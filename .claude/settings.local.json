@@ -1,0 +1,81 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(grep:*)",
+      "Bash(flutter pub:*)",
+      "Bash(flutter analyze:*)",
+      "Bash(sed:*)",
+      "Bash(git fetch:*)",
+      "Bash(find:*)",
+      "Bash(flutter:*)",
+      "Bash(rg:*)",
+      "Bash(rm:*)",
+      "Bash(ls:*)",
+      "Bash(dart analyze:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(dart pub:*)",
+      "WebFetch(domain:pub.dev)",
+      "WebFetch(domain:github.com)",
+      "Bash(python:*)",
+      "Bash(mv:*)",
+      "Bash(dart:*)",
+      "Bash(git checkout:*)",
+      "Bash(git stash:*)",
+      "Bash(bash -c \"flutter analyze\")",
+      "Bash(pkill:*)",
+      "Bash(cmd.exe /c \"flutter *\")",
+      "Bash(cmd.exe /c \"flutter analyze *\")",
+      "Bash(cmd.exe:*)",
+      "WebSearch",
+      "Bash(fc-scan:*)",
+      "Bash(printf:*)",
+      "Bash(for:*)",
+      "Bash(do mv \"$file\" \"$file#Icon_24px_\")",
+      "Bash(done)",
+      "WebFetch(domain:api.flutter.dev)",
+      "WebFetch(domain:medium.com)",
+      "Bash(git add:*)",
+      "Bash(git rebase:*)",
+      "Read(///**)",
+      "Bash(test:*)",
+      "Bash(assets/images/Cursors/cursor_cursor.png)",
+      "Bash(assets/images/Cursors/cursor_hand.png)",
+      "Bash(assets/images/Cursors/cursor_move.png)",
+      "Bash(assets/images/Cursors/cursor_ne_sw.png)",
+      "Bash(assets/images/Cursors/cursor_nw_se.png)",
+      "Bash(lib/presentation/screens/canvas/services/canvas_cursor_manager.dart)",
+      "Bash(chmod:*)",
+      "Bash(npm run build:*)",
+      "Bash(firebase deploy:*)",
+      "WebFetch(domain:www.figma.com)",
+      "WebFetch(domain:developers.figma.com)",
+      "Bash(/mnt/c/Windows/System32/cmd.exe /c \"dart analyze lib/services/email_templates.dart\")",
+      "Bash(git commit:*)",
+      "Bash(npm run deploy:*)",
+      "Bash(xargs cat:*)",
+      "Bash(git config:*)",
+      "Bash(git mv:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git show d3c8e2d3268f754e3461fd005a6d77c75336ff3e^..d3c8e2d3268f754e3461fd005a6d77c75336ff3e --no-merges -- lib/presentation/screens/canvas/services/interaction_service.dart lib/presentation/screens/canvas/services/mermaid/mermaid_to_canvas_converter.dart)",
+      "Bash(grep -E \"\\\\.\\(dart\\)$\")",
+      "WebFetch(domain:developer.atlassian.com)",
+      "WebFetch(domain:forum.figma.com)"
+    ],
+    "deny": []
+  },
+  "enableAllProjectMcpServers": false,
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python -c \"import sys,json,subprocess; d=json.load(sys.stdin); fp=d.get('file_path',''); fp.endswith('.dart') and 'vendor' not in fp and subprocess.call(['bash','scripts/check_narwhal_rules.sh',fp])\""
+          }
+        ]
+      }
+    ]
+  }
+}

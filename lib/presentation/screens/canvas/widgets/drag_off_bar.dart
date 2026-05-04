@@ -1,0 +1,159 @@
+﻿import 'package:onyxia/export.dart';
+import '../providers/providers.dart';
+
+/// Data class to carry information during drag operations
+class DragOffBarData {
+  final ArtifactType type;
+
+  const DragOffBarData({required this.type});
+}
+
+/// Configuration for a button in the DragOffBar
+class DragOffBarButton {
+  final NarwhalIcons icon;
+  final VoidCallback? onDragCompleted;
+  final DragOffBarData? dragData;
+  final Widget Function()? dragFeedbackBuilder;
+
+  const DragOffBarButton({
+    required this.icon,
+    this.onDragCompleted,
+    this.dragData,
+    this.dragFeedbackBuilder,
+  });
+}
+
+/// A flexible toolbar widget that supports both clickable and draggable buttons
+class DragOffBar extends ConsumerWidget {
+  final List<DragOffBarButton?> buttons; // null entries act as separators
+  final double iconSize;
+  final double height;
+
+  const DragOffBar({
+    super.key,
+    required this.buttons,
+    this.iconSize = 30.0,
+    this.height = 56.0,
+  });
+
+  BoxDecoration _getPanelDecoration(BuildContext context) {
+    return BoxDecoration(
+      color: ThemeHelper.neutral100(context),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(color: ThemeHelper.neutral400(context), width: 1),
+      boxShadow: [
+        BoxShadow(
+          color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
+          blurRadius: 3,
+          offset: const Offset(0, 1),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSeparator(BuildContext context) => Container(
+        width: 1,
+        height: 24,
+        color: ThemeHelper.neutral300(context),
+      );
+
+  Widget _buildDefaultDragFeedback(BuildContext context, DragOffBarButton button) {
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: defaultArtifactObjectDimensions.width,
+        height: defaultArtifactObjectDimensions.height,
+        decoration: BoxDecoration(
+          color: ThemeHelper.neutral100(context),
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: ThemeHelper.neutral300(context), width: 2),
+        ),
+        child: Center(
+          child: NarwhalIcon(
+            button.icon,
+            size: 24,
+            color: ThemeHelper.neutral500(context),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildButton(
+    WidgetRef ref,
+    BuildContext context,
+    DragOffBarButton button,
+  ) {
+    final buttonWidget = NarwhalIconButton(
+      icon: button.icon,
+      size: iconSize,
+      onPressed: () {
+        ref.read(dragOffDropPositionProvider.notifier).state = null;
+
+        final showSearchOverlay = ref.read(canvasSettingsProvider(Setting.showSearchOverlay));
+        ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).state = !showSearchOverlay;
+      },
+    );
+
+    // If no drag data is provided, return just the button
+    if (button.dragData == null) {
+      return buttonWidget;
+    }
+
+    // Wrap button with Draggable
+    return Draggable<DragOffBarData>(
+      data: button.dragData!,
+      feedback: button.dragFeedbackBuilder?.call() ?? _buildDefaultDragFeedback(context, button),
+      childWhenDragging: Opacity(
+        opacity: 0.5,
+        child: buttonWidget,
+      ),
+      onDragCompleted: button.onDragCompleted,
+      child: buttonWidget,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<Widget> buttonWidgets = [];
+
+    for (int i = 0; i < buttons.length; i++) {
+      final button = buttons[i];
+
+      // Handle null values as dividers
+      if (button == null) {
+        if (buttonWidgets.isNotEmpty) {
+          buttonWidgets.add(const SizedBox(width: 8));
+          buttonWidgets.add(_buildSeparator(context));
+        }
+        continue;
+      }
+
+      // Add spacing between buttons
+      if (buttonWidgets.isNotEmpty) {
+        buttonWidgets.add(const SizedBox(width: 8));
+      }
+
+      buttonWidgets.add(_buildButton(ref, context, button));
+    }
+
+    return Positioned.fill(
+      bottom: 16,
+      child: Align(
+        alignment: Alignment.bottomCenter,
+        child: Container(
+          height: height,
+          decoration: _getPanelDecoration(context),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: buttonWidgets,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

@@ -1,0 +1,759 @@
+﻿import 'package:onyxia/export.dart';
+import 'dart:math' as math;
+import '../providers/providers.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+class CanvasObjectMenu extends ConsumerStatefulWidget {
+  final VoidCallback openTextEditor;
+  final VoidCallback closeTextEditor;
+  final void Function(CanvasObject) saveTextEditor;
+
+  const CanvasObjectMenu({
+    super.key,
+    required this.openTextEditor,
+    required this.closeTextEditor,
+    required this.saveTextEditor,
+  });
+
+  @override
+  CanvasObjectMenuState createState() => CanvasObjectMenuState();
+}
+
+enum CanvasObjectMenuOption {
+  mediaSource,
+  color,
+  stroke,
+  shape,
+  startArrowTip,
+  endArrowTip,
+  arrowType,
+  textfield,
+  none,
+}
+
+class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
+  CanvasObjectMenuOption _activeMenuOption = CanvasObjectMenuOption.none;
+  List<CanvasObject> _selectedObjects = [];
+
+  static const shapeOptions = [
+    CanvasObjectMenuOption.shape,
+    CanvasObjectMenuOption.color,
+    CanvasObjectMenuOption.stroke,
+  ];
+
+  static const imageOptions = [
+    CanvasObjectMenuOption.mediaSource,
+  ];
+
+  static const textOptions = [
+    CanvasObjectMenuOption.textfield,
+  ];
+
+  static const arrowOptions = [
+    CanvasObjectMenuOption.color,
+    CanvasObjectMenuOption.stroke,
+    CanvasObjectMenuOption.startArrowTip,
+    CanvasObjectMenuOption.endArrowTip,
+    CanvasObjectMenuOption.arrowType,
+    CanvasObjectMenuOption.textfield,
+  ];
+
+  static const brushOptions = [
+    CanvasObjectMenuOption.color,
+  ];
+
+  static const double menuSpacing = CanvasBounds.gridSpacing * 2.0;
+  static const double borderWidth = 1.0;
+  static const double buttonBorderRadius = 8.0;
+  static const double menuPadding = 6.0;
+
+  static const double iconSize = 32.0;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  void _toggleMenuOption(CanvasObjectMenuOption option) {
+    setState(() {
+      _activeMenuOption = _activeMenuOption == option ? CanvasObjectMenuOption.none : option;
+    });
+  }
+
+  void _closeSubmenu() {
+    if (_activeMenuOption == CanvasObjectMenuOption.none) return;
+    setState(() => _activeMenuOption = CanvasObjectMenuOption.none);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final currentSelected = ref.read(canvasObjectsProvider).selectedObjects.where((e) => !e.isArtifact).toList();
+    if (!listEquals(_selectedObjects, currentSelected)) _closeSubmenu();
+
+    _selectedObjects = currentSelected;
+
+    if (ref.watch(headlessProvider).isVisible || _selectedObjects.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    List<CanvasObjectMenuOption> menuOptions = _getCommonMenuOptions(_selectedObjects);
+
+    if (!menuOptions.contains(_activeMenuOption)) {
+      _closeSubmenu();
+    }
+
+    // Calculate bounds for each object, computing arrow bounds inline
+    final List<double> leftBounds = [];
+    final List<double> topBounds = [];
+    final List<double> rightBounds = [];
+    final List<double> bottomBounds = [];
+
+    for (final obj in _selectedObjects) {
+      leftBounds.add(obj.topLeft.dx);
+      topBounds.add(obj.topLeft.dy);
+      rightBounds.add(obj.bottomRight.dx);
+      bottomBounds.add(obj.bottomRight.dy);
+    }
+
+    final double minX = leftBounds.reduce(math.min);
+    final double minY = topBounds.reduce(math.min);
+    final double maxX = rightBounds.reduce(math.max);
+    final double maxY = bottomBounds.reduce(math.max);
+
+    // Calculate center X and top/bottom Y for the bounding rectangle
+    final objectCenterX = (minX + maxX) / 2;
+    final objectTopY = minY;
+    final objectBottomY = maxY;
+
+    final transform = ref.watch(canvasViewportProvider).value;
+    final double scale = transform.getMaxScaleOnAxis();
+
+    // Transform the object's positions from canvas coordinates to screen coordinates
+    final objectCenterScreenPoint = MatrixUtils.transformPoint(transform, Offset(objectCenterX, objectTopY));
+    final objectBottomScreenPoint = MatrixUtils.transformPoint(transform, Offset(objectCenterX, objectBottomY));
+
+    // targetY: desired bottom of main menu when placed above objects
+    final targetY = objectCenterScreenPoint.dy - (CanvasBounds.gridSpacing * scale) - menuSpacing;
+    // belowTargetY: desired top of main menu when placed below objects
+    final belowTargetY = objectBottomScreenPoint.dy + (CanvasBounds.gridSpacing * scale) + menuSpacing;
+
+    // Get viewport dimensions
+    final screenSize = MediaQuery.of(context).size;
+    final viewportWidth = screenSize.width;
+    final viewportHeight = screenSize.height;
+
+    Widget? submenuContent;
+    bool? submenuPrefersAbove;
+    bool submenuFloatRight = false;
+
+    if (_activeMenuOption != CanvasObjectMenuOption.none) {
+      (submenuContent, submenuPrefersAbove) = switch (_activeMenuOption) {
+        CanvasObjectMenuOption.color => (_buildColorPalette(), true),
+        CanvasObjectMenuOption.stroke => (_buildStrokePalette(), true),
+        CanvasObjectMenuOption.shape => (_buildShapePalette(), true),
+        CanvasObjectMenuOption.startArrowTip => (_buildArrowTipPalette(tipOnRight: false), true),
+        CanvasObjectMenuOption.endArrowTip => (_buildArrowTipPalette(tipOnRight: true), true),
+        CanvasObjectMenuOption.arrowType => (_buildArrowTypePalette(), true),
+        _ => throw UnimplementedError('Submenu not implemented for $_activeMenuOption'),
+      };
+    }
+
+    return CustomMultiChildLayout(
+      delegate: _CanvasMenuLayoutDelegate(
+        targetX: objectCenterScreenPoint.dx,
+        targetY: targetY,
+        belowTargetY: belowTargetY,
+        viewportWidth: viewportWidth,
+        viewportHeight: viewportHeight,
+        submenuPrefersAbove: submenuPrefersAbove,
+        submenuFloatRight: submenuFloatRight,
+      ),
+      children: [
+        LayoutId(
+          id: _CanvasMenuChild.mainMenu,
+          child: Consumer(
+            key: ValueKey(_selectedObjects.map((o) => o.id).join(',')),
+            builder: (context, ref, child) {
+              return GridPalette(
+                buttons: _buildMenuOptions(menuOptions),
+                rows: 1,
+                context: context,
+              );
+            },
+          ),
+        ),
+        if (submenuContent != null) LayoutId(id: _CanvasMenuChild.submenu, child: submenuContent),
+      ],
+    );
+  }
+
+  List<CanvasObjectMenuOption> getObjectOptions(CanvasObjectType objectType) => switch (objectType) {
+        CanvasObjectType.text => textOptions,
+        CanvasObjectType.image => imageOptions,
+        CanvasObjectType.arrow => arrowOptions,
+        CanvasObjectType.brush => brushOptions,
+        _ => shapeOptions,
+      };
+
+  List<CanvasObjectMenuOption> _getCommonMenuOptions(List<CanvasObject> selectedObjects) {
+    if (selectedObjects.isEmpty) return [];
+
+    final commonOptions = getObjectOptions(selectedObjects.first.type).toSet();
+    for (final obj in selectedObjects.skip(1)) {
+      commonOptions.retainAll(getObjectOptions(obj.type));
+    }
+
+    if (selectedObjects.length != 1) {
+      commonOptions.remove(CanvasObjectMenuOption.textfield);
+    }
+
+    return commonOptions.toList();
+  }
+
+  List<Widget> _buildMenuOptions(List<CanvasObjectMenuOption> options) {
+    List<Widget> buttons = [];
+    for (final opt in options) {
+      switch (opt) {
+        case CanvasObjectMenuOption.mediaSource:
+          buttons.add(NarwhalIconButton(
+            icon: NarwhalIcons.image,
+            onPressed: () async {
+              final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
+              if (selectedObjects.isNotEmpty) {
+                final selectedObject = selectedObjects[0];
+                String? url = null;
+                if (selectedObject.isImage && selectedObject.imageProps.imageUrl.isNotEmpty) {
+                  url = selectedObject.imageProps.imageUrl;
+                }
+
+                if (url != null) await launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
+              }
+            },
+            isSelected: false,
+          ));
+          break;
+        case CanvasObjectMenuOption.shape:
+          final isSelected = _activeMenuOption == opt;
+          final icon = switch (_selectedObjects[0].type) {
+            CanvasObjectType.rectangle => NarwhalIcons.rectangle,
+            CanvasObjectType.diamond => NarwhalIcons.diamond,
+            CanvasObjectType.oblong => NarwhalIcons.roundedRectangle,
+            CanvasObjectType.circle => NarwhalIcons.circle,
+            CanvasObjectType.rhombus => NarwhalIcons.rhombus,
+            CanvasObjectType.trapezoid => NarwhalIcons.trapezoid,
+            CanvasObjectType.cylinder => NarwhalIcons.cylinder,
+            CanvasObjectType.house => NarwhalIcons.pentahome,
+            CanvasObjectType.reverseHouse => NarwhalIcons.pentahomeReversed,
+            _ => NarwhalIcons.rectangle
+          };
+
+          buttons.add(NarwhalIconButton(
+            icon: icon,
+            onPressed: () => _toggleMenuOption(opt),
+            isSelected: isSelected,
+            isPressed: isSelected,
+            hasCaret: true,
+          ));
+          buttons.add(_buildDivider());
+          break;
+        case CanvasObjectMenuOption.color:
+          final isSelected = _activeMenuOption == opt;
+          buttons.add(
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                // Radial gradient shadow layer (beneath button)
+                Padding(
+                  padding: const EdgeInsets.only(right: 18),
+                  child: Container(
+                    width: 24,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          Colors.black,
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                // Button on top
+                NarwhalIconButton(
+                  icon: NarwhalIcons.colorChip,
+                  iconColor: _selectedObjects.isEmpty ? null : _selectedObjects[0].color,
+                  onPressed: () => _toggleMenuOption(opt),
+                  isSelected: isSelected,
+                  isPressed: isSelected,
+                  hasCaret: true,
+                ),
+              ],
+            ),
+          );
+          break;
+        case CanvasObjectMenuOption.stroke:
+          final isSelected = _activeMenuOption == opt;
+          buttons.add(NarwhalIconButton(
+            icon: NarwhalIcons.stroke,
+            onPressed: () => _toggleMenuOption(opt),
+            isSelected: isSelected,
+            isPressed: isSelected,
+            hasCaret: true,
+          ));
+          break;
+        case CanvasObjectMenuOption.startArrowTip:
+          final isSelected = _activeMenuOption == opt;
+          final icon = switch (_selectedObjects[0].arrowProps.startTip) {
+            ArrowTip.triangle => NarwhalIcons.tipSolidArrowLeft,
+            ArrowTip.circle => NarwhalIcons.tipCircleLeft,
+            ArrowTip.none => NarwhalIcons.noTip,
+          };
+          buttons.add(NarwhalIconButton(
+            icon: icon,
+            onPressed: () => _toggleMenuOption(opt),
+            isSelected: isSelected,
+            hasCaret: true,
+          ));
+          break;
+        case CanvasObjectMenuOption.endArrowTip:
+          final isSelected = _activeMenuOption == opt;
+          final icon = switch (_selectedObjects[0].arrowProps.endTip) {
+            ArrowTip.triangle => NarwhalIcons.tipSolidArrowRight,
+            ArrowTip.circle => NarwhalIcons.tipCircleRight,
+            ArrowTip.none => NarwhalIcons.noTip,
+          };
+          buttons.add(NarwhalIconButton(
+            icon: icon,
+            onPressed: () => _toggleMenuOption(opt),
+            isSelected: isSelected,
+            hasCaret: true,
+          ));
+          break;
+        case CanvasObjectMenuOption.arrowType:
+          final isSelected = _activeMenuOption == opt;
+          final icon = switch (_selectedObjects[0].arrowProps.arrowType) {
+            ArrowType.segmented => NarwhalIcons.lineCorner,
+            ArrowType.curved => NarwhalIcons.lineCurve,
+          };
+          buttons.add(NarwhalIconButton(
+            icon: icon,
+            onPressed: () => _toggleMenuOption(opt),
+            isSelected: isSelected,
+            hasCaret: true,
+          ));
+          break;
+        case CanvasObjectMenuOption.textfield:
+          final isSelected = ref.watch(canvasTextProvider.notifier).isEditing;
+          buttons.add(NarwhalIconButton(
+            icon: NarwhalIcons.textSettings,
+            onPressed: () {
+              if (isSelected) {
+                widget.closeTextEditor();
+                _closeSubmenu();
+              } else {
+                widget.openTextEditor();
+              }
+            },
+            isSelected: isSelected,
+          ));
+          break;
+        case CanvasObjectMenuOption.none:
+          break;
+      }
+    }
+    return buttons;
+  }
+
+  Widget _buildDivider() => Container(
+        width: 0.5,
+        height: iconSize,
+        color: ThemeHelper.neutral400(context),
+      );
+
+  // SUB-MENUS
+
+  Widget _buildColorPalette() {
+    final List<Color> colorPalette = [
+      ThemeHelper.neutral900(context),
+      ThemeHelper.neutral400(context),
+      ThemeHelper.red200(context),
+      ThemeHelper.orange200(context),
+      ThemeHelper.green300(context),
+      ThemeHelper.blue600(context),
+      ThemeHelper.purple200(context),
+      ThemeHelper.neutral100(context),
+      ThemeHelper.neutral500(context),
+      ThemeHelper.red100(context),
+      ThemeHelper.orange100(context),
+      ThemeHelper.green200(context),
+      ThemeHelper.blue300(context),
+      ThemeHelper.purple100(context),
+    ];
+
+    final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
+
+    return GridPalette(
+      buttons: colorPalette
+          .map((color) => NarwhalIconButton(
+                icon: NarwhalIcons.colorChip,
+                iconColor: color,
+                onPressed: () {
+                  for (final obj in _selectedObjects) {
+                    obj.color = color;
+                  }
+                  objectsNotifier.updateObjects(
+                    ref,
+                    objects: _selectedObjects,
+                  );
+                },
+                isSelected: _selectedObjects[0].color == color,
+              ))
+          .toList(),
+      rows: 2,
+      context: context,
+    );
+  }
+
+  Widget _buildStrokePalette() {
+    List<Widget> buttons = [
+      NarwhalIconButton(
+        icon: NarwhalIcons.strokeDashed,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            obj.stroke = StrokeType.dashed;
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: _selectedObjects[0].stroke == StrokeType.dashed,
+      ),
+      NarwhalIconButton(
+        icon: NarwhalIcons.strokeDefault,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            obj.stroke = StrokeType.solid;
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: _selectedObjects[0].stroke == StrokeType.solid,
+      ),
+      NarwhalIconButton(
+        icon: NarwhalIcons.strokeThick,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            obj.stroke = StrokeType.thick;
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: _selectedObjects[0].stroke == StrokeType.thick,
+      ),
+    ];
+
+    return GridPalette(
+      buttons: buttons,
+      rows: 1,
+      context: context,
+    );
+  }
+
+  Widget _buildShapePalette() {
+    final List<CanvasObjectType> shapeOptions = [
+      CanvasObjectType.rectangle,
+      CanvasObjectType.diamond,
+      CanvasObjectType.oblong,
+      CanvasObjectType.circle,
+      CanvasObjectType.rhombus,
+      CanvasObjectType.trapezoid,
+      CanvasObjectType.cylinder,
+      CanvasObjectType.house,
+      CanvasObjectType.reverseHouse,
+    ];
+
+    final Map<CanvasObjectType, NarwhalIcons> shapeIcons = {
+      CanvasObjectType.rectangle: NarwhalIcons.rectangle,
+      CanvasObjectType.diamond: NarwhalIcons.diamond,
+      CanvasObjectType.oblong: NarwhalIcons.roundedRectangle,
+      CanvasObjectType.circle: NarwhalIcons.circle,
+      CanvasObjectType.rhombus: NarwhalIcons.rhombus,
+      CanvasObjectType.trapezoid: NarwhalIcons.trapezoid,
+      CanvasObjectType.cylinder: NarwhalIcons.cylinder,
+      CanvasObjectType.house: NarwhalIcons.pentahome,
+      CanvasObjectType.reverseHouse: NarwhalIcons.pentahomeReversed,
+    };
+
+    List<Widget> buttons = shapeOptions
+        .map((shapeType) => NarwhalIconButton(
+              icon: shapeIcons[shapeType]!,
+              onPressed: () {
+                for (final obj in _selectedObjects) {
+                  obj.type = shapeType;
+                }
+                ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+              },
+              isSelected: _selectedObjects[0].type == shapeType,
+            ))
+        .toList();
+
+    return GridPalette(
+      buttons: buttons,
+      rows: 2,
+      context: context,
+    );
+  }
+
+  Widget _buildArrowTipPalette({required tipOnRight}) {
+    ArrowTip selectedTip = tipOnRight ? _selectedObjects[0].arrowProps.endTip : _selectedObjects[0].arrowProps.startTip;
+
+    List<Widget> buttons = [
+      // Circle tip
+      NarwhalIconButton(
+        icon: tipOnRight ? NarwhalIcons.tipCircleRight : NarwhalIcons.tipCircleLeft,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            if (tipOnRight) {
+              obj.arrowProps.endTip = ArrowTip.circle;
+            } else {
+              obj.arrowProps.startTip = ArrowTip.circle;
+            }
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: selectedTip == ArrowTip.circle,
+      ),
+
+      // Triangle tip
+      NarwhalIconButton(
+        icon: tipOnRight ? NarwhalIcons.tipSolidArrowRight : NarwhalIcons.tipSolidArrowLeft,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            if (tipOnRight) {
+              obj.arrowProps.endTip = ArrowTip.triangle;
+            } else {
+              obj.arrowProps.startTip = ArrowTip.triangle;
+            }
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: selectedTip == ArrowTip.triangle,
+      ),
+
+      // No tip
+      NarwhalIconButton(
+        icon: NarwhalIcons.noTip,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            if (tipOnRight) {
+              obj.arrowProps.endTip = ArrowTip.none;
+            } else {
+              obj.arrowProps.startTip = ArrowTip.none;
+            }
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: selectedTip == ArrowTip.none,
+      ),
+    ];
+
+    return GridPalette(
+      buttons: buttons,
+      rows: 1,
+      context: context,
+    );
+  }
+
+  Widget _buildArrowTypePalette() {
+    ArrowType selectedType = _selectedObjects[0].arrowProps.arrowType;
+
+    List<Widget> buttons = [
+      // Segmented type
+      NarwhalIconButton(
+        icon: NarwhalIcons.lineCorner,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            obj.arrowProps.arrowType = ArrowType.segmented;
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: selectedType == ArrowType.segmented,
+      ),
+
+      // Curved type
+      NarwhalIconButton(
+        icon: NarwhalIcons.lineCurve,
+        onPressed: () {
+          for (final obj in _selectedObjects) {
+            obj.arrowProps.arrowType = ArrowType.curved;
+          }
+          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+        },
+        isSelected: selectedType == ArrowType.curved,
+      ),
+    ];
+
+    return GridPalette(
+      buttons: buttons,
+      rows: 1,
+      context: context,
+    );
+  }
+}
+
+/// A widget that arranges buttons in a grid with a specified number of rows.
+/// Automatically distributes buttons evenly across rows.
+class GridPalette extends StatelessWidget {
+  final List<Widget> buttons;
+  final int rows;
+  final double padding;
+  final BuildContext context;
+
+  const GridPalette({
+    super.key,
+    required this.buttons,
+    required this.rows,
+    required this.context,
+    this.padding = CanvasObjectMenuState.menuPadding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    if (buttons.isEmpty) return const SizedBox.shrink();
+
+    // Calculate buttons per row
+    final int totalButtons = buttons.length;
+    final int buttonsPerRow = (totalButtons / rows).ceil();
+
+    // Build rows
+    List<Widget> rowWidgets = [];
+    for (int i = 0; i < rows; i++) {
+      final int startIndex = i * buttonsPerRow;
+      final int endIndex = math.min(startIndex + buttonsPerRow, totalButtons);
+
+      if (startIndex < totalButtons) {
+        final rowButtons = buttons.sublist(startIndex, endIndex);
+        // Wrap each button in padding
+        final wrappedButtons = rowButtons
+            .map((button) => Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: button,
+                ))
+            .toList();
+        rowWidgets.add(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: wrappedButtons,
+          ),
+        );
+      }
+    }
+
+    return Material(
+      elevation: 2,
+      borderRadius: BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
+      color: ThemeHelper.neutral200(context),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+            color: ThemeHelper.neutral400(context),
+            width: CanvasObjectMenuState.borderWidth,
+          ),
+          borderRadius: BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
+        ),
+        child: AnimatedSize(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          child: IntrinsicWidth(
+            child: Container(
+              constraints: BoxConstraints(minHeight: 54),
+              child: Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: rowWidgets,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+enum _CanvasMenuChild { mainMenu, submenu }
+
+/// Positions the main menu and optional submenu in a single layout pass.
+/// The main menu is centered at [targetX], flipping below objects if it
+/// won't fit above. The submenu is positioned relative to the actual
+/// (measured) main menu bounds — no GlobalKey lag.
+class _CanvasMenuLayoutDelegate extends MultiChildLayoutDelegate {
+  final double targetX;
+  final double targetY;
+  final double belowTargetY;
+  final double viewportWidth;
+  final double viewportHeight;
+  final bool? submenuPrefersAbove; // null = no submenu
+  final bool submenuFloatRight;
+
+  _CanvasMenuLayoutDelegate({
+    required this.targetX,
+    required this.targetY,
+    required this.belowTargetY,
+    required this.viewportWidth,
+    required this.viewportHeight,
+    required this.submenuPrefersAbove,
+    required this.submenuFloatRight,
+  });
+
+  static const double _margin = 16.0;
+  static const double _gap = 4.0;
+
+  @override
+  Size getSize(BoxConstraints constraints) => constraints.biggest;
+
+  @override
+  void performLayout(Size size) {
+    // 1. Main menu — measure first to get its actual size
+    final mmSize = layoutChild(_CanvasMenuChild.mainMenu, const BoxConstraints());
+    final double mmAboveTop = targetY - mmSize.height;
+    final bool flipped = mmAboveTop < _margin;
+    final double mmY = (flipped ? belowTargetY : mmAboveTop).clamp(_margin, viewportHeight - mmSize.height - _margin);
+    final double mmX = (targetX - mmSize.width / 2).clamp(_margin, viewportWidth - mmSize.width - _margin);
+    positionChild(_CanvasMenuChild.mainMenu, Offset(mmX, mmY));
+
+    // 2. Submenu — positioned relative to measured main menu bounds
+    if (hasChild(_CanvasMenuChild.submenu)) {
+      final smSize = layoutChild(_CanvasMenuChild.submenu, const BoxConstraints());
+
+      // X: right-align to main menu's right edge, or center at targetX
+      final double smX = submenuFloatRight
+          ? (mmX + mmSize.width - smSize.width).clamp(_margin, viewportWidth - smSize.width - _margin)
+          : (targetX - smSize.width / 2).clamp(_margin, viewportWidth - smSize.width - _margin);
+
+      // Y: above or below main menu
+      final double mmBottom = mmY + mmSize.height;
+      final double smY;
+      if (flipped) {
+        smY = mmBottom + _gap;
+      } else if (submenuPrefersAbove == true) {
+        final double aboveTop = mmY - _gap - smSize.height;
+        smY = aboveTop < _margin ? mmBottom + _gap : aboveTop;
+      } else {
+        smY = mmBottom + _gap;
+      }
+
+      positionChild(
+        _CanvasMenuChild.submenu,
+        Offset(smX, smY.clamp(_margin, viewportHeight - smSize.height - _margin)),
+      );
+    }
+  }
+
+  @override
+  bool shouldRelayout(_CanvasMenuLayoutDelegate old) =>
+      targetX != old.targetX ||
+      targetY != old.targetY ||
+      belowTargetY != old.belowTargetY ||
+      viewportWidth != old.viewportWidth ||
+      viewportHeight != old.viewportHeight ||
+      submenuPrefersAbove != old.submenuPrefersAbove ||
+      submenuFloatRight != old.submenuFloatRight;
+}

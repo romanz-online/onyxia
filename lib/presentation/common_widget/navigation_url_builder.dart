@@ -1,0 +1,41 @@
+import 'package:onyxia/export.dart';
+import 'package:web/web.dart' as web;
+
+/// Utility class for building navigation URLs for Flutter web Link widgets
+/// Ensures consistent URL generation across the application with proper hash routing
+class NavigationUrlBuilder {
+  /// Detects if the app is using hash routing and returns appropriate base URL
+  static String _getBaseUrl() {
+    if (!kIsWeb) {
+      return ''; // Return empty for non-web platforms
+    }
+
+    try {
+      // Check current URL to determine routing strategy
+      final currentUrl = web.window.location.href;
+      final currentHash = web.window.location.hash;
+
+      // If current URL contains hash routing (/#/), use hash-based URLs
+      if (currentHash.startsWith('#/') || currentUrl.contains('/#/')) {
+        return '/#';
+      }
+
+      // Otherwise, assume path-based routing
+      return '';
+    } catch (e) {
+      // Fallback to hash routing (Flutter web default)
+      return '/#';
+    }
+  }
+
+  /// Builds URL for project dashboard (constellation view)
+  static String buildProjectDashboardUrl(String projectId) {
+    if (projectId.isEmpty) return '${_getBaseUrl()}/projects';
+    return '${_getBaseUrl()}/project/$projectId/graph';
+  }
+
+  static String buildArtifactUrl(String projectId, String artifactId) {
+    if (projectId.isEmpty) return '${_getBaseUrl()}/projects';
+    return '${_getBaseUrl()}/project/$projectId/$artifactId';
+  }
+}

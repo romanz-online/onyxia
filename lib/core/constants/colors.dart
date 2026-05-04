@@ -1,0 +1,69 @@
+import 'package:onyxia/export.dart';
+
+class NarwhalColors {
+  NarwhalColors._();
+
+  static const neutral900 = Color(0xFF1C1C1E);
+  static const neutral800 = Color(0xFF28282C);
+  static const neutral700 = Color(0xFF394648);
+  static const neutral600 = Color(0xFF536560);
+  static const neutral500 = Color(0xFF909699);
+  static const neutral400 = Color(0xFFCFD8DC);
+  static const neutral300 = Color(0xFFECEFF1);
+  static const neutral200 = Color(0xFFF7F9F9);
+  static const neutral100 = Color(0xFFFFFFFF);
+
+  static const blue = Color(0xFF2196F3);
+  static const blue800 = Color(0xFF344F80);
+  static const blue700 = Color(0xFF007CB4);
+  static const blue600 = Color(0xFF699DFF);
+  static const blue500 = Color(0xFF2EBEFF);
+  static const blue400 = Color(0xFF8CDBFF);
+  static const blue300 = Color(0xFFC8DBFF);
+  static const blue200 = Color(0xFFE1F5FE);
+  static const blue100 = Color(0xFFE6F8FF);
+
+  static const green = Color(0xFF4CAF50);
+  static const green900 = Color(0xFF1B5E20);
+  static const green800 = Color(0xFF2E7D32);
+  static const green700 = Color(0xFF388E3C);
+  static const green600 = Color(0xFF43A047);
+  static const green500 = Color(0xFF285C3F);
+  static const green400 = Color(0xFF009142);
+  static const green300 = Color(0xFF55C184);
+  static const green200 = Color(0xFFA9E4C3);
+  static const green100 = Color(0xFFD4F7E4);
+
+  static const orange = Color(0xFFFF9800);
+  static const orange800 = Color(0xFFEF6C00);
+  static const orange700 = Color(0xFFF57C00);
+  static const orange600 = Color(0xFFFB8C00);
+  static const orange500 = Color(0xFFFF9800);
+  static const orange400 = Color(0xFFFFA726);
+  static const orange300 = Color(0xFFFFB74D);
+  static const orange200 = Color(0xFFFFCC80);
+  static const orange100 = Color(0xFFFBC492);
+
+  static const red = Color(0xFFF44336);
+  static const red900 = Color(0xFFB71C1C);
+  static const red800 = Color(0xFFC62828);
+  static const red700 = Color(0xFFD32F2F);
+  static const red600 = Color(0xFFE53935);
+  static const red500 = Color(0xFFF44336);
+  static const red400 = Color(0xFFEF5350);
+  static const red300 = Color(0xFFB55252);
+  static const red200 = Color(0xFFF26D6F);
+  static const red100 = Color(0xFFF8ADAE);
+
+  static const purple = Color(0xFF9C27B0);
+  static const purple600 = Color(0xFF8E24AA);
+  static const purple500 = Color(0xFF9C27B0);
+  static const purple400 = Color(0xFF8E24AA);
+  static const purple300 = Color(0xFFBA68C8);
+  static const purple200 = Color(0xFFC97DC7);
+  static const purple100 = Color(0xFFE3C0E1);
+
+  static const yellow = Color(0xFFFFEB3B);
+  static const amber = Color(0xFFFFC107);
+  static const error = Color(0xFFE53935);
+}

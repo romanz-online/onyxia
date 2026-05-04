@@ -1,0 +1,161 @@
+{
+  "flutter": {
+    "platforms": {
+      "web": {
+        "default": {
+          "projectId": "narwhal-flutter",
+          "appId": "1:710372937018:web:b4f7f26e6425905113d403",
+          "apiKey": "AIzaSyBOaxwt0b3h99XJeb5BF2jMJol69sIwYkI",
+          "authDomain": "narwhal.ics.com",
+          "storageBucket": "narwhal-flutter.firebasestorage.app",
+          "messagingSenderId": "710372937018",
+          "measurementId": "G-H7W4TYBMLD"
+        },
+        "staging": {
+          "projectId": "narwhal-flutter",
+          "appId": "1:710372937018:web:295df272ee7a4e6213d403",
+          "apiKey": "AIzaSyBOaxwt0b3h99XJeb5BF2jMJol69sIwYkI",
+          "authDomain": "narwhal-staging.ics.com",
+          "storageBucket": "narwhal-flutter.firebasestorage.app",
+          "messagingSenderId": "710372937018",
+          "measurementId": "G-M9H6KPEE4Y"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "narwhal-flutter",
+          "configurations": {
+            "web": "1:710372937018:web:b4f7f26e6425905113d403",
+            "web-staging": "1:710372937018:web:<staging-app-id>"
+          }
+        }
+      }
+    }
+  },
+  "hosting": [
+    {
+      "target": "production",
+      "public": "build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "same-origin-allow-popups"
+            }
+          ]
+        },
+        {
+          "source": "/version.json",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache"
+            }
+          ]
+        },
+        {
+          "source": "**/*.svg",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "image/svg+xml"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "target": "staging",
+      "public": "build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ], 
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "same-origin-allow-popups"
+            }
+          ]
+        },
+        {
+          "source": "**/*.svg",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "image/svg+xml"
+            }
+          ]
+        } 
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "release",
+      "public": "build/web",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "headers": [
+        {
+          "source": "**",
+          "headers": [
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "same-origin-allow-popups"
+            }
+          ]
+        },
+        {
+          "source": "**/*.svg",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "image/svg+xml"
+            }
+          ]
+        }
+      ],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "target": "updates",
+      "public": "version_check",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "headers": [
+        {
+          "source": "/version.json",
+          "headers": [
+            { "key": "Cache-Control", "value": "no-cache" }
+          ]
+        }
+      ]
+    }
+  ],
+  "storage": {
+    "rules": "storage.rules"
+  }
+}
