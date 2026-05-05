@@ -64,15 +64,20 @@ class _HomeState extends ConsumerState<Home> {
     if (widget.projectId.isNotEmpty) {
       ref.listen<Projects>(projectsProvider, (previous, next) {
         final wasLoading = previous?.isLoading ?? true;
-        if (wasLoading && !next.isLoading && next.selectedProject.id != widget.projectId) {
-          ref.read(projectsProvider.notifier).selectProjectById(widget.projectId);
+        if (wasLoading &&
+            !next.isLoading &&
+            next.selectedProject.id != widget.projectId) {
+          ref
+              .read(projectsProvider.notifier)
+              .selectProjectById(widget.projectId);
         }
       });
       final currentProjects = ref.watch(projectsProvider);
       if (currentProjects.isLoading) {
         return Scaffold(body: Center(child: NarwhalSpinner()));
       }
-      final projectExists = currentProjects.projects.any((p) => p.id == widget.projectId);
+      final projectExists =
+          currentProjects.projects.any((p) => p.id == widget.projectId);
       if (!projectExists && !currentProjects.isLoading) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) context.replace('/${Routes.projects}');
@@ -93,8 +98,14 @@ class _HomeState extends ConsumerState<Home> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: ArtifactsTreeView(
-                        contextMenuOptions: artifactsContextMenuOptions(),
+                      child: Container(
+                        width: double.infinity,
+                        color: ThemeHelper.neutral100(context),
+                        padding: const EdgeInsets.only(
+                            left: 6, top: 6, bottom: 6, right: 7),
+                        child: ArtifactsTreeView(
+                          contextMenuOptions: artifactsContextMenuOptions(),
+                        ),
                       ),
                     ),
                     const SidebarFooter(),
@@ -126,7 +137,8 @@ class _HomeState extends ConsumerState<Home> {
               child: _ResizeDivider(
                 onDragUpdate: (delta) {
                   final maxWidth = MediaQuery.of(context).size.width - 46 - 300;
-                  _treeSidebarWidth.value = (_treeSidebarWidth.value + delta).clamp(_minTreeSidebarWidth, maxWidth);
+                  _treeSidebarWidth.value = (_treeSidebarWidth.value + delta)
+                      .clamp(_minTreeSidebarWidth, maxWidth);
                 },
               ),
             ),
@@ -159,13 +171,16 @@ class _ResizeDividerState extends State<_ResizeDivider> {
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
             onHorizontalDragStart: (_) => setState(() => _isDragging = true),
-            onHorizontalDragUpdate: (details) => widget.onDragUpdate(details.delta.dx),
+            onHorizontalDragUpdate: (details) =>
+                widget.onDragUpdate(details.delta.dx),
             onHorizontalDragEnd: (_) => setState(() => _isDragging = false),
             child: Center(
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
                 width: (_isDragging || isHovered) ? 3 : 1,
-                color: (_isDragging || isHovered) ? ThemeHelper.accentColor() : ThemeHelper.neutral300(context),
+                color: (_isDragging || isHovered)
+                    ? ThemeHelper.accentColor()
+                    : ThemeHelper.neutral300(context),
               ),
             ),
           ),

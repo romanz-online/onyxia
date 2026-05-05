@@ -117,77 +117,70 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _syncTree(newRoots));
     }
 
-    return Container(
-      width: double.infinity,
-      color: ThemeHelper.neutral100(context),
-      padding: const EdgeInsets.only(left: 6, top: 6, bottom: 6, right: 7),
-      child: hasError
-          ? Center(
-              child: Text(
-                'Error loading items. Please refresh the page.',
-                style: NarwhalTextStyle(color: ThemeHelper.red()),
+    if (hasError)
+      return Center(
+        child: Text(
+          'Error loading items. Please refresh the page.',
+          style: NarwhalTextStyle(),
+        ),
+      );
+
+    if (!isDataLoaded) return Center(child: NarwhalSpinner());
+
+    if (itemNodes.isEmpty) return const SizedBox.shrink();
+
+    return SuperTreeView<Artifact>(
+      controller: treeController,
+      expansionSlotSize: 20,
+      expansionBuilder: (ctx, node) => node.hasChildren
+          ? NarwhalIcon(
+              NarwhalIcons.expandArrowCollapsed,
+              color: ThemeHelper.neutral900(context),
+            )
+          : const SizedBox.shrink(),
+      prefixBuilder: (ctx, node) => node.data.type == ArtifactType.folder
+          ? Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: NarwhalIcon(
+                node.isExpanded
+                    ? NarwhalIcons.folderOpened
+                    : NarwhalIcons.folderClosed,
+                color: ThemeHelper.neutral900(context),
               ),
             )
-          : !isDataLoaded
-              ? Center(child: NarwhalSpinner())
-              : itemNodes.isEmpty
-                  ? const SizedBox.shrink()
-                  : SuperTreeView<Artifact>(
-                      controller: treeController,
-                      expansionSlotSize: 20,
-                      expansionBuilder: (ctx, node) => node.hasChildren
-                          ? MouseRegion(
-                              cursor: SystemMouseCursors.click,
-                              child: NarwhalIcon(
-                                NarwhalIcons.expandArrowCollapsed,
-                                color: ThemeHelper.neutral900(context),
-                              ),
-                            )
-                          : const SizedBox.shrink(),
-                      prefixBuilder: (ctx, node) =>
-                          node.data.type == ArtifactType.folder
-                              ? Padding(
-                                  padding: const EdgeInsets.only(left: 4),
-                                  child: NarwhalIcon(
-                                    node.isExpanded
-                                        ? NarwhalIcons.folderOpened
-                                        : NarwhalIcons.folderClosed,
-                                    color: ThemeHelper.neutral900(context),
-                                  ),
-                                )
-                              : const SizedBox.shrink(),
-                      contentBuilder: (context, node, _) =>
-                          TreeTile(node: node),
-                      style: TreeViewStyle(
-                        indentAmount: 16.0,
-                        padding: EdgeInsets.symmetric(vertical: 0),
-                        hoverColor: ThemeHelper.neutral200(context),
-                        selectedColor: ThemeHelper.neutral200(context),
-                      ),
-                      logic: TreeViewConfig(
-                        enableDragAndDrop: true,
-                        selectionMode: SelectionMode.multiple,
-                        expansionTrigger: ExpansionTrigger.tap,
-                        onNodeTap: (id) => _onNodeTapped(id),
-                        onNodeDoubleTap: (id) => _onNodeDoubleTapped(id),
-                        dragAndDrop: TreeDragAndDropConfig(
-                          canAcceptDrop: (draggedNode, targetNode, position) {
-                            TreeNode<Artifact>? cursor = targetNode;
-                            while (cursor != null) {
-                              if (cursor.id == draggedNode.id) return false;
-                              cursor = cursor.parent;
-                            }
-                            return true;
-                          },
-                        ),
-                      ),
-                      contextMenuBuilder: (ctx, node) {
-                        final menuOptions = widget.contextMenuOptions;
-                        if (menuOptions == null) return [];
-                        final options = menuOptions.options;
-                        return _buildContextMenuItems(options, node);
-                      },
-                    ),
+          : const SizedBox.shrink(),
+      contentBuilder: (context, node, _) => TreeTile(node: node),
+      style: TreeViewStyle(
+        indentAmount: 16.0,
+        padding: EdgeInsets.symmetric(vertical: 0),
+        hoverColor: ThemeHelper.neutral200(context),
+        selectedColor: ThemeHelper.neutral200(context),
+      ),
+      logic: TreeViewConfig(
+        enableDragAndDrop: true,
+        selectionMode: SelectionMode.multiple,
+        expansionTrigger: ExpansionTrigger.tap,
+        onNodeTap: (id) => _onNodeTapped(id),
+        onNodeDoubleTap: (id) => _onNodeDoubleTapped(id),
+        dragAndDrop: TreeDragAndDropConfig(
+          canAcceptDrop: (draggedNode, targetNode, position) {
+            TreeNode<Artifact>? cursor = targetNode;
+            while (cursor != null) {
+              if (position != NodeDropPosition.inside) return false;
+              if (cursor.id == draggedNode.id) return false;
+              if (targetNode.data.type != ArtifactType.folder) return false;
+              cursor = cursor.parent;
+            }
+            return true;
+          },
+        ),
+      ),
+      contextMenuBuilder: (ctx, node) {
+        final menuOptions = widget.contextMenuOptions;
+        if (menuOptions == null) return [];
+        final options = menuOptions.options;
+        return _buildContextMenuItems(options, node);
+      },
     );
   }
 

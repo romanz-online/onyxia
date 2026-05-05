@@ -8,7 +8,8 @@ class EditableArtifactName extends ConsumerStatefulWidget {
   const EditableArtifactName({super.key, required this.item});
 
   @override
-  ConsumerState<EditableArtifactName> createState() => EditableArtifactNameState();
+  ConsumerState<EditableArtifactName> createState() =>
+      EditableArtifactNameState();
 }
 
 class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
@@ -54,21 +55,27 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       _isEditing = false;
     });
     _overlayController.hide();
-    final newName = ItemTitleValidationService.correctTitle(_controller.text.trim());
+    final newName =
+        ItemTitleValidationService.correctTitle(_controller.text.trim());
     if (newName.isEmpty || newName == widget.item.title) {
       _controller.text = widget.item.title;
       return;
     }
-    if (ItemTitleValidationService.errorMessage(ref, newName, widget.item.id) != null) {
+    if (ItemTitleValidationService.errorMessage(ref, newName, widget.item.id) !=
+        null) {
       _controller.text = widget.item.title;
       return;
     }
-    ref.read(artifactsProvider.notifier).updateItem(widget.item.copyWith(title: newName));
+    ref
+        .read(artifactsProvider.notifier)
+        .updateItem(widget.item.copyWith(title: newName));
 
     if (context.mounted) {
-      final urlSelectedId = GoRouterState.of(context).pathParameters['selectedId'];
+      final urlSelectedId =
+          GoRouterState.of(context).pathParameters['selectedId'];
       if (urlSelectedId == widget.item.title) {
-        final projectId = ref.read(projectsProvider.select((s) => s.selectedProject.id));
+        final projectId =
+            ref.read(projectsProvider.select((s) => s.selectedProject.id));
         ref.read(itemPersistenceProvider.notifier).save(newName);
         context.go('/project/$projectId/$newName');
       }
@@ -105,7 +112,8 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                 height: double.infinity,
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
                     child: Text(
                       _errorMessage ?? '',
                       style: NarwhalTextStyle(
@@ -122,40 +130,52 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
         ),
       ),
       child: _isEditing
-          ? Row(
-              children: [
-                Expanded(
-                  child: CompositedTransformTarget(
-                    link: _layerLink,
-                    child: TextField(
-                      controller: _controller,
-                      focusNode: _focusNode,
-                      style: NarwhalTextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.normal,
-                        color: ThemeHelper.neutral700(context),
+          ? Transform.translate(
+              offset: Offset(-4, 0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: CompositedTransformTarget(
+                      link: _layerLink,
+                      child: Container(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        decoration: BoxDecoration(
+                          color: ThemeHelper.neutral200(context),
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: TextField(
+                          controller: _controller,
+                          focusNode: _focusNode,
+                          style: NarwhalTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                            color: ThemeHelper.neutral700(context),
+                          ),
+                          decoration: InputDecoration(
+                            border: InputBorder.none,
+                            contentPadding: EdgeInsets.zero,
+                            isDense: true,
+                            fillColor: Colors.transparent,
+                            hoverColor: Colors.transparent,
+                          ),
+                          autofocus: true,
+                          onSubmitted: (_) => _saveChanges(),
+                          onChanged: (value) {
+                            final msg = ItemTitleValidationService.errorMessage(
+                                ref, value, widget.item.id);
+                            setState(() => _errorMessage = msg);
+                            if (msg != null) {
+                              _overlayController.show();
+                            } else {
+                              _overlayController.hide();
+                            }
+                          },
+                        ),
                       ),
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.zero,
-                        isDense: true,
-                        fillColor: Colors.transparent,
-                      ),
-                      autofocus: true,
-                      onSubmitted: (_) => _saveChanges(),
-                      onChanged: (value) {
-                        final msg = ItemTitleValidationService.errorMessage(ref, value, widget.item.id);
-                        setState(() => _errorMessage = msg);
-                        if (msg != null) {
-                          _overlayController.show();
-                        } else {
-                          _overlayController.hide();
-                        }
-                      },
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             )
           : GestureDetector(
               onDoubleTap: startEditing,
@@ -165,6 +185,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                   fontSize: 14,
                   fontWeight: FontWeight.normal,
                   color: ThemeHelper.neutral700(context),
+                  letterSpacing: 0.5,
                 ),
                 overflow: TextOverflow.ellipsis,
                 maxLines: 1,
