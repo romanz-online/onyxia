@@ -468,37 +468,36 @@ class _EditorField extends ConsumerWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final horizontalMargin = ((constraints.maxWidth - 800.0) / 2).clamp(0.0, double.infinity);
-        return SingleChildScrollView(
+        return CustomScrollView(
           controller: scrollController,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
+          slivers: [
+            SliverToBoxAdapter(
+              child: Padding(
                 padding: EdgeInsets.only(
                   left: (horizontalMargin - 5).clamp(0.0, double.infinity),
                   right: horizontalMargin,
                 ),
                 child: NoteTitleField(provider: provider, nextFocusNode: focusNode),
               ),
-              Padding(
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                  child: BardEditor(
-                    controller: controller,
-                    style: NarwhalTextStyle(),
-                    autofocus: true,
-                    focusNode: focusNode,
-                    availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
-                    onWikiLinkTapped: (title) {
-                      final projectId = ref.read(projectsProvider).selectedProject.id;
-                      context.go('/project/$projectId/$title');
-                    },
-                  ),
+                child: BardEditor(
+                  controller: controller,
+                  style: NarwhalTextStyle(),
+                  autofocus: true,
+                  focusNode: focusNode,
+                  availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
+                  onWikiLinkTapped: (title) {
+                    final projectId = ref.read(projectsProvider).selectedProject.id;
+                    context.go('/project/$projectId/$title');
+                  },
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         );
       },
     );
