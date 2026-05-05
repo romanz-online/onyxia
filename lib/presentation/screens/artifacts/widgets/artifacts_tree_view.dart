@@ -26,17 +26,24 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     _subscribeToMoveEvents();
   }
 
+  @override
+  void dispose() {
+    _moveSubscription?.cancel();
+    treeController.dispose();
+    super.dispose();
+  }
+
   void _subscribeToMoveEvents() {
     _moveSubscription?.cancel();
     _moveSubscription = treeController.addNodeMovedListener(_onNodesMoved);
   }
 
   void _onNodesMoved(TreeNodeMovedEvent<Artifact> event) {
+    print('trying to move');
     for (final node in event.nodes) {
-      final newParentId = node.parent?.id ?? '';
       final success = ref.read(artifactsProvider.notifier).updateParent(
             node.data.id,
-            newParentId: newParentId,
+            newParentId: node.parent?.data.id ?? '',
           );
       if (success && node.parent != null)
         treeController.expandNode(node.parent!);
@@ -49,13 +56,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     ref.read(itemPersistenceProvider.notifier).save(item.id);
     context
         .go(item.navigationUrl(ref.read(projectsProvider).selectedProject.id));
-  }
-
-  @override
-  void dispose() {
-    _moveSubscription?.cancel();
-    treeController.dispose();
-    super.dispose();
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {
@@ -162,12 +162,16 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
         onNodeDoubleTap: (id) => _onNodeDoubleTapped(id),
         dragAndDrop: TreeDragAndDropConfig(
           canAcceptDrop: (draggedNode, targetNode, position) {
-            TreeNode<Artifact>? cursor = targetNode;
-            while (cursor != null) {
-              if (position != NodeDropPosition.inside) return false;
-              if (cursor.id == draggedNode.id) return false;
-              if (targetNode.data.type != ArtifactType.folder) return false;
-              cursor = cursor.parent;
+            if (position != NodeDropPosition.inside) return false;
+            if (targetNode.data.type != ArtifactType.folder) return false;
+            if (targetNode.id == draggedNode.id) return false;
+            return true;
+          },
+          canAcceptDropMany: (draggedNodes, targetNode, position) {
+            if (position != NodeDropPosition.inside) return false;
+            if (targetNode.data.type != ArtifactType.folder) return false;
+            if (draggedNodes.map((e) => e.data.id).contains(targetNode.id)) {
+              return false;
             }
             return true;
           },
@@ -209,7 +213,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   }
 
   bool _isTreeChanged(
-      List<TreeNode<Artifact>> oldRoots, List<TreeNode<Artifact>> newRoots) {
+    List<TreeNode<Artifact>> oldRoots,
+    List<TreeNode<Artifact>> newRoots,
+  ) {
     if (oldRoots.length != newRoots.length) return true;
     for (int i = 0; i < oldRoots.length; i++) {
       if (oldRoots[i].data.title != newRoots[i].data.title) return true;
