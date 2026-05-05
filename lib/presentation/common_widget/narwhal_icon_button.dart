@@ -65,10 +65,12 @@ class NarwhalIconButton extends StatelessWidget {
         onPressed: enabled ? onPressed : null,
         style: ButtonStyle(
           padding: WidgetStateProperty.all(const EdgeInsets.all(3)),
-          backgroundColor: WidgetStateProperty.resolveWith<Color>(getBackgroundColor),
+          backgroundColor:
+              WidgetStateProperty.resolveWith<Color>(getBackgroundColor),
           overlayColor: WidgetStateProperty.all(Colors.transparent),
           side: WidgetStateProperty.all(BorderSide.none),
-          shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(12))),
+          shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
           mouseCursor: WidgetStateProperty.all(SystemMouseCursors.basic),
         ),
         child: hasCaret
@@ -84,7 +86,9 @@ class NarwhalIconButton extends StatelessWidget {
                   ),
                   const SizedBox(width: 2),
                   NarwhalIcon(
-                    (isSelected || isPressed) ? NarwhalIcons.dropdownArrowUp : NarwhalIcons.dropdownArrow,
+                    (isSelected || isPressed)
+                        ? NarwhalIcons.dropdownArrowUp
+                        : NarwhalIcons.dropdownArrow,
                     size: 16,
                     color: getIconColor(theme, context),
                     safeMode: iconSafeMode,

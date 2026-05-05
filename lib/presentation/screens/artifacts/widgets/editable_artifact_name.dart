@@ -131,14 +131,13 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       ),
       child: _isEditing
           ? Transform.translate(
-              offset: Offset(-4, 0),
+              offset: Offset(-4, 4),
               child: Row(
                 children: [
                   Expanded(
                     child: CompositedTransformTarget(
                       link: _layerLink,
                       child: Container(
-                        padding: const EdgeInsets.only(bottom: 4),
                         decoration: BoxDecoration(
                           color: ThemeHelper.neutral200(context),
                           borderRadius: BorderRadius.circular(4),

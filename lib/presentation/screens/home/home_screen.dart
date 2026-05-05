@@ -102,10 +102,12 @@ class _HomeState extends ConsumerState<Home> {
                         width: double.infinity,
                         color: ThemeHelper.neutral100(context),
                         padding: const EdgeInsets.only(
-                            left: 6, top: 6, bottom: 6, right: 7),
-                        child: ArtifactsTreeView(
-                          contextMenuOptions: artifactsContextMenuOptions(),
+                          left: 6,
+                          top: 6,
+                          bottom: 6,
+                          right: 9,
                         ),
+                        child: ArtifactsTreeView(),
                       ),
                     ),
                     const SidebarFooter(),

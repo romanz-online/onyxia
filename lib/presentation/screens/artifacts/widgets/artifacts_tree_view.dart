@@ -5,12 +5,10 @@ class ArtifactsTreeView extends ConsumerStatefulWidget {
     super.key,
     this.onClickNode,
     this.onDoubleClickNode,
-    this.contextMenuOptions,
   });
 
   final void Function(Artifact item)? onClickNode;
   final void Function(Artifact item)? onDoubleClickNode;
-  final ArtifactsTreeContextMenuOptions? contextMenuOptions;
 
   @override
   ArtifactsTreeViewState createState() => ArtifactsTreeViewState();
@@ -175,12 +173,10 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
           },
         ),
       ),
-      contextMenuBuilder: (ctx, node) {
-        final menuOptions = widget.contextMenuOptions;
-        if (menuOptions == null) return [];
-        final options = menuOptions.options;
-        return _buildContextMenuItems(options, node);
-      },
+      contextMenuBuilder: (ctx, node) => _buildContextMenuItems(
+        artifactsContextMenuOptions().options,
+        node,
+      ),
     );
   }
 

@@ -30,43 +30,50 @@ class ArtifactsTreeContextMenuOptions {
   const ArtifactsTreeContextMenuOptions({required this.options});
 }
 
-ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() {
-  return ArtifactsTreeContextMenuOptions(
-    options: [
-      TreeContextMenuOption(
-        label: 'Open in New Tab',
-        index: 0,
-        callback: _handleOpenInNewTab,
-      ),
-      TreeContextMenuOption(
-        label: 'Copy Link',
-        index: 1,
-        callback: _handleCopyLink,
-      ),
-      TreeContextMenuOption(
-        label: 'Remove',
-        index: 2,
-        callback: (context, ref, node, selectedIds) =>
-            _handleRemove(context, ref, selectedIds),
-      ),
-      TreeContextMenuOption(
-        label: 'Rename',
-        index: 3,
-        callback: _handleRename,
-      ),
-    ],
-  );
-}
+ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() =>
+    ArtifactsTreeContextMenuOptions(
+      options: [
+        TreeContextMenuOption(
+          label: 'Open in New Tab',
+          index: 0,
+          callback: _handleOpenInNewTab,
+        ),
+        TreeContextMenuOption(
+          label: 'Copy Link',
+          index: 1,
+          callback: _handleCopyLink,
+        ),
+        TreeContextMenuOption(
+          label: 'Remove',
+          index: 2,
+          callback: (context, ref, node, selectedIds) =>
+              _handleRemove(context, ref, node, selectedIds),
+        ),
+        TreeContextMenuOption(
+          label: 'Rename',
+          index: 3,
+          callback: _handleRename,
+        ),
+      ],
+    );
 
-void _handleOpenInNewTab(BuildContext context, WidgetRef ref,
-    TreeNode<Artifact> node, Set<String> _) {
+void _handleOpenInNewTab(
+  BuildContext context,
+  WidgetRef ref,
+  TreeNode<Artifact> node,
+  Set<String> _,
+) {
   final projectId = ref.read(projectsProvider).selectedProject.id;
   final url = NavigationUrlBuilder.buildArtifactUrl(projectId, node.data.id);
   NavigationContextMenu.openInNewTab(url);
 }
 
-void _handleCopyLink(BuildContext context, WidgetRef ref,
-    TreeNode<Artifact> node, Set<String> _) {
+void _handleCopyLink(
+  BuildContext context,
+  WidgetRef ref,
+  TreeNode<Artifact> node,
+  Set<String> _,
+) {
   final projectId = ref.read(projectsProvider).selectedProject.id;
   final url = NavigationUrlBuilder.buildArtifactUrl(projectId, node.data.id);
   NavigationContextMenu.copyLinkToClipboard(url);
@@ -75,10 +82,15 @@ void _handleCopyLink(BuildContext context, WidgetRef ref,
 void _handleRemove(
   BuildContext context,
   WidgetRef ref,
+  TreeNode<Artifact> node,
   Set<String> selectedIds,
 ) async {
-  for (final id in selectedIds) {
-    ref.read(artifactsProvider.notifier).deleteItem(id, context);
+  if (selectedIds.contains(node.data.id)) {
+    for (final id in selectedIds) {
+      ref.read(artifactsProvider.notifier).deleteItem(id, context);
+    }
+  } else {
+    ref.read(artifactsProvider.notifier).deleteItem(node.data.id, context);
   }
 }
 

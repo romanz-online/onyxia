@@ -19,6 +19,7 @@ class Sidebar extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(4),
         child: Column(
+          spacing: 4,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (projectId.isNotEmpty) ...[

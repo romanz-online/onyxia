@@ -38,7 +38,7 @@ class ContextMenuOverlay {
         double dy = position.dy;
 
         // Estimate height: approx 40px per item + padding
-        final double estimatedHeight = items.length * 40.0 + 8.0;
+        final double estimatedHeight = items.length * 30.0 + 8.0;
 
         if (dx + width > screenSize.width) {
           dx = screenSize.width - width - 8.0;
@@ -70,7 +70,9 @@ class ContextMenuOverlay {
               child: Material(
                 elevation: 8,
                 borderRadius: BorderRadius.circular(6.0),
-                color: Theme.of(context).popupMenuTheme.color ?? Theme.of(context).cardColor,
+                color:
+                    Theme.of(context).popupMenuTheme.color ??
+                    Theme.of(context).cardColor,
                 clipBehavior: Clip.antiAlias,
                 child: Container(
                   width: width,
@@ -79,7 +81,9 @@ class ContextMenuOverlay {
                   ),
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(6.0),
-                    border: Border.all(color: Theme.of(context).dividerColor.withAlpha(25)),
+                    border: Border.all(
+                      color: Theme.of(context).dividerColor.withAlpha(25),
+                    ),
                   ),
                   child: ListView(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -94,7 +98,10 @@ class ContextMenuOverlay {
                         child: Container(
                           width: double.infinity,
                           alignment: Alignment.centerLeft,
-                          padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
+                          padding: const EdgeInsets.symmetric(
+                            vertical: 7.5,
+                            horizontal: 16.0,
+                          ),
                           child: item.child,
                         ),
                       );
