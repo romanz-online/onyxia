@@ -39,7 +39,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   }
 
   void _onNodesMoved(TreeNodeMovedEvent<Artifact> event) {
-    print('trying to move');
     for (final node in event.nodes) {
       final success = ref.read(artifactsProvider.notifier).updateParent(
             node.data.id,
