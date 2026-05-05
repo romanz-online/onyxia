@@ -40,7 +40,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
             node.data.id,
             newParentId: newParentId,
           );
-      if (success && node.parent != null) treeController.expandNode(node.parent!);
+      if (success && node.parent != null)
+        treeController.expandNode(node.parent!);
     }
   }
 
@@ -48,7 +49,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     treeController.setSelectedNodeId(item.id);
     ref.read(selectedArtifactProvider.notifier).state = item;
     ref.read(itemPersistenceProvider.notifier).save(item.id);
-    context.go(item.navigationUrl(ref.read(projectsProvider).selectedProject.id));
+    context
+        .go(item.navigationUrl(ref.read(projectsProvider).selectedProject.id));
   }
 
   @override
@@ -62,7 +64,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     if (!mounted) return;
     _applyExpansionState(newRoots, _getExpansionState(_roots));
 
-    final preserved = treeController.selectedNodeIds.where((id) => _findNodeById(newRoots, id) != null).toSet();
+    final preserved = treeController.selectedNodeIds
+        .where((id) => _findNodeById(newRoots, id) != null)
+        .toSet();
 
     final oldController = treeController;
     _moveSubscription?.cancel();
@@ -95,11 +99,13 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   Widget build(BuildContext context) {
     final itemNodes = ref.watch(artifactsProvider);
     final isDataLoaded = ref.watch(artifactsLoadedProvider);
-    final projectId = ref.watch(projectsProvider.select((s) => s.selectedProject.id));
+    final projectId =
+        ref.watch(projectsProvider.select((s) => s.selectedProject.id));
     final hasError = ref.watch(artifactsErrorProvider(projectId));
 
     final selectedItem = ref.read(selectedArtifactProvider);
-    if (selectedItem != null && !itemNodes.any((req) => req.id == selectedItem.id)) {
+    if (selectedItem != null &&
+        !itemNodes.any((req) => req.id == selectedItem.id)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref.read(selectedArtifactProvider.notifier).state = null;
       });
@@ -132,18 +138,26 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                       expansionBuilder: (ctx, node) => node.hasChildren
                           ? MouseRegion(
                               cursor: SystemMouseCursors.click,
-                              child: const NarwhalIcon(NarwhalIcons.expandArrowCollapsed),
-                            )
-                          : const SizedBox.shrink(),
-                      prefixBuilder: (ctx, node) => node.data.type == ArtifactType.folder
-                          ? Padding(
-                              padding: const EdgeInsets.only(left: 4),
                               child: NarwhalIcon(
-                                node.isExpanded ? NarwhalIcons.folderOpened : NarwhalIcons.folderClosed,
+                                NarwhalIcons.expandArrowCollapsed,
+                                color: ThemeHelper.neutral900(context),
                               ),
                             )
                           : const SizedBox.shrink(),
-                      contentBuilder: (context, node, _) => TreeTile(node: node),
+                      prefixBuilder: (ctx, node) =>
+                          node.data.type == ArtifactType.folder
+                              ? Padding(
+                                  padding: const EdgeInsets.only(left: 4),
+                                  child: NarwhalIcon(
+                                    node.isExpanded
+                                        ? NarwhalIcons.folderOpened
+                                        : NarwhalIcons.folderClosed,
+                                    color: ThemeHelper.neutral900(context),
+                                  ),
+                                )
+                              : const SizedBox.shrink(),
+                      contentBuilder: (context, node, _) =>
+                          TreeTile(node: node),
                       style: TreeViewStyle(
                         indentAmount: 16.0,
                         padding: EdgeInsets.symmetric(vertical: 0),
@@ -205,11 +219,14 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     }
   }
 
-  bool _isTreeChanged(List<TreeNode<Artifact>> oldRoots, List<TreeNode<Artifact>> newRoots) {
+  bool _isTreeChanged(
+      List<TreeNode<Artifact>> oldRoots, List<TreeNode<Artifact>> newRoots) {
     if (oldRoots.length != newRoots.length) return true;
     for (int i = 0; i < oldRoots.length; i++) {
       if (oldRoots[i].data.title != newRoots[i].data.title) return true;
-      if (_isTreeChanged(oldRoots[i].children.toList(), newRoots[i].children.toList())) return true;
+      if (_isTreeChanged(
+          oldRoots[i].children.toList(), newRoots[i].children.toList()))
+        return true;
     }
     return false;
   }
@@ -229,7 +246,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     return state;
   }
 
-  void _applyExpansionState(List<TreeNode<Artifact>> roots, Map<String, bool> state) {
+  void _applyExpansionState(
+      List<TreeNode<Artifact>> roots, Map<String, bool> state) {
     void apply(TreeNode<Artifact> node) {
       node.isExpanded = state[node.id] ?? true;
       for (final child in node.children) {
@@ -285,36 +303,4 @@ List<TreeNode<Artifact>> populateTree(List<Artifact> items) {
 
   final rootItems = items.where((i) => i.parent.isEmpty).toList();
   return rootItems.map(buildNode).toList();
-}
-
-void calculateOverflow({
-  required List<TreeNode<Artifact>> roots,
-  required double treeViewWidth,
-  required String projectName,
-}) {
-  const double indentPerLevel = 40.0;
-  const double iconWidth = 2 * 24.0;
-  const double statusColumnWidth = 100.0;
-  const double padding = 32.0;
-  const double avgCharWidth = 7;
-  const double additionalWidth = 20;
-
-  void checkOverflow(TreeNode<Artifact> node, int level) {
-    final indentation = indentPerLevel * level;
-    final availableNameWidth = treeViewWidth - indentation - iconWidth - statusColumnWidth - padding - additionalWidth;
-
-    final nameWidth = node.data.title.length * avgCharWidth;
-    if (nameWidth > availableNameWidth) {
-      // overflow detected (reserved for future use)
-    }
-    if (node.isExpanded) {
-      for (final child in node.children) {
-        checkOverflow(child, level + 1);
-      }
-    }
-  }
-
-  for (final root in roots) {
-    checkOverflow(root, 0);
-  }
 }

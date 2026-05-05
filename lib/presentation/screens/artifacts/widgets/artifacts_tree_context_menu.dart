@@ -46,7 +46,8 @@ ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() {
       TreeContextMenuOption(
         label: 'Remove',
         index: 2,
-        callback: (context, ref, node, selectedIds) => _handleRemove(context, ref, selectedIds),
+        callback: (context, ref, node, selectedIds) =>
+            _handleRemove(context, ref, selectedIds),
       ),
       TreeContextMenuOption(
         label: 'Rename',
@@ -57,13 +58,15 @@ ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() {
   );
 }
 
-void _handleOpenInNewTab(BuildContext context, WidgetRef ref, TreeNode<Artifact> node, Set<String> _) {
+void _handleOpenInNewTab(BuildContext context, WidgetRef ref,
+    TreeNode<Artifact> node, Set<String> _) {
   final projectId = ref.read(projectsProvider).selectedProject.id;
   final url = NavigationUrlBuilder.buildArtifactUrl(projectId, node.data.id);
   NavigationContextMenu.openInNewTab(url);
 }
 
-void _handleCopyLink(BuildContext context, WidgetRef ref, TreeNode<Artifact> node, Set<String> _) {
+void _handleCopyLink(BuildContext context, WidgetRef ref,
+    TreeNode<Artifact> node, Set<String> _) {
   final projectId = ref.read(projectsProvider).selectedProject.id;
   final url = NavigationUrlBuilder.buildArtifactUrl(projectId, node.data.id);
   NavigationContextMenu.copyLinkToClipboard(url);

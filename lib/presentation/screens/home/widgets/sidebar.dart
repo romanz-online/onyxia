@@ -8,6 +8,7 @@ class Sidebar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
+      width: 42,
       height: double.infinity,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
@@ -20,30 +21,43 @@ class Sidebar extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            NarwhalIconButton(
-              icon: NarwhalIcons.dashboard,
-              tooltip: 'Open graph',
-              onPressed: () {
-                if (projectId.isEmpty) return;
-                context.go('/project/$projectId/${Routes.graph}');
-              },
-            ),
-            NarwhalIconButton(
-              icon: NarwhalIcons.addNew,
-              tooltip: 'New note',
-              onPressed: () async {
-                if (projectId.isEmpty) return;
-                await ArtifactsRepository(projectId: projectId).add(Note(), suppressStream: false);
-              },
-            ),
-            NarwhalIconButton(
-              icon: NarwhalIcons.whiteboard,
-              tooltip: 'New whiteboard',
-              onPressed: () async {
-                if (projectId.isEmpty) return;
-                await ArtifactsRepository(projectId: projectId).add(CanvasModel(), suppressStream: false);
-              },
-            ),
+            if (projectId.isNotEmpty) ...[
+              NarwhalIconButton(
+                icon: NarwhalIcons.dashboard,
+                tooltip: 'Open graph',
+                onPressed: () {
+                  if (projectId.isEmpty) return;
+                  context.go('/project/$projectId/${Routes.graph}');
+                },
+              ),
+              NarwhalIconButton(
+                icon: NarwhalIcons.addNew,
+                tooltip: 'New note',
+                onPressed: () async {
+                  if (projectId.isEmpty) return;
+                  await ArtifactsRepository(projectId: projectId)
+                      .add(Note(), suppressStream: false);
+                },
+              ),
+              NarwhalIconButton(
+                icon: NarwhalIcons.folderClosed,
+                tooltip: 'New folder',
+                onPressed: () async {
+                  if (projectId.isEmpty) return;
+                  await ArtifactsRepository(projectId: projectId)
+                      .add(FolderModel(), suppressStream: false);
+                },
+              ),
+              NarwhalIconButton(
+                icon: NarwhalIcons.whiteboard,
+                tooltip: 'New canvas',
+                onPressed: () async {
+                  if (projectId.isEmpty) return;
+                  await ArtifactsRepository(projectId: projectId)
+                      .add(CanvasModel(), suppressStream: false);
+                },
+              ),
+            ],
           ],
         ),
       ),
