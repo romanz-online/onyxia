@@ -1,6 +1,7 @@
 import 'package:onyxia/export.dart';
 
-final currentUserProvider = StateNotifierProvider<CurrentUserNotifier, UserDefinition>((ref) {
+final currentUserProvider =
+    StateNotifierProvider<CurrentUserNotifier, UserDefinition>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return CurrentUserNotifier(authRepository);
 });
@@ -43,7 +44,9 @@ class CurrentUserNotifier extends StateNotifier<UserDefinition> {
           state = state.copyWith(
             id: authUser.id,
             email: authUser.email ?? '',
-            name: authUser.userMetadata?['name'] ?? authUser.userMetadata?['full_name'] ?? '',
+            name: authUser.userMetadata?['name'] ??
+                authUser.userMetadata?['full_name'] ??
+                '',
             isLogged: true,
           );
         }
@@ -53,17 +56,12 @@ class CurrentUserNotifier extends StateNotifier<UserDefinition> {
     }
   }
 
-  Future<void> signOut() async {
-    await repository.signOut();
-  }
+  Future<void> signOut() async => await repository.signOut();
 
-  Future<bool> signInWithGoogle() async {
-    return repository.signInWithGoogle();
-  }
+  Future<bool> signInWithGoogle() async => repository.signInWithGoogle();
 
-  Future<bool> signInWithFakeAccount() async {
-    return repository.signInWithFakeAccount();
-  }
+  Future<bool> signInWithFakeAccount() async =>
+      repository.signInWithFakeAccount();
 
   /// Updates the user's complete profile in public.users.
   Future<void> updateUserProfile(UserDefinition updatedUser) async {

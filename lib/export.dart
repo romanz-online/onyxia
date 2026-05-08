@@ -45,7 +45,6 @@ export 'package:onyxia/presentation/common_widget/user_profile_overlay.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
 export 'package:onyxia/presentation/common_widget/drag_select_painter.dart';
-export 'package:onyxia/presentation/common_widget/basic_text_input_box.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_data_table.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_paint.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
@@ -146,13 +145,11 @@ export 'package:onyxia/repository/storage_files_repository.dart';
 //services
 export 'package:onyxia/services/canvas_serializer_service.dart';
 export 'package:onyxia/services/note_serializer_service.dart';
-export 'package:onyxia/services/images/project_image_service.dart';
 export 'package:onyxia/services/images/image_service.dart';
 export 'package:onyxia/services/images/image_cache_service.dart';
 export 'package:onyxia/services/images/image_encoding_service.dart';
 export 'package:onyxia/services/history_service.dart';
 export 'package:onyxia/services/timestamp_service.dart';
-export 'package:onyxia/services/images/narwhal_image_provider.dart';
 
 //helpers
 export 'package:onyxia/helpers/color_helper.dart';
