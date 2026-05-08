@@ -7,29 +7,14 @@ class UserReferencesRepository extends BaseSupabaseRepository<UserReference> {
   String get tableName => 'project_members';
 
   @override
+  String get scopeField => 'project_id';
+
+  @override
   UserReference fromMap(Map<String, dynamic> map) => UserReference.fromMap(map);
 
   @override
-  Map<String, dynamic> toMap(UserReference item) => {
-        ...item.toMap(),
-        'project_id': projectId,
-      };
+  Map<String, dynamic> toMap(UserReference item) => item.toMap();
 
   @override
   String getIdFromItem(UserReference item) => item.id;
-
-  @override
-  Future<List<UserReference>> getAll() async {
-    return query(field: 'project_id', isEqualTo: projectId);
-  }
-
-  @override
-  Stream<List<UserReference>> getStream({String? orderBy, bool descending = false}) {
-    return queryStream(
-      field: 'project_id',
-      isEqualTo: projectId,
-      orderBy: orderBy,
-      descending: descending,
-    );
-  }
 }

@@ -182,7 +182,6 @@ class ArrowInteractionService {
         // not a valid arrow, delete
         ref.read(canvasObjectsProvider.notifier).deleteObject(ref, arrow);
       } else {
-        // finalize arrow and sync with firebase
         ref.read(canvasObjectsProvider.notifier).updateObject(ref, arrow);
       }
       ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);

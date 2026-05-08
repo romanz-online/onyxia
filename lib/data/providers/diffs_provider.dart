@@ -55,26 +55,26 @@ class HistoryDiffsNotifier extends StateNotifier<HistoryDiffs> {
   }
 
   void _init() {
-    _subscription = repository.getHistoryDiffsStream().listen((firebaseDiffs) {
+    _subscription = repository.getHistoryDiffsStream().listen((remoteDiffs) {
       if (!mounted) return;
       List<HistoryDiff> newLocalDiffs = state.localDiffs;
       final anyNew = state.currentDiff != null &&
-          firebaseDiffs.any((e) => e.timestamp.isAfter(state.currentDiff!.timestamp) && !state.localDiffs.contains(e));
+          remoteDiffs.any((e) => e.timestamp.isAfter(state.currentDiff!.timestamp) && !state.localDiffs.contains(e));
       // TODO: undo can't go past the first local diff because then the list will be empty
       if (anyNew) {
         // renew localDiffs with all diffs that come after our creation time
         // only if a new diff was added
-        newLocalDiffs = firebaseDiffs
+        newLocalDiffs = remoteDiffs
             .where((diff) => diff.timestamp.isAfter(state.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)))
             .toList();
       }
 
-      final newCurrentDiff = firebaseDiffs.isEmpty ? null : firebaseDiffs.last;
+      final newCurrentDiff = remoteDiffs.isEmpty ? null : remoteDiffs.last;
       final newSelectedDiff =
           state.selectedDiff == state.currentDiff || state.selectedDiff == null ? newCurrentDiff : state.selectedDiff;
 
       state = state.copyWith(
-        remoteDiffs: firebaseDiffs,
+        remoteDiffs: remoteDiffs,
         localDiffs: newLocalDiffs,
         currentDiff: newCurrentDiff,
         selectedDiff: newSelectedDiff,

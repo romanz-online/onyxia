@@ -127,7 +127,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
     final current = state.value;
     if (current == null || current.note == null) return;
 
-    await ArtifactsRepository(projectId: projectId).update(current.note!, suppressStream: false);
+    await ArtifactsRepository(projectId: projectId).update(current.note!);
 
     if (_mounted) {
       state = AsyncData(current.copyWith(isSavedRemotely: true));

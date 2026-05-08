@@ -162,7 +162,7 @@ class FileStorage {
 
   Future<void> _saveFileMetadata(StorageFile storageFile) async {
     try {
-      await _metaRepo.add(storageFile);
+      await _metaRepo.add([storageFile]);
     } catch (e) {
       debugPrint('Error saving storage_files metadata: $e');
       // Best-effort cleanup of the orphaned upload

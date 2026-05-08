@@ -1,7 +1,8 @@
 ﻿import 'package:onyxia/export.dart';
 import 'objects_provider.dart';
 
-final pinsProvider = StateNotifierProvider.autoDispose<PinsNotifier, Pins>((ref) {
+final pinsProvider =
+    StateNotifierProvider.autoDispose<PinsNotifier, Pins>((ref) {
   final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
   final projectId = ref.watch(projectsProvider).selectedProject.id;
   return PinsNotifier(
@@ -37,12 +38,8 @@ class PinsNotifier extends StateNotifier<Pins> {
   void _init() {
     if (canvasId.isEmpty) return;
 
-    _subscription = repository.getPinsStream().listen((firestoreReqPins) async {
-      if (repository.isLocalUpdate || !mounted) return;
-
-      if (mounted) {
-        state = state.copyWith(pins: firestoreReqPins.pins);
-      }
+    _subscription = repository.getPinsStream().listen((remotePins) async {
+      if (mounted) state = state.copyWith(pins: remotePins.pins);
     });
   }
 
@@ -88,7 +85,8 @@ class PinsNotifier extends StateNotifier<Pins> {
       }
 
       if (_throttleTimer == null || !_throttleTimer!.isActive) {
-        final timeToWait = 1000 - now.difference(_lastUpdateTime).inMilliseconds;
+        final timeToWait =
+            1000 - now.difference(_lastUpdateTime).inMilliseconds;
         _throttleTimer = Timer(Duration(milliseconds: timeToWait), () {
           if (mounted) _doUpdate();
         });
@@ -114,7 +112,8 @@ class PinsNotifier extends StateNotifier<Pins> {
       }
 
       if (_throttleTimer == null || !_throttleTimer!.isActive) {
-        final timeToWait = 1000 - now.difference(_lastUpdateTime).inMilliseconds;
+        final timeToWait =
+            1000 - now.difference(_lastUpdateTime).inMilliseconds;
         _throttleTimer = Timer(Duration(milliseconds: timeToWait), () {
           if (mounted) _doUpdate();
         });
@@ -141,7 +140,7 @@ class PinsNotifier extends StateNotifier<Pins> {
   void addPin(WidgetRef ref, Pin pin) {
     pipe(ref, () async {
       addPinState(pin);
-      repository.add(pin);
+      repository.add([pin]);
     }).catchError((e, stack) {
       debugPrint('pipe error in addPin: $e');
     });
@@ -152,7 +151,7 @@ class PinsNotifier extends StateNotifier<Pins> {
       for (final pin in pins) {
         addPinState(pin);
       }
-      repository.addPins(pins);
+      repository.add(pins);
     }).catchError((e, stack) {
       debugPrint('pipe error in addPins: $e');
     });
@@ -193,7 +192,8 @@ class PinsNotifier extends StateNotifier<Pins> {
         serializer: CanvasSerializerService(
           canvasId: canvasId,
           projectId: projectId,
-          repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(
+              projectId: ref.read(projectsProvider).selectedProject.id),
         ),
       );
     }

@@ -21,7 +21,8 @@ final currentCanvasProvider = Provider.autoDispose<CanvasModel?>((ref) {
   final urlCanvasId = ref.watch(urlCanvasIdProvider);
 
   if (urlCanvasId != null) {
-    final canvas = ref.watch(canvasByIdProvider((projectId: projectId, canvasId: urlCanvasId)));
+    final canvas = ref.watch(
+        canvasByIdProvider((projectId: projectId, canvasId: urlCanvasId)));
     if (canvas != null) return canvas;
   }
 
@@ -30,7 +31,8 @@ final currentCanvasProvider = Provider.autoDispose<CanvasModel?>((ref) {
   return selectedItem is CanvasModel ? selectedItem : null;
 });
 
-final canvasObjectsProvider = StateNotifierProvider.autoDispose<ObjectsNotifier, CanvasObjects>((ref) {
+final canvasObjectsProvider =
+    StateNotifierProvider.autoDispose<ObjectsNotifier, CanvasObjects>((ref) {
   // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
   final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
   final projectId = ref.watch(projectsProvider).selectedProject.id;
@@ -77,15 +79,15 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   }
 
   /// Sorts the list of objects by their layer
-  List<CanvasObject> _sortObjects(List<CanvasObject> objects) => objects..sort((a, b) => a.layer.compareTo(b.layer));
+  List<CanvasObject> _sortObjects(List<CanvasObject> objects) =>
+      objects..sort((a, b) => a.layer.compareTo(b.layer));
 
   void _init() {
     if (canvasId.isEmpty) return;
 
-    _subscription = repository.getCanvasObjectsStream().listen((firestoreObjects) async {
-      if (repository.isLocalUpdate) return;
-
-      final sorted = _sortObjects(firestoreObjects.objects);
+    _subscription =
+        repository.getCanvasObjectsStream().listen((remoteObjects) async {
+      final sorted = _sortObjects(remoteObjects.objects);
       List<CanvasObject> updatedObjects = [];
 
       for (final object in sorted) {
@@ -99,7 +101,11 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
       if (mounted) {
         state = state.copyWith(objects: updatedObjects);
         // Update maxLayer based on loaded objects
-        _maxLayer = updatedObjects.isEmpty ? 0 : updatedObjects.map((o) => o.layer).reduce((a, b) => a > b ? a : b);
+        _maxLayer = updatedObjects.isEmpty
+            ? 0
+            : updatedObjects
+                .map((o) => o.layer)
+                .reduce((a, b) => a > b ? a : b);
       }
     });
   }
@@ -181,7 +187,7 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void addObject(WidgetRef ref, CanvasObject object) {
     pipe(ref, () async {
       addObjectState(object);
-      repository.add(object);
+      repository.add([object]);
     }).catchError((e, stack) {
       debugPrint('pipe error in addObject: $e');
     });
@@ -198,7 +204,7 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
       }
 
       state = state.copyWith(objects: _sortObjects(currentObjects));
-      repository.addObjects(objects);
+      repository.add(objects);
     }).catchError((e, stack) {
       debugPrint('pipe error in addObjects: $e');
     });
@@ -207,7 +213,10 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void deleteObject(WidgetRef ref, CanvasObject object) {
     pipe(ref, () async {
       final connectedArrows = state.objects
-          .where((o) => o.isArrow && (o.arrowProps.startObjectId == object.id || o.arrowProps.endObjectId == object.id))
+          .where((o) =>
+              o.isArrow &&
+              (o.arrowProps.startObjectId == object.id ||
+                  o.arrowProps.endObjectId == object.id))
           .toList();
 
       final objectsToDelete = [object, ...connectedArrows];
@@ -217,10 +226,12 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
       final deletedLayers = objectsToDelete.map((o) => o.layer).toList();
 
       // Create updated objects list with adjusted layer numbers
-      final updatedObjects = state.objects.where((o) => !deletedIds.contains(o.id)).map((o) {
+      final updatedObjects =
+          state.objects.where((o) => !deletedIds.contains(o.id)).map((o) {
         // If this object's layer is higher than any deleted object's layer,
         // decrease its layer number by 1 for each deleted object with lower layer
-        int layerAdjustment = deletedLayers.where((layer) => layer < o.layer).length;
+        int layerAdjustment =
+            deletedLayers.where((layer) => layer < o.layer).length;
         if (layerAdjustment > 0) {
           o.layer = o.layer - layerAdjustment;
         }
@@ -235,7 +246,11 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
 
       // Get the actual pins and delete them
       final pinsNotifier = ref.read(pinsProvider.notifier);
-      final pinsToDelete = ref.read(pinsProvider).pins.where((e) => e.pinnedObjectId == object.id).toList();
+      final pinsToDelete = ref
+          .read(pinsProvider)
+          .pins
+          .where((e) => e.pinnedObjectId == object.id)
+          .toList();
 
       if (pinsToDelete.isNotEmpty) {
         pinsNotifier.deletePins(ref, pinsToDelete);
@@ -254,7 +269,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
       final connectedArrows = state.objects
           .where((o) =>
               o.isArrow &&
-              (objects.any((obj) => o.arrowProps.startObjectId == obj.id || o.arrowProps.endObjectId == obj.id)))
+              (objects.any((obj) =>
+                  o.arrowProps.startObjectId == obj.id ||
+                  o.arrowProps.endObjectId == obj.id)))
           .toList();
 
       final allObjectsToDelete = [...objects, ...connectedArrows];
@@ -262,8 +279,10 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
 
       final deletedLayers = allObjectsToDelete.map((o) => o.layer).toList();
 
-      final updatedObjects = state.objects.where((o) => !allDeletedIds.contains(o.id)).map((o) {
-        int layerAdjustment = deletedLayers.where((layer) => layer < o.layer).length;
+      final updatedObjects =
+          state.objects.where((o) => !allDeletedIds.contains(o.id)).map((o) {
+        int layerAdjustment =
+            deletedLayers.where((layer) => layer < o.layer).length;
         if (layerAdjustment > 0) {
           o.layer = o.layer - layerAdjustment;
         }
@@ -299,7 +318,8 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void deselectObject(CanvasObject object) {
     if (!state.selectedObjects.contains(object)) return;
     state = state.copyWith(
-      selectedObjects: state.selectedObjects.where((obj) => obj != object).toList(),
+      selectedObjects:
+          state.selectedObjects.where((obj) => obj != object).toList(),
     );
   }
 
@@ -313,7 +333,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void moveObjectForward(WidgetRef ref, CanvasObject object) {
     if (!canMoveForward(object)) return;
 
-    final objects = List<CanvasObject>.from(state.objects).where((o) => o.isArrow == object.isArrow).toList()
+    final objects = List<CanvasObject>.from(state.objects)
+        .where((o) => o.isArrow == object.isArrow)
+        .toList()
       ..sort((a, b) => a.layer.compareTo(b.layer));
     final index = objects.indexWhere((o) => o.id == object.id);
     if (index == -1) return;
@@ -330,7 +352,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void moveObjectBackward(WidgetRef ref, CanvasObject object) {
     if (!canMoveBackward(object)) return;
 
-    final objects = List<CanvasObject>.from(state.objects).where((o) => o.isArrow == object.isArrow).toList()
+    final objects = List<CanvasObject>.from(state.objects)
+        .where((o) => o.isArrow == object.isArrow)
+        .toList()
       ..sort((a, b) => a.layer.compareTo(b.layer));
     final index = objects.indexWhere((o) => o.id == object.id);
     if (index == -1) return;
@@ -348,7 +372,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void moveObjectToFront(WidgetRef ref, CanvasObject object) {
     if (!canMoveForward(object)) return;
 
-    final objects = List<CanvasObject>.from(state.objects).where((o) => o.isArrow == object.isArrow).toList()
+    final objects = List<CanvasObject>.from(state.objects)
+        .where((o) => o.isArrow == object.isArrow)
+        .toList()
       ..sort((a, b) => a.layer.compareTo(b.layer));
     final index = objects.indexWhere((o) => o.id == object.id);
     if (index == -1) return;
@@ -360,7 +386,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void moveObjectToBack(WidgetRef ref, CanvasObject object) {
     if (!canMoveBackward(object)) return;
 
-    final objects = List<CanvasObject>.from(state.objects).where((o) => o.isArrow == object.isArrow).toList()
+    final objects = List<CanvasObject>.from(state.objects)
+        .where((o) => o.isArrow == object.isArrow)
+        .toList()
       ..sort((a, b) => a.layer.compareTo(b.layer));
     final index = objects.indexWhere((o) => o.id == object.id);
     if (index == -1) return;
@@ -370,7 +398,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   }
 
   bool canMoveForward(CanvasObject object) {
-    final sameTypeObjects = List<CanvasObject>.from(state.objects).where((o) => o.isArrow == object.isArrow).toList()
+    final sameTypeObjects = List<CanvasObject>.from(state.objects)
+        .where((o) => o.isArrow == object.isArrow)
+        .toList()
       ..sort((a, b) => a.layer.compareTo(b.layer));
     if (sameTypeObjects.length <= 1) return false;
 
@@ -378,7 +408,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   }
 
   bool canMoveBackward(CanvasObject object) {
-    final sameTypeObjects = List<CanvasObject>.from(state.objects).where((o) => o.isArrow == object.isArrow).toList()
+    final sameTypeObjects = List<CanvasObject>.from(state.objects)
+        .where((o) => o.isArrow == object.isArrow)
+        .toList()
       ..sort((a, b) => a.layer.compareTo(b.layer));
     if (sameTypeObjects.length <= 1) return false;
 
@@ -396,7 +428,8 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
         serializer: CanvasSerializerService(
           canvasId: canvasId,
           projectId: projectId,
-          repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(
+              projectId: ref.read(projectsProvider).selectedProject.id),
         ),
       );
     }

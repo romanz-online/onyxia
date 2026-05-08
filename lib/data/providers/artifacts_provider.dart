@@ -1,7 +1,9 @@
 ﻿import 'package:onyxia/export.dart';
 
-final artifactsProvider = StateNotifierProvider<ArtifactsTreeNotifier, List<Artifact>>((ref) {
-  final projectId = ref.watch(projectsProvider.select((s) => s.selectedProject.id));
+final artifactsProvider =
+    StateNotifierProvider<ArtifactsTreeNotifier, List<Artifact>>((ref) {
+  final projectId =
+      ref.watch(projectsProvider.select((s) => s.selectedProject.id));
   return ArtifactsTreeNotifier(
     ArtifactsRepository(projectId: projectId),
     projectId,
@@ -10,15 +12,18 @@ final artifactsProvider = StateNotifierProvider<ArtifactsTreeNotifier, List<Arti
 });
 
 final artifactsLoadedProvider = Provider<bool>((ref) {
-  final projectId = ref.watch(projectsProvider.select((s) => s.selectedProject.id));
+  final projectId =
+      ref.watch(projectsProvider.select((s) => s.selectedProject.id));
   if (projectId.isEmpty) return true;
   final dataReceived = ref.watch(artifactsReceivedProvider(projectId));
   final hasError = ref.watch(artifactsErrorProvider(projectId));
   return dataReceived && !hasError;
 });
 
-final artifactsReceivedProvider = StateProvider.family<bool, String>((ref, projectId) => false);
-final artifactsErrorProvider = StateProvider.family<bool, String>((ref, projectId) => false);
+final artifactsReceivedProvider =
+    StateProvider.family<bool, String>((ref, projectId) => false);
+final artifactsErrorProvider =
+    StateProvider.family<bool, String>((ref, projectId) => false);
 
 final wikiLinkTitlesProvider = Provider<List<String>>((ref) {
   return ref.watch(artifactsProvider).map((item) => item.title).toList();
@@ -56,7 +61,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
         ref.read(_receivedProvider(projectId).notifier).state = true;
         ref.read(_errorProvider(projectId).notifier).state = false;
 
-        if (_isOperationInProgress || repository.isLocalUpdate) return;
+        if (_isOperationInProgress) return;
 
         if (!listEquals(state, data)) {
           state = data;
@@ -78,24 +83,29 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
   // --- Lookup ---
 
-  Artifact? getItemByTitle(String title) => _snapshot.firstWhereOrNull((e) => e.title == title);
+  Artifact? getItemByTitle(String title) =>
+      _snapshot.firstWhereOrNull((e) => e.title == title);
 
-  Artifact? getItemById(String id) => _snapshot.firstWhereOrNull((e) => e.id == id);
+  Artifact? getItemById(String id) =>
+      _snapshot.firstWhereOrNull((e) => e.id == id);
 
-  void syncFromFirebase() {
+  void syncFromRemote() {
     if (!listEquals(state, _snapshot)) {
       state = List.from(_snapshot);
     }
   }
 
-  List<Artifact> getChildren(Artifact parent) => state.where((e) => e.parent == parent.id).toList();
+  List<Artifact> getChildren(Artifact parent) =>
+      state.where((e) => e.parent == parent.id).toList();
 
   // --- Add ---
 
   Future<void> addItems(List<Artifact> items) async {
     if (items.isEmpty) return;
 
-    final itemsWithIds = items.map((e) => e.id.isEmpty ? e.copyWith(id: const Uuid().v4()) : e).toList();
+    final itemsWithIds = items
+        .map((e) => e.id.isEmpty ? e.copyWith(id: const Uuid().v4()) : e)
+        .toList();
 
     state = [
       ...itemsWithIds,
@@ -104,7 +114,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
     _isOperationInProgress = true;
     try {
-      await repository.addMultiple(Map.fromEntries(itemsWithIds.map((e) => MapEntry(e.id, e))));
+      await repository.add(itemsWithIds);
     } finally {
       _isOperationInProgress = false;
     }
@@ -113,7 +123,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
   Future<void> addItem(Artifact item) async {
     _isOperationInProgress = true;
     try {
-      await repository.add(item, suppressStream: false);
+      await repository.add([item]);
     } finally {
       _isOperationInProgress = false;
     }
@@ -160,7 +170,8 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
     if (item.type == ArtifactType.folder && newParentId.isNotEmpty) {
       final newParent = state.firstWhereOrNull((e) => e.id == newParentId);
-      if (newParent == null || newParent.type != ArtifactType.folder) return false;
+      if (newParent == null || newParent.type != ArtifactType.folder)
+        return false;
     }
 
     final updated = item.copyWith(parentId: newParentId);

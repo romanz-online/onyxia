@@ -102,10 +102,12 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
 ## Architecture Quick Reference
 
 ### Import Convention
+
 Every Dart file: `import 'package:onyxia/export.dart';`
 This barrel includes ALL providers, models, common widgets, and helpers. Never add granular imports for symbols already in `export.dart`.
 
 ### File Path Conventions
+
 - Provider + its Notifier → same file at `lib/data/data_providers/<name>_provider.dart`
 - Canvas-specific providers → `lib/presentation/screens/canvas/providers/<name>_provider.dart`
 - Repositories → `lib/repository/<name>_repository.dart` (all extend `BaseFirestoreRepository<T>`)
@@ -113,14 +115,17 @@ This barrel includes ALL providers, models, common widgets, and helpers. Never a
 - Models → `lib/data/models/<domain>/<name>.dart`
 
 ### Auth Guard Pattern (required in all auth-dependent providers)
+
 ```dart
 final authState = ref.watch(authProvider);
 final userState = ref.watch(currentUserProvider);
 if (authState.value == null || userState.id.isEmpty) return <Name>Notifier(<State>.initial());
 ```
+
 See `lib/data/data_providers/notifications_provider.dart` for the canonical example.
 
 ### Key Providers
+
 - `authProvider` → `AsyncValue<User?>` (StreamProvider from Firebase Auth)
 - `currentUserProvider` → `UserDefinition` (StateNotifierProvider, sync)
 - Both must be watched in every auth-dependent provider
@@ -132,6 +137,7 @@ See `lib/data/data_providers/notifications_provider.dart` for the canonical exam
 All methods are `static` on `ThemeHelper`. **Never invent or guess a method name** — check `lib/helpers/theme_helper.dart` before using.
 
 **Context-aware** (all take `BuildContext context`):
+
 - Neutral: `neutral100` `neutral200` `neutral300` `neutral400` `neutral500` `neutral600` `neutral700` `neutral800` `neutral900`
 - Blue: `blue100` `blue200` `blue300` `blue400` `blue500` `blue600` `blue700` `blue800`
 - Red: `red100` `red200` `red300` `red400` `red500` `red600` `red700` `red800` `red900`
@@ -141,6 +147,7 @@ All methods are `static` on `ThemeHelper`. **Never invent or guess a method name
 - Special: `black(ctx)` `white(ctx)`
 
 **Context-free** (no BuildContext):
+
 - `blue()` `red()` `orange()` `green()` `purple()` — fixed accent shades
 - `amber()` `yellow()` `errorColor()` `accentColor()`
 
@@ -151,6 +158,7 @@ All methods are `static` on `ThemeHelper`. **Never invent or guess a method name
 Use these verbatim when creating new files. Replace `<Name>` / `<name>` / `<Model>` / `<State>` / `<collection>` with actual names.
 
 ### Repository
+
 ```dart
 // lib/repository/<name>_repository.dart
 import 'package:onyxia/export.dart';
@@ -169,13 +177,11 @@ class <Name>Repository extends BaseFirestoreRepository<<Model>> {
 
   @override
   String getIdFromItem(<Model> item) => item.id;
-
-  @override
-  bool get updateProjectMetadata => true;
 }
 ```
 
 ### Provider + Notifier
+
 ```dart
 // lib/data/data_providers/<name>_provider.dart
 import 'package:onyxia/export.dart';
@@ -193,6 +199,7 @@ class <Name>Notifier extends StateNotifier<<State>> {
 ```
 
 ### Model
+
 ```dart
 class <Name> {
   final String id;
@@ -218,6 +225,7 @@ class <Name> {
 ```
 
 ### Screen
+
 ```dart
 // lib/presentation/screens/<name>/<name>_screen.dart
 import 'package:onyxia/export.dart';
@@ -247,6 +255,7 @@ class _<Name>ScreenState extends ConsumerState<<Name>Screen> {
 ```
 
 ### Provider Unit Test
+
 ```dart
 // test/<feature>/<name>_notifier_test.dart
 import 'package:flutter_test/flutter_test.dart';
@@ -282,6 +291,7 @@ void main() {
 Run `/sweep-violations` (`.claude/commands/sweep-violations.md`) at any time for a full audit of all 600+ Dart files.
 
 To install the pre-commit hook (one-time, from the repo root):
+
 ```bash
 ln -sf ../../scripts/check_narwhal_rules.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 ```

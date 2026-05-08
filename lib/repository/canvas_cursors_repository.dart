@@ -9,10 +9,6 @@ class CanvasCursorsRepository {
   final String canvasId;
   RealtimeChannel? _channel;
 
-  /// Broadcast doesn't echo a sender's own messages back to them, so this is
-  /// always false. Kept for compatibility with consumers that read it.
-  final bool isLocalUpdate = false;
-
   CanvasCursorsRepository({
     required this.projectId,
     required this.canvasId,
@@ -67,10 +63,13 @@ class CanvasCursorsRepository {
 
   /// Broadcast this user's cursor position. Signature matches the legacy
   /// repository's `add(item)` so callers don't change.
-  Future<void> add(UserCursor cursor, {bool suppressStream = true}) async {
+  Future<void> add(UserCursor cursor) async {
     final channel = _getOrCreateChannel();
     channel.subscribe();
-    await channel.sendBroadcastMessage(event: 'cursor', payload: cursor.toMap());
+    await channel.sendBroadcastMessage(
+      event: 'cursor',
+      payload: cursor.toMap(),
+    );
   }
 
   /// Broadcast a "remove this cursor" event. Other clients drop the entry on
@@ -79,6 +78,7 @@ class CanvasCursorsRepository {
     final String userId = item is String ? item : (item as UserCursor).userId;
     final channel = _getOrCreateChannel();
     channel.subscribe();
-    await channel.sendBroadcastMessage(event: 'cursor-remove', payload: {'userId': userId});
+    await channel.sendBroadcastMessage(
+        event: 'cursor-remove', payload: {'userId': userId});
   }
 }

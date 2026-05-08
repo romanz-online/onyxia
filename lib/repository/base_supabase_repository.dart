@@ -3,11 +3,6 @@ import 'package:onyxia/export.dart';
 abstract class BaseSupabaseRepository<T> {
   final String? projectId;
 
-  /// Echo-suppression flag preserved from the Firestore-era base. Consumers that
-  /// listen to repository streams may read this to ignore echoes from their own
-  /// optimistic updates.
-  bool isLocalUpdate = false;
-
   BaseSupabaseRepository({this.projectId});
 
   /// Abstract methods each repository must implement.
@@ -19,25 +14,37 @@ abstract class BaseSupabaseRepository<T> {
   /// Override to false in repositories that are not project-scoped (e.g. `users`).
   bool get requireProjectId => true;
 
+  /// Column used to scope reads and writes. When set, `getAll`/`getStream`
+  /// auto-filter by `scopeField = scopeValue`, and `add`/`update` auto-inject
+  /// the column into the row map. Leave null for non-scoped tables.
+  String? get scopeField => null;
+
+  /// Value paired with `scopeField`. Defaults to `projectId`; override when
+  /// scoping by a different column (e.g. `canvasId`, `itemId`).
+  dynamic get scopeValue => projectId;
+
+  /// Default `orderBy` applied to `getStream` when the caller doesn't pass one.
+  String? get defaultOrderBy => null;
+
   SupabaseClient get _client => Supabase.instance.client;
   SupabaseQueryBuilder get _table => _client.from(tableName);
 
-  Future<R> _execute<R>(Future<R> Function() op, {bool suppressStream = true}) async {
+  /// Builds the row map for inserts/updates: `toMap(item)` + scope column
+  /// auto-injected. Only injects when both `scopeField` and `scopeValue` are
+  /// non-null.
+  Map<String, dynamic> _writeMap(T item) {
+    final map = toMap(item);
+    final field = scopeField;
+    final value = scopeValue;
+    if (field != null && value != null) map[field] = value;
+    return map;
+  }
+
+  Future<R> _execute<R>(Future<R> Function() op) async {
     if (requireProjectId && (projectId == null || projectId!.isEmpty)) {
       throw ArgumentError('Invalid projectId: $projectId');
     }
-    isLocalUpdate = suppressStream;
-    try {
-      return await op();
-    } finally {
-      isLocalUpdate = false;
-    }
-  }
 
-  Future<R> _executeRead<R>(Future<R> Function() op) async {
-    if (requireProjectId && (projectId == null || projectId!.isEmpty)) {
-      throw ArgumentError('Empty projectId');
-    }
     return await op();
   }
 
@@ -51,46 +58,36 @@ abstract class BaseSupabaseRepository<T> {
   // ------------- CRUD -------------
 
   Future<T?> get(String id) {
-    return _executeRead(() async {
+    return _execute(() async {
       final row = await _table.select().eq('id', id).maybeSingle();
       return row == null ? null : fromMap(row);
     });
   }
 
-  Future<List<T>> getAll() {
-    return _executeRead(() async {
-      final rows = await _table.select();
-      return (rows as List).map((r) => fromMap(r as Map<String, dynamic>)).toList();
+  Future<List<T>> getAll() =>
+      query(field: scopeField, isEqualTo: scopeValue);
+
+  Future<void> add(List<T> items) {
+    return _execute(() async {
+      if (items.isEmpty) return;
+      await _table.insert(items.map(_writeMap).toList());
     });
   }
 
-  Future<void> add(T item, {bool suppressStream = true}) {
+  Future<void> update(T item) {
     return _execute(() async {
-      await _table.insert(toMap(item));
-    }, suppressStream: suppressStream);
+      await _table.update(_writeMap(item)).eq('id', getIdFromItem(item));
+    });
   }
 
-  Future<void> addMultiple(Map<String, T> items, {bool suppressStream = true}) {
-    return _execute(() async {
-      if (items.isEmpty) return;
-      await _table.insert(items.values.map(toMap).toList());
-    }, suppressStream: suppressStream);
-  }
-
-  Future<void> update(T item, {bool suppressStream = true}) {
-    return _execute(() async {
-      await _table.update(toMap(item)).eq('id', getIdFromItem(item));
-    }, suppressStream: suppressStream);
-  }
-
-  Future<void> updateMultiple(List<T> items, {bool suppressStream = true}) {
+  Future<void> updateMultiple(List<T> items) {
     if (items.length == 1) {
-      return update(items.first, suppressStream: suppressStream);
+      return update(items.first);
     }
     return _execute(() async {
       if (items.isEmpty) return;
-      await _table.upsert(items.map(toMap).toList());
-    }, suppressStream: suppressStream);
+      await _table.upsert(items.map(_writeMap).toList());
+    });
   }
 
   Future<void> delete(dynamic item) {
@@ -119,39 +116,6 @@ abstract class BaseSupabaseRepository<T> {
     });
   }
 
-  Future<void> deleteWhere({
-    String? field,
-    dynamic isEqualTo,
-    dynamic isNotEqualTo,
-    dynamic isLessThan,
-    dynamic isLessThanOrEqualTo,
-    dynamic isGreaterThan,
-    dynamic isGreaterThanOrEqualTo,
-    dynamic arrayContains,
-    List<dynamic>? arrayContainsAny,
-    List<dynamic>? whereIn,
-    List<dynamic>? whereNotIn,
-    bool? isNull,
-  }) async {
-    final results = await query(
-      field: field,
-      isEqualTo: isEqualTo,
-      isNotEqualTo: isNotEqualTo,
-      isLessThan: isLessThan,
-      isLessThanOrEqualTo: isLessThanOrEqualTo,
-      isGreaterThan: isGreaterThan,
-      isGreaterThanOrEqualTo: isGreaterThanOrEqualTo,
-      arrayContains: arrayContains,
-      arrayContainsAny: arrayContainsAny,
-      whereIn: whereIn,
-      whereNotIn: whereNotIn,
-      isNull: isNull,
-    );
-    if (results.isNotEmpty) {
-      await deleteMultiple(results);
-    }
-  }
-
   // ------------- Queries -------------
 
   Future<List<T>> query({
@@ -167,11 +131,12 @@ abstract class BaseSupabaseRepository<T> {
     List<dynamic>? whereIn,
     List<dynamic>? whereNotIn,
     bool? isNull,
+    String? startsWith,
     String? orderBy,
     bool descending = false,
     int? limit,
   }) {
-    return _executeRead(() async {
+    return _execute(() async {
       dynamic q = _table.select();
       if (field != null) {
         if (isEqualTo != null) q = q.eq(field, isEqualTo);
@@ -179,7 +144,8 @@ abstract class BaseSupabaseRepository<T> {
         if (isLessThan != null) q = q.lt(field, isLessThan);
         if (isLessThanOrEqualTo != null) q = q.lte(field, isLessThanOrEqualTo);
         if (isGreaterThan != null) q = q.gt(field, isGreaterThan);
-        if (isGreaterThanOrEqualTo != null) q = q.gte(field, isGreaterThanOrEqualTo);
+        if (isGreaterThanOrEqualTo != null)
+          q = q.gte(field, isGreaterThanOrEqualTo);
         if (arrayContains != null) q = q.contains(field, [arrayContains]);
         if (arrayContainsAny != null) q = q.overlaps(field, arrayContainsAny);
         if (whereIn != null) q = q.inFilter(field, whereIn);
@@ -187,24 +153,26 @@ abstract class BaseSupabaseRepository<T> {
         if (isNull != null) {
           q = isNull ? q.isFilter(field, null) : q.not(field, 'is', null);
         }
+        if (startsWith != null) q = q.like(field, '$startsWith%');
       }
       if (orderBy != null) q = q.order(orderBy, ascending: !descending);
       if (limit != null) q = q.limit(limit);
       final rows = await q;
-      return (rows as List).map((r) => fromMap(r as Map<String, dynamic>)).toList();
+      return (rows as List)
+          .map((r) => fromMap(r as Map<String, dynamic>))
+          .toList();
     });
   }
 
   // ------------- Streams (Realtime) -------------
 
   Stream<List<T>> getStream({String? orderBy, bool descending = false}) {
-    return _executeStream<List<T>>(() {
-      // .stream() returns SupabaseStreamFilterBuilder; .order() returns
-      // SupabaseStreamBuilder, so the chain has to widen explicitly.
-      SupabaseStreamBuilder stream = _table.stream(primaryKey: ['id']);
-      if (orderBy != null) stream = stream.order(orderBy, ascending: !descending);
-      return stream.map((rows) => rows.map((r) => fromMap(r)).toList());
-    }, <T>[]);
+    return queryStream(
+      field: scopeField,
+      isEqualTo: scopeValue,
+      orderBy: orderBy ?? defaultOrderBy,
+      descending: descending,
+    );
   }
 
   Stream<T?> getDocumentStream(String id) {
@@ -217,64 +185,23 @@ abstract class BaseSupabaseRepository<T> {
   }
 
   /// Streamed query. Realtime supports only a single server-side `.eq()` filter
-  /// — additional operators are applied client-side on each emitted snapshot.
+  /// plus `order` and `limit` — for anything richer use a one-shot `query()`.
   Stream<List<T>> queryStream({
     String? field,
     dynamic isEqualTo,
-    dynamic isNotEqualTo,
-    dynamic isLessThan,
-    dynamic isLessThanOrEqualTo,
-    dynamic isGreaterThan,
-    dynamic isGreaterThanOrEqualTo,
-    dynamic arrayContains,
-    List<dynamic>? arrayContainsAny,
-    List<dynamic>? whereIn,
-    List<dynamic>? whereNotIn,
-    bool? isNull,
     String? orderBy,
     bool descending = false,
     int? limit,
   }) {
     return _executeStream<List<T>>(() {
       final filter = _table.stream(primaryKey: ['id']);
-      // Realtime supports a single server-side .eq filter; anything else is
-      // post-filtered client-side below.
       SupabaseStreamBuilder stream = (field != null && isEqualTo != null)
           ? filter.eq(field, isEqualTo)
           : filter;
-      if (orderBy != null) stream = stream.order(orderBy, ascending: !descending);
+      if (orderBy != null)
+        stream = stream.order(orderBy, ascending: !descending);
       if (limit != null) stream = stream.limit(limit);
-
-      return stream.map((rows) {
-        Iterable<Map<String, dynamic>> filtered = rows;
-        if (field != null) {
-          if (isNotEqualTo != null) {
-            filtered = filtered.where((r) => r[field] != isNotEqualTo);
-          }
-          if (isLessThan != null) {
-            filtered = filtered.where((r) => (r[field] as Comparable).compareTo(isLessThan) < 0);
-          }
-          if (isLessThanOrEqualTo != null) {
-            filtered = filtered.where((r) => (r[field] as Comparable).compareTo(isLessThanOrEqualTo) <= 0);
-          }
-          if (isGreaterThan != null) {
-            filtered = filtered.where((r) => (r[field] as Comparable).compareTo(isGreaterThan) > 0);
-          }
-          if (isGreaterThanOrEqualTo != null) {
-            filtered = filtered.where((r) => (r[field] as Comparable).compareTo(isGreaterThanOrEqualTo) >= 0);
-          }
-          if (whereIn != null) {
-            filtered = filtered.where((r) => whereIn.contains(r[field]));
-          }
-          if (whereNotIn != null) {
-            filtered = filtered.where((r) => !whereNotIn.contains(r[field]));
-          }
-          if (isNull != null) {
-            filtered = filtered.where((r) => isNull ? r[field] == null : r[field] != null);
-          }
-        }
-        return filtered.map((r) => fromMap(r)).toList();
-      });
+      return stream.map((rows) => rows.map((r) => fromMap(r)).toList());
     }, <T>[]);
   }
 }

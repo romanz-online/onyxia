@@ -14,7 +14,8 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
     required this.canvasId,
     required this.repository,
     CommentsRepository? commentsRepository,
-  })  : commentsRepository = commentsRepository ?? CommentsRepository(projectId: projectId),
+  })  : commentsRepository =
+            commentsRepository ?? CommentsRepository(projectId: projectId),
         pinsRepository = PinsRepository(
           projectId: projectId,
           canvasId: canvasId,
@@ -38,11 +39,13 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
       orElse: () => throw Exception('Canvas not found'),
     );
 
-    final objectsStream = await canvasObjectsRepository.getCanvasObjectsStream().first;
+    final objectsStream =
+        await canvasObjectsRepository.getCanvasObjectsStream().first;
     final objects = objectsStream.objects;
 
     // Fetch canvas comments using new canvas comments repository
-    final commentsStream = await commentsRepository.watchComments(targetId: canvasId).first;
+    final commentsStream =
+        await commentsRepository.watchComments(targetId: canvasId).first;
 
     final pinsStream = await pinsRepository.getPinsStream().first;
     final pins = pinsStream.pins;
@@ -76,7 +79,8 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
       }
 
       // Update canvas imageUrl if present
-      if (canvasData.containsKey('imageUrl') && canvasData['imageUrl'] != null) {
+      if (canvasData.containsKey('imageUrl') &&
+          canvasData['imageUrl'] != null) {
         final updatedCanvas = canvas.copyWith(imageUrl: canvasData['imageUrl']);
         await repository.update(updatedCanvas);
       }
@@ -96,20 +100,26 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
 
     await _deleteExistingPins();
 
-    final newObjects = List<Map<String, dynamic>>.from(data['objects']).map((e) => CanvasObject.fromMap(e)).toList();
+    final newObjects = List<Map<String, dynamic>>.from(data['objects'])
+        .map((e) => CanvasObject.fromMap(e))
+        .toList();
 
     // Import the new objects to the existing canvas
     await _importObjects(newObjects, canvasId);
 
     // Import comments if they exist in the data
     if (data.containsKey('comments')) {
-      final newComments = List<Map<String, dynamic>>.from(data['comments']).map((e) => Comment.fromMap(e)).toList();
+      final newComments = List<Map<String, dynamic>>.from(data['comments'])
+          .map((e) => Comment.fromMap(e))
+          .toList();
       await _importComments(newComments);
     }
   }
 
   void _validateData(Map<String, dynamic> data) {
-    if (data.isEmpty || !data.containsKey('canvas') || !data.containsKey('objects')) {
+    if (data.isEmpty ||
+        !data.containsKey('canvas') ||
+        !data.containsKey('objects')) {
       throw FormatException('Missing required data. Data: $data');
     }
   }
@@ -123,21 +133,23 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
 
     // Import all objects
     if (objects.isNotEmpty) {
-      await canvasObjectsRepository.addObjects(objects);
+      await canvasObjectsRepository.add(objects);
     }
   }
 
   Future<void> _deleteExistingComments() async {
     try {
       // Get all canvas comments
-      final commentsStream = await commentsRepository.watchComments(targetId: canvasId).first;
+      final commentsStream =
+          await commentsRepository.watchComments(targetId: canvasId).first;
 
       // Delete each comment
       for (final comment in commentsStream) {
         await commentsRepository.delete(comment.id);
       }
     } catch (e) {
-      debugPrint('_deleteExistingComments: Error deleting existing comments: $e');
+      debugPrint(
+          '_deleteExistingComments: Error deleting existing comments: $e');
       // Continue with import even if deletion fails
     }
   }
@@ -183,7 +195,7 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
           pinnedObjectId: comment.pinnedObjectId,
         );
 
-        await commentsRepository.add(newComment);
+        await commentsRepository.add([newComment]);
       }
     } catch (e) {
       debugPrint('_importComments: Error importing comments: $e');

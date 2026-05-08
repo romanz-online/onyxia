@@ -21,14 +21,19 @@ class HistoryDiffsRepository extends BaseSupabaseRepository<HistoryDiff> {
   String get tableName => 'history_diffs';
 
   @override
+  String? get scopeField => itemId != null ? 'canvas_artifact_id' : null;
+
+  @override
+  dynamic get scopeValue => itemId;
+
+  @override
+  String get defaultOrderBy => 'seq';
+
+  @override
   HistoryDiff fromMap(Map<String, dynamic> map) => HistoryDiff.fromMap(map);
 
   @override
-  Map<String, dynamic> toMap(HistoryDiff item) {
-    final map = item.toMap();
-    if (itemId != null) map['canvas_artifact_id'] = itemId;
-    return map;
-  }
+  Map<String, dynamic> toMap(HistoryDiff item) => item.toMap();
 
   @override
   String getIdFromItem(HistoryDiff item) => item.id;
@@ -41,7 +46,7 @@ class HistoryDiffsRepository extends BaseSupabaseRepository<HistoryDiff> {
 
   Future<void> addHistoryDiff(HistoryDiff diff) async {
     _requireItem('addHistoryDiff()');
-    return add(diff);
+    return add([diff]);
   }
 
   Future<void> deleteHistoryDiff(HistoryDiff diff) async {
@@ -53,7 +58,7 @@ class HistoryDiffsRepository extends BaseSupabaseRepository<HistoryDiff> {
   /// gets a fresh sequence number on insertion.
   Future<void> restoreHistoryDiff(HistoryDiff diff) async {
     _requireItem('restoreHistoryDiff()');
-    return add(diff);
+    return add([diff]);
   }
 
   Future<void> updateHistoryDiff(HistoryDiff diff) async {
@@ -63,10 +68,6 @@ class HistoryDiffsRepository extends BaseSupabaseRepository<HistoryDiff> {
 
   Stream<List<HistoryDiff>> getHistoryDiffsStream() {
     _requireItem('getHistoryDiffsStream()');
-    return queryStream(
-      field: 'canvas_artifact_id',
-      isEqualTo: itemId,
-      orderBy: 'seq',
-    );
+    return getStream();
   }
 }

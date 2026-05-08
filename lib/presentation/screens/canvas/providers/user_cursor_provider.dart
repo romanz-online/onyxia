@@ -1,9 +1,12 @@
 import 'package:onyxia/export.dart';
 import 'objects_provider.dart';
 
-final canvasMousePressedProvider = StateProvider.autoDispose<bool>((ref) => false);
+final canvasMousePressedProvider =
+    StateProvider.autoDispose<bool>((ref) => false);
 
-final cursorIconOverrideProvider = StateNotifierProvider.autoDispose<CursorIconOverrideNotifier, MouseCursor?>((ref) {
+final cursorIconOverrideProvider =
+    StateNotifierProvider.autoDispose<CursorIconOverrideNotifier, MouseCursor?>(
+        (ref) {
   return CursorIconOverrideNotifier();
 });
 
@@ -17,7 +20,9 @@ class CursorIconOverrideNotifier extends StateNotifier<MouseCursor?> {
   }
 }
 
-final usersCursorProvider = StateNotifierProvider.autoDispose<UserCursorNotifier, List<UserCursor>>((ref) {
+final usersCursorProvider =
+    StateNotifierProvider.autoDispose<UserCursorNotifier, List<UserCursor>>(
+        (ref) {
   final projectId = ref.watch(projectsProvider).selectedProject.id;
   final currentUserId = ref.watch(currentUserProvider).id;
   final currentUserEmail = ref.watch(currentUserProvider).email;
@@ -54,7 +59,8 @@ class UserCursorNotifier extends StateNotifier<List<UserCursor>> {
     if (!mounted) return;
     _init();
     // Generate a dummy user ID
-    _currentUserColor = RandomColor.getRandomFromId(currentUserId); // Default color for current user
+    _currentUserColor = RandomColor.getRandomFromId(
+        currentUserId); // Default color for current user
   }
 
   void _cancelSubscriptions() {
@@ -72,12 +78,10 @@ class UserCursorNotifier extends StateNotifier<List<UserCursor>> {
     if (canvasId.isEmpty) return;
 
     // Listen for cursor updates from Firestore
-    _cursorSubscription = canvasCursorsRepository.getCursorsStream(currentUserId, currentUserEmail).listen((cursors) {
-      if (canvasCursorsRepository.isLocalUpdate) return;
-
-      if (mounted) {
-        state = cursors.cast<UserCursor>();
-      }
+    _cursorSubscription = canvasCursorsRepository
+        .getCursorsStream(currentUserId, currentUserEmail)
+        .listen((cursors) {
+      if (mounted) state = cursors.cast<UserCursor>();
     });
   }
 

@@ -1,6 +1,7 @@
 import 'package:onyxia/export.dart';
 
-final projectsProvider = StateNotifierProvider.autoDispose<ProjectsNotifier, Projects>((ref) {
+final projectsProvider =
+    StateNotifierProvider.autoDispose<ProjectsNotifier, Projects>((ref) {
   final authState = ref.watch(authProvider);
   final userState = ref.watch(currentUserProvider);
 
@@ -8,7 +9,8 @@ final projectsProvider = StateNotifierProvider.autoDispose<ProjectsNotifier, Pro
     return ProjectsNotifier(Projects.initial(), ProjectsRepository(), '');
   }
 
-  return ProjectsNotifier(Projects.initial(), ProjectsRepository(), userState.id);
+  return ProjectsNotifier(
+      Projects.initial(), ProjectsRepository(), userState.id);
 });
 
 class ProjectsNotifier extends StateNotifier<Projects> {
@@ -31,7 +33,10 @@ class ProjectsNotifier extends StateNotifier<Projects> {
 
       if (!mounted) return;
 
-      state = state.copyWith(projects: projects, selectedProject: Project.initial(), isLoading: false);
+      state = state.copyWith(
+          projects: projects,
+          selectedProject: Project.initial(),
+          isLoading: false);
     } catch (e) {
       if (!mounted) return;
       print('_loadProjects $e');
@@ -72,12 +77,13 @@ class ProjectsNotifier extends StateNotifier<Projects> {
 
   void addProject(Project project) {
     state = state.copyWith(projects: [...state.projects, project]);
-    projectsRepository.add(project);
+    projectsRepository.add([project]);
   }
 
   void deleteProject(String id) {
     projectsRepository.delete(id);
-    state = state.copyWith(projects: state.projects.where((e) => e.id != id).toList());
+    state = state.copyWith(
+        projects: state.projects.where((e) => e.id != id).toList());
   }
 
   void renameProject(String id, String newName) {
@@ -133,15 +139,23 @@ class ProjectsNotifier extends StateNotifier<Projects> {
     required UserRole role,
   }) async {
     try {
-      final user = await UserDefinitionsRepository(projectId: 'root').getByEmail(email);
+      final user =
+          await UserDefinitionsRepository(projectId: 'root').getByEmail(email);
 
       if (user == null) {
-        NarwhalToast.show(text: 'User with email $email not found', type: ToastType.error);
+        NarwhalToast.show(
+          text: 'User with email $email not found',
+          type: ToastType.error,
+        );
         return;
       }
 
-      await UserReferencesRepository(projectId: projectId).add(UserReference(definitionId: user.id, role: role));
-      NarwhalToast.show(text: 'User with email $email added successfully', type: ToastType.success);
+      await UserReferencesRepository(projectId: projectId)
+          .add([UserReference(definitionId: user.id, role: role)]);
+      NarwhalToast.show(
+        text: 'User with email $email added successfully',
+        type: ToastType.success,
+      );
     } catch (e) {
       debugPrint('Error adding member by email: $e');
       NarwhalToast.show(text: 'Error: $e', type: ToastType.error);

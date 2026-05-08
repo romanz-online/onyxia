@@ -111,7 +111,7 @@ extension AppUserInitials on UserDefinition {
 }
 
 class UserReference extends AttributeReference {
-  final String id; // needs its own beyond definitionId because UserReference maintains its own firebase record
+  final String id; // needs its own beyond definitionId because UserReference maintains its own backing row
   final String definitionId; // = userId
   final UserRole role;
 
