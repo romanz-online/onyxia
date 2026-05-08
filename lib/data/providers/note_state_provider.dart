@@ -57,7 +57,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
   Future<void> _initialize() async {
     try {
       final latestNote =
-          await ArtifactsRepository(projectId: projectId).getDocumentStream(_note.title).first as Note? ?? _note;
+          await ArtifactsRepository(projectId: projectId).getDocumentStream(_note.id).first as Note? ?? _note;
 
       final controller = BardController(text: latestNote.content);
       _controller = controller;
@@ -141,7 +141,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
 
     final serializer = NoteSerializerService(
       projectId: projectId,
-      itemId: _note.title,
+      itemId: _note.id,
       repository: ArtifactsRepository(projectId: projectId),
     );
 

@@ -83,7 +83,7 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
         projectId: projectId,
         targetDiff: diffPreview.targetDiff!,
         serializer: NoteSerializerService(
-          itemId: artifact.title,
+          itemId: artifact.id,
           projectId: projectId,
           repository: ArtifactsRepository(projectId: projectId),
         ),
@@ -111,7 +111,7 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
         ),
       ArtifactType.canvas => ref.read(urlCanvasIdProvider) == null
           ? CanvasEditorView(
-              canvasId: artifact.title,
+              canvasId: artifact.id,
               saveMode: widget.saveMode,
             )
           : const SizedBox.shrink(),

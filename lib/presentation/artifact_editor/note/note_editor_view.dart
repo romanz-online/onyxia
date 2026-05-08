@@ -20,7 +20,7 @@ class NoteEditorView extends ConsumerStatefulWidget {
 class _EditorState extends ConsumerState<NoteEditorView> {
   NoteStateProvider get _provider => widget.provider ?? selectedNoteStateProvider;
   Note? get _artifact => ref.read(_provider).value?.note;
-  String get _selectedNoteId => _artifact?.title ?? '';
+  String get _selectedNoteId => _artifact?.id ?? '';
 
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
@@ -62,7 +62,7 @@ class _EditorState extends ConsumerState<NoteEditorView> {
   void _checkNoteChange() {
     final noteState = ref.read(_provider);
     noteState.whenData((state) {
-      final newNoteId = state.note?.title;
+      final newNoteId = state.note?.id;
       if (newNoteId != _currentNoteId) {
         final shouldReset = _currentNoteId != null;
         _currentNoteId = newNoteId;
