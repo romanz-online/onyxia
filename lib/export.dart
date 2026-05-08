@@ -96,7 +96,7 @@ export 'package:onyxia/data/providers/diffs_provider.dart';
 export 'package:flutter_riverpod/flutter_riverpod.dart' hide AsyncError;
 export 'package:uuid/uuid.dart';
 export 'package:go_router/go_router.dart';
-export 'package:firebase_auth/firebase_auth.dart';
+export 'package:supabase_flutter/supabase_flutter.dart';
 export 'package:contextmenu/contextmenu.dart';
 export 'package:flutter_markdown/flutter_markdown.dart';
 export 'package:flutter_svg/svg.dart';
@@ -129,7 +129,7 @@ export 'package:onyxia/data/models/artifacts/artifact_type.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
 
 //repositories
-export 'package:onyxia/repository/base_firestore_repository.dart';
+export 'package:onyxia/repository/base_supabase_repository.dart';
 export 'package:onyxia/repository/auth_repository.dart';
 export 'package:onyxia/repository/canvas_cursors_repository.dart';
 export 'package:onyxia/repository/canvas_objects_repository.dart';
@@ -141,6 +141,7 @@ export 'package:onyxia/repository/pins_repository.dart';
 export 'package:onyxia/repository/user_definitions_repository.dart';
 export 'package:onyxia/repository/user_references_repository.dart';
 export 'package:onyxia/repository/artifacts_repository.dart';
+export 'package:onyxia/repository/storage_files_repository.dart';
 
 //services
 export 'package:onyxia/services/canvas_serializer_service.dart';
@@ -167,8 +168,6 @@ export 'package:onyxia/helpers/narwhal_enum.dart';
 
 //others
 export 'core/abstracts/serializer.dart';
-export 'firebase_options.dart';
-export 'package:firebase_core/firebase_core.dart';
 export 'dart:convert';
 export 'dart:async';
 export 'package:flutter/material.dart';

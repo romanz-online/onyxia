@@ -1,17 +1,16 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:onyxia/export.dart';
 
-/// Provider that caches user data by ID to avoid repeated Firestore lookups
+/// Caches user data by ID to avoid repeated Supabase lookups.
 final userLookupProvider = Provider<UserLookupService>((ref) => UserLookupService());
 
 class UserLookupService {
   final Map<String, UserDefinition> _userCache = {};
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final UserDefinitionsRepository _repository = UserDefinitionsRepository();
 
-  /// Gets a user by their ID, using cached data if available.
-  /// Returns an AppUser with empty values if user not found or if userId is empty.
+  /// Returns a UserDefinition by ID, using the cache when possible. Returns a
+  /// placeholder UserDefinition for empty IDs or missing rows so the caller
+  /// always has something renderable.
   Future<UserDefinition> getUserById(String userId) async {
-    // Handle empty userId case
     if (userId.isEmpty) {
       return UserDefinition(
         id: '',
@@ -21,38 +20,20 @@ class UserLookupService {
       );
     }
 
-    // Return cached user if available
-    if (_userCache.containsKey(userId)) {
-      return _userCache[userId]!;
-    }
+    final cached = _userCache[userId];
+    if (cached != null) return cached;
 
     try {
-      final userDoc = await _firestore.collection('users').doc(userId).get();
-
-      if (userDoc.exists) {
-        final userData = userDoc.data();
-
-        if (userData != null) {
-          final user = UserDefinition(
-            id: userId,
-            name: userData['name'] ?? '',
-            email: userData['email'] ?? '',
-            isLogged: false, // Not relevant for other users
-            aboutMe: userData['aboutMe'] ?? '',
-          );
-
-          // Cache the user data
-          _userCache[userId] = user;
-          return user;
-        }
+      final user = await _repository.get(userId);
+      if (user != null) {
+        _userCache[userId] = user;
+        return user;
       }
-
       return UserDefinition(
         id: userId,
         name: 'Unknown User',
         email: '',
         isLogged: false,
-        aboutMe: '',
       );
     } catch (error) {
       debugPrint('Error fetching user $userId: $error');
@@ -61,7 +42,6 @@ class UserLookupService {
         name: 'Error',
         email: '',
         isLogged: false,
-        aboutMe: '',
       );
     }
   }

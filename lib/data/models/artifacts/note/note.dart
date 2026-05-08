@@ -42,7 +42,7 @@ class Note extends Artifact {
   }
 
   Note.fromMap(super.map)
-      : content = map['content'] is String ? map['content'] as String : '',
+      : content = ((map['body'] as Map<String, dynamic>?)?['content'] as String?) ?? '',
         super.fromMap();
 
   factory Note.fromJson(String source) => Note.fromMap(json.decode(source));

@@ -191,29 +191,25 @@ class CanvasObject {
   }
 
   Map<String, dynamic> toMap() {
-    final map = {
-      'id': id,
+    final payload = <String, dynamic>{
       'layer': layer,
       'color': color.toARGB32(),
-      'type': type.value,
       'stroke': stroke.value,
-      'createdAt': createdAt.millisecondsSinceEpoch,
       'topLeft': topLeft.toMap(),
       'bottomRight': bottomRight.toMap(),
       'content': content,
     };
+    if (isArrow) payload['arrowProps'] = _arrowProps!.toMap();
+    if (isImage) payload['imageProps'] = _imageProps!.toMap();
+    if (isBrush) payload['brushProps'] = _brushProps!.toMap();
+    if (isArtifact) payload['artifactProps'] = _artifactProps!.toMap();
 
-    if (isArrow) {
-      map['arrowProps'] = _arrowProps!.toMap();
-    } else if (isImage) {
-      map['imageProps'] = _imageProps!.toMap();
-    } else if (isBrush) {
-      map['brushProps'] = _brushProps!.toMap();
-    } else if (isArtifact) {
-      map['artifactProps'] = _artifactProps!.toMap();
-    }
-
-    return map;
+    // Top-level Postgres columns; repository injects `canvas_artifact_id`.
+    return {
+      'id': id,
+      'kind': type.value,
+      'payload': payload,
+    };
   }
 
   Size getDimensions() => Size(
@@ -223,46 +219,44 @@ class CanvasObject {
 
   factory CanvasObject.fromMap(Map<String, dynamic> map) {
     try {
-      // Safe type parsing with defaults
+      final payload = (map['payload'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+
       CanvasObjectType type = CanvasObjectType.rectangle;
       try {
-        type = CanvasObjectType.values.fromString(map['type'] ?? 'Rectangle');
+        type = CanvasObjectType.values.fromString(map['kind'] ?? 'Rectangle');
       } catch (e) {
         type = CanvasObjectType.rectangle;
       }
 
       StrokeType stroke = StrokeType.solid;
       try {
-        stroke = StrokeType.values.fromString(map['stroke'] ?? 'solid');
+        stroke = StrokeType.values.fromString(payload['stroke'] ?? 'solid');
       } catch (e) {
         stroke = StrokeType.solid;
       }
 
-      // Safe color parsing
       Color color = Colors.transparent;
       try {
-        if (map['color'] != null) {
-          color = Color(map['color']);
+        if (payload['color'] != null) {
+          color = Color(payload['color']);
         }
       } catch (e) {
         color = Colors.transparent;
       }
 
-      // Safe date parsing
       DateTime createdAt = DateTime.now();
       try {
-        if (map['createdAt'] != null) {
-          createdAt = DateTime.fromMillisecondsSinceEpoch(map['createdAt']);
-        }
+        final ts = map['created_at'];
+        if (ts is String) createdAt = DateTime.tryParse(ts) ?? DateTime.now();
+        if (ts is int) createdAt = DateTime.fromMillisecondsSinceEpoch(ts);
       } catch (e) {
         createdAt = DateTime.now();
       }
 
-      // Safe offset parsing
       Offset topLeft = Offset.zero;
       try {
-        if (map['topLeft'] != null) {
-          topLeft = OffsetExtension.fromMap(map['topLeft']);
+        if (payload['topLeft'] != null) {
+          topLeft = OffsetExtension.fromMap(payload['topLeft']);
         }
       } catch (e) {
         topLeft = Offset.zero;
@@ -270,18 +264,18 @@ class CanvasObject {
 
       Offset bottomRight = Offset.zero;
       try {
-        if (map['bottomRight'] != null) {
-          bottomRight = OffsetExtension.fromMap(map['bottomRight']);
+        if (payload['bottomRight'] != null) {
+          bottomRight = OffsetExtension.fromMap(payload['bottomRight']);
         }
       } catch (e) {
         bottomRight = Offset.zero;
       }
 
-      final String content = map['content'] is String ? map['content'] as String : '';
+      final String content = payload['content'] is String ? payload['content'] as String : '';
 
       return CanvasObject(
         id: map['id'] ?? '',
-        layer: map['layer'] ?? 0,
+        layer: payload['layer'] ?? 0,
         color: color,
         type: type,
         stroke: stroke,
@@ -289,21 +283,20 @@ class CanvasObject {
         topLeft: topLeft,
         bottomRight: bottomRight,
         content: content,
-        arrowProperties: type == CanvasObjectType.arrow && map['arrowProps'] != null
-            ? ArrowProperties.fromMap(map['arrowProps'])
+        arrowProperties: type == CanvasObjectType.arrow && payload['arrowProps'] != null
+            ? ArrowProperties.fromMap(payload['arrowProps'])
             : null,
-        imageProperties: type == CanvasObjectType.image && map['imageProps'] != null
-            ? ImageProperties.fromMap(map['imageProps'])
+        imageProperties: type == CanvasObjectType.image && payload['imageProps'] != null
+            ? ImageProperties.fromMap(payload['imageProps'])
             : null,
-        brushProperties: type == CanvasObjectType.brush && map['brushProps'] != null
-            ? BrushProperties.fromMap(map['brushProps'])
+        brushProperties: type == CanvasObjectType.brush && payload['brushProps'] != null
+            ? BrushProperties.fromMap(payload['brushProps'])
             : null,
-        artifactProperties: type == CanvasObjectType.artifact && map['artifactProps'] != null
-            ? ArtifactProperties.fromMap(map['artifactProps'])
+        artifactProperties: type == CanvasObjectType.artifact && payload['artifactProps'] != null
+            ? ArtifactProperties.fromMap(payload['artifactProps'])
             : null,
       );
     } catch (e) {
-      // Return a completely default object if parsing fails entirely
       return CanvasObject.initial();
     }
   }

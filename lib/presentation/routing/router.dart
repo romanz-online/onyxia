@@ -11,11 +11,11 @@ class _RouterNotifier extends ChangeNotifier {
 
   _RouterNotifier(Ref ref) {
     final initialAuth = ref.read(authProvider);
-    isAuth = initialAuth.valueOrNull?.uid != null;
+    isAuth = initialAuth.valueOrNull != null;
     isAuthLoading = initialAuth is AsyncLoading;
 
-    ref.listen<AsyncValue<User?>>(authProvider, (_, next) {
-      isAuth = next.valueOrNull?.uid != null;
+    ref.listen<AsyncValue<Session?>>(authProvider, (_, next) {
+      isAuth = next.valueOrNull != null;
       isAuthLoading = next is AsyncLoading;
       notifyListeners();
     });

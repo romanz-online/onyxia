@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Project {
   final String id;
@@ -45,31 +44,23 @@ class Project {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'ownerId': ownerId,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
+      'owner_id': ownerId,
       'name': name,
     };
   }
 
   factory Project.fromMap(Map<String, dynamic> map) {
-    // Convert timestamps or milliseconds to DateTime
-    DateTime? getDateTime(dynamic value) {
-      if (value == null) return null;
-      if (value is int) {
-        return DateTime.fromMillisecondsSinceEpoch(value);
-      } else if (value is Timestamp) {
-        return value.toDate();
-      } else {
-        return null;
-      }
+    DateTime parseTs(dynamic value) {
+      if (value is String) return DateTime.tryParse(value) ?? DateTime.now();
+      if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+      return DateTime.now();
     }
 
     return Project(
       id: map['id'] ?? '',
-      ownerId: map['ownerId'] ?? '',
-      createdAt: getDateTime(map['createdAt']) ?? DateTime.now(),
-      updatedAt: getDateTime(map['updatedAt']) ?? DateTime.now(),
+      ownerId: map['owner_id'] ?? '',
+      createdAt: parseTs(map['created_at']),
+      updatedAt: parseTs(map['updated_at']),
       name: map['name'] ?? '',
     );
   }

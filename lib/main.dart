@@ -1,14 +1,15 @@
 import 'export.dart';
+import 'supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (kIsWeb) {
-    BrowserContextMenu.disableContextMenu();
-  }
+  BrowserContextMenu.disableContextMenu();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
+  await Supabase.initialize(
+    url: supabaseUrl,
+    anonKey: supabaseAnonKey,
   );
+
   runApp(const ProviderScope(child: NarwhalApp()));
 }

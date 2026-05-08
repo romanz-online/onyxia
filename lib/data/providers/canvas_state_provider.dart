@@ -63,7 +63,7 @@ class CanvasNotifier extends StateNotifier<AsyncValue<CanvasState>> {
       final results = await Future.wait([
         _objectsRepo!.getCanvasObjectsStream().first,
         _pinsRepo!.getPinsStream().first,
-        _commentsRepo!.watchComments(targetId: _canvas.title).first,
+        _commentsRepo!.watchComments(targetId: _canvas.id).first,
       ]);
 
       _objects = (results[0] as CanvasObjects).objects;
@@ -101,7 +101,7 @@ class CanvasNotifier extends StateNotifier<AsyncValue<CanvasState>> {
       }
     });
 
-    _commentsSub = _commentsRepo?.watchComments(targetId: _canvas.title).listen((data) {
+    _commentsSub = _commentsRepo?.watchComments(targetId: _canvas.id).listen((data) {
       _comments = data;
       final current = state.value;
       if (mounted && current != null) {

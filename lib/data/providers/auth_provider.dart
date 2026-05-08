@@ -1,5 +1,6 @@
 import 'package:onyxia/export.dart';
 
-final authProvider = StreamProvider<User?>((ref) {
-  return FirebaseAuth.instance.authStateChanges();
+/// Stream of the current Supabase Session — null when signed out.
+final authProvider = StreamProvider<Session?>((ref) {
+  return Supabase.instance.client.auth.onAuthStateChange.map((event) => event.session);
 });

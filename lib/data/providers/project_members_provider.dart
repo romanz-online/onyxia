@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:onyxia/export.dart';
 
 final memberDefinitionsProvider =
@@ -28,7 +27,6 @@ class ProjectMembersNotifier extends StateNotifier<List<UserDefinition>> {
     final removedIds = _currentIds.difference(newIds);
     _currentIds = newIds;
 
-    // Remove departed members immediately — no Firestore read needed
     if (removedIds.isNotEmpty) {
       final updated = state.where((u) => !removedIds.contains(u.id)).toList();
       if (mounted) {
@@ -37,16 +35,10 @@ class ProjectMembersNotifier extends StateNotifier<List<UserDefinition>> {
       }
     }
 
-    // Fetch only the newly added member(s)
     if (addedIds.isNotEmpty) {
-      final docs = await Future.wait(
-        addedIds.map((id) =>
-            FirebaseFirestore.instance.collection('users').doc(id).get()),
-      );
-      final newUsers = docs
-          .where((d) => d.exists)
-          .map((d) => UserDefinition.fromMap({...d.data()!, 'id': d.id}))
-          .toList();
+      final repo = UserDefinitionsRepository();
+      final fetched = await Future.wait(addedIds.map(repo.get));
+      final newUsers = fetched.whereType<UserDefinition>().toList();
       if (mounted) {
         final updated = [...state, ...newUsers];
         state = updated;

@@ -42,34 +42,38 @@ class StorageFile {
     this.metadata,
   });
 
-  /// Create from Map (for Firestore compatibility)
   factory StorageFile.fromMap(Map<String, dynamic> map) {
+    DateTime parseTs(dynamic v) {
+      if (v is String) return DateTime.tryParse(v) ?? DateTime.now();
+      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+      return DateTime.now();
+    }
+
     return StorageFile(
       id: map['id'] as String,
-      name: map['name'] as String,
-      storagePath: map['storagePath'] as String,
-      downloadUrl: map['downloadUrl'] as String,
-      sizeBytes: map['sizeBytes'] as int,
-      mimeType: map['mimeType'] as String,
-      uploadedAt: DateTime.fromMillisecondsSinceEpoch(map['uploadedAt'] as int),
-      uploadedBy: map['uploadedBy'] as String,
-      projectId: map['projectId'] as String?,
+      name: (map['name'] as String?) ?? '',
+      storagePath: (map['path'] as String?) ?? '',
+      downloadUrl: (map['download_url'] as String?) ?? '',
+      sizeBytes: (map['size'] as num?)?.toInt() ?? 0,
+      mimeType: (map['mime'] as String?) ?? '',
+      uploadedAt: parseTs(map['created_at']),
+      uploadedBy: (map['user_id'] as String?) ?? '',
+      projectId: map['project_id'] as String?,
       metadata: map['metadata'] as Map<String, dynamic>?,
     );
   }
 
-  /// Convert to Map (for Firestore compatibility)
+  /// Top-level Postgres columns. `download_url` is computed from `path` at read
+  /// time via Supabase Storage and is never persisted.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
-      'storagePath': storagePath,
-      'downloadUrl': downloadUrl,
-      'sizeBytes': sizeBytes,
-      'mimeType': mimeType,
-      'uploadedAt': uploadedAt.millisecondsSinceEpoch,
-      'uploadedBy': uploadedBy,
-      'projectId': projectId,
+      'path': storagePath,
+      'size': sizeBytes,
+      'mime': mimeType,
+      'user_id': uploadedBy,
+      'project_id': projectId,
       'metadata': metadata,
     };
   }

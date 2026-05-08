@@ -1,14 +1,16 @@
 class HistoryDiff {
+  final String id;
+  final int seq;
   final String userId;
   final String title;
-
-  /// Timestamp doubles as ID.
   final DateTime timestamp;
   final List<Map<String, dynamic>> operations;
   final bool isMilestone;
   final bool isRestored;
 
   const HistoryDiff({
+    this.id = '',
+    this.seq = 0,
     required this.userId,
     this.title = '',
     required this.timestamp,
@@ -17,6 +19,38 @@ class HistoryDiff {
     required this.isRestored,
   });
 
+  /// Top-level Postgres columns. Repository injects `canvas_artifact_id`;
+  /// `seq` is assigned by the Phase B trigger.
+  Map<String, dynamic> toMap() => {
+        if (id.isNotEmpty) 'id': id,
+        'diff': {
+          'userId': userId,
+          'title': title,
+          'operations': operations,
+          'isMilestone': isMilestone,
+          'isRestored': isRestored,
+        },
+      };
+
+  factory HistoryDiff.fromMap(Map<String, dynamic> map) {
+    final diff = (map['diff'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    DateTime ts = DateTime.now();
+    final raw = map['created_at'];
+    if (raw is String) ts = DateTime.tryParse(raw) ?? DateTime.now();
+    if (raw is int) ts = DateTime.fromMillisecondsSinceEpoch(raw);
+    return HistoryDiff(
+      id: map['id'] ?? '',
+      seq: (map['seq'] as num?)?.toInt() ?? 0,
+      userId: diff['userId'] ?? '',
+      title: diff['title'] ?? '',
+      timestamp: ts,
+      operations: List<Map<String, dynamic>>.from(diff['operations'] ?? []),
+      isMilestone: diff['isMilestone'] ?? false,
+      isRestored: diff['isRestored'] ?? false,
+    );
+  }
+
+  /// Backwards-compat alias used by existing serializers.
   Map<String, dynamic> toJson() => {
         'userId': userId,
         'title': title,
@@ -36,6 +70,8 @@ class HistoryDiff {
       );
 
   HistoryDiff copyWith({
+    String? id,
+    int? seq,
     String? userId,
     String? title,
     DateTime? timestamp,
@@ -44,6 +80,8 @@ class HistoryDiff {
     bool? isRestored,
   }) {
     return HistoryDiff(
+      id: id ?? this.id,
+      seq: seq ?? this.seq,
       userId: userId ?? this.userId,
       title: title ?? this.title,
       timestamp: timestamp ?? this.timestamp,

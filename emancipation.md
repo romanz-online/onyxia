@@ -8,28 +8,34 @@ A new GitHub repo is already in place (`main` branch). A Supabase project is alr
 
 ---
 
-## Phase A — Project skeleton & Supabase wiring
+## Phase A — Project skeleton & Supabase wiring - done
 
 **A1.** Update `pubspec.yaml` dependencies:
+
 - Add: `supabase_flutter: ^2.x`
 - Remove: `firebase_core`, `firebase_auth`, `cloud_firestore`, `firebase_storage`
 - Run `flutter pub get`
 
 **A2.** Capture Supabase credentials from the dashboard (Project Settings → API):
-- `SUPABASE_URL` (e.g. `https://<project-ref>.supabase.co`)
-- `SUPABASE_ANON_KEY`
 
-These are passed at build time via `--dart-define=SUPABASE_URL=...` and read in code via `String.fromEnvironment(...)`. They never go in source control.
+- `SUPABASE_URL` (e.g. `https://<project-ref>.supabase.co`)
+- `SUPABASE_ANON_KEY` (the `anon` `public` key — **not** `service_role`)
+
+These live in [lib/supabase_config.dart](lib/supabase_config.dart), which is gitignored and never committed. The file holds two `const` strings (`supabaseUrl`, `supabaseAnonKey`) that the app imports directly. CI writes the same file from GitHub Secrets before `flutter build` (see G2). This avoids needing `--dart-define` on every local `flutter run`.
 
 **A3.** Initialize Supabase in [lib/main.dart](lib/main.dart) (replaces `Firebase.initializeApp(...)`):
+
 ```dart
+import 'supabase_config.dart';
+...
 await Supabase.initialize(
-  url: const String.fromEnvironment('SUPABASE_URL'),
-  anonKey: const String.fromEnvironment('SUPABASE_ANON_KEY'),
+  url: supabaseUrl,
+  anonKey: supabaseAnonKey,
 );
 ```
 
 **A4.** Delete now-obsolete files:
+
 - [.firebaserc](.firebaserc)
 - [firebase.json](firebase.json)
 - [lib/firebase_options.dart](lib/firebase_options.dart)
@@ -45,20 +51,21 @@ All schema changes live in a single migration file: `supabase/migrations/0001_in
 
 **B1. Tables.** Translate the current Firestore collections into relational tables. Every table has the audit columns `created_at timestamptz`, `updated_at timestamptz`, `created_by uuid references auth.users(id)`, `updated_by uuid references auth.users(id)`.
 
-| Table | Notes |
-|---|---|
-| `users` | `id uuid PK = auth.users.id`, `email`, `name`, `image_url` |
-| `projects` | `id`, `name` |
-| `project_members` | `project_id`, `user_id`, `role`, PK = (`project_id`, `user_id`) |
-| `artifacts` | `id`, `project_id` FK, `parent_folder_id` nullable self-FK, `type` enum (`folder`/`note`/`canvas`), `name`, `body jsonb` (note bodies) |
-| `canvas_objects` | `id`, `canvas_artifact_id` FK→`artifacts`, `kind` enum (`arrow`/`brush`/`image`), `payload jsonb` |
-| `pins` | `id`, `canvas_artifact_id` FK, `target_object_id` nullable, `x`, `y`, `expandable bool` |
-| `comments` | `id`, `target_id`, `body` |
-| `sub_comments` | `id`, `comment_id` FK→`comments`, `body` |
-| `history_diffs` | `id`, `canvas_artifact_id` FK, `diff jsonb`, `seq int` |
-| `storage_files` | `id`, `project_id`, `canvas_id` nullable, `user_id`, `path`, `mime`, `size` — mirror of objects in Supabase Storage |
+| Table             | Notes                                                                                                                                  |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`           | `id uuid PK = auth.users.id`, `email`, `name`, `image_url`                                                                             |
+| `projects`        | `id`, `name`                                                                                                                           |
+| `project_members` | `project_id`, `user_id`, `role`, PK = (`project_id`, `user_id`)                                                                        |
+| `artifacts`       | `id`, `project_id` FK, `parent_folder_id` nullable self-FK, `type` enum (`folder`/`note`/`canvas`), `name`, `body jsonb` (note bodies) |
+| `canvas_objects`  | `id`, `canvas_artifact_id` FK→`artifacts`, `kind` enum (`arrow`/`brush`/`image`), `payload jsonb`                                      |
+| `pins`            | `id`, `canvas_artifact_id` FK, `target_object_id` nullable, `x`, `y`, `expandable bool`                                                |
+| `comments`        | `id`, `target_id`, `body`                                                                                                              |
+| `sub_comments`    | `id`, `comment_id` FK→`comments`, `body`                                                                                               |
+| `history_diffs`   | `id`, `canvas_artifact_id` FK, `diff jsonb`, `seq int`                                                                                 |
+| `storage_files`   | `id`, `project_id`, `canvas_id` nullable, `user_id`, `path`, `mime`, `size` — mirror of objects in Supabase Storage                    |
 
 **B2. Audit triggers.** Two reusable trigger functions:
+
 - `set_created_audit()` BEFORE INSERT — sets `created_at = now()`, `created_by = auth.uid()`, plus `updated_at` / `updated_by`
 - `set_updated_audit()` BEFORE UPDATE — sets `updated_at = now()`, `updated_by = auth.uid()`
 
@@ -82,6 +89,7 @@ Attach to every table. This replaces the app-level `_blame()` / `_create()` help
 - `getStream`, `getDocumentStream`, `queryStream`
 
 Implementation notes:
+
 - **Reads**: `Supabase.instance.client.from(table).select()`, with the existing 11 `where`-style operators translating to PostgREST methods (`.eq`, `.neq`, `.lt`, `.lte`, `.gt`, `.gte`, `.contains`, `.containedBy`, `.inFilter`, `.is_`, etc.).
 - **Writes**: `.upsert(...)` / `.update(...).match(...)` / `.delete().match(...)`. For bulk writes, pass an array — Supabase runs each batch in a single transaction server-side.
 - **Streams**: Realtime channels — `client.channel('public:$table').onPostgresChanges(event: ..., schema: 'public', table: ..., callback: ...).subscribe()`.
@@ -91,17 +99,17 @@ Implementation notes:
 
 **C2.** Migrate the 9 concrete repositories one by one. Each becomes a thin subclass of `BaseSupabaseRepository<T>`:
 
-| File | Backing table |
-|---|---|
-| [lib/repository/artifacts_repository.dart](lib/repository/artifacts_repository.dart) | `artifacts` |
-| [lib/repository/canvas_cursors_repository.dart](lib/repository/canvas_cursors_repository.dart) | **Realtime broadcast only — no table** (cursors are ephemeral presence) |
-| [lib/repository/canvas_objects_repository.dart](lib/repository/canvas_objects_repository.dart) | `canvas_objects` |
-| [lib/repository/comments_repository.dart](lib/repository/comments_repository.dart) | `comments` + `sub_comments` |
-| [lib/repository/history_diffs_repository.dart](lib/repository/history_diffs_repository.dart) | `history_diffs` |
-| [lib/repository/pins_repository.dart](lib/repository/pins_repository.dart) | `pins` |
-| [lib/repository/projects_repository.dart](lib/repository/projects_repository.dart) | `projects` + `project_members` |
-| [lib/repository/user_definitions_repository.dart](lib/repository/user_definitions_repository.dart) | `users` |
-| [lib/repository/user_references_repository.dart](lib/repository/user_references_repository.dart) | `users` (read-only) |
+| File                                                                                               | Backing table                                                           |
+| -------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------- |
+| [lib/repository/artifacts_repository.dart](lib/repository/artifacts_repository.dart)               | `artifacts`                                                             |
+| [lib/repository/canvas_cursors_repository.dart](lib/repository/canvas_cursors_repository.dart)     | **Realtime broadcast only — no table** (cursors are ephemeral presence) |
+| [lib/repository/canvas_objects_repository.dart](lib/repository/canvas_objects_repository.dart)     | `canvas_objects`                                                        |
+| [lib/repository/comments_repository.dart](lib/repository/comments_repository.dart)                 | `comments` + `sub_comments`                                             |
+| [lib/repository/history_diffs_repository.dart](lib/repository/history_diffs_repository.dart)       | `history_diffs`                                                         |
+| [lib/repository/pins_repository.dart](lib/repository/pins_repository.dart)                         | `pins`                                                                  |
+| [lib/repository/projects_repository.dart](lib/repository/projects_repository.dart)                 | `projects` + `project_members`                                          |
+| [lib/repository/user_definitions_repository.dart](lib/repository/user_definitions_repository.dart) | `users`                                                                 |
+| [lib/repository/user_references_repository.dart](lib/repository/user_references_repository.dart)   | `users` (read-only)                                                     |
 
 **C3.** Replace the 8 `.snapshots()` callsites with Realtime channel subscriptions. Cursor presence (`canvas_cursors_repository.dart`) should use Realtime **broadcast** channels (`channel.sendBroadcastMessage(...)`), not DB rows — cursors fire too often to write through Postgres.
 
@@ -112,6 +120,7 @@ Implementation notes:
 ## Phase D — Auth migration
 
 **D1.** Rewrite [lib/data/providers/auth_provider.dart](lib/data/providers/auth_provider.dart):
+
 ```dart
 final authProvider = StreamProvider<Session?>((ref) =>
     Supabase.instance.client.auth.onAuthStateChange
@@ -119,6 +128,7 @@ final authProvider = StreamProvider<Session?>((ref) =>
 ```
 
 **D2.** Rewrite [lib/repository/auth_repository.dart](lib/repository/auth_repository.dart) against Supabase Auth:
+
 - Google OAuth: `client.auth.signInWithOAuth(OAuthProvider.google, redirectTo: '<deployed-origin>/auth/callback')`
 - Email + password: `signUp(...)` / `signInWithPassword(...)`
 - Magic link: `signInWithOtp(email: ..., emailRedirectTo: ...)`
@@ -127,6 +137,7 @@ final authProvider = StreamProvider<Session?>((ref) =>
 The pending-user reconciliation flow from the old `auth_repository.dart` is **dropped** — invited users will sign in fresh against Supabase Auth and get a row via the trigger from B3. Reintroduce the flow later only if needed.
 
 **D3.** Configure providers in the Supabase dashboard → Authentication → Providers:
+
 - **Google**: create an OAuth 2.0 Web client in Google Cloud Console (APIs & Services → Credentials). Authorized redirect URI = `https://<project-ref>.supabase.co/auth/v1/callback`. Paste client ID + secret into Supabase.
 - **Email + password**: enable.
 - **Magic link**: part of the email provider — enable.
@@ -138,6 +149,7 @@ The pending-user reconciliation flow from the old `auth_repository.dart` is **dr
 ## Phase E — Storage migration
 
 **E1.** Create Storage buckets in the Supabase dashboard:
+
 - `avatars` — public read
 - `project-files` — private; access gated by RLS policies on the bucket
 - `releases` — public read
@@ -147,6 +159,7 @@ The pending-user reconciliation flow from the old `auth_repository.dart` is **dr
 **E3.** Update [lib/repository/file_storage.dart](lib/repository/file_storage.dart) to upsert metadata into the `storage_files` table on every upload and delete the row on every removal.
 
 **E4.** Bucket access policies (Supabase dashboard → Storage → Policies). Mirror the current rules:
+
 - `releases/*` — public read, authenticated write
 - `avatars/<uid>/*` — public read, write only by the owning uid
 - `project-files/<project_id>/*` — read/write only by members of that project (join `project_members`)
@@ -170,6 +183,7 @@ The pending-user reconciliation flow from the old `auth_repository.dart` is **dr
 **G1.** GitHub repo → Settings → Pages → Source = "GitHub Actions".
 
 **G2.** Add `.github/workflows/deploy.yml`:
+
 ```yaml
 name: Deploy to GitHub Pages
 on:
@@ -191,11 +205,13 @@ jobs:
         with:
           channel: stable
       - run: flutter pub get
-      - run: |
-          flutter build web --release \
-            --base-href /<repo-name>/ \
-            --dart-define=SUPABASE_URL=${{ secrets.SUPABASE_URL }} \
-            --dart-define=SUPABASE_ANON_KEY=${{ secrets.SUPABASE_ANON_KEY }}
+      - name: Write Supabase config from secrets
+        run: |
+          cat > lib/supabase_config.dart <<EOF
+          const supabaseUrl = '${{ secrets.SUPABASE_URL }}';
+          const supabaseAnonKey = '${{ secrets.SUPABASE_ANON_KEY }}';
+          EOF
+      - run: flutter build web --release --base-href /<repo-name>/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: build/web
@@ -207,7 +223,7 @@ jobs:
 
 **G4.** After the first successful deploy, copy the Pages URL into Supabase dashboard → Authentication → URL Configuration → **Site URL** and **Additional Redirect URLs** (so OAuth and magic-link redirects are accepted).
 
-**G5.** *(Optional)* Custom domain: GitHub Pages → custom domain → DNS CNAME → also add the custom domain to Supabase's redirect allowlist.
+**G5.** _(Optional)_ Custom domain: GitHub Pages → custom domain → DNS CNAME → also add the custom domain to Supabase's redirect allowlist.
 
 ---
 

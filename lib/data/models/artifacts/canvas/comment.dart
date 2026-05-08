@@ -77,34 +77,37 @@ class Comment implements ExpandablePin {
     );
   }
 
+  /// Top-level Postgres columns. `subComments` are stored in a separate table
+  /// and populated lazily by the comments repository — never serialized here.
   Map<String, dynamic> toMap() => {
         'id': id,
-        'text': text,
-        'position': position != null ? {'x': position!.dx, 'y': position!.dy} : null,
+        'target_id': targetId,
+        'target_type': (targetType ?? CommentTargetType.canvas).name,
+        'author_id': authorId,
+        'body': text,
+        'x': position?.dx,
+        'y': position?.dy,
         'color': color.toARGB32(),
-        'subComments': subComments.map((e) => e.toMap()).toList(),
-        'authorId': authorId,
-        'createdAt': createdAt?.toIso8601String(),
-        'pinnedObjectId': pinnedObjectId,
-        'targetId': targetId,
+        'pinned_object_id': pinnedObjectId,
         'resolved': resolved,
-        'targetType': targetType?.name,
       };
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     try {
+      final dx = (map['x'] as num?)?.toDouble();
+      final dy = (map['y'] as num?)?.toDouble();
       return Comment(
         id: map['id']?.toString() ?? '',
-        text: map['text']?.toString() ?? '',
-        position: map['position'] != null ? OffsetExtension.fromMap(map['position']) : null,
-        color: Color(map['color']),
-        subComments: List<SubComment>.from(map['subComments']?.map((e) => SubComment.fromMap(e)) ?? []),
-        authorId: map['authorId']?.toString() ?? '',
-        createdAt: map['createdAt'] != null ? _parseDateTime(map['createdAt']) : null,
-        pinnedObjectId: map['pinnedObjectId']?.toString(),
-        targetId: map['targetId']?.toString(),
+        text: map['body']?.toString() ?? '',
+        position: (dx != null && dy != null) ? Offset(dx, dy) : null,
+        color: Color(map['color'] ?? 0),
+        subComments: const [],
+        authorId: map['author_id']?.toString() ?? '',
+        createdAt: map['created_at'] != null ? _parseDateTime(map['created_at']) : null,
+        pinnedObjectId: map['pinned_object_id']?.toString(),
+        targetId: map['target_id']?.toString(),
         resolved: map['resolved'] ?? false,
-        targetType: CommentTargetType.fromString(map['targetType']?.toString()),
+        targetType: CommentTargetType.fromString(map['target_type']?.toString()),
       );
     } catch (e) {
       debugPrint('Error in Comment.fromMap with data: $map');

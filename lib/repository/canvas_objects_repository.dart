@@ -1,7 +1,6 @@
-﻿import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:onyxia/export.dart';
 
-class CanvasObjectsRepository extends BaseFirestoreRepository<CanvasObject> {
+class CanvasObjectsRepository extends BaseSupabaseRepository<CanvasObject> {
   final String canvasId;
 
   CanvasObjectsRepository({
@@ -10,36 +9,42 @@ class CanvasObjectsRepository extends BaseFirestoreRepository<CanvasObject> {
   });
 
   @override
-  String get collectionPath => 'projects/$projectId/artifacts/$canvasId/objects';
+  String get tableName => 'canvas_objects';
 
   @override
   CanvasObject fromMap(Map<String, dynamic> map) => CanvasObject.fromMap(map);
 
   @override
-  Map<String, dynamic> toMap(CanvasObject item) => item.toMap();
+  Map<String, dynamic> toMap(CanvasObject item) => {
+        ...item.toMap(),
+        'canvas_artifact_id': canvasId,
+      };
 
   @override
   String getIdFromItem(CanvasObject item) => item.id;
 
   @override
-  bool get updateProjectMetadata => true;
+  Future<List<CanvasObject>> getAll() =>
+      query(field: 'canvas_artifact_id', isEqualTo: canvasId);
 
-  /// Get stream of all canvas objects wrapped in CanvasObjects container
-  Stream<CanvasObjects> getCanvasObjectsStream() {
-    return executeStream(() {
-      return FirebaseFirestore.instance.collection(collectionPath).snapshots().map((snapshot) {
-        final objects = snapshot.docs.map((doc) => fromMap(doc.data())).toList();
-        return CanvasObjects(objects: objects, selectedObjects: []);
-      });
-    }, CanvasObjects.initial());
+  @override
+  Stream<List<CanvasObject>> getStream({String? orderBy, bool descending = false}) {
+    return queryStream(
+      field: 'canvas_artifact_id',
+      isEqualTo: canvasId,
+      orderBy: orderBy,
+      descending: descending,
+    );
   }
 
-  /// Add multiple canvas objects
-  Future<void> addObjects(List<CanvasObject> objects) {
-    if (objects.length == 1) {
-      return add(objects.first);
-    }
+  /// Real-time stream of all canvas objects on this canvas, wrapped in a CanvasObjects container.
+  Stream<CanvasObjects> getCanvasObjectsStream() {
+    return getStream().map((objects) => CanvasObjects(objects: objects, selectedObjects: []));
+  }
 
+  /// Add multiple canvas objects in a single round-trip.
+  Future<void> addObjects(List<CanvasObject> objects) {
+    if (objects.length == 1) return add(objects.first);
     final objectMap = {for (var obj in objects) obj.id: obj};
     return addMultiple(objectMap);
   }

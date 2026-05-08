@@ -27,21 +27,21 @@ class SubComment {
     );
   }
 
+  /// Top-level Postgres columns. Repository injects `comment_id` at write time.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'text': text,
-      'authorId': authorId,
-      'createdAt': createdAt?.toIso8601String(),
+      'author_id': authorId,
+      'body': text,
     };
   }
 
   factory SubComment.fromMap(Map<String, dynamic> map) {
     return SubComment(
       id: map['id'] ?? '',
-      text: map['text'] ?? '',
-      authorId: map['authorId'] ?? '',
-      createdAt: map['createdAt'] != null ? _parseDateTime(map['createdAt']) : null,
+      text: map['body'] ?? '',
+      authorId: map['author_id'] ?? '',
+      createdAt: map['created_at'] != null ? _parseDateTime(map['created_at']) : null,
     );
   }
 

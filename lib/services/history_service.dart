@@ -135,7 +135,7 @@ class HistoryService {
         try {
           final currentCanvas = await ArtifactsRepository(projectId: projectId).get(serializer.itemId);
           if (currentCanvas != null) {
-            // This update will trigger BaseFirestoreRepository's automatic updatedAt/updatedBy injection
+            // The Postgres set_updated_audit trigger sets updated_at / updated_by on this UPDATE.
             await ArtifactsRepository(projectId: projectId).update(currentCanvas);
           }
         } catch (canvasUpdateError) {

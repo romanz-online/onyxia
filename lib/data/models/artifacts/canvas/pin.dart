@@ -31,31 +31,24 @@ class Pin implements ExpandablePin {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'artifactId': artifactId,
-      'canvasId': canvasId,
-      'position': position.toMap(),
-      'pinnedObjectId': pinnedObjectId,
+      'linked_artifact_id': artifactId.isEmpty ? null : artifactId,
+      'canvas_artifact_id': canvasId,
+      'x': position.dx,
+      'y': position.dy,
+      'target_object_id': pinnedObjectId,
     };
   }
 
   factory Pin.fromMap(Map<String, dynamic> map) {
     try {
-      // Safe position parsing
-      Offset position = Offset.zero;
-      try {
-        if (map['position'] != null) {
-          position = OffsetExtension.fromMap(map['position']);
-        }
-      } catch (e) {
-        position = Offset.zero;
-      }
-
+      final dx = (map['x'] as num?)?.toDouble() ?? 0.0;
+      final dy = (map['y'] as num?)?.toDouble() ?? 0.0;
       return Pin(
         id: map['id'] ?? '',
-        artifactId: map['artifactId'] ?? '',
-        canvasId: map['canvasId'] ?? '',
-        position: position,
-        pinnedObjectId: map['pinnedObjectId']?.toString(),
+        artifactId: map['linked_artifact_id'] ?? '',
+        canvasId: map['canvas_artifact_id'] ?? '',
+        position: Offset(dx, dy),
+        pinnedObjectId: map['target_object_id']?.toString(),
       );
     } catch (e) {
       return Pin();

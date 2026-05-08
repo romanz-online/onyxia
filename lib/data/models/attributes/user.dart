@@ -5,6 +5,7 @@ class UserDefinition extends AttributeDefinition {
   final bool isLogged;
   final String aboutMe;
   final bool pending;
+  final String imageUrl;
 
   UserDefinition({
     required String id,
@@ -13,6 +14,7 @@ class UserDefinition extends AttributeDefinition {
     required this.isLogged,
     this.aboutMe = '',
     this.pending = false,
+    this.imageUrl = '',
   }) : super(id: id, name: name);
 
   UserDefinition.initial()
@@ -20,6 +22,7 @@ class UserDefinition extends AttributeDefinition {
         isLogged = false,
         aboutMe = '',
         pending = false,
+        imageUrl = '',
         super(id: '', name: 'Anonymous User');
 
   UserDefinition copyWith({
@@ -29,6 +32,7 @@ class UserDefinition extends AttributeDefinition {
     bool? isLogged,
     String? aboutMe,
     bool? pending,
+    String? imageUrl,
   }) {
     return UserDefinition(
       id: id ?? this.id,
@@ -37,6 +41,7 @@ class UserDefinition extends AttributeDefinition {
       isLogged: isLogged ?? this.isLogged,
       aboutMe: aboutMe ?? this.aboutMe,
       pending: pending ?? this.pending,
+      imageUrl: imageUrl ?? this.imageUrl,
     );
   }
 
@@ -45,9 +50,8 @@ class UserDefinition extends AttributeDefinition {
       'id': id,
       'email': email,
       'name': name,
-      'isLogged': isLogged,
-      'aboutMe': aboutMe,
-      'pending': pending,
+      'about_me': aboutMe,
+      'image_url': imageUrl,
     };
   }
 
@@ -56,9 +60,10 @@ class UserDefinition extends AttributeDefinition {
       id: map['id'] ?? '',
       email: map['email'] ?? '',
       name: map['name'] ?? '',
-      isLogged: map['isLogged'] ?? false,
-      aboutMe: map['aboutMe'] ?? '',
-      pending: map['pending'] ?? false,
+      isLogged: false,
+      aboutMe: map['about_me'] ?? '',
+      pending: false,
+      imageUrl: map['image_url'] ?? '',
     );
   }
 
@@ -148,13 +153,13 @@ class UserReference extends AttributeReference {
 
   Map<String, dynamic> toMap() => {
         'id': id,
-        'definitionId': definitionId,
+        'user_id': definitionId,
         'role': role.value,
       };
 
   static UserReference fromMap(Map<String, dynamic> map) => UserReference(
         id: map['id'] ?? Uuid().v4(),
-        definitionId: map['definitionId'] ?? '',
+        definitionId: map['user_id'] ?? '',
         role: UserRole.values.fromString(map['role'] ?? ''),
       );
 

@@ -28,13 +28,20 @@ abstract class Artifact {
   // Named constructor for shared field deserialization
   Artifact.fromMap(Map<String, dynamic> map)
       : id = map['id'] ?? '',
-        parent = map['parent'] ?? map['parentId'] ?? '',
-        title = map['title'] ?? map['name'] ?? '',
-        createdAt = map['createdAt'] != null ? DateTime.fromMillisecondsSinceEpoch(map['createdAt']) : null,
-        createdBy = map['createdBy'] ?? map['owner'],
+        parent = map['parent_folder_id'] ?? '',
+        title = map['name'] ?? '',
+        createdAt = _parseTs(map['created_at']),
+        createdBy = map['created_by'],
         type = ArtifactType.values.fromString(map['type'] ?? ''),
-        updatedBy = map['updatedBy'],
-        updatedAt = map['updatedAt'] != null ? DateTime.fromMillisecondsSinceEpoch(map['updatedAt']) : null;
+        updatedBy = map['updated_by'],
+        updatedAt = _parseTs(map['updated_at']);
+
+  static DateTime? _parseTs(dynamic v) {
+    if (v == null) return null;
+    if (v is String) return DateTime.tryParse(v);
+    if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+    return null;
+  }
 
   /// Factory constructor that creates the appropriate concrete Artifact subclass
   /// based on the 'type' field in the map
@@ -53,21 +60,16 @@ abstract class Artifact {
   /// Do NOT use outside of Artifact class definition.
   Map<String, dynamic> toMapSub();
 
-  // Concrete implementation that merges shared fields with child fields
+  // Top-level Postgres columns + subclass-specific fields wrapped in `body` jsonb.
+  // The repository injects `project_id` at write time.
   Map<String, dynamic> toMap() {
-    final sharedMap = {
+    return {
       'id': id,
-      'parentId': parent,
-      'title': title,
-      'createdAt': createdAt?.millisecondsSinceEpoch,
-      'createdBy': createdBy,
+      'parent_folder_id': parent.isEmpty ? null : parent,
+      'name': title,
       'type': type.value,
-      'updatedBy': updatedBy,
-      'updatedAt': updatedAt?.millisecondsSinceEpoch,
+      'body': toMapSub(),
     };
-
-    // Merge shared fields with child-specific fields
-    return {...sharedMap, ...toMapSub()};
   }
 
   Artifact copyWith({

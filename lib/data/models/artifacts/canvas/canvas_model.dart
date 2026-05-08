@@ -25,8 +25,8 @@ class CanvasModel extends Artifact {
   });
 
   CanvasModel.fromMap(super.map)
-      : canvasType = CanvasType.values.fromString(map['canvasType'] ?? ''),
-        imageUrl = map['imageUrl'],
+      : canvasType = CanvasType.values.fromString((map['body'] as Map<String, dynamic>?)?['canvasType'] ?? ''),
+        imageUrl = (map['body'] as Map<String, dynamic>?)?['imageUrl'] as String?,
         super.fromMap();
 
   @override
