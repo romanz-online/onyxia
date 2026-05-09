@@ -110,7 +110,8 @@ extension ConnectionPointExtension on ConnectionPoint {
     final rect = Rect.fromPoints(topLeft, bottomRight);
     final center = rect.center;
     final roofHeight = rect.height * 0.4; // Roof is 40% of total height
-    final houseRect = Rect.fromLTWH(rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
+    final houseRect = Rect.fromLTWH(
+        rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
 
     return switch (this) {
       ConnectionPoint.top => Offset(center.dx, rect.top), // Roof peak
@@ -125,12 +126,14 @@ extension ConnectionPointExtension on ConnectionPoint {
     final rect = Rect.fromPoints(topLeft, bottomRight);
     final center = rect.center;
     final roofHeight = rect.height * 0.4; // Roof is 40% of total height
-    final houseRect = Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height - roofHeight);
+    final houseRect = Rect.fromLTWH(
+        rect.left, rect.top, rect.width, rect.height - roofHeight);
 
     return switch (this) {
       ConnectionPoint.top => Offset(houseRect.center.dx, houseRect.top),
       ConnectionPoint.right => Offset(houseRect.right, houseRect.center.dy),
-      ConnectionPoint.bottom => Offset(center.dx, rect.bottom), // Roof peak at bottom
+      ConnectionPoint.bottom =>
+        Offset(center.dx, rect.bottom), // Roof peak at bottom
       ConnectionPoint.left => Offset(houseRect.left, houseRect.center.dy),
       ConnectionPoint.none => center,
     };

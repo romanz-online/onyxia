@@ -41,7 +41,8 @@ class ArrowWellsOverlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (!showArrowWells || gestureRouter == null) return const SizedBox.shrink();
+    if (!showArrowWells || gestureRouter == null)
+      return const SizedBox.shrink();
 
     final objects = ref.watch(canvasObjectsProvider).objects;
     final selectedObjects = ref.watch(canvasObjectsProvider).selectedObjects;
@@ -81,7 +82,9 @@ class ArrowWellsOverlay extends ConsumerWidget {
               isSourceSelected: selectedObjects.contains(obj),
               isSourceHovered: hoveredObjects.contains(obj),
               isArrowToolActive: toolMode == ToolMode.arrow,
-              isGesturing: ref.watch(canvasGestureStateProvider).interactionContext != null,
+              isGesturing:
+                  ref.watch(canvasGestureStateProvider).interactionContext !=
+                      null,
             ),
           );
         }
@@ -109,7 +112,8 @@ class ArrowWellsOverlay extends ConsumerWidget {
   }
 
   /// Builds large hover detector for connection point circles (gridSpacing * 3)
-  Widget? _buildLargeHoverDetector(CanvasObject canvasObject, WidgetRef ref, ToolMode toolMode) {
+  Widget? _buildLargeHoverDetector(
+      CanvasObject canvasObject, WidgetRef ref, ToolMode toolMode) {
     // Original logic for showing connection point circles
     if (![
       CanvasObjectType.rectangle,
@@ -127,7 +131,8 @@ class ArrowWellsOverlay extends ConsumerWidget {
 
     try {
       final objSize = canvasObject.getDimensions();
-      const double extension = CanvasBounds.gridSpacing * 3.0; // Large hover region
+      const double extension =
+          CanvasBounds.gridSpacing * 3.0; // Large hover region
 
       return Positioned(
         left: canvasObject.topLeft.dx - extension,
@@ -136,8 +141,11 @@ class ArrowWellsOverlay extends ConsumerWidget {
         height: objSize.height + (extension * 2),
         child: MouseRegion(
           hitTestBehavior: HitTestBehavior.translucent,
-          onEnter: (_) => ref.read(hoveredObjectsProvider.notifier).addObject(canvasObject),
-          onExit: (_) => ref.read(hoveredObjectsProvider.notifier).removeObject(canvasObject),
+          onEnter: (_) =>
+              ref.read(hoveredObjectsProvider.notifier).addObject(canvasObject),
+          onExit: (_) => ref
+              .read(hoveredObjectsProvider.notifier)
+              .removeObject(canvasObject),
         ),
       );
     } catch (e) {
@@ -148,7 +156,9 @@ class ArrowWellsOverlay extends ConsumerWidget {
   /// Builds small hover detector for arrow tool wells (gridSpacing / 2)
   Widget? _buildSmallHoverDetector(CanvasObject canvasObject, WidgetRef ref) {
     // Only include objects that aren't brushes, arrows, or text
-    if (canvasObject.isArrow || canvasObject.isBrush || canvasObject.type == CanvasObjectType.text) {
+    if (canvasObject.isArrow ||
+        canvasObject.isBrush ||
+        canvasObject.type == CanvasObjectType.text) {
       return null;
     }
 
@@ -163,7 +173,8 @@ class ArrowWellsOverlay extends ConsumerWidget {
         height: objSize.height + (margin * 2),
         child: MouseRegion(
           hitTestBehavior: HitTestBehavior.translucent,
-          onEnter: (event) => _handleArrowToolHoverEnter(canvasObject, event, ref),
+          onEnter: (event) =>
+              _handleArrowToolHoverEnter(canvasObject, event, ref),
           onExit: (event) => _handleArrowToolHoverExit(canvasObject, ref),
           onHover: (event) => _handleArrowToolHover(canvasObject, event, ref),
         ),
@@ -208,7 +219,8 @@ class ArrowWellsOverlay extends ConsumerWidget {
     final margin = CanvasBounds.gridSpacing;
 
     // Check if cursor is within range
-    final isInRange = canvasObject.isPointInObject(cursorPosition, margin: margin);
+    final isInRange =
+        canvasObject.isPointInObject(cursorPosition, margin: margin);
     final currentPrimed = ref.read(arrowToolPrimedObjectsProvider);
     final isCurrentlyPrimed = currentPrimed?.object.id == canvasObject.id;
 
@@ -222,37 +234,47 @@ class ArrowWellsOverlay extends ConsumerWidget {
       }
     } else if (isInRange && isCurrentlyPrimed) {
       // Update cursor position for dynamic well positioning
-      ref.read(arrowToolPrimedObjectsProvider.notifier).updateCursor(cursorPosition);
+      ref
+          .read(arrowToolPrimedObjectsProvider.notifier)
+          .updateCursor(cursorPosition);
     }
   }
 
   /// Updates the arrow tool primed object, finding the closest object if multiple are in range
-  void _updateArrowToolPrimedObject(CanvasObject canvasObject, Offset cursorPosition, WidgetRef ref) {
+  void _updateArrowToolPrimedObject(
+      CanvasObject canvasObject, Offset cursorPosition, WidgetRef ref) {
     final currentPrimed = ref.read(arrowToolPrimedObjectsProvider);
 
     // If no object is currently primed, or this object is closer, set it as primed
     if (currentPrimed == null) {
-      ref.read(arrowToolPrimedObjectsProvider.notifier).setPrimed(canvasObject, cursorPosition);
+      ref
+          .read(arrowToolPrimedObjectsProvider.notifier)
+          .setPrimed(canvasObject, cursorPosition);
     } else {
       // Compare distances to determine which object should be primed
-      final currentDistance = (cursorPosition - currentPrimed.object.topLeft).distance;
+      final currentDistance =
+          (cursorPosition - currentPrimed.object.topLeft).distance;
       final newDistance = (cursorPosition - canvasObject.topLeft).distance;
       if (newDistance < currentDistance) {
-        ref.read(arrowToolPrimedObjectsProvider.notifier).setPrimed(canvasObject, cursorPosition);
+        ref
+            .read(arrowToolPrimedObjectsProvider.notifier)
+            .setPrimed(canvasObject, cursorPosition);
       }
     }
   }
 
   /// Converts screen coordinates to canvas coordinates
-  Offset _getCanvasCoordinates(Offset screenPosition, WidgetRef ref) =>
-      ref.read(canvasViewportProvider.notifier).convertToCanvasCoords(screenPosition);
+  Offset _getCanvasCoordinates(Offset screenPosition, WidgetRef ref) => ref
+      .read(canvasViewportProvider.notifier)
+      .convertToCanvasCoords(screenPosition);
 
   /// Checks if an arrow is currently being drawn from the given object
   bool _isDrawingArrowFromObject(CanvasObject object, WidgetRef ref) {
     final gestureState = ref.read(canvasGestureStateProvider);
 
     // Check if there's an active arrow being drawn
-    if (gestureState.activeObject == null || !gestureState.activeObject!.isArrow) {
+    if (gestureState.activeObject == null ||
+        !gestureState.activeObject!.isArrow) {
       return false;
     }
 

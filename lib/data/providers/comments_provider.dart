@@ -43,7 +43,9 @@ class CommentsState {
   }
 }
 
-final commentsProvider = StateNotifierProvider.family<CommentsNotifier, CommentsState, String>((ref, targetId) {
+final commentsProvider =
+    StateNotifierProvider.family<CommentsNotifier, CommentsState, String>(
+        (ref, targetId) {
   final projectId = ref.watch(projectsProvider).selectedProject.id;
   final repository = CommentsRepository(projectId: projectId);
 
@@ -76,9 +78,11 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
 
   void _watchComments() {
     _subscription?.cancel();
-    _subscription = repository.watchComments(targetId: targetId).listen((comments) {
+    _subscription =
+        repository.watchComments(targetId: targetId).listen((comments) {
       final sortedComments = List<Comment>.from(comments);
-      sortedComments.sort((a, b) => (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+      sortedComments.sort((a, b) => (a.createdAt ??
+              DateTime.fromMillisecondsSinceEpoch(0))
           .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
 
       state = state.copyWith(comments: sortedComments);
@@ -100,13 +104,11 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     required String text,
     required String commentId,
     required CommentTargetType targetType,
-    Color? color,
     Offset? position,
   }) async {
     final newComment = Comment(
       id: commentId,
       text: text,
-      color: color ?? Colors.yellow,
       subComments: [],
       authorId: user.id,
       position: position,
@@ -194,7 +196,8 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
 
   Future<void> deleteSubComment(String commentId, String subCommentId) async {
     final comment = state.comments.firstWhere((c) => c.id == commentId);
-    final updatedSubComments = comment.subComments.where((sub) => sub.id != subCommentId).toList();
+    final updatedSubComments =
+        comment.subComments.where((sub) => sub.id != subCommentId).toList();
 
     final updatedComment = comment.copyWith(subComments: updatedSubComments);
 
@@ -224,8 +227,9 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   // Get the 1-based index of a comment based on creation time
   int getCommentIndex(Comment comment) {
     final sortedComments = List<Comment>.from(state.comments);
-    sortedComments.sort((a, b) => (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-        .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    sortedComments.sort((a, b) =>
+        (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+            .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     return sortedComments.indexOf(comment) + 1; // 1-based index
   }
 
@@ -270,13 +274,11 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     required String commentId,
     required Offset position,
     String? objectId,
-    Color? color,
     String? pinnedObjectId,
   }) {
     final tempComment = Comment(
       id: commentId,
       text: '',
-      color: color ?? Colors.yellow,
       subComments: [],
       authorId: user.id,
       position: position,

@@ -19,7 +19,8 @@ class CanvasInteractionService {
       final oldTitle = currentCanvas.title;
       final newTitle = titleController.text.trim();
       if (newTitle.isNotEmpty && newTitle != oldTitle) {
-        ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id)
+        ArtifactsRepository(
+                projectId: ref.read(projectsProvider).selectedProject.id)
             .update(currentCanvas.copyWith(title: newTitle));
       } else {
         titleController.text = oldTitle;
@@ -91,16 +92,21 @@ class CanvasInteractionService {
       }
 
       // Shift (grid-snapping)
-      if (key == LogicalKeyboardKey.shiftLeft || key == LogicalKeyboardKey.shiftRight) {
+      if (key == LogicalKeyboardKey.shiftLeft ||
+          key == LogicalKeyboardKey.shiftRight) {
         ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).state =
-            !ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).state;
+            !ref
+                .read(canvasSettingsProvider(Setting.snapToGrid).notifier)
+                .state;
         return true;
       }
 
       // Undo/Redo functionality (works for both markup and whiteboard)
       if (isModifierPressed && key == LogicalKeyboardKey.keyZ) {
-        final shiftPressed = HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.shiftLeft) ||
-            HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.shiftRight);
+        final shiftPressed = HardwareKeyboard.instance.logicalKeysPressed
+                .contains(LogicalKeyboardKey.shiftLeft) ||
+            HardwareKeyboard.instance.logicalKeysPressed
+                .contains(LogicalKeyboardKey.shiftRight);
 
         ref.read(canvasDiffPreviewProvider.notifier).clearPreview();
 
@@ -116,8 +122,10 @@ class CanvasInteractionService {
 
       // Paste
       if (isModifierPressed && key == LogicalKeyboardKey.keyV) {
-        final targetPosition = ref.read(canvasViewportProvider.notifier).getViewportCenter();
-        final pasted = await CanvasClipboardService.paste(targetPosition: targetPosition, ref: ref);
+        final targetPosition =
+            ref.read(canvasViewportProvider.notifier).getViewportCenter();
+        final pasted = await CanvasClipboardService.paste(
+            targetPosition: targetPosition, ref: ref);
 
         objectsNotifier.addObjects(ref, pasted.$1);
         objectsNotifier.clearSelectedObjects();
@@ -126,7 +134,8 @@ class CanvasInteractionService {
       }
 
       // Backspace/Delete
-      if (key == LogicalKeyboardKey.delete || key == LogicalKeyboardKey.backspace) {
+      if (key == LogicalKeyboardKey.delete ||
+          key == LogicalKeyboardKey.backspace) {
         objectsNotifier.deleteObjects(ref, selectedObjects);
         return true;
       }
@@ -144,9 +153,12 @@ class CanvasInteractionService {
         return true;
       }
     } else if (event is KeyUpEvent) {
-      if (event.logicalKey == LogicalKeyboardKey.shiftLeft || event.logicalKey == LogicalKeyboardKey.shiftRight) {
+      if (event.logicalKey == LogicalKeyboardKey.shiftLeft ||
+          event.logicalKey == LogicalKeyboardKey.shiftRight) {
         ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).state =
-            !ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).state;
+            !ref
+                .read(canvasSettingsProvider(Setting.snapToGrid).notifier)
+                .state;
       }
     }
 
@@ -154,7 +166,8 @@ class CanvasInteractionService {
   }
 
   /// Checks if currently focusing on a text input widget
-  static bool isFocusingText({required BuildContext context, required WidgetRef ref}) {
+  static bool isFocusingText(
+      {required BuildContext context, required WidgetRef ref}) {
     // Check if this widget is still mounted before proceeding
     if (!context.mounted) return false;
 
@@ -182,7 +195,10 @@ class CanvasInteractionService {
     try {
       focusContext.visitAncestorElements((element) {
         final widget = element.widget;
-        if (widget is TextField || widget is TextFormField || widget is EditableText || widget is CupertinoTextField) {
+        if (widget is TextField ||
+            widget is TextFormField ||
+            widget is EditableText ||
+            widget is CupertinoTextField) {
           isTextWidget = true;
           return false;
         }
@@ -195,17 +211,22 @@ class CanvasInteractionService {
 
     return isTextWidget ||
         (context.mounted && ref.read(canvasTextProvider.notifier).hasFocus) ||
-        (context.mounted && ref.read(selectedNoteStateProvider.notifier).hasFocus) ||
+        (context.mounted &&
+            ref.read(selectedNoteStateProvider.notifier).hasFocus) ||
         (context.mounted && ref.read(expandedPinProvider.notifier).hasFocus);
   }
 
   /// Checks if modifier keys (Ctrl/Cmd) are currently pressed
   static bool isModifierPressed() {
-    final ctrlPressed = HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.controlLeft) ||
-        HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.controlRight);
+    final ctrlPressed = HardwareKeyboard.instance.logicalKeysPressed
+            .contains(LogicalKeyboardKey.controlLeft) ||
+        HardwareKeyboard.instance.logicalKeysPressed
+            .contains(LogicalKeyboardKey.controlRight);
 
-    final metaPressed = HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.metaLeft) ||
-        HardwareKeyboard.instance.logicalKeysPressed.contains(LogicalKeyboardKey.metaRight);
+    final metaPressed = HardwareKeyboard.instance.logicalKeysPressed
+            .contains(LogicalKeyboardKey.metaLeft) ||
+        HardwareKeyboard.instance.logicalKeysPressed
+            .contains(LogicalKeyboardKey.metaRight);
 
     return ctrlPressed || metaPressed;
   }
@@ -250,7 +271,10 @@ class CanvasInteractionService {
 
   /// Clears temporary comment state
   static void clearTemporaryComment({required WidgetRef ref}) {
-    ref.read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier).clearTemporaryComment();
+    ref
+        .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+            .notifier)
+        .clearTemporaryComment();
   }
 
   static Future<void> pipeHistory({
@@ -264,7 +288,8 @@ class CanvasInteractionService {
       serializer: CanvasSerializerService(
         canvasId: ref.read(currentCanvasProvider)?.id ?? '',
         projectId: ref.read(projectsProvider).selectedProject.id,
-        repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+        repository: ArtifactsRepository(
+            projectId: ref.read(projectsProvider).selectedProject.id),
       ),
     );
   }
@@ -338,8 +363,11 @@ class CanvasInteractionService {
 
   static void closeHeadlessPalette({required WidgetRef ref}) {
     if (ref.read(headlessProvider).headlessArrow != null) {
-      if (ref.read(headlessProvider).headlessArrow!.arrowProps.endPoint == ConnectionPoint.none) {
-        ref.read(canvasObjectsProvider.notifier).deleteObject(ref, ref.read(headlessProvider).headlessArrow!);
+      if (ref.read(headlessProvider).headlessArrow!.arrowProps.endPoint ==
+          ConnectionPoint.none) {
+        ref
+            .read(canvasObjectsProvider.notifier)
+            .deleteObject(ref, ref.read(headlessProvider).headlessArrow!);
       }
     }
     ref.read(headlessProvider.notifier).hidePalette();
@@ -410,7 +438,8 @@ class CanvasInteractionService {
       if (targetObject.isArrow) {
         // Arrow positioning: store as percentage along arrow path (0.0-1.0)
         final arrowPoints = targetObject.arrowProps.points;
-        final pathPercentage = ArrowPathHelper.getPercentageAtPoint(arrowPoints, position);
+        final pathPercentage =
+            ArrowPathHelper.getPercentageAtPoint(arrowPoints, position);
         finalPosition = Offset(pathPercentage, 0.0);
       } else {
         // Regular object positioning: relative positioning (0.0-1.0)
@@ -503,7 +532,8 @@ class CanvasInteractionService {
   }) async {
     try {
       await ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier)
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+              .notifier)
           .deleteComment(commentId: commentId);
     } catch (e) {
       debugPrint('Error deleting comment: $e');
@@ -524,7 +554,8 @@ class CanvasInteractionService {
       if (targetObject.isArrow) {
         // Arrow positioning: store as percentage along arrow path (0.0-1.0)
         final arrowPoints = targetObject.arrowProps.points;
-        final pathPercentage = ArrowPathHelper.getPercentageAtPoint(arrowPoints, position);
+        final pathPercentage =
+            ArrowPathHelper.getPercentageAtPoint(arrowPoints, position);
         finalPosition = Offset(pathPercentage, 0.0);
       } else {
         // Regular object positioning: relative positioning (0.0-1.0)
@@ -538,7 +569,10 @@ class CanvasInteractionService {
 
     final commentId = const Uuid().v4();
 
-    ref.read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier).createTemporaryComment(
+    ref
+        .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+            .notifier)
+        .createTemporaryComment(
           commentId: commentId,
           position: finalPosition,
           objectId: targetObject?.id,

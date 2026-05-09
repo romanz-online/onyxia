@@ -16,28 +16,32 @@ class BrushToolHandler extends CanvasToolGestureHandler {
   bool get allowsViewportPanning => false;
 
   @override
-  void Function(DragStartDetails, WidgetRef, BuildContext, CanvasInteractionContext)? get onPanStart =>
-      (details, ref, buildContext, interactionContext) {
-        if (interactionContext is ArrowWellInteraction) return;
+  void Function(
+          DragStartDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
+      get onPanStart => (details, ref, buildContext, interactionContext) {
+            if (interactionContext is ArrowWellInteraction) return;
 
-        final brush = CanvasObject(
-          id: const Uuid().v4(),
-          type: CanvasObjectType.brush,
-          topLeft: details.localPosition,
-          bottomRight: details.localPosition,
-          color: NarwhalColors.neutral600,
-          brushProperties: BrushProperties(
-            points: [details.localPosition],
-          ),
-        );
+            final brush = CanvasObject(
+              id: const Uuid().v4(),
+              type: CanvasObjectType.brush,
+              topLeft: details.localPosition,
+              bottomRight: details.localPosition,
+              color: NarwhalColors.neutral600,
+              brushProperties: BrushProperties(
+                points: [details.localPosition],
+              ),
+            );
 
-        ref.read(canvasObjectsProvider.notifier).addObject(ref, brush);
-        ref.read(canvasGestureStateProvider.notifier).setActiveObject(brush);
-      };
+            ref.read(canvasObjectsProvider.notifier).addObject(ref, brush);
+            ref
+                .read(canvasGestureStateProvider.notifier)
+                .setActiveObject(brush);
+          };
 
   @override
-  void Function(DragUpdateDetails, WidgetRef, BuildContext, CanvasInteractionContext)? get onPanUpdate =>
-      (details, ref, buildContext, interactionContext) {
+  void Function(DragUpdateDetails, WidgetRef, BuildContext,
+      CanvasInteractionContext)? get onPanUpdate => (details, ref, buildContext,
+          interactionContext) {
         final brushObject = ref.read(canvasGestureStateProvider).activeObject;
         if (brushObject == null || !brushObject.isBrush) return;
 
@@ -60,13 +64,15 @@ class BrushToolHandler extends CanvasToolGestureHandler {
       };
 
   @override
-  void Function(DragEndDetails, WidgetRef, BuildContext, CanvasInteractionContext)? get onPanEnd =>
-      (details, ref, buildContext, interactionContext) {
-        final brushObject = ref.read(canvasGestureStateProvider).activeObject;
-        if (brushObject == null || !brushObject.isBrush) return;
+  void Function(
+          DragEndDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
+      get onPanEnd => (details, ref, buildContext, interactionContext) {
+            final brushObject =
+                ref.read(canvasGestureStateProvider).activeObject;
+            if (brushObject == null || !brushObject.isBrush) return;
 
-        ref.read(canvasObjectsProvider.notifier).selectObject(brushObject);
-        ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
-        ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-      };
+            ref.read(canvasObjectsProvider.notifier).selectObject(brushObject);
+            ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+            ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+          };
 }

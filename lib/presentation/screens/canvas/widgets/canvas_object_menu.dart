@@ -76,7 +76,8 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   void _toggleMenuOption(CanvasObjectMenuOption option) {
     setState(() {
-      _activeMenuOption = _activeMenuOption == option ? CanvasObjectMenuOption.none : option;
+      _activeMenuOption =
+          _activeMenuOption == option ? CanvasObjectMenuOption.none : option;
     });
   }
 
@@ -87,7 +88,11 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   @override
   Widget build(BuildContext context) {
-    final currentSelected = ref.read(canvasObjectsProvider).selectedObjects.where((e) => !e.isArtifact).toList();
+    final currentSelected = ref
+        .read(canvasObjectsProvider)
+        .selectedObjects
+        .where((e) => !e.isArtifact)
+        .toList();
     if (!listEquals(_selectedObjects, currentSelected)) _closeSubmenu();
 
     _selectedObjects = currentSelected;
@@ -96,7 +101,8 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       return const SizedBox.shrink();
     }
 
-    List<CanvasObjectMenuOption> menuOptions = _getCommonMenuOptions(_selectedObjects);
+    List<CanvasObjectMenuOption> menuOptions =
+        _getCommonMenuOptions(_selectedObjects);
 
     if (!menuOptions.contains(_activeMenuOption)) {
       _closeSubmenu();
@@ -129,13 +135,19 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     final double scale = transform.getMaxScaleOnAxis();
 
     // Transform the object's positions from canvas coordinates to screen coordinates
-    final objectCenterScreenPoint = MatrixUtils.transformPoint(transform, Offset(objectCenterX, objectTopY));
-    final objectBottomScreenPoint = MatrixUtils.transformPoint(transform, Offset(objectCenterX, objectBottomY));
+    final objectCenterScreenPoint = MatrixUtils.transformPoint(
+        transform, Offset(objectCenterX, objectTopY));
+    final objectBottomScreenPoint = MatrixUtils.transformPoint(
+        transform, Offset(objectCenterX, objectBottomY));
 
     // targetY: desired bottom of main menu when placed above objects
-    final targetY = objectCenterScreenPoint.dy - (CanvasBounds.gridSpacing * scale) - menuSpacing;
+    final targetY = objectCenterScreenPoint.dy -
+        (CanvasBounds.gridSpacing * scale) -
+        menuSpacing;
     // belowTargetY: desired top of main menu when placed below objects
-    final belowTargetY = objectBottomScreenPoint.dy + (CanvasBounds.gridSpacing * scale) + menuSpacing;
+    final belowTargetY = objectBottomScreenPoint.dy +
+        (CanvasBounds.gridSpacing * scale) +
+        menuSpacing;
 
     // Get viewport dimensions
     final screenSize = MediaQuery.of(context).size;
@@ -151,10 +163,17 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         CanvasObjectMenuOption.color => (_buildColorPalette(), true),
         CanvasObjectMenuOption.stroke => (_buildStrokePalette(), true),
         CanvasObjectMenuOption.shape => (_buildShapePalette(), true),
-        CanvasObjectMenuOption.startArrowTip => (_buildArrowTipPalette(tipOnRight: false), true),
-        CanvasObjectMenuOption.endArrowTip => (_buildArrowTipPalette(tipOnRight: true), true),
+        CanvasObjectMenuOption.startArrowTip => (
+            _buildArrowTipPalette(tipOnRight: false),
+            true
+          ),
+        CanvasObjectMenuOption.endArrowTip => (
+            _buildArrowTipPalette(tipOnRight: true),
+            true
+          ),
         CanvasObjectMenuOption.arrowType => (_buildArrowTypePalette(), true),
-        _ => throw UnimplementedError('Submenu not implemented for $_activeMenuOption'),
+        _ => throw UnimplementedError(
+            'Submenu not implemented for $_activeMenuOption'),
       };
     }
 
@@ -182,12 +201,14 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
             },
           ),
         ),
-        if (submenuContent != null) LayoutId(id: _CanvasMenuChild.submenu, child: submenuContent),
+        if (submenuContent != null)
+          LayoutId(id: _CanvasMenuChild.submenu, child: submenuContent),
       ],
     );
   }
 
-  List<CanvasObjectMenuOption> getObjectOptions(CanvasObjectType objectType) => switch (objectType) {
+  List<CanvasObjectMenuOption> getObjectOptions(CanvasObjectType objectType) =>
+      switch (objectType) {
         CanvasObjectType.text => textOptions,
         CanvasObjectType.image => imageOptions,
         CanvasObjectType.arrow => arrowOptions,
@@ -195,7 +216,8 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         _ => shapeOptions,
       };
 
-  List<CanvasObjectMenuOption> _getCommonMenuOptions(List<CanvasObject> selectedObjects) {
+  List<CanvasObjectMenuOption> _getCommonMenuOptions(
+      List<CanvasObject> selectedObjects) {
     if (selectedObjects.isEmpty) return [];
 
     final commonOptions = getObjectOptions(selectedObjects.first.type).toSet();
@@ -218,15 +240,18 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           buttons.add(NarwhalIconButton(
             icon: NarwhalIcons.image,
             onPressed: () async {
-              final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
+              final selectedObjects =
+                  ref.read(canvasObjectsProvider).selectedObjects;
               if (selectedObjects.isNotEmpty) {
                 final selectedObject = selectedObjects[0];
                 String? url = null;
-                if (selectedObject.isImage && selectedObject.imageProps.imageUrl.isNotEmpty) {
+                if (selectedObject.isImage &&
+                    selectedObject.imageProps.imageUrl.isNotEmpty) {
                   url = selectedObject.imageProps.imageUrl;
                 }
 
-                if (url != null) await launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
+                if (url != null)
+                  await launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
               }
             },
             isSelected: false,
@@ -282,7 +307,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                 // Button on top
                 NarwhalIconButton(
                   icon: NarwhalIcons.colorChip,
-                  iconColor: _selectedObjects.isEmpty ? null : _selectedObjects[0].color,
+                  iconColor: _selectedObjects.isEmpty
+                      ? null
+                      : _selectedObjects[0].color,
                   onPressed: () => _toggleMenuOption(opt),
                   isSelected: isSelected,
                   isPressed: isSelected,
@@ -423,7 +450,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           for (final obj in _selectedObjects) {
             obj.stroke = StrokeType.dashed;
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.dashed,
       ),
@@ -433,7 +462,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           for (final obj in _selectedObjects) {
             obj.stroke = StrokeType.solid;
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.solid,
       ),
@@ -443,7 +474,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           for (final obj in _selectedObjects) {
             obj.stroke = StrokeType.thick;
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.thick,
       ),
@@ -488,7 +521,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                 for (final obj in _selectedObjects) {
                   obj.type = shapeType;
                 }
-                ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+                ref
+                    .read(canvasObjectsProvider.notifier)
+                    .updateObjects(ref, objects: _selectedObjects);
               },
               isSelected: _selectedObjects[0].type == shapeType,
             ))
@@ -502,12 +537,16 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
   }
 
   Widget _buildArrowTipPalette({required tipOnRight}) {
-    ArrowTip selectedTip = tipOnRight ? _selectedObjects[0].arrowProps.endTip : _selectedObjects[0].arrowProps.startTip;
+    ArrowTip selectedTip = tipOnRight
+        ? _selectedObjects[0].arrowProps.endTip
+        : _selectedObjects[0].arrowProps.startTip;
 
     List<Widget> buttons = [
       // Circle tip
       NarwhalIconButton(
-        icon: tipOnRight ? NarwhalIcons.tipCircleRight : NarwhalIcons.tipCircleLeft,
+        icon: tipOnRight
+            ? NarwhalIcons.tipCircleRight
+            : NarwhalIcons.tipCircleLeft,
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
@@ -516,14 +555,18 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
               obj.arrowProps.startTip = ArrowTip.circle;
             }
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: selectedTip == ArrowTip.circle,
       ),
 
       // Triangle tip
       NarwhalIconButton(
-        icon: tipOnRight ? NarwhalIcons.tipSolidArrowRight : NarwhalIcons.tipSolidArrowLeft,
+        icon: tipOnRight
+            ? NarwhalIcons.tipSolidArrowRight
+            : NarwhalIcons.tipSolidArrowLeft,
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
@@ -532,7 +575,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
               obj.arrowProps.startTip = ArrowTip.triangle;
             }
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: selectedTip == ArrowTip.triangle,
       ),
@@ -548,7 +593,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
               obj.arrowProps.startTip = ArrowTip.none;
             }
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: selectedTip == ArrowTip.none,
       ),
@@ -572,7 +619,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           for (final obj in _selectedObjects) {
             obj.arrowProps.arrowType = ArrowType.segmented;
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: selectedType == ArrowType.segmented,
       ),
@@ -584,7 +633,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           for (final obj in _selectedObjects) {
             obj.arrowProps.arrowType = ArrowType.curved;
           }
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref, objects: _selectedObjects);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .updateObjects(ref, objects: _selectedObjects);
         },
         isSelected: selectedType == ArrowType.curved,
       ),
@@ -648,7 +699,8 @@ class GridPalette extends StatelessWidget {
 
     return Material(
       elevation: 2,
-      borderRadius: BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
+      borderRadius:
+          BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
       color: ThemeHelper.neutral200(context),
       child: Container(
         decoration: BoxDecoration(
@@ -656,7 +708,8 @@ class GridPalette extends StatelessWidget {
             color: ThemeHelper.neutral400(context),
             width: CanvasObjectMenuState.borderWidth,
           ),
-          borderRadius: BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
+          borderRadius:
+              BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
         ),
         child: AnimatedSize(
           duration: const Duration(milliseconds: 200),
@@ -712,21 +765,27 @@ class _CanvasMenuLayoutDelegate extends MultiChildLayoutDelegate {
   @override
   void performLayout(Size size) {
     // 1. Main menu — measure first to get its actual size
-    final mmSize = layoutChild(_CanvasMenuChild.mainMenu, const BoxConstraints());
+    final mmSize =
+        layoutChild(_CanvasMenuChild.mainMenu, const BoxConstraints());
     final double mmAboveTop = targetY - mmSize.height;
     final bool flipped = mmAboveTop < _margin;
-    final double mmY = (flipped ? belowTargetY : mmAboveTop).clamp(_margin, viewportHeight - mmSize.height - _margin);
-    final double mmX = (targetX - mmSize.width / 2).clamp(_margin, viewportWidth - mmSize.width - _margin);
+    final double mmY = (flipped ? belowTargetY : mmAboveTop)
+        .clamp(_margin, viewportHeight - mmSize.height - _margin);
+    final double mmX = (targetX - mmSize.width / 2)
+        .clamp(_margin, viewportWidth - mmSize.width - _margin);
     positionChild(_CanvasMenuChild.mainMenu, Offset(mmX, mmY));
 
     // 2. Submenu — positioned relative to measured main menu bounds
     if (hasChild(_CanvasMenuChild.submenu)) {
-      final smSize = layoutChild(_CanvasMenuChild.submenu, const BoxConstraints());
+      final smSize =
+          layoutChild(_CanvasMenuChild.submenu, const BoxConstraints());
 
       // X: right-align to main menu's right edge, or center at targetX
       final double smX = submenuFloatRight
-          ? (mmX + mmSize.width - smSize.width).clamp(_margin, viewportWidth - smSize.width - _margin)
-          : (targetX - smSize.width / 2).clamp(_margin, viewportWidth - smSize.width - _margin);
+          ? (mmX + mmSize.width - smSize.width)
+              .clamp(_margin, viewportWidth - smSize.width - _margin)
+          : (targetX - smSize.width / 2)
+              .clamp(_margin, viewportWidth - smSize.width - _margin);
 
       // Y: above or below main menu
       final double mmBottom = mmY + mmSize.height;
@@ -742,7 +801,8 @@ class _CanvasMenuLayoutDelegate extends MultiChildLayoutDelegate {
 
       positionChild(
         _CanvasMenuChild.submenu,
-        Offset(smX, smY.clamp(_margin, viewportHeight - smSize.height - _margin)),
+        Offset(
+            smX, smY.clamp(_margin, viewportHeight - smSize.height - _margin)),
       );
     }
   }

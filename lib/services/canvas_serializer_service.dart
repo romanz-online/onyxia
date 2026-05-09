@@ -188,7 +188,6 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
           id: const Uuid().v4(),
           text: comment.text,
           position: comment.position,
-          color: comment.color,
           subComments: newSubComments,
           authorId: comment.authorId,
           createdAt: comment.createdAt,

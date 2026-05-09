@@ -41,7 +41,8 @@ class _CommentItemState extends ConsumerState<CommentItem> {
       return user;
     } catch (e) {
       if (!mounted) return UserDefinition.initial();
-      final fallbackUser = UserDefinition.initial().copyWith(name: userId, id: userId);
+      final fallbackUser =
+          UserDefinition.initial().copyWith(name: userId, id: userId);
       _userCache[userId] = fallbackUser;
       return fallbackUser;
     }
@@ -63,7 +64,10 @@ class _CommentItemState extends ConsumerState<CommentItem> {
           title: 'Delete Comment',
           content: 'Are you sure you want to delete this comment?',
           onConfirm: () {
-            ref.read(commentsProvider(widget.targetId).notifier).deleteComment(commentId: comment.id).then(
+            ref
+                .read(commentsProvider(widget.targetId).notifier)
+                .deleteComment(commentId: comment.id)
+                .then(
               (value) {
                 NarwhalToast.show(
                   text: 'Comment deleted',
@@ -84,11 +88,13 @@ class _CommentItemState extends ConsumerState<CommentItem> {
   ) {
     switch (action) {
       case 'Edit':
-        debugPrint('Editing subcomment: ${subComment.id} of comment: ${parentComment.id}');
+        debugPrint(
+            'Editing subcomment: ${subComment.id} of comment: ${parentComment.id}');
         _showEditSubCommentDialog(parentComment, subComment);
         break;
       case 'Delete':
-        debugPrint('Deleting subcomment: ${subComment.id} of comment: ${parentComment.id}');
+        debugPrint(
+            'Deleting subcomment: ${subComment.id} of comment: ${parentComment.id}');
         _showDeleteConfirmationDialog(
           title: 'Delete Reply',
           content: 'Are you sure you want to delete this reply?',
@@ -114,11 +120,15 @@ class _CommentItemState extends ConsumerState<CommentItem> {
   }
 
   void _showEditCommentDialog(Comment comment) {
-    ref.read(commentsProvider(widget.targetId).notifier).setSelectedCommentForEdit(comment);
+    ref
+        .read(commentsProvider(widget.targetId).notifier)
+        .setSelectedCommentForEdit(comment);
   }
 
   void _showEditSubCommentDialog(Comment parentComment, SubComment subComment) {
-    ref.read(commentsProvider(widget.targetId).notifier).setSelectedCommentForEdit(
+    ref
+        .read(commentsProvider(widget.targetId).notifier)
+        .setSelectedCommentForEdit(
           parentComment,
           subCommentId: subComment.id,
         );
@@ -202,7 +212,9 @@ class _CommentItemState extends ConsumerState<CommentItem> {
               const SizedBox(width: 8),
               Text(
                 action,
-                style: action == 'Delete' ? NarwhalTextStyle(color: ThemeHelper.red()) : null,
+                style: action == 'Delete'
+                    ? NarwhalTextStyle(color: ThemeHelper.red())
+                    : null,
               ),
             ],
           ),
@@ -227,7 +239,9 @@ class _CommentItemState extends ConsumerState<CommentItem> {
           });
         },
         child: Container(
-          color: _isSelected ? ThemeHelper.blue500(context).withValues(alpha: 0.3) : null,
+          color: _isSelected
+              ? ThemeHelper.blue500(context).withValues(alpha: 0.3)
+              : null,
           padding: const EdgeInsets.all(12),
           child: FutureBuilder<UserDefinition>(
             future: _getUser(widget.comment.authorId),
@@ -245,46 +259,18 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            if (widget.comment.resolved)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                decoration: BoxDecoration(
-                                  color: ThemeHelper.neutral400(context),
-                                  borderRadius: BorderRadius.circular(4),
-                                ),
-                                child: Text(
-                                  'Resolved',
-                                  style: NarwhalTextStyle(
-                                    fontSize: 12,
-                                    color: ThemeHelper.neutral100(context),
-                                    fontWeight: FontWeight.w700,
-                                    fontFamily: 'Segoe UI',
-                                  ),
-                                ),
-                              )
-                            else if (_isSelected || _isHovered)
+                            if (_isSelected || _isHovered)
                               Row(
                                 children: [
                                   NarwhalIconButton(
-                                    icon: NarwhalIcons.resolve,
                                     onPressed: () {
-                                      final resolvedComment = widget.comment.copyWith(resolved: true);
                                       ref
-                                          .read(commentsProvider(widget.targetId).notifier)
-                                          .updateComment(updatedComment: resolvedComment);
+                                          .read(expandedPinProvider.notifier)
+                                          .expandPin(widget.comment);
                                     },
-                                    size: 32,
-                                    iconSafeMode: true,
-                                    tooltip: 'Mark as Resolved',
-                                  ),
-                                  NarwhalIconButton(
-                                    onPressed: () {
-                                      ref.read(expandedPinProvider.notifier).expandPin(widget.comment);
-                                    },
-                                    enabled: !widget.comment.resolved,
                                     icon: NarwhalIcons.comment,
                                     size: 32,
-                                    tooltip: "Expand Comment Pin",
+                                    tooltip: 'Expand Comment Pin',
                                   )
                                 ],
                               ),
@@ -294,11 +280,14 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                                 height: 48,
                                 child: _buildPopupMenuButton(
                                   actions: availableCommentActions,
-                                  onSelected: (action) => _handleCommentAction(action, widget.comment),
+                                  onSelected: (action) => _handleCommentAction(
+                                      action, widget.comment),
                                 ),
                               )
                             else
-                              const SizedBox(width: 48, height: 48), // Placeholder for menu button
+                              const SizedBox(
+                                  width: 48,
+                                  height: 48), // Placeholder for menu button
                           ],
                         ),
                       ],
@@ -362,11 +351,15 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                           ),
                         ),
                       ),
-                    if (showSubComments && widget.comment.subComments.isNotEmpty)
+                    if (showSubComments &&
+                        widget.comment.subComments.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(left: 0.0, top: 12),
                         child: Column(
-                          children: widget.comment.subComments.asMap().entries.map((entry) {
+                          children: widget.comment.subComments
+                              .asMap()
+                              .entries
+                              .map((entry) {
                             final subComment = entry.value;
 
                             return Padding(
@@ -374,31 +367,38 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                               child: FutureBuilder<UserDefinition>(
                                 future: _getUser(subComment.authorId),
                                 builder: (context, snapshot) {
-                                  final user = snapshot.data ?? UserDefinition.initial();
+                                  final user =
+                                      snapshot.data ?? UserDefinition.initial();
 
                                   return Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
                                         padding: const EdgeInsets.only(top: 2),
                                         child: NarwhalIcon(
                                           NarwhalIcons.indent,
                                           size: 24,
-                                          color: ThemeHelper.neutral500(context),
+                                          color:
+                                              ThemeHelper.neutral500(context),
                                         ),
                                       ),
                                       const SizedBox(width: 12),
                                       Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               Text(
-                                                user.name.isNotEmpty ? user.name : 'Unknown User',
+                                                user.name.isNotEmpty
+                                                    ? user.name
+                                                    : 'Unknown User',
                                                 style: NarwhalTextStyle(
                                                   fontWeight: FontWeight.w600,
                                                   fontSize: 12,
-                                                  color: ThemeHelper.neutral800(context),
+                                                  color: ThemeHelper.neutral800(
+                                                      context),
                                                 ),
                                               ),
                                               const SizedBox(width: 8),
@@ -406,7 +406,8 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                                                 subComment.timeAgo(),
                                                 style: NarwhalTextStyle(
                                                   fontSize: 11,
-                                                  color: ThemeHelper.neutral500(context),
+                                                  color: ThemeHelper.neutral500(
+                                                      context),
                                                 ),
                                               ),
                                             ],
@@ -418,7 +419,8 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                                               subComment.text,
                                               style: NarwhalTextStyle(
                                                 fontSize: 12,
-                                                color: ThemeHelper.neutral800(context),
+                                                color: ThemeHelper.neutral800(
+                                                    context),
                                               ),
                                             ),
                                           ),
@@ -426,13 +428,17 @@ class _CommentItemState extends ConsumerState<CommentItem> {
                                       ),
                                       const Spacer(),
                                       () {
-                                        final availableSubCommentActions = _getAvailableSubCommentActions(subComment);
-                                        if (availableSubCommentActions.isEmpty) {
+                                        final availableSubCommentActions =
+                                            _getAvailableSubCommentActions(
+                                                subComment);
+                                        if (availableSubCommentActions
+                                            .isEmpty) {
                                           return const SizedBox.shrink();
                                         }
                                         return _buildPopupMenuButton(
                                           actions: availableSubCommentActions,
-                                          onSelected: (action) => _handleSubCommentAction(
+                                          onSelected: (action) =>
+                                              _handleSubCommentAction(
                                             action,
                                             widget.comment,
                                             subComment,

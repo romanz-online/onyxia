@@ -24,20 +24,31 @@ class CanvasObjectTextArea extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     try {
       final bool isEditing = objectTextState.editingObjId == canvasObject.id;
-      final bool isSelected = ref.read(canvasObjectsProvider).selectedObjects.contains(canvasObject);
+      final bool isSelected = ref
+          .read(canvasObjectsProvider)
+          .selectedObjects
+          .contains(canvasObject);
 
-      if (canvasObject.isBrush || canvasObject.isImage) return const SizedBox.shrink();
+      if (canvasObject.isBrush || canvasObject.isImage)
+        return const SizedBox.shrink();
 
-      if (isSelected && !isEditing && canvasObject.isContentEmpty && canvasObject.type != CanvasObjectType.text) {
+      if (isSelected &&
+          !isEditing &&
+          canvasObject.isContentEmpty &&
+          canvasObject.type != CanvasObjectType.text) {
         return _buildHoverHint(ref: ref);
       }
 
       if (!isEditing && !canvasObject.isContentEmpty) {
-        return canvasObject.type == CanvasObjectType.text ? _buildTextViewer(ref: ref) : _buildNormalViewer(ref: ref);
+        return canvasObject.type == CanvasObjectType.text
+            ? _buildTextViewer(ref: ref)
+            : _buildNormalViewer(ref: ref);
       }
 
       if (isEditing) {
-        return canvasObject.type == CanvasObjectType.text ? _buildTextEditor(ref: ref) : _buildNormalEditor(ref: ref);
+        return canvasObject.type == CanvasObjectType.text
+            ? _buildTextEditor(ref: ref)
+            : _buildNormalEditor(ref: ref);
       }
 
       return const SizedBox.shrink();
@@ -47,7 +58,8 @@ class CanvasObjectTextArea extends ConsumerWidget {
   }
 
   Widget _buildHoverHint({required WidgetRef ref}) {
-    final interactionContext = ObjectFillInteractionContext(targetObject: canvasObject);
+    final interactionContext =
+        ObjectFillInteractionContext(targetObject: canvasObject);
     return Positioned(
       left: canvasObject.topLeft.dx,
       top: canvasObject.topLeft.dy,
@@ -62,8 +74,10 @@ class CanvasObjectTextArea extends ConsumerWidget {
             onPanStart: gestureRouter.getHandlePanStart(interactionContext),
             onPanUpdate: gestureRouter.getHandlePanUpdate(),
             onPanEnd: gestureRouter.getHandlePanEnd(),
-            onSecondaryTapDown: gestureRouter.getHandleSecondaryTapDown(interactionContext),
-            onSecondaryTapUp: gestureRouter.getHandleSecondaryTapUp(interactionContext),
+            onSecondaryTapDown:
+                gestureRouter.getHandleSecondaryTapDown(interactionContext),
+            onSecondaryTapUp:
+                gestureRouter.getHandleSecondaryTapUp(interactionContext),
             child: Center(
               child: Text(
                 isHovered ? 'Add Text' : '',
@@ -121,7 +135,8 @@ class CanvasObjectTextArea extends ConsumerWidget {
                       isDense: true,
                     ),
                     onChanged: (value) {
-                      canvasObject.content = ref.read(canvasTextProvider.notifier).text;
+                      canvasObject.content =
+                          ref.read(canvasTextProvider.notifier).text;
                       onTextKeyPress(canvasObject);
                     },
                   ),
@@ -143,7 +158,8 @@ class CanvasObjectTextArea extends ConsumerWidget {
     final double centerX = position.dx + (maxWidth / 2);
     final double centerY = position.dy + (maxHeight / 2);
 
-    final interactionContext = ObjectFillInteractionContext(targetObject: canvasObject);
+    final interactionContext =
+        ObjectFillInteractionContext(targetObject: canvasObject);
 
     return Positioned(
       left: centerX + padding,
@@ -165,8 +181,10 @@ class CanvasObjectTextArea extends ConsumerWidget {
               onPanStart: gestureRouter.getHandlePanStart(interactionContext),
               onPanUpdate: gestureRouter.getHandlePanUpdate(),
               onPanEnd: gestureRouter.getHandlePanEnd(),
-              onSecondaryTapDown: gestureRouter.getHandleSecondaryTapDown(interactionContext),
-              onSecondaryTapUp: gestureRouter.getHandleSecondaryTapUp(interactionContext),
+              onSecondaryTapDown:
+                  gestureRouter.getHandleSecondaryTapDown(interactionContext),
+              onSecondaryTapUp:
+                  gestureRouter.getHandleSecondaryTapUp(interactionContext),
               child: Center(
                 child: MarkdownBody(
                   data: canvasObject.content,
@@ -216,11 +234,14 @@ class CanvasObjectTextArea extends ConsumerWidget {
                 hintText: 'Enter text',
               ),
               onChanged: (value) {
-                canvasObject.content = ref.read(canvasTextProvider.notifier).text;
-                final renderBox = canvasObject.textAreaKey.currentContext?.findRenderObject() as RenderBox?;
+                canvasObject.content =
+                    ref.read(canvasTextProvider.notifier).text;
+                final renderBox = canvasObject.textAreaKey.currentContext
+                    ?.findRenderObject() as RenderBox?;
                 if (renderBox != null && renderBox.hasSize) {
                   final containerSize = renderBox.size;
-                  canvasObject.bottomRight = canvasObject.topLeft + Offset(containerSize.width, containerSize.height);
+                  canvasObject.bottomRight = canvasObject.topLeft +
+                      Offset(containerSize.width, containerSize.height);
                 }
                 onTextKeyPress(canvasObject);
               },
@@ -232,7 +253,8 @@ class CanvasObjectTextArea extends ConsumerWidget {
   }
 
   Widget _buildTextViewer({required WidgetRef ref}) {
-    final interactionContext = ObjectFillInteractionContext(targetObject: canvasObject);
+    final interactionContext =
+        ObjectFillInteractionContext(targetObject: canvasObject);
 
     return Positioned(
       left: canvasObject.topLeft.dx,
@@ -244,12 +266,17 @@ class CanvasObjectTextArea extends ConsumerWidget {
         onPanStart: gestureRouter.getHandlePanStart(interactionContext),
         onPanUpdate: gestureRouter.getHandlePanUpdate(),
         onPanEnd: gestureRouter.getHandlePanEnd(),
-        onSecondaryTapDown: gestureRouter.getHandleSecondaryTapDown(interactionContext),
-        onSecondaryTapUp: gestureRouter.getHandleSecondaryTapUp(interactionContext),
+        onSecondaryTapDown:
+            gestureRouter.getHandleSecondaryTapDown(interactionContext),
+        onSecondaryTapUp:
+            gestureRouter.getHandleSecondaryTapUp(interactionContext),
         child: Container(
           decoration: BoxDecoration(
             border: Border.all(
-              color: ref.read(canvasObjectsProvider).selectedObjects.contains(canvasObject)
+              color: ref
+                      .read(canvasObjectsProvider)
+                      .selectedObjects
+                      .contains(canvasObject)
                   ? ThemeHelper.blue500(context)
                   : Colors.transparent,
               width: 1.5,
@@ -321,7 +348,9 @@ class CanvasArrowTextArea extends ConsumerWidget {
     if (keypoints.length >= 2) {
       double totalLength = 0.0;
       for (int i = 0; i < canvasObject.arrowProps.points.length - 1; i++) {
-        totalLength += (canvasObject.arrowProps.points[i + 1] - canvasObject.arrowProps.points[i]).distance;
+        totalLength += (canvasObject.arrowProps.points[i + 1] -
+                canvasObject.arrowProps.points[i])
+            .distance;
       }
       maxWidth = math.max(totalLength * 0.3, 100.0) + padding * 2;
       maxHeight = math.min(maxWidth * 0.6, 100.0);
@@ -368,7 +397,8 @@ class CanvasArrowTextArea extends ConsumerWidget {
                       isDense: true,
                     ),
                     onChanged: (value) {
-                      canvasObject.content = ref.read(canvasTextProvider.notifier).text;
+                      canvasObject.content =
+                          ref.read(canvasTextProvider.notifier).text;
                       onTextKeyPress(canvasObject);
                     },
                   ),
@@ -382,7 +412,8 @@ class CanvasArrowTextArea extends ConsumerWidget {
   }
 
   Widget _buildArrowViewer({required WidgetRef ref}) {
-    final isSelected = ref.read(canvasObjectsProvider).selectedObjects.contains(canvasObject);
+    final isSelected =
+        ref.read(canvasObjectsProvider).selectedObjects.contains(canvasObject);
     const double padding = 5.0;
     final position = canvasObject.getTextOffset();
 
@@ -390,7 +421,9 @@ class CanvasArrowTextArea extends ConsumerWidget {
 
     double totalLength = 0.0;
     for (int i = 0; i < canvasObject.arrowProps.points.length - 1; i++) {
-      totalLength += (canvasObject.arrowProps.points[i + 1] - canvasObject.arrowProps.points[i]).distance;
+      totalLength += (canvasObject.arrowProps.points[i + 1] -
+              canvasObject.arrowProps.points[i])
+          .distance;
     }
 
     final maxWidth = math.max(totalLength * 0.3, 100.0) + padding * 2;
@@ -415,7 +448,9 @@ class CanvasArrowTextArea extends ConsumerWidget {
                     decoration: BoxDecoration(
                       color: ThemeHelper.neutral100(context),
                       border: Border.all(
-                        color: isSelected ? ThemeHelper.blue500(context) : canvasObject.color,
+                        color: isSelected
+                            ? ThemeHelper.blue500(context)
+                            : canvasObject.color,
                         width: 3.0,
                       ),
                       borderRadius: BorderRadius.circular(8.0),
@@ -437,7 +472,8 @@ class CanvasArrowTextArea extends ConsumerWidget {
             return CanvasGestureDetector(
               gestureKey: canvasObject.arrowTextAreaKey,
               gestureRouter: gestureRouter,
-              interactionContext: ArrowTextInteraction(targetObject: canvasObject),
+              interactionContext:
+                  ArrowTextInteraction(targetObject: canvasObject),
               behavior: HitTestBehavior.opaque,
               child: textWidget,
             );

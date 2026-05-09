@@ -107,8 +107,9 @@ class MinimapState extends ConsumerState<Minimap> {
     double minDistance = double.infinity;
 
     for (final resolution in resolutions.keys) {
-      final distance = math
-          .sqrt(math.pow(screenSize.width - resolution.width, 2) + math.pow(screenSize.height - resolution.height, 2));
+      final distance = math.sqrt(
+          math.pow(screenSize.width - resolution.width, 2) +
+              math.pow(screenSize.height - resolution.height, 2));
 
       if (distance < minDistance) {
         minDistance = distance;
@@ -126,14 +127,16 @@ class MinimapState extends ConsumerState<Minimap> {
     final canvasBounds = canvasBoundsState.bounds;
 
     // Return canvas bounds while data is loading or for non-markup canvases
-    if (canvasBoundsState.isLoading || currentCanvas.canvasType != CanvasType.markup) {
+    if (canvasBoundsState.isLoading ||
+        currentCanvas.canvasType != CanvasType.markup) {
       return canvasBounds.size;
     }
 
     // For markup canvases, use actual image dimensions if available
     final backgroundImage = canvasBoundsState.backgroundImage;
     if (backgroundImage != null) {
-      return Size(backgroundImage.width.toDouble(), backgroundImage.height.toDouble());
+      return Size(
+          backgroundImage.width.toDouble(), backgroundImage.height.toDouble());
     }
 
     // Fallback to canvas bounds if image not available
@@ -169,7 +172,8 @@ class MinimapState extends ConsumerState<Minimap> {
     if (!mounted) return const SizedBox.shrink();
 
     try {
-      final showMinimap = ref.watch(canvasSettingsProvider(Setting.showMinimap));
+      final showMinimap =
+          ref.watch(canvasSettingsProvider(Setting.showMinimap));
       final objects = ref.watch(canvasObjectsProvider);
       final currentCanvas = widget.canvas;
       final canvasBoundsState = ref.watch(canvasBoundsProvider);
@@ -213,7 +217,8 @@ class MinimapState extends ConsumerState<Minimap> {
 
       final Size currentMinimapSize = minimapSize;
       final Size currentDisplayBounds = displayBounds;
-      final double scale = currentMinimapSize.width / currentDisplayBounds.width;
+      final double scale =
+          currentMinimapSize.width / currentDisplayBounds.width;
 
       // Get the current viewport size
       final viewportSize = MediaQuery.of(context).size;
@@ -222,7 +227,9 @@ class MinimapState extends ConsumerState<Minimap> {
       ref.watch(canvasViewportProvider);
 
       // Get the visible region in object coordinates from the viewport provider
-      final Rect visibleRegion = ref.read(canvasViewportProvider.notifier).getVisibleObjectRect(viewportSize);
+      final Rect visibleRegion = ref
+          .read(canvasViewportProvider.notifier)
+          .getVisibleObjectRect(viewportSize);
       final double rScale = 1.0; // responsiveScale;
 
       // If minimap is hidden, show only zoom controls with extended hover region
@@ -333,7 +340,10 @@ class MinimapState extends ConsumerState<Minimap> {
                       child: NarwhalIconButton(
                         icon: NarwhalIcons.close,
                         size: 20,
-                        onPressed: () => ref.read(canvasSettingsProvider(Setting.showMinimap).notifier).state = false,
+                        onPressed: () => ref
+                            .read(canvasSettingsProvider(Setting.showMinimap)
+                                .notifier)
+                            .state = false,
                       ),
                     ),
                   ],
@@ -410,7 +420,9 @@ class MinimapState extends ConsumerState<Minimap> {
                   color: ThemeHelper.neutral200(context),
                   child: Center(
                     child: Text(
-                      ref.read(canvasViewportProvider.notifier).getCurrentZoomAsString(),
+                      ref
+                          .read(canvasViewportProvider.notifier)
+                          .getCurrentZoomAsString(),
                       style: NarwhalTextStyle(
                         fontSize: 14.0,
                         color: ThemeHelper.neutral800(context),
@@ -463,7 +475,10 @@ class MinimapState extends ConsumerState<Minimap> {
                 child: NarwhalIconButton(
                   icon: NarwhalIcons.dropdownArrowUp,
                   size: 28,
-                  onPressed: () => ref.read(canvasSettingsProvider(Setting.showMinimap).notifier).state = true,
+                  onPressed: () => ref
+                      .read(
+                          canvasSettingsProvider(Setting.showMinimap).notifier)
+                      .state = true,
                 ),
               ),
             ),
@@ -503,7 +518,8 @@ class MinimapState extends ConsumerState<Minimap> {
     );
   }
 
-  void _handleMinimapPan(Offset position, Size viewportSize, double minimapScale) {
+  void _handleMinimapPan(
+      Offset position, Size viewportSize, double minimapScale) {
     final bounds = ref.read(canvasBoundsProvider).bounds;
 
     // Convert minimap click to object coordinates (image-relative for markup,
@@ -521,9 +537,12 @@ class MinimapState extends ConsumerState<Minimap> {
 
     final scale = ref.read(canvasViewportProvider).value.getMaxScaleOnAxis();
 
-    ref.read(canvasViewportProvider.notifier).setTransformation(Matrix4.identity()
-      ..translateByDouble(viewportCenterX - contentX * scale, viewportCenterY - contentY * scale, 0.0, 1.0)
-      ..scaleByDouble(scale, scale, scale, 1.0));
+    ref
+        .read(canvasViewportProvider.notifier)
+        .setTransformation(Matrix4.identity()
+          ..translateByDouble(viewportCenterX - contentX * scale,
+              viewportCenterY - contentY * scale, 0.0, 1.0)
+          ..scaleByDouble(scale, scale, scale, 1.0));
   }
 }
 
@@ -603,7 +622,8 @@ class MinimapCanvasPainter extends CustomPainter {
     canvas.drawOval(ovalRect, paint);
   }
 
-  void _drawRectangle(Canvas canvas, CanvasObject object, Paint fillPaint, Paint strokePaint) {
+  void _drawRectangle(
+      Canvas canvas, CanvasObject object, Paint fillPaint, Paint strokePaint) {
     canvas.drawRect(
       Rect.fromPoints(object.topLeft, object.bottomRight),
       fillPaint,
@@ -753,6 +773,7 @@ class MinimapViewportPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(MinimapViewportPainter oldDelegate) {
-    return oldDelegate.visibleRegion != visibleRegion || oldDelegate.minimapScale != minimapScale;
+    return oldDelegate.visibleRegion != visibleRegion ||
+        oldDelegate.minimapScale != minimapScale;
   }
 }

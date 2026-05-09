@@ -39,11 +39,17 @@ class HeadlessState {
     bool clearHoveredItem = false,
   }) {
     return HeadlessState(
-      headlessArrow: clearHeadlessArrow ? null : (headlessArrow ?? this.headlessArrow),
+      headlessArrow:
+          clearHeadlessArrow ? null : (headlessArrow ?? this.headlessArrow),
       ghostObject: clearGhostObject ? null : (ghostObject ?? this.ghostObject),
-      hoveredShapeType: clearHoveredShapeType ? null : (hoveredShapeType ?? this.hoveredShapeType),
-      canvasConfig: clearCanvasConfig ? null : (canvasConfig ?? this.canvasConfig),
-      sourceArtifactId: clearSourceArtifactId ? null : (sourceArtifactId ?? this.sourceArtifactId),
+      hoveredShapeType: clearHoveredShapeType
+          ? null
+          : (hoveredShapeType ?? this.hoveredShapeType),
+      canvasConfig:
+          clearCanvasConfig ? null : (canvasConfig ?? this.canvasConfig),
+      sourceArtifactId: clearSourceArtifactId
+          ? null
+          : (sourceArtifactId ?? this.sourceArtifactId),
       children: clearChildren ? null : (children ?? this.children),
       hoveredItem: clearHoveredItem ? null : (hoveredItem ?? this.hoveredItem),
     );
@@ -150,12 +156,15 @@ class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
     if (needsEndShape && arrowProps.points.isNotEmpty) {
       // Place ghost object at the end of the arrow
       final lastKeypoint = arrowProps.points.last;
-      final secondLastKeypoint =
-          arrowProps.points.length > 1 ? arrowProps.points[arrowProps.points.length - 2] : arrowProps.points[0];
+      final secondLastKeypoint = arrowProps.points.length > 1
+          ? arrowProps.points[arrowProps.points.length - 2]
+          : arrowProps.points[0];
 
       // Calculate direction from second-to-last to last keypoint
       final direction = lastKeypoint - secondLastKeypoint;
-      final normalizedDirection = direction.distance > 0 ? direction / direction.distance : const Offset(1, 0);
+      final normalizedDirection = direction.distance > 0
+          ? direction / direction.distance
+          : const Offset(1, 0);
 
       ghostPosition = lastKeypoint + (normalizedDirection * shapeOffset);
     } else {
@@ -203,11 +212,14 @@ class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
 
     if (needsEndShape && arrowProps.points.isNotEmpty) {
       final lastKeypoint = arrowProps.points.last;
-      final secondLastKeypoint =
-          arrowProps.points.length > 1 ? arrowProps.points[arrowProps.points.length - 2] : arrowProps.points[0];
+      final secondLastKeypoint = arrowProps.points.length > 1
+          ? arrowProps.points[arrowProps.points.length - 2]
+          : arrowProps.points[0];
 
       final direction = lastKeypoint - secondLastKeypoint;
-      final normalizedDirection = direction.distance > 0 ? direction / direction.distance : const Offset(1, 0);
+      final normalizedDirection = direction.distance > 0
+          ? direction / direction.distance
+          : const Offset(1, 0);
 
       ghostPosition = lastKeypoint + (normalizedDirection * shapeOffset);
     } else {
@@ -245,9 +257,11 @@ class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
 
     // Find the source object from the objects provider
     final objects = ref.read(canvasObjectsProvider).objects;
-    final sourceObject = objects.firstWhereOrNull((obj) => obj.id == startObjectId);
+    final sourceObject =
+        objects.firstWhereOrNull((obj) => obj.id == startObjectId);
 
-    if (sourceObject != null && sourceObject.type == CanvasObjectType.artifact) {
+    if (sourceObject != null &&
+        sourceObject.type == CanvasObjectType.artifact) {
       return sourceObject.artifactProps.artifactId;
     }
 
@@ -258,12 +272,14 @@ class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
     final notes = ref.read(artifactsProvider);
 
     // Filter notes where parentId matches the source item
-    final children = notes.where((req) => req.parent == parentArtifactId).toList();
+    final children =
+        notes.where((req) => req.parent == parentArtifactId).toList();
 
     return children.isNotEmpty ? children : null;
   }
 }
 
-final headlessProvider = StateNotifierProvider.autoDispose<HeadlessArrowNotifier, HeadlessState>(
+final headlessProvider =
+    StateNotifierProvider.autoDispose<HeadlessArrowNotifier, HeadlessState>(
   (ref) => HeadlessArrowNotifier(),
 );

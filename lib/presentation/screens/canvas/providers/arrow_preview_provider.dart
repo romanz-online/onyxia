@@ -184,7 +184,8 @@ class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
         return CanvasObject.initial();
     }
 
-    final ghostBottomRight = ghostTopLeft + Offset(sourceObjDimensions.width, sourceObjDimensions.height);
+    final ghostBottomRight = ghostTopLeft +
+        Offset(sourceObjDimensions.width, sourceObjDimensions.height);
 
     // Clone the source object with new position and styling
     return CanvasObject(
@@ -195,10 +196,14 @@ class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
       topLeft: ghostTopLeft,
       bottomRight: ghostBottomRight,
       stroke: sourceObject.stroke,
-      arrowProperties: sourceObject.hasArrowProps ? sourceObject.arrowProps : null,
-      imageProperties: sourceObject.hasImageProps ? sourceObject.imageProps : null,
-      brushProperties: sourceObject.hasBrushProps ? sourceObject.brushProps : null,
-      artifactProperties: sourceObject.hasArtifactProps ? sourceObject.artifactProps : null,
+      arrowProperties:
+          sourceObject.hasArrowProps ? sourceObject.arrowProps : null,
+      imageProperties:
+          sourceObject.hasImageProps ? sourceObject.imageProps : null,
+      brushProperties:
+          sourceObject.hasBrushProps ? sourceObject.brushProps : null,
+      artifactProperties:
+          sourceObject.hasArtifactProps ? sourceObject.artifactProps : null,
     );
   }
 
@@ -281,10 +286,26 @@ class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
 
     // Priority order: opposite first, then perpendicular pair, never same-direction
     final targetPointPriority = switch (createPoint) {
-      ConnectionPoint.top => [ConnectionPoint.bottom, ConnectionPoint.left, ConnectionPoint.right],
-      ConnectionPoint.bottom => [ConnectionPoint.top, ConnectionPoint.left, ConnectionPoint.right],
-      ConnectionPoint.left => [ConnectionPoint.right, ConnectionPoint.top, ConnectionPoint.bottom],
-      ConnectionPoint.right => [ConnectionPoint.left, ConnectionPoint.top, ConnectionPoint.bottom],
+      ConnectionPoint.top => [
+          ConnectionPoint.bottom,
+          ConnectionPoint.left,
+          ConnectionPoint.right
+        ],
+      ConnectionPoint.bottom => [
+          ConnectionPoint.top,
+          ConnectionPoint.left,
+          ConnectionPoint.right
+        ],
+      ConnectionPoint.left => [
+          ConnectionPoint.right,
+          ConnectionPoint.top,
+          ConnectionPoint.bottom
+        ],
+      ConnectionPoint.right => [
+          ConnectionPoint.left,
+          ConnectionPoint.top,
+          ConnectionPoint.bottom
+        ],
       ConnectionPoint.none => <ConnectionPoint>[],
     };
 
@@ -309,11 +330,13 @@ class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
       final distToOpposite = directionToOpposite.distance;
       if (distToOpposite == 0) continue;
 
-      final dotProduct = directionToOpposite.dx * searchDirection.dx + directionToOpposite.dy * searchDirection.dy;
+      final dotProduct = directionToOpposite.dx * searchDirection.dx +
+          directionToOpposite.dy * searchDirection.dy;
       if (dotProduct <= 0) continue;
 
       final normalizedDir = directionToOpposite / distToOpposite;
-      final alignment = normalizedDir.dx * searchDirection.dx + normalizedDir.dy * searchDirection.dy;
+      final alignment = normalizedDir.dx * searchDirection.dx +
+          normalizedDir.dy * searchDirection.dy;
       if (alignment <= 0.3) continue;
 
       // Score = min distance from sourcePosition to any valid target connection point
@@ -334,4 +357,5 @@ class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
 }
 
 final arrowPreviewProvider =
-    StateNotifierProvider.autoDispose<ArrowPreviewNotifier, ArrowPreview?>((ref) => ArrowPreviewNotifier());
+    StateNotifierProvider.autoDispose<ArrowPreviewNotifier, ArrowPreview?>(
+        (ref) => ArrowPreviewNotifier());

@@ -82,7 +82,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     // Show spinner while bounds are loading, or while waiting for urlCanvasIdProvider
     // to be set via post-frame callback (there is a 1-frame window between the parent
     // rendering and the callback firing where both are null)
-    if (canvasBounds.isLoading || (urlCanvasId == null && currentCanvas == null)) {
+    if (canvasBounds.isLoading ||
+        (urlCanvasId == null && currentCanvas == null)) {
       return Scaffold(body: Center(child: NarwhalSpinner()));
     }
 
@@ -104,9 +105,13 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final objectText = ref.watch(canvasTextProvider);
     final usersCursors = ref.watch(usersCursorProvider);
     final canvasId = ref.watch(currentCanvasProvider)?.id ?? '';
-    final canvasCommentsState = canvasId.isNotEmpty ? ref.watch(commentsProvider(canvasId)) : CommentsState.initial();
-    final showArtifacts = ref.watch(canvasSettingsProvider(Setting.showArtifacts));
-    final showComments = ref.watch(canvasSettingsProvider(Setting.showComments));
+    final canvasCommentsState = canvasId.isNotEmpty
+        ? ref.watch(commentsProvider(canvasId))
+        : CommentsState.initial();
+    final showArtifacts =
+        ref.watch(canvasSettingsProvider(Setting.showArtifacts));
+    final showComments =
+        ref.watch(canvasSettingsProvider(Setting.showComments));
     final showToolbar = ref.watch(canvasSettingsProvider(Setting.showToolbar));
     final arrowPreview = ref.watch(arrowPreviewProvider);
     final headlessState = ref.watch(headlessProvider);
@@ -114,7 +119,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
 
     final comments = [
       ...canvasCommentsState.comments,
-      if (canvasCommentsState.temporaryComment != null) canvasCommentsState.temporaryComment!,
+      if (canvasCommentsState.temporaryComment != null)
+        canvasCommentsState.temporaryComment!,
     ];
 
     // Update gesture router with current context and config
@@ -142,8 +148,10 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
             ),
             _buildImageDropRegion(ref),
             CanvasObjectMenu(
-              openTextEditor: () => CanvasInteractionService.openTextEditor(ref: ref),
-              closeTextEditor: () => CanvasInteractionService.closeTextEditor(ref: ref),
+              openTextEditor: () =>
+                  CanvasInteractionService.openTextEditor(ref: ref),
+              closeTextEditor: () =>
+                  CanvasInteractionService.closeTextEditor(ref: ref),
               saveTextEditor: _debouncedTextSave,
             ),
             if (showToolbar)
@@ -153,7 +161,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                     DragOffBarButton(
                       icon: NarwhalIcons.note,
                       dragData: DragOffBarData(type: ArtifactType.note),
-                      dragFeedbackBuilder: () => _buildArtifactDragFeedback(context),
+                      dragFeedbackBuilder: () =>
+                          _buildArtifactDragFeedback(context),
                     ),
                     // DragOffBarButton(
                     //   icon: NarwhalIcons.imageTool,
@@ -164,7 +173,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                 )
               else
                 ToolBarWidget(
-                  closeTextEditor: () => CanvasInteractionService.closeTextEditor(ref: ref),
+                  closeTextEditor: () =>
+                      CanvasInteractionService.closeTextEditor(ref: ref),
                 ),
             if (headlessState.isVisible)
               HeadlessPalette(
@@ -196,9 +206,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     return Container(
       color: ThemeHelper.neutral200(context),
       child: Listener(
-        onPointerDown: (_) => ref.read(canvasMousePressedProvider.notifier).state = true,
-        onPointerUp: (_) => ref.read(canvasMousePressedProvider.notifier).state = false,
-        onPointerCancel: (_) => ref.read(canvasMousePressedProvider.notifier).state = false,
+        onPointerDown: (_) =>
+            ref.read(canvasMousePressedProvider.notifier).state = true,
+        onPointerUp: (_) =>
+            ref.read(canvasMousePressedProvider.notifier).state = false,
+        onPointerCancel: (_) =>
+            ref.read(canvasMousePressedProvider.notifier).state = false,
         child: InteractiveViewer(
           minScale: ref.read(canvasViewportProvider.notifier).minScale,
           maxScale: ref.read(canvasViewportProvider.notifier).maxScale,
@@ -207,10 +220,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           constrained: false,
           panEnabled: _gestureRouter.allowsViewportPanning,
           scaleEnabled: _gestureRouter.allowsViewportScaling,
-          onInteractionUpdate: (details) =>
-              ref.read(canvasViewportProvider.notifier).setTransformation(viewportController.value),
-          onInteractionEnd: (details) =>
-              ref.read(canvasViewportProvider.notifier).setTransformation(viewportController.value),
+          onInteractionUpdate: (details) => ref
+              .read(canvasViewportProvider.notifier)
+              .setTransformation(viewportController.value),
+          onInteractionEnd: (details) => ref
+              .read(canvasViewportProvider.notifier)
+              .setTransformation(viewportController.value),
           child: CanvasCursorOverlay(
             child: Consumer(
               builder: (context, ref, child) {
@@ -248,9 +263,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                               selectedObjects: objects.selectedObjects,
                               draggedObjects: ref.watch(draggedObjectsProvider),
                               dragSelect: ref.watch(dragSelectRectProvider),
-                              arrowPrimedObjects: ref.watch(arrowPrimedObjectsProvider),
-                              arrowToolPrimedData: ref.watch(arrowToolPrimedObjectsProvider),
-                              textEditedObjId: ref.watch(canvasTextProvider).editingObjId,
+                              arrowPrimedObjects:
+                                  ref.watch(arrowPrimedObjectsProvider),
+                              arrowToolPrimedData:
+                                  ref.watch(arrowToolPrimedObjectsProvider),
+                              textEditedObjId:
+                                  ref.watch(canvasTextProvider).editingObjId,
                               usersCursors: usersCursors,
                               arrowPreview: arrowPreview,
                             );
@@ -281,7 +299,10 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                             ),
                           ),
                       ArrowWellsOverlay(
-                        scale: ref.read(canvasViewportProvider).value.getMaxScaleOnAxis(),
+                        scale: ref
+                            .read(canvasViewportProvider)
+                            .value
+                            .getMaxScaleOnAxis(),
                         showArrowWells: true,
                         transformationController: viewportController,
                         gestureRouter: _gestureRouter,
@@ -320,13 +341,18 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                       DragTarget<TreeNode>(
                         onWillAcceptWithDetails: (data) => true,
                         onAcceptWithDetails: (details) {
-                          final RenderBox renderBox = context.findRenderObject() as RenderBox;
-                          final canvasPosition = renderBox.globalToLocal(details.offset);
+                          final RenderBox renderBox =
+                              context.findRenderObject() as RenderBox;
+                          final canvasPosition =
+                              renderBox.globalToLocal(details.offset);
 
-                          final hitInteractionContext = _canvasPainter?.hitTestForDropEvent(canvasPosition);
-                          final hitObjectFill = hitInteractionContext is ObjectFillInteractionContext;
+                          final hitInteractionContext = _canvasPainter
+                              ?.hitTestForDropEvent(canvasPosition);
+                          final hitObjectFill = hitInteractionContext
+                              is ObjectFillInteractionContext;
 
-                          if (hitObjectFill || config.allowArtifactsOnBackground) {
+                          if (hitObjectFill ||
+                              config.allowArtifactsOnBackground) {
                             // Hit an object - create pin on the object
                             switch (config.artifactDisplay) {
                               case ArtifactCanvasDisplay.pin:
@@ -334,7 +360,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                                   ref: ref,
                                   position: canvasPosition,
                                   item: details.data.data,
-                                  targetObject: hitObjectFill ? hitInteractionContext.targetObject : null,
+                                  targetObject: hitObjectFill
+                                      ? hitInteractionContext.targetObject
+                                      : null,
                                 );
                                 break;
                               case ArtifactCanvasDisplay.object:
@@ -347,18 +375,23 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                             }
                           } else {
                             NarwhalToast.show(
-                              text: 'Cannot drop item pins on whiteboard canvas.',
+                              text:
+                                  'Cannot drop item pins on whiteboard canvas.',
                               type: ToastType.info,
                             );
                           }
                         },
-                        builder: (context, candidateData, rejectedData) => const SizedBox.expand(),
+                        builder: (context, candidateData, rejectedData) =>
+                            const SizedBox.expand(),
                       ),
                       DragTarget<Object>(
-                        onWillAcceptWithDetails: (data) => data.data is ImageDragData,
+                        onWillAcceptWithDetails: (data) =>
+                            data.data is ImageDragData,
                         onAcceptWithDetails: (details) {
-                          final RenderBox renderBox = context.findRenderObject() as RenderBox;
-                          final canvasPosition = renderBox.globalToLocal(details.offset);
+                          final RenderBox renderBox =
+                              context.findRenderObject() as RenderBox;
+                          final canvasPosition =
+                              renderBox.globalToLocal(details.offset);
                           if (details.data is ImageDragData) {
                             CanvasInteractionService.insertImage(
                               ref: ref,
@@ -367,23 +400,33 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                             );
                           }
                         },
-                        builder: (context, candidateData, rejectedData) => const SizedBox.expand(),
+                        builder: (context, candidateData, rejectedData) =>
+                            const SizedBox.expand(),
                       ),
                       DragTarget<DragOffBarData>(
                         onWillAcceptWithDetails: (data) => true,
                         onAcceptWithDetails: (details) {
-                          final RenderBox renderBox = context.findRenderObject() as RenderBox;
-                          final canvasPosition = renderBox.globalToLocal(details.offset);
+                          final RenderBox renderBox =
+                              context.findRenderObject() as RenderBox;
+                          final canvasPosition =
+                              renderBox.globalToLocal(details.offset);
 
                           // Handle rectangle drag and drop
                           if (details.data.type == ArtifactType.note) {
                             // Store the drop position
-                            ref.read(dragOffDropPositionProvider.notifier).state = canvasPosition;
+                            ref
+                                .read(dragOffDropPositionProvider.notifier)
+                                .state = canvasPosition;
                             // Open the search overlay
-                            ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).state = true;
+                            ref
+                                .read(canvasSettingsProvider(
+                                        Setting.showSearchOverlay)
+                                    .notifier)
+                                .state = true;
                           }
                         },
-                        builder: (context, candidateData, rejectedData) => const SizedBox.expand(),
+                        builder: (context, candidateData, rejectedData) =>
+                            const SizedBox.expand(),
                       ),
                     ],
                   ),
@@ -460,7 +503,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final comment = comments.firstWhereOrNull((c) => c.id == expandedItem.id);
     if (comment != null) {
       CanvasObject? obj = comment.pinnedObjectId != null
-          ? ref.read(canvasObjectsProvider.notifier).getObjectById(comment.pinnedObjectId!)
+          ? ref
+              .read(canvasObjectsProvider.notifier)
+              .getObjectById(comment.pinnedObjectId!)
           : null;
 
       return CanvasCommentPinExpanded(
@@ -484,7 +529,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     required List<CanvasObject> objects,
     required TransformationController transformationController,
   }) =>
-      comments.where((comment) => !comment.resolved).toList().map((comment) {
+      comments.map((comment) {
         CanvasObject? targetObject;
         if (comment.pinnedObjectId != null) {
           targetObject = objects.firstWhereOrNull(
@@ -518,7 +563,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         hitTestBehavior: HitTestBehavior.translucent,
         onDropOver: (event) {
           ref.read(isDragHoveringProvider.notifier).state = true;
-          return event.session.allowedOperations.firstOrNull ?? DropOperation.none;
+          return event.session.allowedOperations.firstOrNull ??
+              DropOperation.none;
         },
         onDropLeave: (event) {
           ref.read(isDragHoveringProvider.notifier).state = false;

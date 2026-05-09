@@ -2,7 +2,8 @@
 import 'dart:math' as math;
 import 'package:onyxia/presentation/screens/canvas/providers/providers.dart';
 
-const Size defaultArtifactObjectDimensions = Size(CanvasBounds.gridSpacing * 10, CanvasBounds.gridSpacing * 10);
+const Size defaultArtifactObjectDimensions =
+    Size(CanvasBounds.gridSpacing * 10, CanvasBounds.gridSpacing * 10);
 
 enum ResizeHandle {
   center,
@@ -153,7 +154,8 @@ class CanvasObject {
     );
   }
 
-  factory CanvasObject.fromJson(String jsonStr) => CanvasObject.fromMap(json.decode(jsonStr));
+  factory CanvasObject.fromJson(String jsonStr) =>
+      CanvasObject.fromMap(json.decode(jsonStr));
 
   String toJson() => json.encode(toMap());
 
@@ -207,7 +209,7 @@ class CanvasObject {
     // Top-level Postgres columns; repository injects `canvas_artifact_id`.
     return {
       'id': id,
-      'kind': type.value,
+      'type': type.value,
       'payload': payload,
     };
   }
@@ -219,18 +221,19 @@ class CanvasObject {
 
   factory CanvasObject.fromMap(Map<String, dynamic> map) {
     try {
-      final payload = (map['payload'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+      final payload = (map['payload'] as Map<String, dynamic>?) ??
+          const <String, dynamic>{};
 
       CanvasObjectType type = CanvasObjectType.rectangle;
       try {
-        type = CanvasObjectType.values.fromString(map['kind'] ?? 'Rectangle');
+        type = CanvasObjectType.values.fromString(map['type'] ?? '');
       } catch (e) {
         type = CanvasObjectType.rectangle;
       }
 
       StrokeType stroke = StrokeType.solid;
       try {
-        stroke = StrokeType.values.fromString(payload['stroke'] ?? 'solid');
+        stroke = StrokeType.values.fromString(payload['stroke'] ?? '');
       } catch (e) {
         stroke = StrokeType.solid;
       }
@@ -271,7 +274,8 @@ class CanvasObject {
         bottomRight = Offset.zero;
       }
 
-      final String content = payload['content'] is String ? payload['content'] as String : '';
+      final String content =
+          payload['content'] is String ? payload['content'] as String : '';
 
       return CanvasObject(
         id: map['id'] ?? '',
@@ -283,16 +287,20 @@ class CanvasObject {
         topLeft: topLeft,
         bottomRight: bottomRight,
         content: content,
-        arrowProperties: type == CanvasObjectType.arrow && payload['arrowProps'] != null
-            ? ArrowProperties.fromMap(payload['arrowProps'])
-            : null,
-        imageProperties: type == CanvasObjectType.image && payload['imageProps'] != null
-            ? ImageProperties.fromMap(payload['imageProps'])
-            : null,
-        brushProperties: type == CanvasObjectType.brush && payload['brushProps'] != null
-            ? BrushProperties.fromMap(payload['brushProps'])
-            : null,
-        artifactProperties: type == CanvasObjectType.artifact && payload['artifactProps'] != null
+        arrowProperties:
+            type == CanvasObjectType.arrow && payload['arrowProps'] != null
+                ? ArrowProperties.fromMap(payload['arrowProps'])
+                : null,
+        imageProperties:
+            type == CanvasObjectType.image && payload['imageProps'] != null
+                ? ImageProperties.fromMap(payload['imageProps'])
+                : null,
+        brushProperties:
+            type == CanvasObjectType.brush && payload['brushProps'] != null
+                ? BrushProperties.fromMap(payload['brushProps'])
+                : null,
+        artifactProperties: type == CanvasObjectType.artifact &&
+                payload['artifactProps'] != null
             ? ArtifactProperties.fromMap(payload['artifactProps'])
             : null,
       );
@@ -434,7 +442,10 @@ class CanvasObject {
               ) +
               margin;
 
-          if (point.dx < minX || point.dx > maxX || point.dy < minY || point.dy > maxY) {
+          if (point.dx < minX ||
+              point.dx > maxX ||
+              point.dy < minY ||
+              point.dy > maxY) {
             return false;
           }
 
@@ -472,7 +483,8 @@ class CanvasObject {
 
             if (l2 > 0) {
               // Calculate projection of point onto line segment
-              final t = math.max(0, math.min(1, (point - p1).dot(p2 - p1) / l2));
+              final t =
+                  math.max(0, math.min(1, (point - p1).dot(p2 - p1) / l2));
               final double tValue = t.toDouble();
               final proj = p1 + (p2 - p1) * tValue;
               final distance = (point - proj).distance;
@@ -538,8 +550,12 @@ class CanvasObject {
     final distanceToRight = (bottomRight.dx - position.dx).abs();
 
     // Find the minimum distance and corresponding edge
-    final minDistance =
-        [distanceToTop, distanceToBottom, distanceToLeft, distanceToRight].reduce((a, b) => a < b ? a : b);
+    final minDistance = [
+      distanceToTop,
+      distanceToBottom,
+      distanceToLeft,
+      distanceToRight
+    ].reduce((a, b) => a < b ? a : b);
 
     ConnectionPoint nearestEdge;
     Offset boundaryPoint;
@@ -582,17 +598,34 @@ class CanvasObject {
     final distToBottomLeft = _distanceToLineSegment(position, bottom, left);
     final distToLeftTop = _distanceToLineSegment(position, left, top);
 
-    final distances = [distToTopRight, distToRightBottom, distToBottomLeft, distToLeftTop];
+    final distances = [
+      distToTopRight,
+      distToRightBottom,
+      distToBottomLeft,
+      distToLeftTop
+    ];
     final minDistance = distances.reduce((a, b) => a < b ? a : b);
 
     if (minDistance == distToTopRight) {
-      return (ConnectionPoint.top, _projectOntoLineSegment(position, top, right));
+      return (
+        ConnectionPoint.top,
+        _projectOntoLineSegment(position, top, right)
+      );
     } else if (minDistance == distToRightBottom) {
-      return (ConnectionPoint.right, _projectOntoLineSegment(position, right, bottom));
+      return (
+        ConnectionPoint.right,
+        _projectOntoLineSegment(position, right, bottom)
+      );
     } else if (minDistance == distToBottomLeft) {
-      return (ConnectionPoint.bottom, _projectOntoLineSegment(position, bottom, left));
+      return (
+        ConnectionPoint.bottom,
+        _projectOntoLineSegment(position, bottom, left)
+      );
     } else {
-      return (ConnectionPoint.left, _projectOntoLineSegment(position, left, top));
+      return (
+        ConnectionPoint.left,
+        _projectOntoLineSegment(position, left, top)
+      );
     }
   }
 
@@ -653,7 +686,8 @@ class CanvasObject {
       final bottomSemicircleTop = rect.bottom - effectiveRadius;
 
       // Determine which region the position is in
-      if (position.dy >= topSemicircleBottom && position.dy <= bottomSemicircleTop) {
+      if (position.dy >= topSemicircleBottom &&
+          position.dy <= bottomSemicircleTop) {
         // Position is in the straight edge region (between the two semicircles)
         if (position.dx < center.dx) {
           return (ConnectionPoint.left, Offset(rect.left, position.dy));
@@ -662,8 +696,11 @@ class CanvasObject {
         }
       } else if (position.dy < topSemicircleBottom) {
         // Position is in top semicircle region - split quarter-circles between top and side edges
-        final projectedPoint =
-            _projectOntoSemicircle(position, Offset(center.dx, rect.top + effectiveRadius), effectiveRadius, true);
+        final projectedPoint = _projectOntoSemicircle(
+            position,
+            Offset(center.dx, rect.top + effectiveRadius),
+            effectiveRadius,
+            true);
 
         // Determine which edge this quarter-circle belongs to based on angle
         final dx = projectedPoint.dx - center.dx;
@@ -683,8 +720,11 @@ class CanvasObject {
         }
       } else {
         // Position is in bottom semicircle region - split quarter-circles between bottom and side edges
-        final projectedPoint =
-            _projectOntoSemicircle(position, Offset(center.dx, rect.bottom - effectiveRadius), effectiveRadius, false);
+        final projectedPoint = _projectOntoSemicircle(
+            position,
+            Offset(center.dx, rect.bottom - effectiveRadius),
+            effectiveRadius,
+            false);
 
         // Determine which edge this quarter-circle belongs to based on angle
         final dx = projectedPoint.dx - center.dx;
@@ -710,7 +750,8 @@ class CanvasObject {
       final rightSemicircleLeft = rect.right - effectiveRadius;
 
       // Determine which region the position is in
-      if (position.dx >= leftSemicircleRight && position.dx <= rightSemicircleLeft) {
+      if (position.dx >= leftSemicircleRight &&
+          position.dx <= rightSemicircleLeft) {
         // Position is in the straight edge region (between the two semicircles)
         if (position.dy < center.dy) {
           return (ConnectionPoint.top, Offset(position.dx, rect.top));
@@ -720,7 +761,10 @@ class CanvasObject {
       } else if (position.dx < leftSemicircleRight) {
         // Position is in left semicircle region - split quarter-circles between left and top/bottom edges
         final projectedPoint = _projectOntoSemicircle(
-            position, Offset(rect.left + effectiveRadius, center.dy), effectiveRadius, true,
+            position,
+            Offset(rect.left + effectiveRadius, center.dy),
+            effectiveRadius,
+            true,
             isVertical: true);
 
         // Determine which edge this quarter-circle belongs to based on angle
@@ -742,7 +786,10 @@ class CanvasObject {
       } else {
         // Position is in right semicircle region - split quarter-circles between right and top/bottom edges
         final projectedPoint = _projectOntoSemicircle(
-            position, Offset(rect.right - effectiveRadius, center.dy), effectiveRadius, false,
+            position,
+            Offset(rect.right - effectiveRadius, center.dy),
+            effectiveRadius,
+            false,
             isVertical: true);
 
         // Determine which edge this quarter-circle belongs to based on angle
@@ -786,13 +833,25 @@ class CanvasObject {
     final minDistance = distances.reduce((a, b) => a < b ? a : b);
 
     if (minDistance == distToTop) {
-      return (ConnectionPoint.top, _projectOntoLineSegment(position, topL, topR));
+      return (
+        ConnectionPoint.top,
+        _projectOntoLineSegment(position, topL, topR)
+      );
     } else if (minDistance == distToRight) {
-      return (ConnectionPoint.right, _projectOntoLineSegment(position, topR, bottomR));
+      return (
+        ConnectionPoint.right,
+        _projectOntoLineSegment(position, topR, bottomR)
+      );
     } else if (minDistance == distToBottom) {
-      return (ConnectionPoint.bottom, _projectOntoLineSegment(position, bottomR, bottomL));
+      return (
+        ConnectionPoint.bottom,
+        _projectOntoLineSegment(position, bottomR, bottomL)
+      );
     } else {
-      return (ConnectionPoint.left, _projectOntoLineSegment(position, bottomL, topL));
+      return (
+        ConnectionPoint.left,
+        _projectOntoLineSegment(position, bottomL, topL)
+      );
     }
   }
 
@@ -817,13 +876,25 @@ class CanvasObject {
     final minDistance = distances.reduce((a, b) => a < b ? a : b);
 
     if (minDistance == distToTop) {
-      return (ConnectionPoint.top, _projectOntoLineSegment(position, topL, topR));
+      return (
+        ConnectionPoint.top,
+        _projectOntoLineSegment(position, topL, topR)
+      );
     } else if (minDistance == distToRight) {
-      return (ConnectionPoint.right, _projectOntoLineSegment(position, topR, bottomR));
+      return (
+        ConnectionPoint.right,
+        _projectOntoLineSegment(position, topR, bottomR)
+      );
     } else if (minDistance == distToBottom) {
-      return (ConnectionPoint.bottom, _projectOntoLineSegment(position, bottomR, bottomL));
+      return (
+        ConnectionPoint.bottom,
+        _projectOntoLineSegment(position, bottomR, bottomL)
+      );
     } else {
-      return (ConnectionPoint.left, _projectOntoLineSegment(position, bottomL, topL));
+      return (
+        ConnectionPoint.left,
+        _projectOntoLineSegment(position, bottomL, topL)
+      );
     }
   }
 
@@ -831,7 +902,8 @@ class CanvasObject {
   (ConnectionPoint, Offset) _findNearestHouseOffset(Offset position) {
     final rect = Rect.fromPoints(topLeft, bottomRight);
     final roofHeight = rect.height * 0.4;
-    final houseRect = Rect.fromLTWH(rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
+    final houseRect = Rect.fromLTWH(
+        rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
 
     // House vertices
     final roofPeak = Offset(rect.center.dx, rect.top);
@@ -841,13 +913,24 @@ class CanvasObject {
     final houseBottomRight = Offset(houseRect.right, houseRect.bottom);
 
     // Calculate distances to each edge
-    final distToLeftRoof = _distanceToLineSegment(position, roofBottomLeft, roofPeak);
-    final distToRightRoof = _distanceToLineSegment(position, roofPeak, roofBottomRight);
-    final distToLeftWall = _distanceToLineSegment(position, roofBottomLeft, houseBottomLeft);
-    final distToRightWall = _distanceToLineSegment(position, roofBottomRight, houseBottomRight);
-    final distToBottom = _distanceToLineSegment(position, houseBottomLeft, houseBottomRight);
+    final distToLeftRoof =
+        _distanceToLineSegment(position, roofBottomLeft, roofPeak);
+    final distToRightRoof =
+        _distanceToLineSegment(position, roofPeak, roofBottomRight);
+    final distToLeftWall =
+        _distanceToLineSegment(position, roofBottomLeft, houseBottomLeft);
+    final distToRightWall =
+        _distanceToLineSegment(position, roofBottomRight, houseBottomRight);
+    final distToBottom =
+        _distanceToLineSegment(position, houseBottomLeft, houseBottomRight);
 
-    final distances = [distToLeftRoof, distToRightRoof, distToLeftWall, distToRightWall, distToBottom];
+    final distances = [
+      distToLeftRoof,
+      distToRightRoof,
+      distToLeftWall,
+      distToRightWall,
+      distToBottom
+    ];
     final minDistance = distances.reduce((a, b) => a < b ? a : b);
 
     // Check if position is near the roof peak (within radius for better UX)
@@ -855,7 +938,8 @@ class CanvasObject {
     final distanceToPeak = (position - roofPeak).distance;
 
     if (minDistance == distToLeftRoof) {
-      final projectedPoint = _projectOntoLineSegment(position, roofBottomLeft, roofPeak);
+      final projectedPoint =
+          _projectOntoLineSegment(position, roofBottomLeft, roofPeak);
       // If close to peak, snap to peak; otherwise use projected point on diagonal
       if (distanceToPeak <= peakRadius) {
         return (ConnectionPoint.top, roofPeak);
@@ -863,7 +947,8 @@ class CanvasObject {
         return (ConnectionPoint.left, projectedPoint);
       }
     } else if (minDistance == distToRightRoof) {
-      final projectedPoint = _projectOntoLineSegment(position, roofPeak, roofBottomRight);
+      final projectedPoint =
+          _projectOntoLineSegment(position, roofPeak, roofBottomRight);
       // If close to peak, snap to peak; otherwise use projected point on diagonal
       if (distanceToPeak <= peakRadius) {
         return (ConnectionPoint.top, roofPeak);
@@ -871,11 +956,20 @@ class CanvasObject {
         return (ConnectionPoint.right, projectedPoint);
       }
     } else if (minDistance == distToLeftWall) {
-      return (ConnectionPoint.left, _projectOntoLineSegment(position, roofBottomLeft, houseBottomLeft));
+      return (
+        ConnectionPoint.left,
+        _projectOntoLineSegment(position, roofBottomLeft, houseBottomLeft)
+      );
     } else if (minDistance == distToRightWall) {
-      return (ConnectionPoint.right, _projectOntoLineSegment(position, roofBottomRight, houseBottomRight));
+      return (
+        ConnectionPoint.right,
+        _projectOntoLineSegment(position, roofBottomRight, houseBottomRight)
+      );
     } else {
-      return (ConnectionPoint.bottom, _projectOntoLineSegment(position, houseBottomLeft, houseBottomRight));
+      return (
+        ConnectionPoint.bottom,
+        _projectOntoLineSegment(position, houseBottomLeft, houseBottomRight)
+      );
     }
   }
 
@@ -883,7 +977,8 @@ class CanvasObject {
   (ConnectionPoint, Offset) _findNearestReverseHouseOffset(Offset position) {
     final rect = Rect.fromPoints(topLeft, bottomRight);
     final roofHeight = rect.height * 0.4;
-    final houseRect = Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height - roofHeight);
+    final houseRect = Rect.fromLTWH(
+        rect.left, rect.top, rect.width, rect.height - roofHeight);
 
     // Reverse house vertices
     final houseTopLeft = Offset(houseRect.left, houseRect.top);
@@ -893,13 +988,24 @@ class CanvasObject {
     final roofPeak = Offset(rect.center.dx, rect.bottom);
 
     // Calculate distances to each edge
-    final distToTop = _distanceToLineSegment(position, houseTopLeft, houseTopRight);
-    final distToLeftWall = _distanceToLineSegment(position, houseTopLeft, roofTopLeft);
-    final distToRightWall = _distanceToLineSegment(position, houseTopRight, roofTopRight);
-    final distToLeftRoof = _distanceToLineSegment(position, roofTopLeft, roofPeak);
-    final distToRightRoof = _distanceToLineSegment(position, roofPeak, roofTopRight);
+    final distToTop =
+        _distanceToLineSegment(position, houseTopLeft, houseTopRight);
+    final distToLeftWall =
+        _distanceToLineSegment(position, houseTopLeft, roofTopLeft);
+    final distToRightWall =
+        _distanceToLineSegment(position, houseTopRight, roofTopRight);
+    final distToLeftRoof =
+        _distanceToLineSegment(position, roofTopLeft, roofPeak);
+    final distToRightRoof =
+        _distanceToLineSegment(position, roofPeak, roofTopRight);
 
-    final distances = [distToTop, distToLeftWall, distToRightWall, distToLeftRoof, distToRightRoof];
+    final distances = [
+      distToTop,
+      distToLeftWall,
+      distToRightWall,
+      distToLeftRoof,
+      distToRightRoof
+    ];
     final minDistance = distances.reduce((a, b) => a < b ? a : b);
 
     // Check if position is near the roof peak (within radius for better UX)
@@ -907,13 +1013,23 @@ class CanvasObject {
     final distanceToPeak = (position - roofPeak).distance;
 
     if (minDistance == distToTop) {
-      return (ConnectionPoint.top, _projectOntoLineSegment(position, houseTopLeft, houseTopRight));
+      return (
+        ConnectionPoint.top,
+        _projectOntoLineSegment(position, houseTopLeft, houseTopRight)
+      );
     } else if (minDistance == distToLeftWall) {
-      return (ConnectionPoint.left, _projectOntoLineSegment(position, houseTopLeft, roofTopLeft));
+      return (
+        ConnectionPoint.left,
+        _projectOntoLineSegment(position, houseTopLeft, roofTopLeft)
+      );
     } else if (minDistance == distToRightWall) {
-      return (ConnectionPoint.right, _projectOntoLineSegment(position, houseTopRight, roofTopRight));
+      return (
+        ConnectionPoint.right,
+        _projectOntoLineSegment(position, houseTopRight, roofTopRight)
+      );
     } else if (minDistance == distToLeftRoof) {
-      final projectedPoint = _projectOntoLineSegment(position, roofTopLeft, roofPeak);
+      final projectedPoint =
+          _projectOntoLineSegment(position, roofTopLeft, roofPeak);
       // If close to peak, snap to peak; otherwise use projected point on diagonal
       if (distanceToPeak <= peakRadius) {
         return (ConnectionPoint.bottom, roofPeak);
@@ -921,7 +1037,8 @@ class CanvasObject {
         return (ConnectionPoint.left, projectedPoint);
       }
     } else {
-      final projectedPoint = _projectOntoLineSegment(position, roofPeak, roofTopRight);
+      final projectedPoint =
+          _projectOntoLineSegment(position, roofPeak, roofTopRight);
       // If close to peak, snap to peak; otherwise use projected point on diagonal
       if (distanceToPeak <= peakRadius) {
         return (ConnectionPoint.bottom, roofPeak);
@@ -987,26 +1104,31 @@ class CanvasObject {
   }
 
   /// Helper method to calculate distance from point to line segment
-  double _distanceToLineSegment(Offset point, Offset lineStart, Offset lineEnd) {
+  double _distanceToLineSegment(
+      Offset point, Offset lineStart, Offset lineEnd) {
     final lineLength = (lineEnd - lineStart).distanceSquared;
     if (lineLength == 0) return (point - lineStart).distance;
 
-    final t = math.max(0, math.min(1, (point - lineStart).dot(lineEnd - lineStart) / lineLength));
+    final t = math.max(0,
+        math.min(1, (point - lineStart).dot(lineEnd - lineStart) / lineLength));
     final projection = lineStart + (lineEnd - lineStart) * t.toDouble();
     return (point - projection).distance;
   }
 
   /// Helper method to project point onto line segment
-  Offset _projectOntoLineSegment(Offset point, Offset lineStart, Offset lineEnd) {
+  Offset _projectOntoLineSegment(
+      Offset point, Offset lineStart, Offset lineEnd) {
     final lineLength = (lineEnd - lineStart).distanceSquared;
     if (lineLength == 0) return lineStart;
 
-    final t = math.max(0, math.min(1, (point - lineStart).dot(lineEnd - lineStart) / lineLength));
+    final t = math.max(0,
+        math.min(1, (point - lineStart).dot(lineEnd - lineStart) / lineLength));
     return lineStart + (lineEnd - lineStart) * t.toDouble();
   }
 
   /// Helper method to project point onto semicircle
-  Offset _projectOntoSemicircle(Offset point, Offset semicircleCenter, double radius, bool isTop,
+  Offset _projectOntoSemicircle(
+      Offset point, Offset semicircleCenter, double radius, bool isTop,
       {bool isVertical = false}) {
     final dx = point.dx - semicircleCenter.dx;
     final dy = point.dy - semicircleCenter.dy;
@@ -1022,30 +1144,42 @@ class CanvasObject {
       if (isTop) {
         // Left semicircle - constrain to left half
         final constrainedX = normalizedX <= 0 ? normalizedX : 0;
-        final length = math.sqrt(constrainedX * constrainedX + normalizedY * normalizedY);
+        final length =
+            math.sqrt(constrainedX * constrainedX + normalizedY * normalizedY);
         if (length == 0) return semicircleCenter + Offset(-radius, 0);
-        return semicircleCenter + Offset((constrainedX / length) * radius, (normalizedY / length) * radius);
+        return semicircleCenter +
+            Offset((constrainedX / length) * radius,
+                (normalizedY / length) * radius);
       } else {
         // Right semicircle - constrain to right half
         final constrainedX = normalizedX >= 0 ? normalizedX : 0;
-        final length = math.sqrt(constrainedX * constrainedX + normalizedY * normalizedY);
+        final length =
+            math.sqrt(constrainedX * constrainedX + normalizedY * normalizedY);
         if (length == 0) return semicircleCenter + Offset(radius, 0);
-        return semicircleCenter + Offset((constrainedX / length) * radius, (normalizedY / length) * radius);
+        return semicircleCenter +
+            Offset((constrainedX / length) * radius,
+                (normalizedY / length) * radius);
       }
     } else {
       // For horizontal semicircles, constrain to appropriate half
       if (isTop) {
         // Top semicircle - constrain to top half
         final constrainedY = normalizedY <= 0 ? normalizedY : 0;
-        final length = math.sqrt(normalizedX * normalizedX + constrainedY * constrainedY);
+        final length =
+            math.sqrt(normalizedX * normalizedX + constrainedY * constrainedY);
         if (length == 0) return semicircleCenter + Offset(0, -radius);
-        return semicircleCenter + Offset((normalizedX / length) * radius, (constrainedY / length) * radius);
+        return semicircleCenter +
+            Offset((normalizedX / length) * radius,
+                (constrainedY / length) * radius);
       } else {
         // Bottom semicircle - constrain to bottom half
         final constrainedY = normalizedY >= 0 ? normalizedY : 0;
-        final length = math.sqrt(normalizedX * normalizedX + constrainedY * constrainedY);
+        final length =
+            math.sqrt(normalizedX * normalizedX + constrainedY * constrainedY);
         if (length == 0) return semicircleCenter + Offset(0, radius);
-        return semicircleCenter + Offset((normalizedX / length) * radius, (constrainedY / length) * radius);
+        return semicircleCenter +
+            Offset((normalizedX / length) * radius,
+                (constrainedY / length) * radius);
       }
     }
   }
@@ -1069,56 +1203,71 @@ class CanvasObject {
 
       bool isFirstSegment = arrowKeypointIndex == 0;
       bool isLastSegment = arrowKeypointIndex == newKeypoints.length - 2;
-      bool isHorizontal = newKeypoints[arrowKeypointIndex].dy - newKeypoints[arrowKeypointIndex + 1].dy == 0;
+      bool isHorizontal = newKeypoints[arrowKeypointIndex].dy -
+              newKeypoints[arrowKeypointIndex + 1].dy ==
+          0;
 
       // only allows orthogonal movement depending on segment orientation
-      Offset appliedDelta = isHorizontal ? Offset(0, delta.dy) : Offset(delta.dx, 0);
+      Offset appliedDelta =
+          isHorizontal ? Offset(0, delta.dy) : Offset(delta.dx, 0);
 
       if (newKeypoints.length == 2) {
         // straight line (one segment)
-        final midpoint1 = _getOffsetBetween(newKeypoints[0], newKeypoints[1], minSegmentLength);
-        final midpoint2 = _getOffsetBetween(newKeypoints[1], newKeypoints[0], minSegmentLength);
+        final midpoint1 = _getOffsetBetween(
+            newKeypoints[0], newKeypoints[1], minSegmentLength);
+        final midpoint2 = _getOffsetBetween(
+            newKeypoints[1], newKeypoints[0], minSegmentLength);
         newKeypoints.insert(1, midpoint2);
         newKeypoints.insert(1, midpoint2);
         newKeypoints.insert(1, midpoint1);
         newKeypoints.insert(1, midpoint1);
 
         // Apply delta and clamp to canvas bounds
-        newKeypoints[2] = canvasBoundsNotifier.clamp(newKeypoints[2] + appliedDelta);
-        newKeypoints[3] = canvasBoundsNotifier.clamp(newKeypoints[3] + appliedDelta);
+        newKeypoints[2] =
+            canvasBoundsNotifier.clamp(newKeypoints[2] + appliedDelta);
+        newKeypoints[3] =
+            canvasBoundsNotifier.clamp(newKeypoints[3] + appliedDelta);
       } else if (isFirstSegment || isLastSegment) {
-        double segmentLength = (newKeypoints[arrowKeypointIndex + 1] - newKeypoints[arrowKeypointIndex]).distance;
+        double segmentLength = (newKeypoints[arrowKeypointIndex + 1] -
+                newKeypoints[arrowKeypointIndex])
+            .distance;
 
         // Only allow creating new segments if the current one is longer than minimum
         if (segmentLength > minSegmentLength) {
           if (isFirstSegment) {
-            final newKeypoint = _getOffsetBetween(newKeypoints[0], newKeypoints[1], minSegmentLength);
+            final newKeypoint = _getOffsetBetween(
+                newKeypoints[0], newKeypoints[1], minSegmentLength);
 
             newKeypoints.insert(1, newKeypoint);
             newKeypoints.insert(1, newKeypoint);
 
             // Apply delta and clamp to canvas bounds
-            newKeypoints[2] = canvasBoundsNotifier.clamp(newKeypoints[2] + appliedDelta);
-            newKeypoints[3] = canvasBoundsNotifier.clamp(newKeypoints[3] + appliedDelta);
+            newKeypoints[2] =
+                canvasBoundsNotifier.clamp(newKeypoints[2] + appliedDelta);
+            newKeypoints[3] =
+                canvasBoundsNotifier.clamp(newKeypoints[3] + appliedDelta);
           } else if (isLastSegment) {
             final newKeypoint = _getOffsetBetween(
-                newKeypoints[newKeypoints.length - 1], newKeypoints[newKeypoints.length - 2], minSegmentLength);
+                newKeypoints[newKeypoints.length - 1],
+                newKeypoints[newKeypoints.length - 2],
+                minSegmentLength);
 
             newKeypoints.insert(newKeypoints.length - 1, newKeypoint);
             newKeypoints.insert(newKeypoints.length - 1, newKeypoint);
 
             // Apply delta and clamp to canvas bounds
-            newKeypoints[newKeypoints.length - 3] =
-                canvasBoundsNotifier.clamp(newKeypoints[newKeypoints.length - 3] + appliedDelta);
-            newKeypoints[newKeypoints.length - 4] =
-                canvasBoundsNotifier.clamp(newKeypoints[newKeypoints.length - 4] + appliedDelta);
+            newKeypoints[newKeypoints.length - 3] = canvasBoundsNotifier
+                .clamp(newKeypoints[newKeypoints.length - 3] + appliedDelta);
+            newKeypoints[newKeypoints.length - 4] = canvasBoundsNotifier
+                .clamp(newKeypoints[newKeypoints.length - 4] + appliedDelta);
           }
         }
       } else {
         // Apply delta and clamp to canvas bounds
-        newKeypoints[arrowKeypointIndex] = canvasBoundsNotifier.clamp(newKeypoints[arrowKeypointIndex] + appliedDelta);
-        newKeypoints[arrowKeypointIndex + 1] =
-            canvasBoundsNotifier.clamp(newKeypoints[arrowKeypointIndex + 1] + appliedDelta);
+        newKeypoints[arrowKeypointIndex] = canvasBoundsNotifier
+            .clamp(newKeypoints[arrowKeypointIndex] + appliedDelta);
+        newKeypoints[arrowKeypointIndex + 1] = canvasBoundsNotifier
+            .clamp(newKeypoints[arrowKeypointIndex + 1] + appliedDelta);
       }
 
       // Ensure all keypoints are within canvas bounds
@@ -1236,11 +1385,15 @@ class CanvasObject {
       newTopLeft = canvasBoundsNotifier.clamp(newTopLeft);
       newBottomRight = canvasBoundsNotifier.clamp(newBottomRight);
 
-      if (topLeft != newTopLeft && snapToGrid && type != CanvasObjectType.image) {
+      if (topLeft != newTopLeft &&
+          snapToGrid &&
+          type != CanvasObjectType.image) {
         newTopLeft = canvasBoundsNotifier.snap(newTopLeft);
       }
 
-      if (bottomRight != newBottomRight && snapToGrid && type != CanvasObjectType.image) {
+      if (bottomRight != newBottomRight &&
+          snapToGrid &&
+          type != CanvasObjectType.image) {
         newBottomRight = canvasBoundsNotifier.snap(newBottomRight);
       }
 
@@ -1257,12 +1410,14 @@ class CanvasObject {
         newBottomRight = Offset(newBottomRight.dx, temp);
       }
 
-      if ((newTopLeft.dx - newBottomRight.dx).abs() < CanvasBounds.gridSpacing) {
+      if ((newTopLeft.dx - newBottomRight.dx).abs() <
+          CanvasBounds.gridSpacing) {
         newTopLeft = Offset(topLeft.dx, newTopLeft.dy);
         newBottomRight = Offset(bottomRight.dx, newBottomRight.dy);
       }
 
-      if ((newTopLeft.dy - newBottomRight.dy).abs() < CanvasBounds.gridSpacing) {
+      if ((newTopLeft.dy - newBottomRight.dy).abs() <
+          CanvasBounds.gridSpacing) {
         newTopLeft = Offset(newTopLeft.dx, topLeft.dy);
         newBottomRight = Offset(newBottomRight.dx, bottomRight.dy);
       }
@@ -1290,7 +1445,9 @@ class CanvasObject {
       }
       return true;
     } else {
-      Offset newTopLeft = snapToGrid ? canvasBoundsNotifier.snap(topLeft + delta) : topLeft + delta;
+      Offset newTopLeft = snapToGrid
+          ? canvasBoundsNotifier.snap(topLeft + delta)
+          : topLeft + delta;
       Offset newBottomRight = bottomRight + delta;
 
       return canvasBoundsNotifier.clamp(newTopLeft) == newTopLeft &&
@@ -1305,7 +1462,9 @@ class CanvasObject {
     final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
     final bounds = canvasBoundsNotifier.bounds;
 
-    Offset newTopLeft = snapToGrid ? canvasBoundsNotifier.snap(topLeft + delta) : topLeft + delta;
+    Offset newTopLeft = snapToGrid
+        ? canvasBoundsNotifier.snap(topLeft + delta)
+        : topLeft + delta;
     Offset newBottomRight = bottomRight + delta;
 
     return {
@@ -1323,15 +1482,19 @@ class CanvasObject {
     if (!canMove(ref, delta)) return false;
 
     if (isArrow) {
-      arrowProps.points =
-          arrowProps.points.map((p) => snapToGrid ? canvasBoundsNotifier.snap(p + delta) : p + delta).toList();
+      arrowProps.points = arrowProps.points
+          .map((p) =>
+              snapToGrid ? canvasBoundsNotifier.snap(p + delta) : p + delta)
+          .toList();
       return true;
     } else if (isBrush) {
       brushProps.points = brushProps.points.map((p) => p + delta).toList();
       _updateBoundingRect();
       return true;
     } else {
-      topLeft = snapToGrid ? canvasBoundsNotifier.snap(topLeft + delta) : topLeft + delta;
+      topLeft = snapToGrid
+          ? canvasBoundsNotifier.snap(topLeft + delta)
+          : topLeft + delta;
       bottomRight = bottomRight + delta;
     }
     return true;
@@ -1419,7 +1582,8 @@ class CanvasObject {
         if ((rect.width - rect.height).abs() <= CanvasBounds.gridSpacing) {
           // For a perfect circle, inner rect is a square with corners at quarter-circle centers
           final radius = math.min(rect.width, rect.height) / 2;
-          final innerSize = radius * math.sqrt(2); // Distance from center to quarter-circle center
+          final innerSize = radius *
+              math.sqrt(2); // Distance from center to quarter-circle center
           return Rect.fromCenter(
             center: center,
             width: innerSize,
@@ -1439,7 +1603,8 @@ class CanvasObject {
           final innerLeft = center.dx - quarterCircleOffset;
           final innerRight = center.dx + quarterCircleOffset;
           final innerTop = rect.top + effectiveRadius - quarterCircleOffset;
-          final innerBottom = rect.bottom - effectiveRadius + quarterCircleOffset;
+          final innerBottom =
+              rect.bottom - effectiveRadius + quarterCircleOffset;
 
           return Rect.fromLTRB(innerLeft, innerTop, innerRight, innerBottom);
         } else {
@@ -1557,35 +1722,42 @@ class CanvasObject {
 
 extension GenericCanvasObjectExtension on CanvasObject {
   bool get isGeneric =>
-      type != CanvasObjectType.arrow && type != CanvasObjectType.image && type != CanvasObjectType.brush;
+      type != CanvasObjectType.arrow &&
+      type != CanvasObjectType.image &&
+      type != CanvasObjectType.brush;
 }
 
 extension ArrowCanvasObjectExtension on CanvasObject {
   bool get isArrow => type == CanvasObjectType.arrow;
   ArrowProperties get arrow => arrowProps;
 
-  CanvasObject getStartObject(WidgetRef ref) => ref.read(canvasObjectsProvider).objects.firstWhere(
-        (e) => e.id == arrowProps.startObjectId,
-        orElse: () => CanvasObject.initial(),
-      );
+  CanvasObject getStartObject(WidgetRef ref) =>
+      ref.read(canvasObjectsProvider).objects.firstWhere(
+            (e) => e.id == arrowProps.startObjectId,
+            orElse: () => CanvasObject.initial(),
+          );
 
-  CanvasObject getEndObject(WidgetRef ref) => ref.read(canvasObjectsProvider).objects.firstWhere(
-        (e) => e.id == arrowProps.endObjectId,
-        orElse: () => CanvasObject.initial(),
-      );
+  CanvasObject getEndObject(WidgetRef ref) =>
+      ref.read(canvasObjectsProvider).objects.firstWhere(
+            (e) => e.id == arrowProps.endObjectId,
+            orElse: () => CanvasObject.initial(),
+          );
 
   Offset getStartOffset(WidgetRef ref, {CanvasObject? startObject}) {
     final startObj = startObject ?? getStartObject(ref);
-    return (startObj.id.isEmpty || arrowProps.startPoint == ConnectionPoint.none)
+    return (startObj.id.isEmpty ||
+            arrowProps.startPoint == ConnectionPoint.none)
         ? arrowProps.startAbsoluteOffset!
-        : arrowProps.startPoint.getOffset(startObj) + (arrowProps.startRelativeOffset ?? Offset.zero);
+        : arrowProps.startPoint.getOffset(startObj) +
+            (arrowProps.startRelativeOffset ?? Offset.zero);
   }
 
   Offset getEndOffset(WidgetRef ref, {CanvasObject? endObject}) {
     final endObj = endObject ?? getEndObject(ref);
     return (endObj.id.isEmpty || arrowProps.endPoint == ConnectionPoint.none)
         ? arrowProps.endAbsoluteOffset!
-        : arrowProps.endPoint.getOffset(endObj) + (arrowProps.endRelativeOffset ?? Offset.zero);
+        : arrowProps.endPoint.getOffset(endObj) +
+            (arrowProps.endRelativeOffset ?? Offset.zero);
   }
 
   /// Updates the arrow's topLeft and bottomRight values based on its points
@@ -1630,7 +1802,8 @@ extension ArrowCanvasObjectExtension on CanvasObject {
       arrowProps.points = arrowProps.points.reversed.toList();
     }
 
-    arrowProps.curvedMidpoint = arrowProps.points.isEmpty ? curveOffset(0.0) : curveOffset(0.5);
+    arrowProps.curvedMidpoint =
+        arrowProps.points.isEmpty ? curveOffset(0.0) : curveOffset(0.5);
 
     _updateBoundingRect();
   }
@@ -1643,10 +1816,13 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   ) {
     final snapToGrid = ref.read(canvasSettingsProvider(Setting.snapToGrid));
     final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
-    if (endObj.id.isEmpty || endObj.id == arrowProps.startObjectId || startObj.isPointInObject(position)) {
+    if (endObj.id.isEmpty ||
+        endObj.id == arrowProps.startObjectId ||
+        startObj.isPointInObject(position)) {
       arrowProps.endObjectId = null;
       arrowProps.endPoint = ConnectionPoint.none;
-      arrowProps.endAbsoluteOffset = snapToGrid ? canvasBoundsNotifier.snap(position) : position;
+      arrowProps.endAbsoluteOffset =
+          snapToGrid ? canvasBoundsNotifier.snap(position) : position;
     } else {
       final nearestPoint = endObj.findNearestBoundOffset(position);
 
@@ -1655,9 +1831,11 @@ extension ArrowCanvasObjectExtension on CanvasObject {
       arrowProps.endAbsoluteOffset = nearestPoint.$2;
 
       final connectionPointOffset = arrowProps.endPoint.getOffset(endObj);
-      arrowProps.endRelativeOffset = arrowProps.endAbsoluteOffset! - connectionPointOffset;
+      arrowProps.endRelativeOffset =
+          arrowProps.endAbsoluteOffset! - connectionPointOffset;
 
-      if (arrowProps.endRelativeOffset!.distance <= CanvasBounds.gridSpacing * 2) {
+      if (arrowProps.endRelativeOffset!.distance <=
+          CanvasBounds.gridSpacing * 2) {
         arrowProps.endRelativeOffset = Offset.zero;
       }
     }
@@ -1673,10 +1851,13 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   ) {
     final snapToGrid = ref.read(canvasSettingsProvider(Setting.snapToGrid));
     final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
-    if (startObj.id.isEmpty || startObj.id == arrowProps.endObjectId || endObj.isPointInObject(position)) {
+    if (startObj.id.isEmpty ||
+        startObj.id == arrowProps.endObjectId ||
+        endObj.isPointInObject(position)) {
       arrowProps.startObjectId = null;
       arrowProps.startPoint = ConnectionPoint.none;
-      arrowProps.startAbsoluteOffset = snapToGrid ? canvasBoundsNotifier.snap(position) : position;
+      arrowProps.startAbsoluteOffset =
+          snapToGrid ? canvasBoundsNotifier.snap(position) : position;
     } else {
       final nearestPoint = startObj.findNearestBoundOffset(position);
 
@@ -1685,9 +1866,11 @@ extension ArrowCanvasObjectExtension on CanvasObject {
       arrowProps.startAbsoluteOffset = nearestPoint.$2;
 
       final connectionPointOffset = arrowProps.startPoint.getOffset(startObj);
-      arrowProps.startRelativeOffset = arrowProps.startAbsoluteOffset! - connectionPointOffset;
+      arrowProps.startRelativeOffset =
+          arrowProps.startAbsoluteOffset! - connectionPointOffset;
 
-      if (arrowProps.startRelativeOffset!.distance <= CanvasBounds.gridSpacing * 2) {
+      if (arrowProps.startRelativeOffset!.distance <=
+          CanvasBounds.gridSpacing * 2) {
         arrowProps.startRelativeOffset = Offset.zero;
       }
     }
@@ -1728,8 +1911,10 @@ extension ArrowCanvasObjectExtension on CanvasObject {
         // Find closest point on this segment
         final segmentVector = segmentEnd - segmentStart;
         final cursorVector = cursorPosition - segmentStart;
-        final t = (cursorVector.dx * segmentVector.dx + cursorVector.dy * segmentVector.dy) /
-            (segmentVector.dx * segmentVector.dx + segmentVector.dy * segmentVector.dy);
+        final t = (cursorVector.dx * segmentVector.dx +
+                cursorVector.dy * segmentVector.dy) /
+            (segmentVector.dx * segmentVector.dx +
+                segmentVector.dy * segmentVector.dy);
         final tClamped = t.clamp(0.0, 1.0);
 
         final pointOnSegment = segmentStart + segmentVector * tClamped;
@@ -1737,7 +1922,8 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 
         if (distance < closestDistance) {
           closestDistance = distance;
-          bestPosition = (accumulatedLength + segmentLength * tClamped) / totalLength;
+          bestPosition =
+              (accumulatedLength + segmentLength * tClamped) / totalLength;
         }
       }
 
@@ -1780,9 +1966,10 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 
     if (arrowProps.startObjectId == anchor.id) {
       // moving object is the start object
-      updatedKeypoints[0] = arrowProps.startPoint.getOffset(anchor) + (arrowProps.startRelativeOffset ?? Offset.zero);
-      bool isHorizontal =
-          arrowProps.startPoint == ConnectionPoint.left || arrowProps.startPoint == ConnectionPoint.right;
+      updatedKeypoints[0] = arrowProps.startPoint.getOffset(anchor) +
+          (arrowProps.startRelativeOffset ?? Offset.zero);
+      bool isHorizontal = arrowProps.startPoint == ConnectionPoint.left ||
+          arrowProps.startPoint == ConnectionPoint.right;
 
       if (originalKeypoints.length >= 3) {
         // Detect if the original first segment direction conflicts with the connection point direction.
@@ -1791,27 +1978,33 @@ extension ArrowCanvasObjectExtension on CanvasObject {
         final origP1 = originalKeypoints[1];
         final dx = (origP1.dx - origP0.dx).abs();
         final dy = (origP1.dy - origP0.dy).abs();
-        final conflict = (isHorizontal && dy > dx) || (!isHorizontal && dx > dy);
+        final conflict =
+            (isHorizontal && dy > dx) || (!isHorizontal && dx > dy);
 
         if (conflict) {
           // Insert a turn keypoint at the connection point to create a proper elbow,
           // preserving the original first-segment direction instead of warping it.
-          final turnPoint =
-              isHorizontal ? Offset(origP1.dx, updatedKeypoints[0].dy) : Offset(updatedKeypoints[0].dx, origP1.dy);
+          final turnPoint = isHorizontal
+              ? Offset(origP1.dx, updatedKeypoints[0].dy)
+              : Offset(updatedKeypoints[0].dx, origP1.dy);
           updatedKeypoints.insert(1, turnPoint);
         } else {
-          updatedKeypoints[1] = Offset(isHorizontal ? updatedKeypoints[1].dx : updatedKeypoints[0].dx,
+          updatedKeypoints[1] = Offset(
+              isHorizontal ? updatedKeypoints[1].dx : updatedKeypoints[0].dx,
               isHorizontal ? updatedKeypoints[0].dy : updatedKeypoints[1].dy);
         }
       } else {
-        updatedKeypoints[1] = Offset(isHorizontal ? updatedKeypoints[1].dx : updatedKeypoints[0].dx,
+        updatedKeypoints[1] = Offset(
+            isHorizontal ? updatedKeypoints[1].dx : updatedKeypoints[0].dx,
             isHorizontal ? updatedKeypoints[0].dy : updatedKeypoints[1].dy);
       }
     } else if (arrowProps.endObjectId == anchor.id) {
       // moving object is the end object
       updatedKeypoints[updatedKeypoints.length - 1] =
-          arrowProps.endPoint.getOffset(anchor) + (arrowProps.endRelativeOffset ?? Offset.zero);
-      bool isHorizontal = arrowProps.endPoint == ConnectionPoint.left || arrowProps.endPoint == ConnectionPoint.right;
+          arrowProps.endPoint.getOffset(anchor) +
+              (arrowProps.endRelativeOffset ?? Offset.zero);
+      bool isHorizontal = arrowProps.endPoint == ConnectionPoint.left ||
+          arrowProps.endPoint == ConnectionPoint.right;
 
       if (originalKeypoints.length >= 3) {
         // Detect if the original last segment direction conflicts with the connection point direction.
@@ -1820,7 +2013,8 @@ extension ArrowCanvasObjectExtension on CanvasObject {
         final origLast = originalKeypoints[n - 1];
         final dx = (origLast.dx - origPrev.dx).abs();
         final dy = (origLast.dy - origPrev.dy).abs();
-        final conflict = (isHorizontal && dy > dx) || (!isHorizontal && dx > dy);
+        final conflict =
+            (isHorizontal && dy > dx) || (!isHorizontal && dx > dy);
 
         if (conflict) {
           final lastIdx = updatedKeypoints.length - 1;
@@ -1890,7 +2084,8 @@ extension ArrowCanvasObjectExtension on CanvasObject {
     final List<double> segmentLengths = [];
 
     for (int i = 0; i < arrowProps.points.length - 1; i++) {
-      final segmentLength = (arrowProps.points[i + 1] - arrowProps.points[i]).distance;
+      final segmentLength =
+          (arrowProps.points[i + 1] - arrowProps.points[i]).distance;
       segmentLengths.add(segmentLength);
       totalLength += segmentLength;
     }
@@ -1900,7 +2095,8 @@ extension ArrowCanvasObjectExtension on CanvasObject {
     }
 
     // Find target distance along path
-    final targetDistance = totalLength * arrowProps.textPosition.clamp(0.0, 1.0);
+    final targetDistance =
+        totalLength * arrowProps.textPosition.clamp(0.0, 1.0);
 
     // Find which segment contains the target distance
     double accumulatedDistance = 0.0;
@@ -1912,7 +2108,8 @@ extension ArrowCanvasObjectExtension on CanvasObject {
         final remainingDistance = targetDistance - accumulatedDistance;
         final t = segmentLength > 0 ? remainingDistance / segmentLength : 0.0;
 
-        return Offset.lerp(arrowProps.points[i], arrowProps.points[i + 1], t) ?? arrowProps.points[i];
+        return Offset.lerp(arrowProps.points[i], arrowProps.points[i + 1], t) ??
+            arrowProps.points[i];
       }
 
       accumulatedDistance += segmentLength;

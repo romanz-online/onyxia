@@ -43,10 +43,12 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     // Validate position to ensure it fits within editor bounds
     // Use default dimensions for new comment (will be refined in didChangeDependencies)
     final isNewComment = widget.comment.text.isEmpty;
-    final widgetWidth = isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
+    final widgetWidth =
+        isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
     final widgetHeight = isNewComment ? 60.0 : 200.0; // Conservative estimate
 
-    _currentPosition = _validatePosition(initialPosition, widgetWidth, widgetHeight);
+    _currentPosition =
+        _validatePosition(initialPosition, widgetWidth, widgetHeight);
   }
 
   @override
@@ -57,10 +59,12 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     if (storedPosition != null) {
       // Validate stored position to ensure it fits within current editor bounds
       final isNewComment = _currentComment.text.isEmpty;
-      final widgetWidth = isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
+      final widgetWidth =
+          isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
       final widgetHeight = isNewComment ? 60.0 : _calculateMaxHeight(context);
 
-      _currentPosition = _validatePosition(storedPosition, widgetWidth, widgetHeight);
+      _currentPosition =
+          _validatePosition(storedPosition, widgetWidth, widgetHeight);
     }
   }
 
@@ -74,10 +78,12 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
 
       // Validate position when switching to a different comment
       final isNewComment = _currentComment.text.isEmpty;
-      final widgetWidth = isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
+      final widgetWidth =
+          isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
       final widgetHeight = isNewComment ? 60.0 : 200.0; // Conservative estimate
 
-      _currentPosition = _validatePosition(rawPosition, widgetWidth, widgetHeight);
+      _currentPosition =
+          _validatePosition(rawPosition, widgetWidth, widgetHeight);
 
       // Only clear editing state when switching to a different comment
       setState(() {
@@ -95,11 +101,13 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
 
       // Calculate actual widget dimensions dynamically
       final isNewComment = _currentComment.text.isEmpty;
-      final widgetWidth = isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
+      final widgetWidth =
+          isNewComment ? 240.0 : 500.0; // maxWidth from _buildCommentBox
       final widgetHeight = isNewComment ? 60.0 : _calculateMaxHeight(context);
 
       // Use centralized validation to constrain position within editor bounds
-      _currentPosition = _validatePosition(newPosition, widgetWidth, widgetHeight);
+      _currentPosition =
+          _validatePosition(newPosition, widgetWidth, widgetHeight);
     });
   }
 
@@ -108,11 +116,14 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     final updatedComment = _currentComment.copyWith(
       position: _currentPosition,
     );
-    ref.read(commentsProvider(_selectedItemId).notifier).updateComment(updatedComment: updatedComment);
+    ref
+        .read(commentsProvider(_selectedItemId).notifier)
+        .updateComment(updatedComment: updatedComment);
   }
 
   bool get _isSelected {
-    final selected = ref.watch(commentsProvider(_selectedItemId)).selectedComment;
+    final selected =
+        ref.watch(commentsProvider(_selectedItemId)).selectedComment;
     return selected.id == widget.comment.id;
   }
 
@@ -133,12 +144,15 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
 
   double _calculateMaxHeight(BuildContext context) {
     // Use editor height if available, otherwise fall back to screen height
-    final containerHeight = widget.editorHeight ?? MediaQuery.of(context).size.height;
-    final topPadding = widget.editorHeight != null ? 0 : MediaQuery.of(context).padding.top;
+    final containerHeight =
+        widget.editorHeight ?? MediaQuery.of(context).size.height;
+    final topPadding =
+        widget.editorHeight != null ? 0 : MediaQuery.of(context).padding.top;
 
     // Calculate available space considering current position
     final margin = 30.0;
-    final availableHeight = containerHeight - _currentPosition.dy - margin - topPadding;
+    final availableHeight =
+        containerHeight - _currentPosition.dy - margin - topPadding;
 
     // Use reasonable bounds with safe fallbacks
     const minHeight = 200.0;
@@ -152,7 +166,8 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     return availableHeight.clamp(minHeight, preferredMaxHeight);
   }
 
-  Offset _validatePosition(Offset desiredPosition, double widgetWidth, double widgetHeight) {
+  Offset _validatePosition(
+      Offset desiredPosition, double widgetWidth, double widgetHeight) {
     final editorWidth = widget.editorWidth;
     final editorHeight = widget.editorHeight;
 
@@ -160,8 +175,10 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     if (editorWidth == null || editorHeight == null) return desiredPosition;
 
     // Constrain to editor bounds considering widget size
-    final constrainedX = desiredPosition.dx.clamp(0.0, (editorWidth - widgetWidth).clamp(0.0, double.infinity));
-    final constrainedY = desiredPosition.dy.clamp(0.0, (editorHeight - widgetHeight).clamp(0.0, double.infinity));
+    final constrainedX = desiredPosition.dx
+        .clamp(0.0, (editorWidth - widgetWidth).clamp(0.0, double.infinity));
+    final constrainedY = desiredPosition.dy
+        .clamp(0.0, (editorHeight - widgetHeight).clamp(0.0, double.infinity));
 
     return Offset(constrainedX, constrainedY);
   }
@@ -169,16 +186,15 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
   void _addSubComment() {
     final text = _commentController.text.trim();
     if (text.isNotEmpty) {
-      ref.read(commentsProvider(_selectedItemId).notifier).addSubComment(widget.comment.id, text);
+      ref
+          .read(commentsProvider(_selectedItemId).notifier)
+          .addSubComment(widget.comment.id, text);
       _commentController.clear();
     }
   }
 
   void _submitCommentText(String text) {
-    _submitComment(
-      existingComment: null,
-      commentColor: _currentComment.color,
-    );
+    _submitComment(existingComment: null);
   }
 
   void _startEditing() {
@@ -192,7 +208,9 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     final text = _commentController.text.trim();
     if (text.isNotEmpty) {
       final updatedComment = _currentComment.copyWith(text: text);
-      ref.read(commentsProvider(_selectedItemId).notifier).updateComment(updatedComment: updatedComment);
+      ref
+          .read(commentsProvider(_selectedItemId).notifier)
+          .updateComment(updatedComment: updatedComment);
       setState(() {
         _isEditingComment = false;
         _commentController.clear();
@@ -213,7 +231,9 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
   }
 
   void _deleteSubComment(String subCommentId) {
-    ref.read(commentsProvider(_selectedItemId).notifier).deleteSubComment(widget.comment.id, subCommentId);
+    ref
+        .read(commentsProvider(_selectedItemId).notifier)
+        .deleteSubComment(widget.comment.id, subCommentId);
   }
 
   void _startEditingSubComment(SubComment subComment) {
@@ -283,9 +303,12 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         FutureBuilder<UserDefinition>(
-                          future: ref.read(userLookupProvider).getUserById(subComment.authorId),
+                          future: ref
+                              .read(userLookupProvider)
+                              .getUserById(subComment.authorId),
                           builder: (context, snapshot) {
-                            final author = snapshot.data ?? UserDefinition.initial();
+                            final author =
+                                snapshot.data ?? UserDefinition.initial();
                             return Text(
                               '${author.name},',
                               style: NarwhalTextStyle(
@@ -324,9 +347,12 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                           value: SubCommentMenuAction.delete,
                           child: Row(
                             children: [
-                              Icon(Icons.delete, size: 16, color: ThemeHelper.red()),
+                              Icon(Icons.delete,
+                                  size: 16, color: ThemeHelper.red()),
                               SizedBox(width: 8),
-                              Text('Delete', style: NarwhalTextStyle(color: ThemeHelper.red())),
+                              Text('Delete',
+                                  style: NarwhalTextStyle(
+                                      color: ThemeHelper.red())),
                             ],
                           ),
                         ),
@@ -366,9 +392,11 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
       children: [
         Row(
           children: [
-            Icon(Icons.drag_indicator, size: 16, color: ThemeHelper.neutral500(context)),
+            Icon(Icons.drag_indicator,
+                size: 16, color: ThemeHelper.neutral500(context)),
             const SizedBox(width: 4),
-            CommentWidgetBase.buildCommentHeader(context, index, _currentComment),
+            CommentWidgetBase.buildCommentHeader(
+                context, index, _currentComment),
           ],
         ),
         Row(
@@ -394,11 +422,14 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                     children: [
                       Icon(Icons.delete, size: 16, color: ThemeHelper.red()),
                       SizedBox(width: 8),
-                      Text('Delete', style: NarwhalTextStyle(color: ThemeHelper.red())),
+                      Text('Delete',
+                          style: NarwhalTextStyle(color: ThemeHelper.red())),
                     ],
                   ),
                   onTap: () {
-                    ref.read(commentsProvider(_selectedItemId).notifier).deleteComment(commentId: _currentComment.id);
+                    ref
+                        .read(commentsProvider(_selectedItemId).notifier)
+                        .deleteComment(commentId: _currentComment.id);
                     widget.onClose?.call();
                   },
                 ),
@@ -407,7 +438,9 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
             IconButton(
               icon: const Icon(Icons.close_sharp, size: 18),
               onPressed: () {
-                ref.read(commentsProvider(_selectedItemId).notifier).setSelectedComment(null);
+                ref
+                    .read(commentsProvider(_selectedItemId).notifier)
+                    .setSelectedComment(null);
                 widget.onClose?.call();
               },
             ),
@@ -461,9 +494,12 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                           Row(
                             children: [
                               FutureBuilder<UserDefinition>(
-                                future: ref.read(userLookupProvider).getUserById(_currentComment.authorId),
+                                future: ref
+                                    .read(userLookupProvider)
+                                    .getUserById(_currentComment.authorId),
                                 builder: (context, snapshot) {
-                                  final author = snapshot.data ?? UserDefinition.initial();
+                                  final author =
+                                      snapshot.data ?? UserDefinition.initial();
                                   return Text(
                                     '${author.name},',
                                     style: NarwhalTextStyle(
@@ -507,7 +543,9 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Icon(
-                                    _showReplies ? Icons.expand_less : Icons.expand_more,
+                                    _showReplies
+                                        ? Icons.expand_less
+                                        : Icons.expand_more,
                                     size: 16,
                                   ),
                                   const SizedBox(width: 4),
@@ -521,7 +559,8 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                               ),
                             ),
                           ],
-                          if (_showReplies && _currentComment.subComments.isNotEmpty) ...[
+                          if (_showReplies &&
+                              _currentComment.subComments.isNotEmpty) ...[
                             const Divider(height: 16),
                             _buildSubCommentsList(),
                           ],
@@ -542,23 +581,32 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                         Expanded(
                           child: Shortcuts(
                             shortcuts: <LogicalKeySet, Intent>{
-                              LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.enter): const NewLineIntent(),
-                              LogicalKeySet(LogicalKeyboardKey.enter): const SubmitIntent(),
+                              LogicalKeySet(LogicalKeyboardKey.shift,
+                                      LogicalKeyboardKey.enter):
+                                  const NewLineIntent(),
+                              LogicalKeySet(LogicalKeyboardKey.enter):
+                                  const SubmitIntent(),
                             },
                             child: Actions(
                               actions: <Type, Action<Intent>>{
-                                NewLineIntent: CallbackAction<NewLineIntent>(onInvoke: (intent) {
+                                NewLineIntent: CallbackAction<NewLineIntent>(
+                                    onInvoke: (intent) {
                                   // Insert newline manually at cursor position
                                   final text = _commentController.text;
-                                  final selection = _commentController.selection;
-                                  final newText = text.replaceRange(selection.start, selection.end, '\n');
-                                  _commentController.value = _commentController.value.copyWith(
+                                  final selection =
+                                      _commentController.selection;
+                                  final newText = text.replaceRange(
+                                      selection.start, selection.end, '\n');
+                                  _commentController.value =
+                                      _commentController.value.copyWith(
                                     text: newText,
-                                    selection: TextSelection.collapsed(offset: selection.start + 1),
+                                    selection: TextSelection.collapsed(
+                                        offset: selection.start + 1),
                                   );
                                   return null;
                                 }),
-                                SubmitIntent: CallbackAction<SubmitIntent>(onInvoke: (intent) {
+                                SubmitIntent: CallbackAction<SubmitIntent>(
+                                    onInvoke: (intent) {
                                   if (_isEditingComment) {
                                     _saveEditedComment();
                                   } else if (_editingSubCommentId != null) {
@@ -578,8 +626,10 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                                           ? 'Edit reply'
                                           : 'Reply',
                                   border: InputBorder.none,
-                                  hintStyle: NarwhalTextStyle(color: ThemeHelper.neutral500(context)),
-                                  contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                  hintStyle: NarwhalTextStyle(
+                                      color: ThemeHelper.neutral500(context)),
+                                  contentPadding: EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 10),
                                 ),
                                 maxLines: null,
                                 keyboardType: TextInputType.multiline,
@@ -590,7 +640,8 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                         ),
                         if (_isEditingComment) ...[
                           IconButton(
-                            icon: Icon(Icons.close, color: ThemeHelper.neutral500(context)),
+                            icon: Icon(Icons.close,
+                                color: ThemeHelper.neutral500(context)),
                             onPressed: _cancelEditingComment,
                             tooltip: 'Cancel',
                             splashRadius: 20,
@@ -603,7 +654,8 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                           ),
                         ] else if (_editingSubCommentId != null) ...[
                           IconButton(
-                            icon: Icon(Icons.close, color: ThemeHelper.neutral500(context)),
+                            icon: Icon(Icons.close,
+                                color: ThemeHelper.neutral500(context)),
                             onPressed: _cancelEditingSubComment,
                             tooltip: 'Cancel',
                             splashRadius: 20,
@@ -616,7 +668,8 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                           ),
                         ] else
                           IconButton(
-                            icon: Icon(Icons.send, color: ThemeHelper.neutral500(context)),
+                            icon: Icon(Icons.send,
+                                color: ThemeHelper.neutral500(context)),
                             onPressed: _addSubComment,
                             tooltip: 'Send',
                             splashRadius: 20,
@@ -635,14 +688,17 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
 
   @override
   Widget build(BuildContext context) {
-    final commentIndex = ref.watch(commentsProvider(_selectedItemId).notifier).getCommentIndex(_currentComment);
+    final commentIndex = ref
+        .watch(commentsProvider(_selectedItemId).notifier)
+        .getCommentIndex(_currentComment);
     final user = ref.watch(currentUserProvider);
 
     final showExpanded = _isSelected || _currentComment.text.isEmpty;
 
     // Watch for edit intent changes
     final state = ref.watch(commentsProvider(_selectedItemId));
-    if (state.shouldEditOnOpen && state.selectedComment.id == widget.comment.id) {
+    if (state.shouldEditOnOpen &&
+        state.selectedComment.id == widget.comment.id) {
       // Check if we need to switch what we're editing
       final needsUpdate = state.editingSubCommentId != _editingSubCommentId ||
           (state.editingSubCommentId == null && !_isEditingComment);
@@ -661,7 +717,8 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
               // Find and start editing the specific subcomment
               final subComment = _currentComment.subComments.firstWhere(
                 (sc) => sc.id == state.editingSubCommentId,
-                orElse: () => SubComment(id: '', text: '', authorId: '', createdAt: DateTime.now()),
+                orElse: () => SubComment(
+                    id: '', text: '', authorId: '', createdAt: DateTime.now()),
               );
               if (subComment.id.isNotEmpty) {
                 _startEditingSubComment(subComment);
@@ -670,7 +727,9 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
               _startEditing();
             }
             // Reset the edit intent by clearing the flag but keeping the selection
-            ref.read(commentsProvider(_selectedItemId).notifier).clearEditIntent();
+            ref
+                .read(commentsProvider(_selectedItemId).notifier)
+                .clearEditIntent();
           }
         });
       }
@@ -692,11 +751,15 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
                   (_currentComment.text.isEmpty)
                       ? CommentWidgetBase.buildNewCommentInput(
                           controller: _commentController,
-                          onSubmit: () => _submitCommentText(_commentController.text),
+                          onSubmit: () =>
+                              _submitCommentText(_commentController.text),
                           onCancel: () {
                             _commentController.clear();
                             // Clear selected comment before closing
-                            ref.read(commentsProvider(_selectedItemId).notifier).setSelectedComment(null);
+                            ref
+                                .read(
+                                    commentsProvider(_selectedItemId).notifier)
+                                .setSelectedComment(null);
                             widget.onClose?.call();
                           },
                           userName: user.name,
@@ -712,10 +775,7 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
     );
   }
 
-  void _submitComment({
-    Comment? existingComment,
-    required Color commentColor,
-  }) {
+  void _submitComment({Comment? existingComment}) {
     if (_commentController.text.isEmpty) {
       NarwhalToast.show(
         text: 'Comment cannot be empty',
@@ -730,12 +790,13 @@ class _ArtifactCommentWidgetState extends ConsumerState<ArtifactComment> {
         ref.read(commentsProvider(_selectedItemId).notifier).addComment(
               text: _commentController.text,
               commentId: commentId,
-              color: commentColor,
               position: widget.comment.position,
               targetType: CommentTargetType.note,
             );
         // Clear selection and notify Editor to close the widget
-        ref.read(commentsProvider(_selectedItemId).notifier).setSelectedComment(null);
+        ref
+            .read(commentsProvider(_selectedItemId).notifier)
+            .setSelectedComment(null);
         widget.onClose?.call();
       } else {
         final updatedComment = existingComment.copyWith(

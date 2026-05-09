@@ -27,7 +27,8 @@ class CanvasCommentPinExpanded extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<CanvasCommentPinExpanded> createState() => _CanvasCommentPinExpandedState();
+  ConsumerState<CanvasCommentPinExpanded> createState() =>
+      _CanvasCommentPinExpandedState();
 }
 
 enum HorizontalAnchor {
@@ -37,7 +38,9 @@ enum HorizontalAnchor {
   leftTopRight, // Expanded to left, pin at top-right corner
 }
 
-class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpanded> with TickerProviderStateMixin {
+class _CanvasCommentPinExpandedState
+    extends ConsumerState<CanvasCommentPinExpanded>
+    with TickerProviderStateMixin {
   static const double _defaultWidth = 320;
   static const double _minHeight = 150;
   static const double _maxHeight = 500;
@@ -86,13 +89,6 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
     ref.read(expandedPinProvider.notifier).collapsePin();
   }
 
-  void _onResolve() {
-    ref
-        .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier)
-        .updateComment(updatedComment: widget.comment.copyWith(resolved: true));
-    _onClose();
-  }
-
   void _onMoreOptions() {
     setState(() {
       _isCommentActionMenuOpen = !_isCommentActionMenuOpen;
@@ -123,7 +119,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
     final text = _replyController.text.trim();
     if (text.isNotEmpty) {
       ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier)
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+              .notifier)
           .addSubComment(widget.comment.id, text);
       _replyController.clear();
 
@@ -140,9 +137,11 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
 
             Future.delayed(const Duration(milliseconds: 350), () {
               if (_commentsScrollController.hasClients) {
-                final newMax = _commentsScrollController.position.maxScrollExtent;
+                final newMax =
+                    _commentsScrollController.position.maxScrollExtent;
                 if (newMax > maxExtent) {
-                  debugPrint('📜 Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
+                  debugPrint(
+                      '📜 Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
                   _commentsScrollController.animateTo(
                     newMax,
                     duration: const Duration(milliseconds: 200),
@@ -156,8 +155,10 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
             debugPrint('⏳ Layout not ready, retrying...');
             Future.delayed(const Duration(milliseconds: 200), () {
               if (_commentsScrollController.hasClients) {
-                final newMax = _commentsScrollController.position.maxScrollExtent;
-                debugPrint('📜 Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
+                final newMax =
+                    _commentsScrollController.position.maxScrollExtent;
+                debugPrint(
+                    '📜 Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
                 _commentsScrollController.animateTo(
                   newMax,
                   duration: const Duration(milliseconds: 300),
@@ -182,7 +183,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
 
   @override
   Widget build(BuildContext context) {
-    final double scale = widget.transformationController.value.getMaxScaleOnAxis();
+    final double scale =
+        widget.transformationController.value.getMaxScaleOnAxis();
     final int commentCount = 1 + widget.comment.subComments.length;
     final double containerHeight = _estimateContentHeight(commentCount);
 
@@ -200,9 +202,11 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
       scale,
     );
 
-    final bool isUpwardAnchor =
-        anchor == HorizontalAnchor.rightBottomLeft || anchor == HorizontalAnchor.leftBottomRight;
-    final double positionedTop = isUpwardAnchor ? widget.position.dy + (1.0 / scale) : rect.top - (37.0 / scale);
+    final bool isUpwardAnchor = anchor == HorizontalAnchor.rightBottomLeft ||
+        anchor == HorizontalAnchor.leftBottomRight;
+    final double positionedTop = isUpwardAnchor
+        ? widget.position.dy + (1.0 / scale)
+        : rect.top - (37.0 / scale);
 
     return Positioned(
       top: positionedTop,
@@ -292,7 +296,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
       final rect = _calculateExpandedRect(pinPosition, size, anchor, scale);
       final screenRect = _transformRectToScreen(rect);
 
-      if (screenViewport.contains(screenRect.topLeft) && screenViewport.contains(screenRect.bottomRight)) {
+      if (screenViewport.contains(screenRect.topLeft) &&
+          screenViewport.contains(screenRect.bottomRight)) {
         return anchor;
       }
     }
@@ -350,7 +355,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
   Rect _transformRectToScreen(Rect canvasRect) {
     final transform = widget.transformationController.value;
     final topLeft = MatrixUtils.transformPoint(transform, canvasRect.topLeft);
-    final bottomRight = MatrixUtils.transformPoint(transform, canvasRect.bottomRight);
+    final bottomRight =
+        MatrixUtils.transformPoint(transform, canvasRect.bottomRight);
     return Rect.fromPoints(topLeft, bottomRight);
   }
 
@@ -360,7 +366,10 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
     const double commentHeight = 60;
     const double padding = 24;
 
-    final double contentHeight = headerHeight + replyInputHeight + (commentCount * commentHeight) + padding;
+    final double contentHeight = headerHeight +
+        replyInputHeight +
+        (commentCount * commentHeight) +
+        padding;
 
     final clampedHeight = contentHeight.clamp(_minHeight, _maxHeight);
 
@@ -394,7 +403,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
                 isOpen: _isCommentActionMenuOpen,
                 onClose: () => _toggleCommentActionMenu(isOpen: false),
                 closingDelay: const Duration(milliseconds: 100),
-                builder: (context, closeOverlay) => _buildCommentActionOverlay(closeOverlay),
+                builder: (context, closeOverlay) =>
+                    _buildCommentActionOverlay(closeOverlay),
                 child: NarwhalIconButton(
                   key: _moreButtonKey,
                   icon: NarwhalIcons.moreDots,
@@ -402,12 +412,6 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
                   isPressed: _isCommentActionMenuOpen,
                   onPressed: _onMoreOptions,
                 ),
-              ),
-              const SizedBox(width: 6),
-              NarwhalIconButton(
-                icon: NarwhalIcons.resolve,
-                size: 30,
-                onPressed: _onResolve,
               ),
               const SizedBox(width: 6),
               NarwhalIconButton(
@@ -502,7 +506,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
                             style: NarwhalTextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.normal,
-                              color: ThemeHelper.neutral900(context).withValues(alpha: 0.7),
+                              color: ThemeHelper.neutral900(context)
+                                  .withValues(alpha: 0.7),
                             ),
                           ),
                       ],
@@ -522,13 +527,14 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
                   closeOverlay,
                 ),
                 child: NarwhalIconButton(
-                  key: _commentMenuKeys.putIfAbsent(commentId, () => GlobalKey()),
+                  key: _commentMenuKeys.putIfAbsent(
+                      commentId, () => GlobalKey()),
                   icon: NarwhalIcons.moreDots,
                   size: 28,
                   enabled: _isCurrentUserAuthor(authorId),
                   isPressed: _openCommentMenuId == commentId,
-                  onPressed: () =>
-                      setState(() => _openCommentMenuId = _openCommentMenuId == commentId ? null : commentId),
+                  onPressed: () => setState(() => _openCommentMenuId =
+                      _openCommentMenuId == commentId ? null : commentId),
                 ),
               ),
             ],
@@ -545,17 +551,21 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
         children: [
           Shortcuts(
             shortcuts: <LogicalKeySet, Intent>{
-              LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.enter): const NewLineIntent(),
+              LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.enter):
+                  const NewLineIntent(),
               LogicalKeySet(LogicalKeyboardKey.enter): const SubmitIntent(),
             },
             child: Actions(
               actions: <Type, Action<Intent>>{
-                NewLineIntent: CallbackAction<NewLineIntent>(onInvoke: (intent) {
+                NewLineIntent:
+                    CallbackAction<NewLineIntent>(onInvoke: (intent) {
                   // Insert newline manually at cursor position
                   final selection = _replyController.selection;
                   _replyController.value = _replyController.value.copyWith(
-                    text: _replyController.text.replaceRange(selection.start, selection.end, '\n'),
-                    selection: TextSelection.collapsed(offset: selection.start + 1),
+                    text: _replyController.text
+                        .replaceRange(selection.start, selection.end, '\n'),
+                    selection:
+                        TextSelection.collapsed(offset: selection.start + 1),
                   );
                   return null;
                 }),
@@ -628,7 +638,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
   }
 
   Widget _buildCommentActionOverlay(VoidCallback closeOverlay) {
-    final RenderBox? renderBox = _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return const SizedBox.shrink();
 
     final position = renderBox.localToGlobal(Offset.zero);
@@ -636,14 +647,17 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
 
     // Calculate left-aligned and right-aligned positions
     final leftAlignedPosition = position.dx;
-    final rightAlignedPosition = position.dx - minDropdownWidth + renderBox.size.width;
+    final rightAlignedPosition =
+        position.dx - minDropdownWidth + renderBox.size.width;
 
     // Get viewport width to check for overflow
     final viewportWidth = MediaQuery.of(context).size.width;
-    final wouldOverflowRight = leftAlignedPosition + minDropdownWidth > viewportWidth;
+    final wouldOverflowRight =
+        leftAlignedPosition + minDropdownWidth > viewportWidth;
 
     // Use left-aligned by default, right-aligned if it would overflow
-    final finalLeft = wouldOverflowRight ? rightAlignedPosition : leftAlignedPosition;
+    final finalLeft =
+        wouldOverflowRight ? rightAlignedPosition : leftAlignedPosition;
 
     return Positioned(
       left: finalLeft,
@@ -688,11 +702,14 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
     required String title,
     required VoidCallback onTap,
   }) {
-    final canvasStyle = NarwhalStyles.dropdownListTextStyle(context).copyWith(color: ThemeHelper.neutral900(context));
+    final canvasStyle = NarwhalStyles.dropdownListTextStyle(context)
+        .copyWith(color: ThemeHelper.neutral900(context));
     return HoverBuilder(
       builder: (context, isHovered) {
         return Container(
-          color: isHovered ? ThemeHelper.blue400(context).withValues(alpha: 0.5) : Colors.transparent,
+          color: isHovered
+              ? ThemeHelper.blue400(context).withValues(alpha: 0.5)
+              : Colors.transparent,
           child: ListTile(
             title: Text(
               title,
@@ -714,7 +731,8 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
     GlobalKey buttonKey,
     VoidCallback closeOverlay,
   ) {
-    final RenderBox? renderBox = buttonKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        buttonKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return const SizedBox.shrink();
 
     final position = renderBox.localToGlobal(Offset.zero);
@@ -722,13 +740,15 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
 
     // Calculate left-aligned and right-aligned positions
     final leftAlignedPosition = position.dx;
-    final rightAlignedPosition = position.dx - minDropdownWidth + renderBox.size.width;
+    final rightAlignedPosition =
+        position.dx - minDropdownWidth + renderBox.size.width;
 
     // Check for left-side overflow to determine if we need to fall back to left-alignment
     final wouldOverflowLeft = rightAlignedPosition < 0;
 
     // Use right-aligned by default, left-aligned if it would overflow off the left side
-    final finalLeft = wouldOverflowLeft ? leftAlignedPosition : rightAlignedPosition;
+    final finalLeft =
+        wouldOverflowLeft ? leftAlignedPosition : rightAlignedPosition;
 
     return Positioned(
       left: finalLeft,
@@ -788,11 +808,13 @@ class _CanvasCommentPinExpandedState extends ConsumerState<CanvasCommentPinExpan
 
     if (isSubComment) {
       ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier)
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+              .notifier)
           .deleteSubComment(widget.comment.id, commentId);
     } else {
       ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier)
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+              .notifier)
           .deleteComment(commentId: commentId);
       NarwhalToast.show(
         text: 'Comment removed',

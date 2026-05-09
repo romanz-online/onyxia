@@ -17,23 +17,26 @@ class TextToolHandler extends CanvasToolGestureHandler {
   bool get allowsViewportScaling => true;
 
   @override
-  void Function(TapUpDetails, WidgetRef, BuildContext, CanvasInteractionContext)? get onTapUp =>
-      (details, ref, buildContext, interactionContext) {
-        switch (interactionContext) {
-          case ObjectFillInteractionContext(:final targetObject):
-            ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-            ref.read(canvasObjectsProvider.notifier).selectObject(targetObject);
-            CanvasInteractionService.openTextEditor(ref: ref);
-            break;
-          case BackgroundInteraction():
-            _createTextObject(details.localPosition, ref);
-            break;
-          case _:
-            return;
-        }
+  void Function(
+          TapUpDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
+      get onTapUp => (details, ref, buildContext, interactionContext) {
+            switch (interactionContext) {
+              case ObjectFillInteractionContext(:final targetObject):
+                ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+                ref
+                    .read(canvasObjectsProvider.notifier)
+                    .selectObject(targetObject);
+                CanvasInteractionService.openTextEditor(ref: ref);
+                break;
+              case BackgroundInteraction():
+                _createTextObject(details.localPosition, ref);
+                break;
+              case _:
+                return;
+            }
 
-        ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
-      };
+            ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+          };
 
   void _createTextObject(Offset tapPosition, WidgetRef ref) {
     const double width = CanvasBounds.gridSpacing * 7;

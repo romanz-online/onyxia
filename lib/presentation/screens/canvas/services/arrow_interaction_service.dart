@@ -29,8 +29,11 @@ class ArrowInteractionService {
 
       ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
       ghostObject.color = sourceObject.color;
-      ghostObject.topLeft = ref.read(canvasBoundsProvider.notifier).clamp(ghostObject.topLeft);
-      ghostObject.bottomRight = ref.read(canvasBoundsProvider.notifier).clamp(ghostObject.bottomRight);
+      ghostObject.topLeft =
+          ref.read(canvasBoundsProvider.notifier).clamp(ghostObject.topLeft);
+      ghostObject.bottomRight = ref
+          .read(canvasBoundsProvider.notifier)
+          .clamp(ghostObject.bottomRight);
 
       objectsToAdd.add(ghostObject);
       createdObject = true;
@@ -42,7 +45,8 @@ class ArrowInteractionService {
 
     if (endObject == null) return;
 
-    arrowPreview.arrow.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
+    arrowPreview.arrow.layer =
+        ref.read(canvasObjectsProvider.notifier).nextLayer();
     arrowPreview.arrow.color = ThemeHelper.neutral600(context);
     arrowPreview.arrow.stroke = StrokeType.solid;
     arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
@@ -53,7 +57,9 @@ class ArrowInteractionService {
         operation: () async {
           ref.read(pinsProvider.notifier).addPins(ref, pinsToAdd);
           objectsToAdd.add(arrowPreview.arrow);
-          ref.read(canvasObjectsProvider.notifier).addObjects(ref, objectsToAdd);
+          ref
+              .read(canvasObjectsProvider.notifier)
+              .addObjects(ref, objectsToAdd);
           arrowPreview.arrow.pruneKeypoints();
           ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
         });
@@ -90,7 +96,9 @@ class ArrowInteractionService {
       stroke: StrokeType.solid,
       arrowProperties: ArrowProperties(
         startObjectId: sourceObject.id,
-        endAbsoluteOffset: ref.read(canvasViewportProvider.notifier).convertToCanvasCoords(details.globalPosition),
+        endAbsoluteOffset: ref
+            .read(canvasViewportProvider.notifier)
+            .convertToCanvasCoords(details.globalPosition),
         startPoint: createPoint,
         startRelativeOffset: startRelativeOffset,
         arrowType: canvasConfig.defaultArrowType,
@@ -112,15 +120,22 @@ class ArrowInteractionService {
   }) {
     if (arrow == null || !arrow.isArrow) return;
 
-    ref.read(canvasGestureStateProvider.notifier).updateAccumulatedDelta(details.delta);
+    ref
+        .read(canvasGestureStateProvider.notifier)
+        .updateAccumulatedDelta(details.delta);
 
-    final canvasPosition = ref.read(canvasViewportProvider.notifier).convertToCanvasCoords(details.globalPosition);
+    final canvasPosition = ref
+        .read(canvasViewportProvider.notifier)
+        .convertToCanvasCoords(details.globalPosition);
     if (part == ArrowMoveType.start) {
       final endObj = arrow.getEndObject(ref);
       if (endObj.id.isEmpty) return;
 
       final startObj = ref.read(canvasObjectsProvider).objects.firstWhere(
-            (obj) => !obj.isArrow && !obj.isBrush && obj.isPointInObject(canvasPosition),
+            (obj) =>
+                !obj.isArrow &&
+                !obj.isBrush &&
+                obj.isPointInObject(canvasPosition),
             orElse: () => CanvasObject.initial(),
           );
 
@@ -130,7 +145,10 @@ class ArrowInteractionService {
       if (startObj.id.isEmpty) return;
 
       final endObj = ref.read(canvasObjectsProvider).objects.firstWhere(
-            (obj) => !obj.isArrow && !obj.isBrush && obj.isPointInObject(canvasPosition),
+            (obj) =>
+                !obj.isArrow &&
+                !obj.isBrush &&
+                obj.isPointInObject(canvasPosition),
             orElse: () => CanvasObject.initial(),
           );
 
@@ -169,7 +187,9 @@ class ArrowInteractionService {
     arrow.updateArrowBounds();
     ref.read(canvasObjectsProvider.notifier).updateObjectState(arrow);
 
-    if (arrow.arrowProps.endPoint == ConnectionPoint.none && arrow.arrowProps.points.isNotEmpty && isNewArrow) {
+    if (arrow.arrowProps.endPoint == ConnectionPoint.none &&
+        arrow.arrowProps.points.isNotEmpty &&
+        isNewArrow) {
       ref.read(headlessProvider.notifier).showPalette(
             headlessArrow: arrow,
             canvasConfig: canvasConfig,

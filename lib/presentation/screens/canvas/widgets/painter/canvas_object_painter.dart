@@ -157,7 +157,8 @@ class CanvasObjectPainter {
   }
 
   void _drawDiamond(CanvasObjectPaintContext paintContext) {
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
     final center = rect.center;
 
     final path = Path();
@@ -209,7 +210,8 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(strokePath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(strokePath, paintContext.strokePaint);
       }
     } else {
       if (paintContext.object.stroke == StrokeType.dashed) {
@@ -221,13 +223,15 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(path, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(path, paintContext.strokePaint);
       }
     }
   }
 
   void _drawOblong(CanvasObjectPaintContext paintContext) {
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
 
     // If the oblong is close to being spherical, treat it as a circle
     if ((rect.width - rect.height).abs() <= CanvasBounds.gridSpacing) {
@@ -237,7 +241,8 @@ class CanvasObjectPainter {
     final radius = rect.height / 2;
     final roundedRect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
 
-    paintContext.touchyObjectPainter.drawRRect(roundedRect, paintContext.fillPaint);
+    paintContext.touchyObjectPainter
+        .drawRRect(roundedRect, paintContext.fillPaint);
 
     if (paintContext.object.stroke == StrokeType.none) return;
 
@@ -257,7 +262,8 @@ class CanvasObjectPainter {
         final path = Path();
 
         // For tall oblongs (height >= width), use width/2 as radius to maintain oblong shape
-        final effectiveRadius = rect.width <= rect.height ? rect.width / 2 : radius;
+        final effectiveRadius =
+            rect.width <= rect.height ? rect.width / 2 : radius;
 
         // Calculate gap positions (center of each edge)
         final topGapStart = rect.center.dx - paintContext.gapLength / 2;
@@ -381,15 +387,18 @@ class CanvasObjectPainter {
           );
         }
 
-        paintContext.touchyObjectPainter.drawPath(path, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(path, paintContext.strokePaint);
       } else {
-        paintContext.touchyObjectPainter.drawRRect(roundedRect, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawRRect(roundedRect, paintContext.strokePaint);
       }
     }
   }
 
   void _drawRhombus(CanvasObjectPaintContext paintContext) {
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
     final offset = rect.width * 0.2; // 20% offset for slant
 
     // Define the four vertices of the rhombus
@@ -425,7 +434,9 @@ class CanvasObjectPainter {
 
         // Calculate the center points of each actual edge
         final topEdgeCenter = Offset(
-          (paintContext.object.topLeft.dx + paintContext.object.bottomRight.dx) / 2,
+          (paintContext.object.topLeft.dx +
+                  paintContext.object.bottomRight.dx) /
+              2,
           topLeft.dy,
         );
         final rightEdgeCenter = Offset(
@@ -433,7 +444,9 @@ class CanvasObjectPainter {
           (topRight.dy + bottomRight.dy) / 2,
         );
         final bottomEdgeCenter = Offset(
-          (paintContext.object.topLeft.dx + paintContext.object.bottomRight.dx) / 2,
+          (paintContext.object.topLeft.dx +
+                  paintContext.object.bottomRight.dx) /
+              2,
           bottomRight.dy,
         );
         final leftEdgeCenter = Offset(
@@ -445,7 +458,8 @@ class CanvasObjectPainter {
         final halfGap = paintContext.gapLength / 2;
 
         // Top edge (flat horizontal)
-        final topGapStart = Offset(topEdgeCenter.dx - halfGap, topEdgeCenter.dy);
+        final topGapStart =
+            Offset(topEdgeCenter.dx - halfGap, topEdgeCenter.dy);
         final topGapEnd = Offset(topEdgeCenter.dx + halfGap, topEdgeCenter.dy);
 
         // Right edge (diagonal)
@@ -456,8 +470,10 @@ class CanvasObjectPainter {
         final rightGapEnd = rightEdgeCenter + (rightEdgeUnit * halfGap);
 
         // Bottom edge (flat horizontal)
-        final bottomGapStart = Offset(bottomEdgeCenter.dx + halfGap, bottomEdgeCenter.dy);
-        final bottomGapEnd = Offset(bottomEdgeCenter.dx - halfGap, bottomEdgeCenter.dy);
+        final bottomGapStart =
+            Offset(bottomEdgeCenter.dx + halfGap, bottomEdgeCenter.dy);
+        final bottomGapEnd =
+            Offset(bottomEdgeCenter.dx - halfGap, bottomEdgeCenter.dy);
 
         // Left edge (diagonal)
         final leftEdgeVector = topLeft - bottomLeft;
@@ -487,15 +503,18 @@ class CanvasObjectPainter {
         strokePath.moveTo(leftGapEnd.dx, leftGapEnd.dy);
         strokePath.lineTo(topLeft.dx, topLeft.dy);
 
-        paintContext.touchyObjectPainter.drawPath(strokePath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(strokePath, paintContext.strokePaint);
       } else {
-        paintContext.touchyObjectPainter.drawPath(path, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(path, paintContext.strokePaint);
       }
     }
   }
 
   void _drawTrapezoid(CanvasObjectPaintContext paintContext) {
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
     final topInset = rect.width * 0.2; // Top is 20% narrower
 
     // Define the four vertices of the trapezoid
@@ -551,7 +570,8 @@ class CanvasObjectPainter {
         final halfGap = paintContext.gapLength / 2;
 
         // Top edge (flat horizontal, narrower)
-        final topGapStart = Offset(topEdgeCenter.dx - halfGap, topEdgeCenter.dy);
+        final topGapStart =
+            Offset(topEdgeCenter.dx - halfGap, topEdgeCenter.dy);
         final topGapEnd = Offset(topEdgeCenter.dx + halfGap, topEdgeCenter.dy);
 
         // Right edge (diagonal from narrow top to wide bottom)
@@ -562,8 +582,10 @@ class CanvasObjectPainter {
         final rightGapEnd = rightEdgeCenter + (rightEdgeUnit * halfGap);
 
         // Bottom edge (flat horizontal, wider)
-        final bottomGapStart = Offset(bottomEdgeCenter.dx + halfGap, bottomEdgeCenter.dy);
-        final bottomGapEnd = Offset(bottomEdgeCenter.dx - halfGap, bottomEdgeCenter.dy);
+        final bottomGapStart =
+            Offset(bottomEdgeCenter.dx + halfGap, bottomEdgeCenter.dy);
+        final bottomGapEnd =
+            Offset(bottomEdgeCenter.dx - halfGap, bottomEdgeCenter.dy);
 
         // Left edge (diagonal from narrow top to wide bottom)
         final leftEdgeVector = topLeft - bottomLeft;
@@ -593,17 +615,21 @@ class CanvasObjectPainter {
         strokePath.moveTo(leftGapEnd.dx, leftGapEnd.dy);
         strokePath.lineTo(topLeft.dx, topLeft.dy);
 
-        paintContext.touchyObjectPainter.drawPath(strokePath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(strokePath, paintContext.strokePaint);
       } else {
-        paintContext.touchyObjectPainter.drawPath(path, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(path, paintContext.strokePaint);
       }
     }
   }
 
   void _drawHouse(CanvasObjectPaintContext paintContext) {
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
     final roofHeight = rect.height * 0.4; // Roof is 40% of total height
-    final houseRect = Rect.fromLTWH(rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
+    final houseRect = Rect.fromLTWH(
+        rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
 
     final seamOffset = 1;
 
@@ -613,11 +639,14 @@ class CanvasObjectPainter {
     final topRight = Offset(houseRect.right, houseRect.top + seamOffset / 2);
     final topLeft = Offset(houseRect.left, houseRect.top + seamOffset / 2);
     final roofPeak = Offset(rect.center.dx, rect.top);
-    final roofBottomLeft = Offset(rect.left, rect.top + roofHeight + seamOffset);
-    final roofBottomRight = Offset(rect.right, rect.top + roofHeight + seamOffset);
+    final roofBottomLeft =
+        Offset(rect.left, rect.top + roofHeight + seamOffset);
+    final roofBottomRight =
+        Offset(rect.right, rect.top + roofHeight + seamOffset);
 
     // Draw house base (rectangle) fill
-    paintContext.touchyObjectPainter.drawRect(houseRect, paintContext.fillPaint);
+    paintContext.touchyObjectPainter
+        .drawRect(houseRect, paintContext.fillPaint);
 
     // Draw roof fill
     final roofPath = Path();
@@ -670,16 +699,22 @@ class CanvasObjectPainter {
         );
 
         // Left edge (vertical) gap
-        final leftGapStart = Offset(leftEdgeCenter.dx, leftEdgeCenter.dy - halfGap);
-        final leftGapEnd = Offset(leftEdgeCenter.dx, leftEdgeCenter.dy + halfGap);
+        final leftGapStart =
+            Offset(leftEdgeCenter.dx, leftEdgeCenter.dy - halfGap);
+        final leftGapEnd =
+            Offset(leftEdgeCenter.dx, leftEdgeCenter.dy + halfGap);
 
         // Bottom edge (horizontal) gap
-        final bottomGapStart = Offset(bottomEdgeCenter.dx - halfGap, bottomEdgeCenter.dy);
-        final bottomGapEnd = Offset(bottomEdgeCenter.dx + halfGap, bottomEdgeCenter.dy);
+        final bottomGapStart =
+            Offset(bottomEdgeCenter.dx - halfGap, bottomEdgeCenter.dy);
+        final bottomGapEnd =
+            Offset(bottomEdgeCenter.dx + halfGap, bottomEdgeCenter.dy);
 
         // Right edge (vertical) gap
-        final rightGapStart = Offset(rightEdgeCenter.dx, rightEdgeCenter.dy + halfGap);
-        final rightGapEnd = Offset(rightEdgeCenter.dx, rightEdgeCenter.dy - halfGap);
+        final rightGapStart =
+            Offset(rightEdgeCenter.dx, rightEdgeCenter.dy + halfGap);
+        final rightGapEnd =
+            Offset(rightEdgeCenter.dx, rightEdgeCenter.dy - halfGap);
 
         // For roof edges, calculate diagonal gap positions
         final leftRoofEdgeCenter = Offset(
@@ -700,7 +735,8 @@ class CanvasObjectPainter {
         // Right roof edge (diagonal)
         final rightRoofVector = roofBottomRight - roofPeak;
         final rightRoofUnit = rightRoofVector / rightRoofVector.distance;
-        final rightRoofGapStart = rightRoofEdgeCenter - (rightRoofUnit * halfGap);
+        final rightRoofGapStart =
+            rightRoofEdgeCenter - (rightRoofUnit * halfGap);
         final rightRoofGapEnd = rightRoofEdgeCenter + (rightRoofUnit * halfGap);
 
         // Draw left edge with gap
@@ -727,8 +763,10 @@ class CanvasObjectPainter {
         // Calculate roof peak gap
         final leftRoofToPeakVector = roofPeak - roofBottomLeft;
         final rightRoofToPeakVector = roofPeak - roofBottomRight;
-        final leftRoofToPeakUnit = leftRoofToPeakVector / leftRoofToPeakVector.distance;
-        final rightRoofToPeakUnit = rightRoofToPeakVector / rightRoofToPeakVector.distance;
+        final leftRoofToPeakUnit =
+            leftRoofToPeakVector / leftRoofToPeakVector.distance;
+        final rightRoofToPeakUnit =
+            rightRoofToPeakVector / rightRoofToPeakVector.distance;
 
         // Create gap at the peak vertex
         final peakGapLeft = roofPeak - (leftRoofToPeakUnit * halfGap);
@@ -745,21 +783,28 @@ class CanvasObjectPainter {
         strokePath.moveTo(leftRoofGapEnd.dx, leftRoofGapEnd.dy);
         strokePath.lineTo(roofBottomLeft.dx, roofBottomLeft.dy);
 
-        paintContext.touchyObjectPainter.drawPath(strokePath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(strokePath, paintContext.strokePaint);
       } else {
         // Draw without gaps
-        paintContext.touchyObjectPainter.drawLine(topLeft, bottom, paintContext.strokePaint); // Left
-        paintContext.touchyObjectPainter.drawLine(bottom, bottomRight, paintContext.strokePaint); // Bottom
-        paintContext.touchyObjectPainter.drawLine(bottomRight, topRight, paintContext.strokePaint); // Right
-        paintContext.touchyObjectPainter.drawPath(roofPath, paintContext.strokePaint); // Roof
+        paintContext.touchyObjectPainter
+            .drawLine(topLeft, bottom, paintContext.strokePaint); // Left
+        paintContext.touchyObjectPainter
+            .drawLine(bottom, bottomRight, paintContext.strokePaint); // Bottom
+        paintContext.touchyObjectPainter
+            .drawLine(bottomRight, topRight, paintContext.strokePaint); // Right
+        paintContext.touchyObjectPainter
+            .drawPath(roofPath, paintContext.strokePaint); // Roof
       }
     }
   }
 
   void _drawReverseHouse(CanvasObjectPaintContext paintContext) {
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
     final roofHeight = rect.height * 0.4; // Roof is 40% of total height
-    final houseRect = Rect.fromLTWH(rect.left, rect.top, rect.width, rect.height - roofHeight);
+    final houseRect = Rect.fromLTWH(
+        rect.left, rect.top, rect.width, rect.height - roofHeight);
 
     final seamOffset = 1;
 
@@ -767,14 +812,19 @@ class CanvasObjectPainter {
     final top = Offset(houseRect.left, houseRect.top);
     final topRight = Offset(houseRect.right, houseRect.top);
     final topLeft = Offset(houseRect.left, houseRect.top);
-    final bottomRight = Offset(houseRect.right, houseRect.bottom - seamOffset / 2);
-    final bottomLeft = Offset(houseRect.left, houseRect.bottom - seamOffset / 2);
+    final bottomRight =
+        Offset(houseRect.right, houseRect.bottom - seamOffset / 2);
+    final bottomLeft =
+        Offset(houseRect.left, houseRect.bottom - seamOffset / 2);
     final roofPeak = Offset(rect.center.dx, rect.bottom);
-    final roofTopLeft = Offset(rect.left, rect.bottom - roofHeight - seamOffset);
-    final roofTopRight = Offset(rect.right, rect.bottom - roofHeight - seamOffset);
+    final roofTopLeft =
+        Offset(rect.left, rect.bottom - roofHeight - seamOffset);
+    final roofTopRight =
+        Offset(rect.right, rect.bottom - roofHeight - seamOffset);
 
     // Draw house base (rectangle) fill
-    paintContext.touchyObjectPainter.drawRect(houseRect, paintContext.fillPaint);
+    paintContext.touchyObjectPainter
+        .drawRect(houseRect, paintContext.fillPaint);
 
     // Draw roof fill (downward triangle)
     final roofPath = Path();
@@ -826,16 +876,21 @@ class CanvasObjectPainter {
         );
 
         // Top edge (horizontal) gap
-        final topGapStart = Offset(topEdgeCenter.dx - halfGap, topEdgeCenter.dy);
+        final topGapStart =
+            Offset(topEdgeCenter.dx - halfGap, topEdgeCenter.dy);
         final topGapEnd = Offset(topEdgeCenter.dx + halfGap, topEdgeCenter.dy);
 
         // Left edge (vertical) gap
-        final leftGapStart = Offset(leftEdgeCenter.dx, leftEdgeCenter.dy - halfGap);
-        final leftGapEnd = Offset(leftEdgeCenter.dx, leftEdgeCenter.dy + halfGap);
+        final leftGapStart =
+            Offset(leftEdgeCenter.dx, leftEdgeCenter.dy - halfGap);
+        final leftGapEnd =
+            Offset(leftEdgeCenter.dx, leftEdgeCenter.dy + halfGap);
 
         // Right edge (vertical) gap
-        final rightGapStart = Offset(rightEdgeCenter.dx, rightEdgeCenter.dy - halfGap);
-        final rightGapEnd = Offset(rightEdgeCenter.dx, rightEdgeCenter.dy + halfGap);
+        final rightGapStart =
+            Offset(rightEdgeCenter.dx, rightEdgeCenter.dy - halfGap);
+        final rightGapEnd =
+            Offset(rightEdgeCenter.dx, rightEdgeCenter.dy + halfGap);
 
         // Draw top edge with gap
         strokePath.moveTo(top.dx, top.dy);
@@ -860,8 +915,10 @@ class CanvasObjectPainter {
         // Calculate roof peak gap
         final leftRoofToPeakVector = roofPeak - roofTopLeft;
         final rightRoofToPeakVector = roofPeak - roofTopRight;
-        final leftRoofToPeakUnit = leftRoofToPeakVector / leftRoofToPeakVector.distance;
-        final rightRoofToPeakUnit = rightRoofToPeakVector / rightRoofToPeakVector.distance;
+        final leftRoofToPeakUnit =
+            leftRoofToPeakVector / leftRoofToPeakVector.distance;
+        final rightRoofToPeakUnit =
+            rightRoofToPeakVector / rightRoofToPeakVector.distance;
 
         // Create gap at the peak vertex
         final peakGapLeft = roofPeak - (leftRoofToPeakUnit * halfGap);
@@ -876,13 +933,18 @@ class CanvasObjectPainter {
         // Draw right roof edge from peak gap end
         strokePath.lineTo(roofTopRight.dx, roofTopRight.dy);
 
-        paintContext.touchyObjectPainter.drawPath(strokePath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(strokePath, paintContext.strokePaint);
       } else {
         // Draw without gaps
-        paintContext.touchyObjectPainter.drawLine(top, topRight, paintContext.strokePaint); // Top
-        paintContext.touchyObjectPainter.drawLine(top, bottomLeft, paintContext.strokePaint); // Left
-        paintContext.touchyObjectPainter.drawLine(topRight, bottomRight, paintContext.strokePaint); // Right
-        paintContext.touchyObjectPainter.drawPath(roofPath, paintContext.strokePaint); // Roof
+        paintContext.touchyObjectPainter
+            .drawLine(top, topRight, paintContext.strokePaint); // Top
+        paintContext.touchyObjectPainter
+            .drawLine(top, bottomLeft, paintContext.strokePaint); // Left
+        paintContext.touchyObjectPainter
+            .drawLine(topRight, bottomRight, paintContext.strokePaint); // Right
+        paintContext.touchyObjectPainter
+            .drawPath(roofPath, paintContext.strokePaint); // Roof
       }
     }
   }
@@ -894,7 +956,8 @@ class CanvasObjectPainter {
     final targetSize = paintContext.object.getDimensions();
 
     // Try exact size first, fallback to any cached size if miss (stretched during resize)
-    var image = ImageService.getImageSync(url, targetSize: targetSize) ?? ImageCacheService.getFallbackImage(url);
+    var image = ImageService.getImageSync(url, targetSize: targetSize) ??
+        ImageCacheService.getFallbackImage(url);
 
     // Configure Paint for better image quality
     Paint paint = Paint()
@@ -903,7 +966,8 @@ class CanvasObjectPainter {
 
     if (paintContext.isGhost) {
       paint = Paint()
-        ..color = ThemeHelper.neutral500(paintContext.context).withValues(alpha: 0.5)
+        ..color =
+            ThemeHelper.neutral500(paintContext.context).withValues(alpha: 0.5)
         ..isAntiAlias = true
         ..filterQuality = FilterQuality.high;
     }
@@ -913,17 +977,20 @@ class CanvasObjectPainter {
       paintContext.canvas.drawImageRect(
         image,
         Rect.fromLTWH(0, 0, image.width.toDouble(), image.height.toDouble()),
-        Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight),
+        Rect.fromPoints(
+            paintContext.object.topLeft, paintContext.object.bottomRight),
         paint,
       );
 
       // Add an invisible TouchyCanvas rectangle over the image for hit detection
-      final hitDetectionRect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+      final hitDetectionRect = Rect.fromPoints(
+          paintContext.object.topLeft, paintContext.object.bottomRight);
       final invisiblePaint = Paint()
         ..color = const Color(0x00000000) // Completely transparent
         ..style = PaintingStyle.fill;
 
-      paintContext.touchyObjectPainter.drawRect(hitDetectionRect, invisiblePaint);
+      paintContext.touchyObjectPainter
+          .drawRect(hitDetectionRect, invisiblePaint);
     }
   }
 
@@ -962,18 +1029,23 @@ class CanvasObjectPainter {
     final endpoint = points.last;
     final secondLastPoint = points[points.length - 2];
 
-    final endDirectionVector = Offset(endpoint.dx - secondLastPoint.dx, endpoint.dy - secondLastPoint.dy);
-    final endMagnitude =
-        sqrt(endDirectionVector.dx * endDirectionVector.dx + endDirectionVector.dy * endDirectionVector.dy);
+    final endDirectionVector = Offset(
+        endpoint.dx - secondLastPoint.dx, endpoint.dy - secondLastPoint.dy);
+    final endMagnitude = sqrt(endDirectionVector.dx * endDirectionVector.dx +
+        endDirectionVector.dy * endDirectionVector.dy);
     if (endMagnitude == 0) return;
-    final endNormalizedDirection = Offset(endDirectionVector.dx / endMagnitude, endDirectionVector.dy / endMagnitude);
+    final endNormalizedDirection = Offset(endDirectionVector.dx / endMagnitude,
+        endDirectionVector.dy / endMagnitude);
 
-    final startDirectionVector = Offset(secondPoint.dx - startPoint.dx, secondPoint.dy - startPoint.dy);
-    final startMagnitude =
-        sqrt(startDirectionVector.dx * startDirectionVector.dx + startDirectionVector.dy * startDirectionVector.dy);
+    final startDirectionVector =
+        Offset(secondPoint.dx - startPoint.dx, secondPoint.dy - startPoint.dy);
+    final startMagnitude = sqrt(
+        startDirectionVector.dx * startDirectionVector.dx +
+            startDirectionVector.dy * startDirectionVector.dy);
     if (startMagnitude == 0) return;
-    final startNormalizedDirection =
-        Offset(startDirectionVector.dx / startMagnitude, startDirectionVector.dy / startMagnitude);
+    final startNormalizedDirection = Offset(
+        startDirectionVector.dx / startMagnitude,
+        startDirectionVector.dy / startMagnitude);
 
     Offset adjustedEndpoint = endpoint;
     Offset adjustedStartPoint = startPoint;
@@ -981,7 +1053,8 @@ class CanvasObjectPainter {
       adjustedEndpoint = endpoint - endNormalizedDirection * arrowSize * 0.4;
     }
     if (paintContext.object.arrowProps.startTip != ArrowTip.none) {
-      adjustedStartPoint = startPoint + startNormalizedDirection * arrowSize * 0.5;
+      adjustedStartPoint =
+          startPoint + startNormalizedDirection * arrowSize * 0.5;
     }
 
     adjustedEndpoint = adjustedEndpoint - endNormalizedDirection;
@@ -1004,7 +1077,8 @@ class CanvasObjectPainter {
         bool isDash = true;
         while (drawn < distance) {
           final remaining = distance - drawn;
-          final segmentLength = isDash ? min(dashWidth, remaining) : min(dashSpace, remaining);
+          final segmentLength =
+              isDash ? min(dashWidth, remaining) : min(dashSpace, remaining);
 
           final start = current + normalized * drawn;
           final end = current + normalized * (drawn + segmentLength);
@@ -1260,7 +1334,8 @@ class CanvasObjectPainter {
           paintContext.canvas.drawPath(arrowHeadPath, clearPaint);
         }
 
-        paintContext.canvas.drawPath(arrowHeadPath, paint..style = PaintingStyle.fill);
+        paintContext.canvas
+            .drawPath(arrowHeadPath, paint..style = PaintingStyle.fill);
         break;
       case ArrowTip.circle:
         final circleRadius = 6.0;
@@ -1270,7 +1345,8 @@ class CanvasObjectPainter {
         final innerPaint = Paint()
           ..style = PaintingStyle.fill
           ..color = ThemeHelper.white(context);
-        paintContext.canvas.drawCircle(point, circleRadius - paint.strokeWidth / 2 + 1, innerPaint);
+        paintContext.canvas.drawCircle(
+            point, circleRadius - paint.strokeWidth / 2 + 1, innerPaint);
         break;
     }
   }
@@ -1315,8 +1391,12 @@ class CanvasObjectPainter {
       (paintContext.object.topLeft.dy + paintContext.object.bottomRight.dy) / 2,
     );
 
-    final width = (paintContext.object.bottomRight.dx - paintContext.object.topLeft.dx).abs();
-    final height = (paintContext.object.bottomRight.dy - paintContext.object.topLeft.dy).abs();
+    final width =
+        (paintContext.object.bottomRight.dx - paintContext.object.topLeft.dx)
+            .abs();
+    final height =
+        (paintContext.object.bottomRight.dy - paintContext.object.topLeft.dy)
+            .abs();
 
     final ovalRect = Rect.fromCenter(
       center: center,
@@ -1399,16 +1479,19 @@ class CanvasObjectPainter {
           topAngle + 2 * pi - leftAngle - gapAngleX - gapAngleY,
         );
 
-        paintContext.touchyObjectPainter.drawPath(path, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(path, paintContext.strokePaint);
       } else {
-        paintContext.touchyObjectPainter.drawOval(ovalRect, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawOval(ovalRect, paintContext.strokePaint);
       }
     }
   }
 
   void _drawRectangle(CanvasObjectPaintContext paintContext) {
     final radius = 8.0;
-    final rect = Rect.fromPoints(paintContext.object.topLeft, paintContext.object.bottomRight);
+    final rect = Rect.fromPoints(
+        paintContext.object.topLeft, paintContext.object.bottomRight);
     final rrect = RRect.fromRectAndRadius(rect, Radius.circular(radius));
 
     paintContext.touchyObjectPainter.drawRRect(rrect, paintContext.fillPaint);
@@ -1490,26 +1573,31 @@ class CanvasObjectPainter {
           radius: Radius.circular(radius),
         );
 
-        paintContext.touchyObjectPainter.drawPath(path, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(path, paintContext.strokePaint);
       } else {
-        paintContext.touchyObjectPainter.drawRRect(rrect, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawRRect(rrect, paintContext.strokePaint);
       }
     }
   }
 
   void _drawCylinder(CanvasObjectPaintContext paintContext) {
     // Calculate dimensions
-    final double width = paintContext.object.bottomRight.dx - paintContext.object.topLeft.dx;
-    final double height = paintContext.object.bottomRight.dy - paintContext.object.topLeft.dy;
+    final double width =
+        paintContext.object.bottomRight.dx - paintContext.object.topLeft.dx;
+    final double height =
+        paintContext.object.bottomRight.dy - paintContext.object.topLeft.dy;
 
     // Define the radius of the cylinder's ends (for barrel shape)
     final double radiusX = width / 2;
     final double radiusY = height / 6; // Makes the ends oval
 
     // Top and bottom center points
-    final Offset topCenter = Offset(paintContext.object.topLeft.dx + radiusX, paintContext.object.topLeft.dy + radiusY);
-    final Offset bottomCenter =
-        Offset(paintContext.object.topLeft.dx + radiusX, paintContext.object.bottomRight.dy - radiusY);
+    final Offset topCenter = Offset(paintContext.object.topLeft.dx + radiusX,
+        paintContext.object.topLeft.dy + radiusY);
+    final Offset bottomCenter = Offset(paintContext.object.topLeft.dx + radiusX,
+        paintContext.object.bottomRight.dy - radiusY);
 
     // Draw the body (middle rectangle)
     final Rect bodyRect = Rect.fromLTRB(
@@ -1522,11 +1610,15 @@ class CanvasObjectPainter {
     paintContext.touchyObjectPainter.drawRect(bodyRect, paintContext.fillPaint);
 
     // Draw the top and bottom oval ends
-    final Rect topOvalRect = Rect.fromCenter(center: topCenter, width: width, height: radiusY * 2);
-    final Rect bottomOvalRect = Rect.fromCenter(center: bottomCenter, width: width, height: radiusY * 2);
+    final Rect topOvalRect =
+        Rect.fromCenter(center: topCenter, width: width, height: radiusY * 2);
+    final Rect bottomOvalRect = Rect.fromCenter(
+        center: bottomCenter, width: width, height: radiusY * 2);
 
-    paintContext.touchyObjectPainter.drawOval(topOvalRect, paintContext.fillPaint);
-    paintContext.touchyObjectPainter.drawOval(bottomOvalRect, paintContext.fillPaint);
+    paintContext.touchyObjectPainter
+        .drawOval(topOvalRect, paintContext.fillPaint);
+    paintContext.touchyObjectPainter
+        .drawOval(bottomOvalRect, paintContext.fillPaint);
 
     if (paintContext.object.stroke == StrokeType.none) return;
 
@@ -1542,12 +1634,14 @@ class CanvasObjectPainter {
       final double halfGap = paintContext.gapLength / 2;
 
       // Right edge center
-      final Offset rightEdgeCenter = Offset(boundingRect.right, boundingRect.center.dy);
+      final Offset rightEdgeCenter =
+          Offset(boundingRect.right, boundingRect.center.dy);
       final double rightGapTop = rightEdgeCenter.dy - halfGap;
       final double rightGapBottom = rightEdgeCenter.dy + halfGap;
 
       // Left edge center
-      final Offset leftEdgeCenter = Offset(boundingRect.left, boundingRect.center.dy);
+      final Offset leftEdgeCenter =
+          Offset(boundingRect.left, boundingRect.center.dy);
       final double leftGapTop = leftEdgeCenter.dy - halfGap;
       final double leftGapBottom = leftEdgeCenter.dy + halfGap;
 
@@ -1569,7 +1663,8 @@ class CanvasObjectPainter {
       // Draw from left to just before top gap (going clockwise, positive direction)
       topOvalPath.addArc(topOvalRect, leftAngle, pi / 2 - topGapAngle);
       // Draw from just after top gap to right
-      topOvalPath.addArc(topOvalRect, topAngle + topGapAngle, pi / 2 + topGapAngle);
+      topOvalPath.addArc(
+          topOvalRect, topAngle + topGapAngle, pi / 2 + topGapAngle);
 
       if (paintContext.object.stroke == StrokeType.dashed) {
         TouchyDashedPainter.paint(
@@ -1580,7 +1675,8 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(topOvalPath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(topOvalPath, paintContext.strokePaint);
       }
 
       // Draw bottom oval with gap (only the bottom half, visible part)
@@ -1596,10 +1692,11 @@ class CanvasObjectPainter {
       final double bottomGapAngle = gapAngleX;
 
       // Draw from right to just before bottom gap
-      bottomOvalPath.addArc(bottomOvalRect, bottomRightAngle, bottomBottomAngle - bottomRightAngle - bottomGapAngle);
+      bottomOvalPath.addArc(bottomOvalRect, bottomRightAngle,
+          bottomBottomAngle - bottomRightAngle - bottomGapAngle);
       // Draw from just after bottom gap to left
-      bottomOvalPath.addArc(
-          bottomOvalRect, bottomBottomAngle + bottomGapAngle, bottomLeftAngle - bottomBottomAngle - bottomGapAngle);
+      bottomOvalPath.addArc(bottomOvalRect, bottomBottomAngle + bottomGapAngle,
+          bottomLeftAngle - bottomBottomAngle - bottomGapAngle);
 
       if (paintContext.object.stroke == StrokeType.dashed) {
         TouchyDashedPainter.paint(
@@ -1610,7 +1707,8 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(bottomOvalPath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(bottomOvalPath, paintContext.strokePaint);
       }
 
       // Draw left border of rectangle body with gap
@@ -1629,7 +1727,8 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(leftBorderPath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(leftBorderPath, paintContext.strokePaint);
       }
 
       // Draw right border of rectangle body with gap
@@ -1648,7 +1747,8 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(rightBorderPath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(rightBorderPath, paintContext.strokePaint);
       }
     } else {
       // Draw top and bottom ovals with borders (only visible halves)
@@ -1665,7 +1765,8 @@ class CanvasObjectPainter {
       final double bottomRightAngle = 0;
       final double bottomLeftAngle = pi;
 
-      bottomOvalPathNoGap.addArc(bottomOvalRect, bottomRightAngle, bottomLeftAngle - bottomRightAngle);
+      bottomOvalPathNoGap.addArc(
+          bottomOvalRect, bottomRightAngle, bottomLeftAngle - bottomRightAngle);
 
       if (paintContext.object.stroke == StrokeType.dashed) {
         TouchyDashedPainter.paint(
@@ -1683,8 +1784,10 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(topOvalPathNoGap, paintContext.strokePaint);
-        paintContext.touchyObjectPainter.drawPath(bottomOvalPathNoGap, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(topOvalPathNoGap, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(bottomOvalPathNoGap, paintContext.strokePaint);
       }
 
       // Draw left and right borders of rectangle body only
@@ -1703,13 +1806,15 @@ class CanvasObjectPainter {
           step: 8,
         );
       } else {
-        paintContext.touchyObjectPainter.drawPath(bodyBorderPath, paintContext.strokePaint);
+        paintContext.touchyObjectPainter
+            .drawPath(bodyBorderPath, paintContext.strokePaint);
       }
     }
   }
 
   void _drawBrush(CanvasObjectPaintContext paintContext) {
-    if (!paintContext.object.isBrush || paintContext.object.brushProps.points.isEmpty) return;
+    if (!paintContext.object.isBrush ||
+        paintContext.object.brushProps.points.isEmpty) return;
 
     final points = paintContext.object.brushProps.points;
 

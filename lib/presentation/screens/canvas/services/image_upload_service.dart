@@ -24,7 +24,8 @@ class CanvasImageUploadService {
         }
 
         final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-        final viewportCenter = ref.read(canvasViewportProvider.notifier).getViewportCenter();
+        final viewportCenter =
+            ref.read(canvasViewportProvider.notifier).getViewportCenter();
 
         if (!context.mounted) return;
 

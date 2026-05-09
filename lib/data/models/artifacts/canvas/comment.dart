@@ -6,73 +6,61 @@ class Comment implements ExpandablePin {
   final String text;
   @override
   final Offset? position;
-  final Color color;
   final List<SubComment> subComments;
   final String authorId;
   final DateTime? createdAt;
   final String? pinnedObjectId;
   final String? targetId;
-  final bool resolved;
   final CommentTargetType? targetType;
 
   Comment({
     required this.id,
     required this.text,
     this.position,
-    required this.color,
     required this.subComments,
     required this.authorId,
     this.createdAt,
     this.pinnedObjectId,
     this.targetId,
-    this.resolved = false,
     this.targetType,
   });
 
   factory Comment.initial() => Comment(
         id: '',
-        color: Colors.transparent,
         text: '',
         authorId: '',
         subComments: [],
         pinnedObjectId: null,
-        resolved: false,
       );
 
   static final empty = Comment(
     id: '',
-    color: Colors.transparent,
     text: '',
     authorId: '',
     subComments: [],
     pinnedObjectId: null,
-    resolved: false,
   );
 
   Comment copyWith({
     String? id,
     String? text,
     Offset? position,
-    Color? color,
     List<SubComment>? subComments,
     String? authorId,
     DateTime? createdAt,
     String? pinnedObjectId,
     String? targetId,
-    bool? resolved,
     CommentTargetType? targetType,
   }) {
     return Comment(
       id: id ?? this.id,
       text: text ?? this.text,
       position: position ?? this.position,
-      color: color ?? this.color,
       subComments: subComments ?? this.subComments,
       authorId: authorId ?? this.authorId,
       createdAt: createdAt ?? this.createdAt,
       pinnedObjectId: pinnedObjectId ?? this.pinnedObjectId,
       targetId: targetId ?? this.targetId,
-      resolved: resolved ?? this.resolved,
       targetType: targetType ?? this.targetType,
     );
   }
@@ -87,9 +75,7 @@ class Comment implements ExpandablePin {
         'body': text,
         'x': position?.dx,
         'y': position?.dy,
-        'color': color.toARGB32(),
         'pinned_object_id': pinnedObjectId,
-        'resolved': resolved,
       };
 
   factory Comment.fromMap(Map<String, dynamic> map) {
@@ -100,14 +86,15 @@ class Comment implements ExpandablePin {
         id: map['id']?.toString() ?? '',
         text: map['body']?.toString() ?? '',
         position: (dx != null && dy != null) ? Offset(dx, dy) : null,
-        color: Color(map['color'] ?? 0),
         subComments: const [],
         authorId: map['author_id']?.toString() ?? '',
-        createdAt: map['created_at'] != null ? _parseDateTime(map['created_at']) : null,
+        createdAt: map['created_at'] != null
+            ? _parseDateTime(map['created_at'])
+            : null,
         pinnedObjectId: map['pinned_object_id']?.toString(),
         targetId: map['target_id']?.toString(),
-        resolved: map['resolved'] ?? false,
-        targetType: CommentTargetType.fromString(map['target_type']?.toString()),
+        targetType:
+            CommentTargetType.fromString(map['target_type']?.toString()),
       );
     } catch (e) {
       debugPrint('Error in Comment.fromMap with data: $map');
@@ -130,7 +117,8 @@ class Comment implements ExpandablePin {
 
   String toJson() => json.encode(toMap());
 
-  factory Comment.fromJson(String source) => Comment.fromMap(json.decode(source));
+  factory Comment.fromJson(String source) =>
+      Comment.fromMap(json.decode(source));
 
   /// Calculate the actual position of the comment on the canvas.
   /// If parent is null, uses absolute positioning.
@@ -165,12 +153,10 @@ class Comment implements ExpandablePin {
       'id: $id, '
       'text: $text, '
       'position: $position, '
-      'color: $color, '
       'subComments: $subComments, '
       'authorId: $authorId, '
       'createdAt: $createdAt, '
       'pinnedObjectId: $pinnedObjectId, '
-      'resolved: $resolved, '
       ')';
 }
 

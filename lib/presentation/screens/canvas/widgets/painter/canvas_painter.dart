@@ -84,7 +84,8 @@ class CanvasPainter extends CustomPainter {
         ref,
         isGhost: true,
         gestureRouter: gestureRouter,
-        interactionContext: ObjectFillInteractionContext(targetObject: paletteState.ghostObject!),
+        interactionContext: ObjectFillInteractionContext(
+            targetObject: paletteState.ghostObject!),
         isInteractive: isInteractive,
       );
     }
@@ -109,9 +110,12 @@ class CanvasPainter extends CustomPainter {
       // Calculate if this object should have gaps drawn
       final bool drawGaps = (activeObject != null &&
               activeObject.isArrow &&
-              ((moveType == ArrowMoveType.start && activeObject.arrowProps.startObjectId == object.id) ||
-                  (moveType == ArrowMoveType.end && activeObject.arrowProps.endObjectId == object.id))) ||
-          (toolMode == ToolMode.arrow && arrowToolPrimedData?.object.id == object.id);
+              ((moveType == ArrowMoveType.start &&
+                      activeObject.arrowProps.startObjectId == object.id) ||
+                  (moveType == ArrowMoveType.end &&
+                      activeObject.arrowProps.endObjectId == object.id))) ||
+          (toolMode == ToolMode.arrow &&
+              arrowToolPrimedData?.object.id == object.id);
 
       CanvasObjectPainter.paint(
         touchyCanvas,
@@ -166,7 +170,9 @@ class CanvasPainter extends CustomPainter {
       // Prepare the text to display
       final textPainter = TextPainter(
         text: TextSpan(
-          text: userCursor.userEmail.isNotEmpty ? userCursor.userEmail : userCursor.userId,
+          text: userCursor.userEmail.isNotEmpty
+              ? userCursor.userEmail
+              : userCursor.userId,
           style: NarwhalTextStyle(
             color: ThemeHelper.white(context), // Text color
             fontSize: 10, // Font size
@@ -219,7 +225,10 @@ class CanvasPainter extends CustomPainter {
         );
       }
 
-      if (!object.isBrush && !object.isArrow && object.type != CanvasObjectType.text && textEditedObjId != object.id) {
+      if (!object.isBrush &&
+          !object.isArrow &&
+          object.type != CanvasObjectType.text &&
+          textEditedObjId != object.id) {
         _drawResizeEdges(touchyCanvas, canvas, object);
         _drawResizeCorners(touchyCanvas, canvas, object);
       }
@@ -322,8 +331,10 @@ class CanvasPainter extends CustomPainter {
     }
   }
 
-  void _drawArrowPreview(TouchyCanvas touchyCanvas, Canvas canvas, ArrowPreview preview) {
-    final arrowInteractionContext = ObjectFillInteractionContext(targetObject: preview.arrow);
+  void _drawArrowPreview(
+      TouchyCanvas touchyCanvas, Canvas canvas, ArrowPreview preview) {
+    final arrowInteractionContext =
+        ObjectFillInteractionContext(targetObject: preview.arrow);
     CanvasObjectPainter.paint(
       touchyCanvas,
       canvas,
@@ -338,7 +349,8 @@ class CanvasPainter extends CustomPainter {
 
     if (preview.hasGhostObject) {
       final ghostObject = preview.ghostObject!;
-      final ghostInteractionContext = ObjectFillInteractionContext(targetObject: ghostObject);
+      final ghostInteractionContext =
+          ObjectFillInteractionContext(targetObject: ghostObject);
       CanvasObjectPainter.paint(
         touchyCanvas,
         canvas,
@@ -416,7 +428,8 @@ class CanvasPainter extends CustomPainter {
 
       if (handleRect == Rect.zero) continue;
 
-      final isHorizontal = handle == ResizeHandle.centerLeft || handle == ResizeHandle.centerRight;
+      final isHorizontal = handle == ResizeHandle.centerLeft ||
+          handle == ResizeHandle.centerRight;
       final lineHeight = isHorizontal ? handleRect.height : edgeWidth;
       final lineWidth = isHorizontal ? edgeWidth : handleRect.width;
       final lineRect = Rect.fromLTWH(
@@ -521,7 +534,8 @@ class CanvasPainter extends CustomPainter {
       return;
     }
 
-    if (object.arrowProps.points.length <= 1 || object.arrowProps.arrowType == ArrowType.curved) {
+    if (object.arrowProps.points.length <= 1 ||
+        object.arrowProps.arrowType == ArrowType.curved) {
       return;
     }
 
@@ -542,7 +556,8 @@ class CanvasPainter extends CustomPainter {
       final isLastSegment = i == points.length - 2;
 
       // Skip drawing handle if segment is short and first/last
-      if (segmentLength < CanvasBounds.gridSpacing * 3 && (isFirstSegment || isLastSegment)) {
+      if (segmentLength < CanvasBounds.gridSpacing * 3 &&
+          (isFirstSegment || isLastSegment)) {
         continue;
       }
 
@@ -644,7 +659,8 @@ class CanvasPainter extends CustomPainter {
     if (arrowProps.startObjectId != null) {
       final startObj = object.getStartObject(ref);
       startPoint = startObj.id.isNotEmpty
-          ? arrowProps.startPoint.getOffset(startObj) + (arrowProps.startRelativeOffset ?? Offset.zero)
+          ? arrowProps.startPoint.getOffset(startObj) +
+              (arrowProps.startRelativeOffset ?? Offset.zero)
           : (arrowProps.startAbsoluteOffset ?? Offset.zero);
     } else {
       startPoint = arrowProps.startAbsoluteOffset ?? Offset.zero;
@@ -655,7 +671,8 @@ class CanvasPainter extends CustomPainter {
     if (arrowProps.endObjectId != null) {
       final endObj = object.getEndObject(ref);
       endPoint = endObj.id.isNotEmpty
-          ? arrowProps.endPoint.getOffset(endObj) + (arrowProps.endRelativeOffset ?? Offset.zero)
+          ? arrowProps.endPoint.getOffset(endObj) +
+              (arrowProps.endRelativeOffset ?? Offset.zero)
           : (arrowProps.endAbsoluteOffset ?? Offset.zero);
     } else {
       endPoint = arrowProps.endAbsoluteOffset ?? Offset.zero;

@@ -59,7 +59,8 @@ class CanvasClipboardService {
       // fallback to text object
       if (text.isNotEmpty) {
         final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-        final viewportCenter = ref.read(canvasViewportProvider.notifier).getViewportCenter();
+        final viewportCenter =
+            ref.read(canvasViewportProvider.notifier).getViewportCenter();
 
         final newObj = CanvasObject(
           id: const Uuid().v4(),
@@ -77,10 +78,12 @@ class CanvasClipboardService {
         ref.read(canvasObjectsProvider.notifier).selectObject(newObj);
         CanvasInteractionService.openTextEditor(ref: ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          final renderBox = newObj.textAreaKey.currentContext?.findRenderObject() as RenderBox?;
+          final renderBox = newObj.textAreaKey.currentContext
+              ?.findRenderObject() as RenderBox?;
           if (renderBox != null && renderBox.hasSize) {
             final containerSize = renderBox.size;
-            newObj.bottomRight = newObj.topLeft + Offset(containerSize.width, containerSize.height);
+            newObj.bottomRight = newObj.topLeft +
+                Offset(containerSize.width, containerSize.height);
           }
 
           ref.read(canvasObjectsProvider.notifier).addObject(ref, newObj);
@@ -102,8 +105,9 @@ class CanvasClipboardService {
   }) {
     final nconContent = text.substring(5); // Remove "NCON:" prefix
     final List<dynamic> objectsList = jsonDecode(nconContent);
-    final List<CanvasObject> objects =
-        objectsList.map((objMap) => CanvasObject.fromMap(objMap as Map<String, dynamic>)).toList();
+    final List<CanvasObject> objects = objectsList
+        .map((objMap) => CanvasObject.fromMap(objMap as Map<String, dynamic>))
+        .toList();
 
     if (objects.isEmpty) return (<CanvasObject>[], <Pin>[]);
 
@@ -138,8 +142,10 @@ class CanvasClipboardService {
     double maxY = double.negativeInfinity;
 
     for (final obj in objects) {
-      final newTopLeft = obj.topLeft + initialOffsetDifference + pasteTranslation;
-      final newBottomRight = obj.bottomRight + initialOffsetDifference + pasteTranslation;
+      final newTopLeft =
+          obj.topLeft + initialOffsetDifference + pasteTranslation;
+      final newBottomRight =
+          obj.bottomRight + initialOffsetDifference + pasteTranslation;
 
       minX = math.min(minX, newTopLeft.dx);
       minY = math.min(minY, newTopLeft.dy);
@@ -152,16 +158,20 @@ class CanvasClipboardService {
     Offset adjustment = Offset.zero;
 
     if (maxX > canvasBounds.right) {
-      adjustment = Offset(adjustment.dx - (maxX - canvasBounds.right), adjustment.dy);
+      adjustment =
+          Offset(adjustment.dx - (maxX - canvasBounds.right), adjustment.dy);
     }
     if (maxY > canvasBounds.bottom) {
-      adjustment = Offset(adjustment.dx, adjustment.dy - (maxY - canvasBounds.bottom));
+      adjustment =
+          Offset(adjustment.dx, adjustment.dy - (maxY - canvasBounds.bottom));
     }
     if (minX < canvasBounds.left) {
-      adjustment = Offset(adjustment.dx + (canvasBounds.left - minX), adjustment.dy);
+      adjustment =
+          Offset(adjustment.dx + (canvasBounds.left - minX), adjustment.dy);
     }
     if (minY < canvasBounds.top) {
-      adjustment = Offset(adjustment.dx, adjustment.dy + (canvasBounds.top - minY));
+      adjustment =
+          Offset(adjustment.dx, adjustment.dy + (canvasBounds.top - minY));
     }
 
     final adjustedOffset = initialOffsetDifference + adjustment;
@@ -175,9 +185,11 @@ class CanvasClipboardService {
       idMapping[obj.id] = newObj.id;
 
       final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
-      newObj.topLeft = canvasBoundsNotifier
-          .snap((newObj.topLeft + adjustedOffset).translate(pasteTranslation.dx, pasteTranslation.dy));
-      newObj.bottomRight = (newObj.bottomRight + adjustedOffset).translate(pasteTranslation.dx, pasteTranslation.dy);
+      newObj.topLeft = canvasBoundsNotifier.snap(
+          (newObj.topLeft + adjustedOffset)
+              .translate(pasteTranslation.dx, pasteTranslation.dy));
+      newObj.bottomRight = (newObj.bottomRight + adjustedOffset)
+          .translate(pasteTranslation.dx, pasteTranslation.dy);
 
       pastedObjects.add(newObj);
     }
@@ -186,12 +198,14 @@ class CanvasClipboardService {
       final newArrow = CanvasObject.fromJson(obj.toJson());
       newArrow.id = const Uuid().v4();
 
-      newArrow.topLeft = (newArrow.topLeft + adjustedOffset).translate(pasteTranslation.dx, pasteTranslation.dy);
-      newArrow.bottomRight =
-          (newArrow.bottomRight + adjustedOffset).translate(pasteTranslation.dx, pasteTranslation.dy);
+      newArrow.topLeft = (newArrow.topLeft + adjustedOffset)
+          .translate(pasteTranslation.dx, pasteTranslation.dy);
+      newArrow.bottomRight = (newArrow.bottomRight + adjustedOffset)
+          .translate(pasteTranslation.dx, pasteTranslation.dy);
 
       if (idMapping.containsKey(obj.arrowProps.startObjectId)) {
-        newArrow.arrowProps.startObjectId = idMapping[obj.arrowProps.startObjectId]!;
+        newArrow.arrowProps.startObjectId =
+            idMapping[obj.arrowProps.startObjectId]!;
       }
 
       if (idMapping.containsKey(obj.arrowProps.endObjectId)) {
@@ -199,7 +213,8 @@ class CanvasClipboardService {
       }
 
       newArrow.arrowProps.points = newArrow.arrowProps.points
-          .map((keypoint) => (keypoint + adjustedOffset).translate(pasteTranslation.dx, pasteTranslation.dy))
+          .map((keypoint) => (keypoint + adjustedOffset)
+              .translate(pasteTranslation.dx, pasteTranslation.dy))
           .toList();
 
       pastedObjects.add(newArrow);
@@ -227,5 +242,4 @@ class CanvasClipboardService {
   }
 
   static bool _isNcon(String text) => text.startsWith('NCON:');
-
 }

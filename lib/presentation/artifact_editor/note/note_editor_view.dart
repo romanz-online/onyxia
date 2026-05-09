@@ -18,7 +18,8 @@ class NoteEditorView extends ConsumerStatefulWidget {
 }
 
 class _EditorState extends ConsumerState<NoteEditorView> {
-  NoteStateProvider get _provider => widget.provider ?? selectedNoteStateProvider;
+  NoteStateProvider get _provider =>
+      widget.provider ?? selectedNoteStateProvider;
   Note? get _artifact => ref.read(_provider).value?.note;
   String get _selectedNoteId => _artifact?.id ?? '';
 
@@ -87,17 +88,19 @@ class _EditorState extends ConsumerState<NoteEditorView> {
       _isDragOver = false;
       _previousSelectedComment = null;
     });
-    ref.read(commentsProvider(_selectedNoteId).notifier).setSelectedComment(null);
+    ref
+        .read(commentsProvider(_selectedNoteId).notifier)
+        .setSelectedComment(null);
   }
 
   void _handleCommentCreate([Offset? contextMenuPosition]) {
-    final position = contextMenuPosition ?? _localPosition ?? const Offset(100, 100);
+    final position =
+        contextMenuPosition ?? _localPosition ?? const Offset(100, 100);
     final newComment = Comment(
       id: const Uuid().v4(),
       text: '',
       authorId: ref.read(currentUserProvider).id,
       position: position,
-      color: ThemeHelper.yellow(),
       subComments: [],
       createdAt: DateTime.now(),
     );
@@ -106,7 +109,9 @@ class _EditorState extends ConsumerState<NoteEditorView> {
       _currentComment = newComment;
       _localPosition = position;
     });
-    ref.read(commentsProvider(_selectedNoteId).notifier).setSelectedComment(newComment);
+    ref
+        .read(commentsProvider(_selectedNoteId).notifier)
+        .setSelectedComment(newComment);
   }
 
   void _clearCommentSelection() {
@@ -118,7 +123,9 @@ class _EditorState extends ConsumerState<NoteEditorView> {
           _localPosition = null;
           _selectedCommentId = null;
         });
-        ref.read(commentsProvider(_selectedNoteId).notifier).setSelectedComment(null);
+        ref
+            .read(commentsProvider(_selectedNoteId).notifier)
+            .setSelectedComment(null);
       }
     });
   }
@@ -163,11 +170,12 @@ class _EditorState extends ConsumerState<NoteEditorView> {
 
     final item = ref.watch(_provider.select((state) => state.value?.note));
     if (item == null) {
-      return const Center(child: Text('No item selected', style: NarwhalTextStyle()));
+      return const Center(
+          child: Text('No item selected', style: NarwhalTextStyle()));
     }
 
-    final selectedComment =
-        ref.watch(commentsProvider(_selectedNoteId).select((state) => state.selectedComment));
+    final selectedComment = ref.watch(commentsProvider(_selectedNoteId)
+        .select((state) => state.selectedComment));
 
     if (selectedComment != _previousSelectedComment) {
       _previousSelectedComment = selectedComment;
@@ -243,16 +251,20 @@ class _EditorState extends ConsumerState<NoteEditorView> {
 
   void _handleExternalCommentSelection(Comment selectedComment) {
     if (selectedComment.id.isNotEmpty) {
-      if (_currentComment == null || _currentComment!.id != selectedComment.id) {
+      if (_currentComment == null ||
+          _currentComment!.id != selectedComment.id) {
         if (mounted) {
           setState(() {
             _showComment = true;
             _currentComment = selectedComment;
-            _localPosition = selectedComment.position ?? _localPosition ?? const Offset(100, 100);
+            _localPosition = selectedComment.position ??
+                _localPosition ??
+                const Offset(100, 100);
             _selectedCommentId = selectedComment.id;
           });
         }
-      } else if (_currentComment != null && _currentComment!.id == selectedComment.id) {
+      } else if (_currentComment != null &&
+          _currentComment!.id == selectedComment.id) {
         _currentComment = selectedComment;
       }
     } else if (_selectedCommentId != null) {
@@ -349,7 +361,8 @@ class _EditorContentState extends State<_EditorContent> {
   }
 
   void _updateEditorHeight() {
-    final RenderBox? renderBox = _editorKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _editorKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null && renderBox.hasSize) {
       final newHeight = renderBox.size.height;
       final newWidth = renderBox.size.width;
@@ -372,7 +385,8 @@ class _EditorContentState extends State<_EditorContent> {
             onComment: widget.onCommentCreate,
             child: LayoutBuilder(
               builder: (context, cardConstraints) {
-                WidgetsBinding.instance.addPostFrameCallback((_) => _updateEditorHeight());
+                WidgetsBinding.instance
+                    .addPostFrameCallback((_) => _updateEditorHeight());
 
                 return DropRegion(
                   key: _editorKey,
@@ -380,7 +394,8 @@ class _EditorContentState extends State<_EditorContent> {
                   hitTestBehavior: HitTestBehavior.opaque,
                   onDropOver: (event) {
                     widget.onDragOver(true);
-                    return event.session.allowedOperations.firstOrNull ?? DropOperation.none;
+                    return event.session.allowedOperations.firstOrNull ??
+                        DropOperation.none;
                   },
                   onPerformDrop: widget.onImageDrop,
                   onDropLeave: (_) => widget.onDragOver(false),
@@ -413,7 +428,9 @@ class _EditorContentState extends State<_EditorContent> {
                             ),
                           ),
                         ),
-                      if (widget.showComment && widget.currentComment != null && widget.localPosition != null)
+                      if (widget.showComment &&
+                          widget.currentComment != null &&
+                          widget.localPosition != null)
                         Builder(
                           builder: (context) {
                             return ArtifactComment(
@@ -467,7 +484,8 @@ class _EditorField extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final horizontalMargin = ((constraints.maxWidth - 800.0) / 2).clamp(0.0, double.infinity);
+        final horizontalMargin =
+            ((constraints.maxWidth - 800.0) / 2).clamp(0.0, double.infinity);
         return CustomScrollView(
           controller: scrollController,
           slivers: [
@@ -477,7 +495,8 @@ class _EditorField extends ConsumerWidget {
                   left: (horizontalMargin - 5).clamp(0.0, double.infinity),
                   right: horizontalMargin,
                 ),
-                child: NoteTitleField(provider: provider, nextFocusNode: focusNode),
+                child: NoteTitleField(
+                    provider: provider, nextFocusNode: focusNode),
               ),
             ),
             SliverFillRemaining(
@@ -491,7 +510,8 @@ class _EditorField extends ConsumerWidget {
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
                   onWikiLinkTapped: (title) {
-                    final projectId = ref.read(projectsProvider).selectedProject.id;
+                    final projectId =
+                        ref.read(projectsProvider).selectedProject.id;
                     context.go('/project/$projectId/$title');
                   },
                 ),
