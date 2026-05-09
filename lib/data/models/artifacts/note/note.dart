@@ -10,6 +10,9 @@ class Note extends Artifact {
     super.createdAt,
     super.createdBy,
     super.type = ArtifactType.note,
+    super.updatedBy,
+    super.updatedAt,
+    //
     this.content = '',
   });
 
@@ -32,6 +35,9 @@ class Note extends Artifact {
       createdAt: createdAt ?? this.createdAt,
       createdBy: createdBy ?? this.createdBy,
       type: type ?? this.type,
+      updatedBy: updatedBy ?? this.updatedBy,
+      updatedAt: updatedAt ?? this.updatedAt,
+      //
       content: content ?? this.content,
     );
   }
@@ -42,7 +48,9 @@ class Note extends Artifact {
   }
 
   Note.fromMap(super.map)
-      : content = ((map['body'] as Map<String, dynamic>?)?['content'] as String?) ?? '',
+      : content =
+            ((map['body'] as Map<String, dynamic>?)?['content'] as String?) ??
+                '',
         super.fromMap();
 
   factory Note.fromJson(String source) => Note.fromMap(json.decode(source));
