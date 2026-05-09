@@ -52,7 +52,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   void _selectItem(Artifact item) {
     treeController.setSelectedNodeId(item.id);
     ref.read(selectedArtifactProvider.notifier).state = item;
-    ref.read(itemPersistenceProvider.notifier).save(item.id);
     context
         .go(item.navigationUrl(ref.read(projectsProvider).selectedProject.id));
   }

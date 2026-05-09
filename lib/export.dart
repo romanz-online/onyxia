@@ -88,7 +88,6 @@ export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_item_provider.dart';
 export 'package:onyxia/data/providers/note_state_provider.dart';
 export 'package:onyxia/data/providers/canvas_state_provider.dart';
-export 'package:onyxia/data/providers/persistence_provider.dart';
 export 'package:onyxia/data/providers/diffs_provider.dart';
 
 //packages

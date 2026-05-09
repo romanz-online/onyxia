@@ -76,7 +76,6 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       if (urlSelectedId == widget.item.title) {
         final projectId =
             ref.read(projectsProvider.select((s) => s.selectedProject.id));
-        ref.read(itemPersistenceProvider.notifier).save(newName);
         context.go('/project/$projectId/$newName');
       }
     }
