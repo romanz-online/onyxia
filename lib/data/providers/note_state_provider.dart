@@ -56,8 +56,10 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
 
   Future<void> _initialize() async {
     try {
-      final latestNote =
-          await ArtifactsRepository(projectId: projectId).getDocumentStream(_note.id).first as Note? ?? _note;
+      final latestNote = await ArtifactsRepository(projectId: projectId)
+              .getDocumentStream(_note.id)
+              .first as Note? ??
+          _note;
 
       final controller = BardController(text: latestNote.content);
       _controller = controller;
@@ -67,7 +69,8 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
         final current = state.value;
         if (current == null || current.note == null) return;
         final updatedNote = current.note!.copyWith(content: controller.text);
-        state = AsyncData(current.copyWith(note: updatedNote, isSavedRemotely: false));
+        state = AsyncData(
+            current.copyWith(note: updatedNote, isSavedRemotely: false));
         if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
           _debounceSave();
         }
@@ -177,26 +180,16 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
 }
 
 /// Type alias for note state providers — use in widget signatures.
-typedef NoteStateProvider = AutoDisposeStateNotifierProvider<NoteNotifier, AsyncValue<NoteState>>;
+typedef NoteStateProvider
+    = AutoDisposeStateNotifierProvider<NoteNotifier, AsyncValue<NoteState>>;
 
 /// Creates a NoteNotifier for the currently selected Note item.
-final selectedNoteStateProvider = StateNotifierProvider.autoDispose<NoteNotifier, AsyncValue<NoteState>>((ref) {
+final selectedNoteStateProvider =
+    StateNotifierProvider.autoDispose<NoteNotifier, AsyncValue<NoteState>>(
+        (ref) {
   final item = ref.watch(selectedArtifactProvider);
-  final projectId = ref.watch(projectsProvider.select((s) => s.selectedProject.id));
-  final authState = ref.watch(authProvider);
-
-  if (item is! Note || projectId.isEmpty || authState.value == null) {
-    return NoteNotifier(projectId: '', note: Note(), ref: ref);
-  }
-
-  return NoteNotifier(projectId: projectId, note: item, ref: ref);
-});
-
-/// Creates a NoteNotifier for the folder child preview panel.
-final selectedFolderChildNoteStateProvider =
-    StateNotifierProvider.autoDispose<NoteNotifier, AsyncValue<NoteState>>((ref) {
-  final item = ref.watch(selectedFolderChildArtifactProvider);
-  final projectId = ref.watch(projectsProvider.select((s) => s.selectedProject.id));
+  final projectId =
+      ref.watch(projectsProvider.select((s) => s.selectedProject.id));
   final authState = ref.watch(authProvider);
 
   if (item is! Note || projectId.isEmpty || authState.value == null) {

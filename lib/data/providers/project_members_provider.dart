@@ -10,7 +10,7 @@ class ProjectMembersNotifier extends StateNotifier<List<UserDefinition>> {
 
   ProjectMembersNotifier(Ref ref) : super([]) {
     ref.listen<AsyncValue<List<UserReference>>>(
-      projectMembersProvider(null),
+      userReferencesProvider(null),
       (_, next) {
         final newIds = next.asData?.value.map((m) => m.definitionId).toSet() ??
             const <String>{};

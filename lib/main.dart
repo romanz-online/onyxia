@@ -6,10 +6,7 @@ void main() async {
 
   BrowserContextMenu.disableContextMenu();
 
-  await Supabase.initialize(
-    url: supabaseUrl,
-    anonKey: supabaseAnonKey,
-  );
+  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
   runApp(const ProviderScope(child: NarwhalApp()));
 }

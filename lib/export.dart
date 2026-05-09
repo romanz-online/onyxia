@@ -79,7 +79,6 @@ export 'package:onyxia/data/providers/comments_provider.dart';
 export 'package:onyxia/data/providers/projects_provider.dart';
 export 'package:onyxia/data/providers/current_user_provider.dart';
 export 'package:onyxia/data/providers/user_definitions_provider.dart';
-export 'package:onyxia/data/providers/current_user_role_provider.dart';
 export 'package:onyxia/data/providers/user_lookup_provider.dart';
 export 'package:onyxia/data/providers/user_references_provider.dart';
 export 'package:onyxia/data/providers/project_members_provider.dart';
@@ -87,7 +86,6 @@ export 'package:onyxia/data/providers/canvases_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_item_provider.dart';
 export 'package:onyxia/data/providers/note_state_provider.dart';
-export 'package:onyxia/data/providers/canvas_state_provider.dart';
 export 'package:onyxia/data/providers/diffs_provider.dart';
 
 //packages
@@ -101,7 +99,7 @@ export 'package:flutter_svg/svg.dart';
 
 //models
 export 'package:onyxia/data/models/artifacts/note/note.dart';
-export 'package:onyxia/data/models/projects.dart';
+export 'package:onyxia/data/models/project/projects.dart';
 export 'package:onyxia/data/models/history/history_diff.dart';
 export 'package:onyxia/data/models/history/history_diffs.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas_model.dart';

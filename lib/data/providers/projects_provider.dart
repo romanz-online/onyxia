@@ -99,10 +99,6 @@ class ProjectsNotifier extends StateNotifier<Projects> {
     state = state.copyWith(projects: updatedProjects);
   }
 
-  void setProjectsShown(ProjectsShown type) {
-    state = state.copyWith(projectsShown: type);
-  }
-
   void setSearchString(String searchString) {
     state = state.copyWith(searchString: searchString);
   }

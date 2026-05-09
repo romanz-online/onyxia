@@ -1,7 +1,8 @@
 ﻿import 'package:onyxia/export.dart';
 
-final historyDiffsProvider =
-    StateNotifierProvider.autoDispose.family<HistoryDiffsNotifier, HistoryDiffs, HistoryDiffsParams>((ref, params) {
+final historyDiffsProvider = StateNotifierProvider.autoDispose
+    .family<HistoryDiffsNotifier, HistoryDiffs, HistoryDiffsParams>(
+        (ref, params) {
   return HistoryDiffsNotifier(
     projectId: params.projectId,
     itemId: params.itemId,
@@ -59,19 +60,24 @@ class HistoryDiffsNotifier extends StateNotifier<HistoryDiffs> {
       if (!mounted) return;
       List<HistoryDiff> newLocalDiffs = state.localDiffs;
       final anyNew = state.currentDiff != null &&
-          remoteDiffs.any((e) => e.timestamp.isAfter(state.currentDiff!.timestamp) && !state.localDiffs.contains(e));
+          remoteDiffs.any((e) =>
+              e.timestamp.isAfter(state.currentDiff!.timestamp) &&
+              !state.localDiffs.contains(e));
       // TODO: undo can't go past the first local diff because then the list will be empty
       if (anyNew) {
         // renew localDiffs with all diffs that come after our creation time
         // only if a new diff was added
         newLocalDiffs = remoteDiffs
-            .where((diff) => diff.timestamp.isAfter(state.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)))
+            .where((diff) => diff.timestamp.isAfter(
+                state.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)))
             .toList();
       }
 
       final newCurrentDiff = remoteDiffs.isEmpty ? null : remoteDiffs.last;
       final newSelectedDiff =
-          state.selectedDiff == state.currentDiff || state.selectedDiff == null ? newCurrentDiff : state.selectedDiff;
+          state.selectedDiff == state.currentDiff || state.selectedDiff == null
+              ? newCurrentDiff
+              : state.selectedDiff;
 
       state = state.copyWith(
         remoteDiffs: remoteDiffs,
@@ -123,7 +129,9 @@ class HistoryDiffsNotifier extends StateNotifier<HistoryDiffs> {
     final previousDiff = state.localDiffs[currentIndex - 1];
     final diffToDelete = state.currentDiff!;
     final newSelectedDiff =
-        state.selectedDiff == state.currentDiff || state.selectedDiff == null ? previousDiff : state.selectedDiff;
+        state.selectedDiff == state.currentDiff || state.selectedDiff == null
+            ? previousDiff
+            : state.selectedDiff;
 
     await repository.deleteHistoryDiff(diffToDelete);
 
@@ -141,7 +149,9 @@ class HistoryDiffsNotifier extends StateNotifier<HistoryDiffs> {
     final currentIndex = state.localDiffs.indexOf(state.currentDiff!);
     final nextDiff = state.localDiffs[currentIndex + 1];
     final newSelectedDiff =
-        state.selectedDiff == state.currentDiff || state.selectedDiff == null ? nextDiff : state.selectedDiff;
+        state.selectedDiff == state.currentDiff || state.selectedDiff == null
+            ? nextDiff
+            : state.selectedDiff;
 
     await repository.restoreHistoryDiff(nextDiff);
 
@@ -153,7 +163,5 @@ class HistoryDiffsNotifier extends StateNotifier<HistoryDiffs> {
     return true;
   }
 
-  void updateDiff(HistoryDiff diff) {
-    repository.updateHistoryDiff(diff);
-  }
+  void updateDiff(HistoryDiff diff) => repository.updateHistoryDiff(diff);
 }

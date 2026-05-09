@@ -1,6 +1,6 @@
 import 'package:onyxia/export.dart';
 
-final projectMembersProvider = StreamProvider.autoDispose
+final userReferencesProvider = StreamProvider.autoDispose
     .family<List<UserReference>, String?>((ref, explicitProjectId) {
   final projectId = (explicitProjectId != null && explicitProjectId.isNotEmpty)
       ? explicitProjectId
