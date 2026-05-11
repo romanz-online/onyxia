@@ -159,7 +159,7 @@ void pasteArtifactAtPosition(
         );
 
     NarwhalToast.show(
-      text: 'Pin "${note.title}" pasted onto object',
+      text: 'Pin "${note.name}" pasted onto object',
       type: ToastType.success,
     );
   } else {

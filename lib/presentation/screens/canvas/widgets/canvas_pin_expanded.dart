@@ -148,7 +148,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
     setState(() {
       _isEditing = true;
-      _titleController = TextEditingController(text: item.title);
+      _titleController = TextEditingController(text: item.name);
       _contentController = TextEditingController(text: item.content);
     });
   }
@@ -182,7 +182,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
     final newContent = _contentController!.text;
 
     if (_isNewPin) {
-      final newArtifact = Note(title: newTitle, content: newContent);
+      final newArtifact = Note(name: newTitle, content: newContent);
       ref.read(pinsProvider.notifier).updatePin(
             ref,
             widget.pin.copyWith(artifactId: newArtifact.id),
@@ -469,9 +469,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                         bottom: 4,
                                       ),
                                       child: Text(
-                                        artifact.title.isEmpty
+                                        artifact.name.isEmpty
                                             ? 'Untitled'
-                                            : artifact.title,
+                                            : artifact.name,
                                         style: NarwhalTextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,

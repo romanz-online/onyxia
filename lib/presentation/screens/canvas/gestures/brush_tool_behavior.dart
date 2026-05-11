@@ -6,8 +6,8 @@ import 'canvas_tool_gesture_handler.dart';
 
 /// Handles gestures for brush/freehand drawing tool
 /// Creates stroke objects by tracking pan gestures
-class BrushToolHandler extends CanvasToolGestureHandler {
-  const BrushToolHandler({required super.canvasConfig});
+class BrushToolBehavior extends CanvasToolGestureHandler {
+  const BrushToolBehavior({required super.canvasConfig});
 
   @override
   ToolMode get toolMode => ToolMode.brush;

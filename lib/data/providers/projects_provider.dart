@@ -3,14 +3,14 @@ import 'package:onyxia/export.dart';
 final projectsProvider =
     StateNotifierProvider.autoDispose<ProjectsNotifier, Projects>((ref) {
   final authState = ref.watch(authProvider);
-  final userState = ref.watch(currentUserProvider);
+  final currentUser = ref.watch(currentUserProvider);
 
-  if (authState.value == null || userState.id.isEmpty) {
+  if (authState.value == null || currentUser.id.isEmpty) {
     return ProjectsNotifier(Projects.initial(), ProjectsRepository(), '');
   }
 
   return ProjectsNotifier(
-      Projects.initial(), ProjectsRepository(), userState.id);
+      Projects.initial(), ProjectsRepository(), currentUser.id);
 });
 
 class ProjectsNotifier extends StateNotifier<Projects> {

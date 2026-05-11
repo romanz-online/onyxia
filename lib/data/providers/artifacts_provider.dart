@@ -26,7 +26,7 @@ final artifactsErrorProvider =
     StateProvider.family<bool, String>((ref, projectId) => false);
 
 final wikiLinkTitlesProvider = Provider<List<String>>((ref) {
-  return ref.watch(artifactsProvider).map((item) => item.title).toList();
+  return ref.watch(artifactsProvider).map((item) => item.name).toList();
 });
 
 class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
@@ -81,55 +81,15 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
     super.dispose();
   }
 
-  // --- Lookup ---
-
-  Artifact? getItemByTitle(String title) =>
-      _snapshot.firstWhereOrNull((e) => e.title == title);
-
   Artifact? getItemById(String id) =>
       _snapshot.firstWhereOrNull((e) => e.id == id);
 
-  void syncFromRemote() {
-    if (!listEquals(state, _snapshot)) {
-      state = List.from(_snapshot);
-    }
-  }
-
-  List<Artifact> getChildren(Artifact parent) =>
-      state.where((e) => e.parentFolderId == parent.id).toList();
-
-  // --- Add ---
-
   Future<void> addItems(List<Artifact> items) async {
     if (items.isEmpty) return;
-
-    final itemsWithIds = items
-        .map((e) => e.id.isEmpty ? e.copyWith(id: const Uuid().v4()) : e)
-        .toList();
-
-    state = [
-      ...itemsWithIds,
-      ...state.where((e) => !itemsWithIds.any((n) => n.id == e.id)),
-    ];
-
-    _isOperationInProgress = true;
-    try {
-      await repository.add(itemsWithIds);
-    } finally {
-      _isOperationInProgress = false;
-    }
+    await repository.add(items);
   }
 
-  Future<void> addItem(Artifact item) async {
-    _isOperationInProgress = true;
-    try {
-      await repository.add([item]);
-    } finally {
-      _isOperationInProgress = false;
-    }
-  }
-
-  // --- Delete ---
+  Future<void> addItem(Artifact item) async => await repository.add([item]);
 
   Future<void> deleteItem(String itemId, BuildContext context) async {
     if (itemId.isEmpty) return;

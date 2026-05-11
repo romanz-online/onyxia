@@ -576,7 +576,7 @@ class CanvasPainter extends CustomPainter {
     Offset startPoint;
     if (arrowProps.startObjectId != null) {
       final startObj = object.getStartObject(ref);
-      startPoint = startObj.id.isNotEmpty
+      startPoint = startObj != null
           ? arrowProps.startPoint.getOffset(startObj) +
               (arrowProps.startRelativeOffset ?? Offset.zero)
           : (arrowProps.startAbsoluteOffset ?? Offset.zero);
@@ -588,7 +588,7 @@ class CanvasPainter extends CustomPainter {
     Offset endPoint;
     if (arrowProps.endObjectId != null) {
       final endObj = object.getEndObject(ref);
-      endPoint = endObj.id.isNotEmpty
+      endPoint = endObj != null
           ? arrowProps.endPoint.getOffset(endObj) +
               (arrowProps.endRelativeOffset ?? Offset.zero)
           : (arrowProps.endAbsoluteOffset ?? Offset.zero);

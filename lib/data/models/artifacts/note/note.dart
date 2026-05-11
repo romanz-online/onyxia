@@ -5,7 +5,7 @@ class Note extends Artifact {
 
   Note({
     super.id,
-    super.title = 'Untitled',
+    super.name = 'Untitled',
     super.parentFolderId,
     super.createdAt,
     super.createdBy,
@@ -30,7 +30,7 @@ class Note extends Artifact {
   }) {
     return Note(
       id: id ?? this.id,
-      title: title ?? this.title,
+      name: title ?? this.name,
       parentFolderId: parentFolderId ?? this.parentFolderId,
       createdAt: createdAt ?? this.createdAt,
       createdBy: createdBy ?? this.createdBy,

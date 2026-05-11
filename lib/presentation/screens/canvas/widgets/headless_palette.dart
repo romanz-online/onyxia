@@ -59,7 +59,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     CanvasObjectType.reverseHouse: NarwhalIcons.pentahomeReversed,
   };
 
-  NarwhalIcons _getShapeIcon(CanvasObjectType shapeType) => _shapeIcons[shapeType] ?? NarwhalIcons.rectangle;
+  NarwhalIcons _getShapeIcon(CanvasObjectType shapeType) =>
+      _shapeIcons[shapeType] ?? NarwhalIcons.rectangle;
 
   void _onShapeSelected(CanvasObjectType shapeType) {
     final paletteState = ref.read(headlessProvider);
@@ -83,9 +84,11 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
     // Determine connection point based on arrow direction
     if (arrowDirection.dx.abs() > arrowDirection.dy.abs()) {
-      connectionPoint = arrowDirection.dx > 0 ? ConnectionPoint.left : ConnectionPoint.right;
+      connectionPoint =
+          arrowDirection.dx > 0 ? ConnectionPoint.left : ConnectionPoint.right;
     } else {
-      connectionPoint = arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
+      connectionPoint =
+          arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
     }
 
     ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
@@ -127,9 +130,11 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
     // Determine connection point based on arrow direction
     if (arrowDirection.dx.abs() > arrowDirection.dy.abs()) {
-      connectionPoint = arrowDirection.dx > 0 ? ConnectionPoint.left : ConnectionPoint.right;
+      connectionPoint =
+          arrowDirection.dx > 0 ? ConnectionPoint.left : ConnectionPoint.right;
     } else {
-      connectionPoint = arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
+      connectionPoint =
+          arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
     }
 
     ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
@@ -166,7 +171,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
   Widget _buildShapesPaletteLayout(HeadlessState paletteState) {
     // Calculate menu dimensions (original logic for shapes)
-    final menuHeight = shapePaletteSize.height + addSectionSize.height + borderWidth * 2;
+    final menuHeight =
+        shapePaletteSize.height + addSectionSize.height + borderWidth * 2;
     final menuWidth = shapePaletteSize.width + borderWidth * 2;
 
     // Calculate arrow direction from last two keypoints to determine menu offset
@@ -176,7 +182,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     final arrowKeypoints = widget.arrow.arrowProps.points;
     if (arrowKeypoints.isEmpty) return const SizedBox.shrink();
 
-    final direction = arrowKeypoints.last - arrowKeypoints[arrowKeypoints.length - 2];
+    final direction =
+        arrowKeypoints.last - arrowKeypoints[arrowKeypoints.length - 2];
 
     if (direction.dx > 0) {
       // Arrow going right, offset menu left
@@ -194,7 +201,9 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
       offsetY = menuSpacingY;
     }
 
-    final lastKeypoint = ref.read(canvasViewportProvider.notifier).convertToScreenCoords(arrowKeypoints.last);
+    final lastKeypoint = ref
+        .read(canvasViewportProvider.notifier)
+        .convertToScreenCoords(arrowKeypoints.last);
     final desiredX = lastKeypoint.dx - menuWidth / 2 + offsetX;
     final desiredY = lastKeypoint.dy - menuHeight + offsetY;
 
@@ -232,16 +241,22 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
               final paletteTop = y;
               final paletteBottom = y + menuHeight;
 
-              final isOutsidePalette =
-                  tapX < paletteLeft || tapX > paletteRight || tapY < paletteTop || tapY > paletteBottom;
+              final isOutsidePalette = tapX < paletteLeft ||
+                  tapX > paletteRight ||
+                  tapY < paletteTop ||
+                  tapY > paletteBottom;
 
               if (isOutsidePalette) {
                 final paletteState = ref.read(headlessProvider);
                 if (paletteState.headlessArrow == null) return;
 
                 final arrow = paletteState.headlessArrow!;
-                ref.read(canvasObjectsProvider.notifier).deleteObject(ref, arrow);
-                ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+                ref
+                    .read(canvasObjectsProvider.notifier)
+                    .deleteObject(ref, arrow);
+                ref
+                    .read(canvasGestureStateProvider.notifier)
+                    .resetInteraction(ref);
               }
             },
             child: Container(color: Colors.transparent),
@@ -276,7 +291,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                     height: addSectionSize.height,
                     width: addSectionSize.width,
                     decoration: BoxDecoration(
-                      color: ThemeHelper.neutral600(context).withValues(alpha: 0.05),
+                      color: ThemeHelper.neutral600(context)
+                          .withValues(alpha: 0.05),
                       borderRadius: const BorderRadius.only(
                         bottomLeft: Radius.circular(buttonBorderRadius),
                         bottomRight: Radius.circular(buttonBorderRadius),
@@ -318,11 +334,15 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     if (arrowKeypoints.isEmpty) return const SizedBox.shrink();
 
     // Get arrow position for positioning the menu
-    final lastKeypoint = ref.read(canvasViewportProvider.notifier).convertToScreenCoords(arrowKeypoints.last);
+    final lastKeypoint = ref
+        .read(canvasViewportProvider.notifier)
+        .convertToScreenCoords(arrowKeypoints.last);
 
     // Calculate arrow direction for basic positioning offset
-    final direction = arrowKeypoints.last - arrowKeypoints[arrowKeypoints.length - 2];
-    double offsetX = direction.dx > 0 ? -50 : 50; // Simple offset, no fixed calculations
+    final direction =
+        arrowKeypoints.last - arrowKeypoints[arrowKeypoints.length - 2];
+    double offsetX =
+        direction.dx > 0 ? -50 : 50; // Simple offset, no fixed calculations
     double offsetY = direction.dy > 0 ? -50 : 50;
 
     final desiredX = lastKeypoint.dx + offsetX;
@@ -345,15 +365,19 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
               final arrow = paletteState.headlessArrow!;
               ref.read(canvasObjectsProvider.notifier).deleteObject(ref, arrow);
-              ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+              ref
+                  .read(canvasGestureStateProvider.notifier)
+                  .resetInteraction(ref);
             },
             child: Container(color: Colors.transparent),
           ),
         ),
         // Notes palette with right-click menu styling
         Positioned(
-          left: desiredX.clamp(viewportMargin, screenSize.width - 250 - viewportMargin),
-          top: desiredY.clamp(viewportMargin, screenSize.height - 300 - viewportMargin),
+          left: desiredX.clamp(
+              viewportMargin, screenSize.width - 250 - viewportMargin),
+          top: desiredY.clamp(
+              viewportMargin, screenSize.height - 300 - viewportMargin),
           child: IntrinsicHeight(
             child: IntrinsicWidth(
               child: Material(
@@ -365,7 +389,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                     color: ThemeHelper.neutral100(context),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
+                      color: ThemeHelper.neutral500(context)
+                          .withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -408,7 +433,9 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: paletteState.children!.map((item) => _buildMenuItem(item)).toList(),
+          children: paletteState.children!
+              .map((item) => _buildMenuItem(item))
+              .toList(),
         ),
       ),
     );
@@ -416,18 +443,22 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
   Widget _buildMenuItem(Artifact item) {
     final isHovered = ref.watch(headlessProvider).hoveredItem == item;
-    final itemTitle = item.title.isEmpty ? 'Untitled' : item.title;
+    final itemTitle = item.name.isEmpty ? 'Untitled' : item.name;
 
     return MouseRegion(
-      onEnter: (_) => ref.read(headlessProvider.notifier).setHoveredItem(context, item),
-      onExit: (_) => ref.read(headlessProvider.notifier).setHoveredItem(context, null),
+      onEnter: (_) =>
+          ref.read(headlessProvider.notifier).setHoveredItem(context, item),
+      onExit: (_) =>
+          ref.read(headlessProvider.notifier).setHoveredItem(context, null),
       child: GestureDetector(
         onTap: () => _onItemSelected(item),
         child: Container(
           height: 40,
           margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
-            color: isHovered ? ThemeHelper.neutral300(context) : Colors.transparent,
+            color: isHovered
+                ? ThemeHelper.neutral300(context)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Padding(
@@ -466,11 +497,17 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
       children: [
         Row(
           mainAxisSize: MainAxisSize.min,
-          children: shapeOptions.sublist(0, 5).map((shapeType) => _buildShapeButton(shapeType: shapeType)).toList(),
+          children: shapeOptions
+              .sublist(0, 5)
+              .map((shapeType) => _buildShapeButton(shapeType: shapeType))
+              .toList(),
         ),
         Row(
           mainAxisSize: MainAxisSize.min,
-          children: shapeOptions.sublist(5).map((shapeType) => _buildShapeButton(shapeType: shapeType)).toList(),
+          children: shapeOptions
+              .sublist(5)
+              .map((shapeType) => _buildShapeButton(shapeType: shapeType))
+              .toList(),
         ),
       ],
     );
@@ -480,8 +517,11 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     return Container(
       margin: const EdgeInsets.all(menuPadding),
       child: MouseRegion(
-        onEnter: (_) => ref.read(headlessProvider.notifier).setHoveredShape(context, shapeType),
-        onExit: (_) => ref.read(headlessProvider.notifier).setHoveredShape(context, null),
+        onEnter: (_) => ref
+            .read(headlessProvider.notifier)
+            .setHoveredShape(context, shapeType),
+        onExit: (_) =>
+            ref.read(headlessProvider.notifier).setHoveredShape(context, null),
         child: NarwhalIconButton(
           icon: _getShapeIcon(shapeType),
           onPressed: () => _onShapeSelected(shapeType),

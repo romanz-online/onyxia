@@ -1731,22 +1731,19 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   bool get isArrow => type == CanvasObjectType.arrow;
   ArrowProperties get arrow => arrowProps;
 
-  CanvasObject getStartObject(WidgetRef ref) =>
-      ref.read(canvasObjectsProvider).objects.firstWhere(
-            (e) => e.id == arrowProps.startObjectId,
-            orElse: () => CanvasObject.initial(),
-          );
+  CanvasObject? getStartObject(WidgetRef ref) => ref
+      .read(canvasObjectsProvider)
+      .objects
+      .firstWhereOrNull((e) => e.id == arrowProps.startObjectId);
 
-  CanvasObject getEndObject(WidgetRef ref) =>
-      ref.read(canvasObjectsProvider).objects.firstWhere(
-            (e) => e.id == arrowProps.endObjectId,
-            orElse: () => CanvasObject.initial(),
-          );
+  CanvasObject? getEndObject(WidgetRef ref) => ref
+      .read(canvasObjectsProvider)
+      .objects
+      .firstWhereOrNull((e) => e.id == arrowProps.endObjectId);
 
   Offset getStartOffset(WidgetRef ref, {CanvasObject? startObject}) {
     final startObj = startObject ?? getStartObject(ref);
-    return (startObj.id.isEmpty ||
-            arrowProps.startPoint == ConnectionPoint.none)
+    return (startObj == null || arrowProps.startPoint == ConnectionPoint.none)
         ? arrowProps.startAbsoluteOffset!
         : arrowProps.startPoint.getOffset(startObj) +
             (arrowProps.startRelativeOffset ?? Offset.zero);
@@ -1754,7 +1751,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 
   Offset getEndOffset(WidgetRef ref, {CanvasObject? endObject}) {
     final endObj = endObject ?? getEndObject(ref);
-    return (endObj.id.isEmpty || arrowProps.endPoint == ConnectionPoint.none)
+    return (endObj == null || arrowProps.endPoint == ConnectionPoint.none)
         ? arrowProps.endAbsoluteOffset!
         : arrowProps.endPoint.getOffset(endObj) +
             (arrowProps.endRelativeOffset ?? Offset.zero);
@@ -1781,9 +1778,9 @@ extension ArrowCanvasObjectExtension on CanvasObject {
     final start = getStartOffset(ref, startObject: startObj);
     final end = getEndOffset(ref, endObject: endObject);
 
-    if ((startObj.id.isNotEmpty && startObj.isPointInObject(end)) ||
-        (endObj.id.isNotEmpty && endObj.isPointInObject(start)) ||
-        (startObj.id.isEmpty && endObj.id.isEmpty)) {
+    if ((startObj != null && startObj.isPointInObject(end)) ||
+        (endObj != null && endObj.isPointInObject(start)) ||
+        (startObj == null && endObj == null)) {
       arrowProps.points = [];
       arrowProps.curvedMidpoint = curveOffset(0.0);
       return;
@@ -1816,8 +1813,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   ) {
     final snapToGrid = ref.read(canvasSettingsProvider(Setting.snapToGrid));
     final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
-    if (endObj.id.isEmpty ||
-        endObj.id == arrowProps.startObjectId ||
+    if (endObj.id == arrowProps.startObjectId ||
         startObj.isPointInObject(position)) {
       arrowProps.endObjectId = null;
       arrowProps.endPoint = ConnectionPoint.none;
@@ -1851,8 +1847,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   ) {
     final snapToGrid = ref.read(canvasSettingsProvider(Setting.snapToGrid));
     final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
-    if (startObj.id.isEmpty ||
-        startObj.id == arrowProps.endObjectId ||
+    if (startObj.id == arrowProps.endObjectId ||
         endObj.isPointInObject(position)) {
       arrowProps.startObjectId = null;
       arrowProps.startPoint = ConnectionPoint.none;

@@ -12,7 +12,8 @@ const _defaultForces = {
   'centerStrength': 0.1,
 };
 
-ConstellationNode _nodeFromItem(BuildContext context, Artifact i) => ConstellationNode(id: i.title);
+ConstellationNode _nodeFromItem(BuildContext context, Artifact i) =>
+    ConstellationNode(id: i.name);
 
 // ── Layout builders ───────────────────────────────────────────────────────────
 
@@ -23,12 +24,13 @@ typedef ConstellationLayout = ({
 });
 
 /// Wiki-link layout: edges follow [[Title]] references in note content.
-ConstellationLayout _buildWikiLinks(BuildContext context, List<Artifact> items) {
+ConstellationLayout _buildWikiLinks(
+    BuildContext context, List<Artifact> items) {
   final nodes = items.map((i) => _nodeFromItem(context, i)).toList();
 
   // Case-insensitive lookup: lowercased title → canonical title
   final titleLookup = <String, String>{
-    for (final i in items) i.title.toLowerCase(): i.title,
+    for (final i in items) i.name.toLowerCase(): i.name,
   };
 
   final edges = <ConstellationEdge>[];
@@ -36,8 +38,8 @@ ConstellationLayout _buildWikiLinks(BuildContext context, List<Artifact> items) 
     if (item is! Note) continue;
     for (final rawLink in extractWikiLinks(item.content)) {
       final canonical = titleLookup[rawLink.toLowerCase()];
-      if (canonical != null && canonical != item.title) {
-        edges.add(ConstellationEdge(source: item.title, target: canonical));
+      if (canonical != null && canonical != item.name) {
+        edges.add(ConstellationEdge(source: item.name, target: canonical));
       }
     }
   }
@@ -56,7 +58,8 @@ class Constellation extends ConsumerStatefulWidget {
 
 class _ConstellationState extends ConsumerState<Constellation> {
   void _onNodeTap(String nodeId) {
-    final item = ref.read(artifactsProvider).firstWhereOrNull((e) => e.title == nodeId);
+    final item =
+        ref.read(artifactsProvider).firstWhereOrNull((e) => e.name == nodeId);
     if (item == null) return;
     ref.read(selectedArtifactProvider.notifier).state = item;
     final projectId = ref.read(projectsProvider).selectedProject.id;

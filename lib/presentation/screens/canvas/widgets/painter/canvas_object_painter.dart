@@ -1008,8 +1008,8 @@ class CanvasObjectPainter {
 
     final startObj = paintContext.object.getStartObject(paintContext.ref);
     final endObj = paintContext.object.getEndObject(paintContext.ref);
-    if ((startObj.id.isNotEmpty && startObj.isPointInObject(points.last)) ||
-        (endObj.id.isNotEmpty && endObj.isPointInObject(points.first))) {
+    if ((startObj != null && startObj.isPointInObject(points.last)) ||
+        (endObj != null && endObj.isPointInObject(points.first))) {
       return;
     }
 

@@ -90,7 +90,7 @@ class ArtifactObject extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Center(
         child: Text(
-          item.title.isEmpty ? 'Untitled' : item.title,
+          item.name.isEmpty ? 'Untitled' : item.name,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 color: ThemeHelper.neutral700(context),
                 fontWeight: FontWeight.w500,
@@ -134,7 +134,7 @@ class ArtifactObject extends ConsumerWidget {
               ),
             ),
             child: Text(
-              item.title.isEmpty ? 'Untitled' : item.title,
+              item.name.isEmpty ? 'Untitled' : item.name,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: ThemeHelper.neutral700(context),
                     fontWeight: FontWeight.w600,

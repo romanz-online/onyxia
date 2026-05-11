@@ -4,8 +4,8 @@ import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
 import '../services/services.dart';
 
-class TextToolHandler extends CanvasToolGestureHandler {
-  const TextToolHandler({required super.canvasConfig});
+class TextToolBehavior extends CanvasToolGestureHandler {
+  const TextToolBehavior({required super.canvasConfig});
 
   @override
   ToolMode get toolMode => ToolMode.text;

@@ -21,7 +21,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
   String? _errorMessage;
 
   void startEditing() {
-    _controller.text = widget.item.title;
+    _controller.text = widget.item.name;
     setState(() {
       _isEditing = true;
     });
@@ -33,7 +33,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.item.title);
+    _controller = TextEditingController(text: widget.item.name);
 
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus && _isEditing) {
@@ -57,13 +57,13 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
     _overlayController.hide();
     final newName =
         ItemTitleValidationService.correctTitle(_controller.text.trim());
-    if (newName.isEmpty || newName == widget.item.title) {
-      _controller.text = widget.item.title;
+    if (newName.isEmpty || newName == widget.item.name) {
+      _controller.text = widget.item.name;
       return;
     }
     if (ItemTitleValidationService.errorMessage(ref, newName, widget.item.id) !=
         null) {
-      _controller.text = widget.item.title;
+      _controller.text = widget.item.name;
       return;
     }
     ref
@@ -73,7 +73,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
     if (context.mounted) {
       final urlSelectedId =
           GoRouterState.of(context).pathParameters['selectedId'];
-      if (urlSelectedId == widget.item.title) {
+      if (urlSelectedId == widget.item.name) {
         final projectId =
             ref.read(projectsProvider.select((s) => s.selectedProject.id));
         context.go('/project/$projectId/$newName');
@@ -178,7 +178,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
           : GestureDetector(
               onDoubleTap: startEditing,
               child: Text(
-                widget.item.title,
+                widget.item.name,
                 style: NarwhalTextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.normal,

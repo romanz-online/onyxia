@@ -3,7 +3,7 @@
 abstract class Artifact {
   final String id;
   final String parentFolderId;
-  final String title;
+  final String name;
   final DateTime? createdAt;
   final String? createdBy;
   final ArtifactType type;
@@ -11,21 +11,21 @@ abstract class Artifact {
   final DateTime? updatedAt;
 
   Artifact({
-    this.id = '',
+    String? id,
     this.parentFolderId = '',
-    required this.title,
+    required this.name,
     this.createdAt,
     this.createdBy = 'Unknown',
     required this.type,
     this.updatedBy,
     this.updatedAt,
-  });
+  }) : this.id = id == null || id.isEmpty ? const Uuid().v4() : id;
 
   // Named constructor for shared field deserialization
   Artifact.fromMap(Map<String, dynamic> map)
       : id = map['id'] ?? '',
         parentFolderId = map['parent_folder_id'] ?? '',
-        title = map['name'] ?? '',
+        name = map['name'] ?? '',
         createdAt = TimestampService.fromMap(map['created_at']),
         createdBy = map['created_by'],
         type = ArtifactType.values.fromString(map['type']),
@@ -55,7 +55,7 @@ abstract class Artifact {
     return {
       'id': id,
       'parent_folder_id': parentFolderId.isEmpty ? null : parentFolderId,
-      'name': title,
+      'name': name,
       'type': type.value,
       'body': toMapSub(),
     };
@@ -78,7 +78,7 @@ abstract class Artifact {
   String toString() {
     return 'Artifact('
         'parentFolderId: $parentFolderId, '
-        'title: $title, '
+        'name: $name, '
         'createdAt: $createdAt, '
         'createdBy: $createdBy, '
         'type: $type, '
@@ -93,7 +93,7 @@ abstract class Artifact {
     return other is Artifact &&
         other.id == id &&
         other.parentFolderId == parentFolderId &&
-        other.title == title &&
+        other.name == name &&
         other.createdAt == createdAt &&
         other.createdBy == createdBy &&
         other.type == type &&
@@ -105,7 +105,7 @@ abstract class Artifact {
   int get hashCode {
     return id.hashCode ^
         parentFolderId.hashCode ^
-        title.hashCode ^
+        name.hashCode ^
         createdAt.hashCode ^
         createdBy.hashCode ^
         type.hashCode ^
@@ -120,7 +120,7 @@ abstract class Artifact {
   String get getUpdatedBy => updatedBy ?? 'Unknown';
 
   /// Returns the navigation URL for this item within the given project.
-  String navigationUrl(String projectId) => '/project/$projectId/$title';
+  String navigationUrl(String projectId) => '/project/$projectId/$name';
 
   dynamic castToSubtype() => switch (type) {
         ArtifactType.note => this as Note,

@@ -216,7 +216,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   ) {
     if (oldRoots.length != newRoots.length) return true;
     for (int i = 0; i < oldRoots.length; i++) {
-      if (oldRoots[i].data.title != newRoots[i].data.title) return true;
+      if (oldRoots[i].data.name != newRoots[i].data.name) return true;
       if (_isTreeChanged(
           oldRoots[i].children.toList(), newRoots[i].children.toList()))
         return true;

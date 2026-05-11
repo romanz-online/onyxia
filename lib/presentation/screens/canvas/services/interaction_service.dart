@@ -16,7 +16,7 @@ class CanvasInteractionService {
     onEditingComplete();
     final currentCanvas = ref.read(currentCanvasProvider);
     if (currentCanvas != null) {
-      final oldTitle = currentCanvas.title;
+      final oldTitle = currentCanvas.name;
       final newTitle = titleController.text.trim();
       if (newTitle.isNotEmpty && newTitle != oldTitle) {
         ArtifactsRepository(

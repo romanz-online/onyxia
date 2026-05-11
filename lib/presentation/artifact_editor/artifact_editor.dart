@@ -26,7 +26,8 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
   bool _bypassNotifyBar = false;
   DateTime? _notifySuppressedUntil;
 
-  NoteStateProvider get _noteProvider => widget.noteProvider ?? selectedNoteStateProvider;
+  NoteStateProvider get _noteProvider =>
+      widget.noteProvider ?? selectedNoteStateProvider;
 
   Artifact? get _artifact {
     if (widget.noteProvider != null) {
@@ -43,7 +44,8 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
       if (mounted) {
         setState(() {
           _isSaving = false;
-          if (_notifySuppressedUntil == null || DateTime.now().isAfter(_notifySuppressedUntil!)) {
+          if (_notifySuppressedUntil == null ||
+              DateTime.now().isAfter(_notifySuppressedUntil!)) {
             _showNotifyBar = true;
           }
         });
@@ -91,7 +93,8 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
 
       try {
         final refreshedState = ref.refresh(_noteProvider);
-        debugPrint('_restoreArtifact: Editor refreshed with state: ${refreshedState.hasValue ? "loaded" : "loading"}');
+        debugPrint(
+            '_restoreArtifact: Editor refreshed with state: ${refreshedState.hasValue ? "loaded" : "loading"}');
       } catch (e) {
         debugPrint('_restoreArtifact: Editor refresh failed: $e');
       }
@@ -168,11 +171,13 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
                   onTap: () => _restoreArtifact(ref, diffPreview),
                   borderRadius: BorderRadius.circular(4),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: ThemeHelper.green().withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: ThemeHelper.green().withValues(alpha: 0.5)),
+                      border: Border.all(
+                          color: ThemeHelper.green().withValues(alpha: 0.5)),
                     ),
                     child: Text(
                       'Restore',
@@ -186,14 +191,18 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
                 ),
                 const SizedBox(width: 8),
                 InkWell(
-                  onTap: () => ref.read(artifactsDiffPreviewProvider.notifier).clearPreview(),
+                  onTap: () => ref
+                      .read(artifactsDiffPreviewProvider.notifier)
+                      .clearPreview(),
                   borderRadius: BorderRadius.circular(4),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: ThemeHelper.red().withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(4),
-                      border: Border.all(color: ThemeHelper.red().withValues(alpha: 0.5)),
+                      border: Border.all(
+                          color: ThemeHelper.red().withValues(alpha: 0.5)),
                     ),
                     child: Text(
                       'Close',
@@ -237,17 +246,20 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
     ref.listen(_noteProvider, (previous, next) {
       final prevSaved = previous?.value?.isSavedRemotely;
       final nextSaved = next.value?.isSavedRemotely;
-      if (widget.saveMode == SaveMode.auto && prevSaved == false && nextSaved == true) {
+      if (widget.saveMode == SaveMode.auto &&
+          prevSaved == false &&
+          nextSaved == true) {
         if (_bypassNotifyBar) {
           _bypassNotifyBar = false;
-        } else if (_notifySuppressedUntil == null || DateTime.now().isAfter(_notifySuppressedUntil!)) {
+        } else if (_notifySuppressedUntil == null ||
+            DateTime.now().isAfter(_notifySuppressedUntil!)) {
           setState(() => _showNotifyBar = true);
         }
       }
     });
 
     ref.listen(selectedArtifactProvider, (previous, next) {
-      if (previous?.title != next?.title) {
+      if (previous?.name != next?.name) {
         setState(() {
           _showNotifyBar = false;
           _notifySuppressedUntil = null;
@@ -308,20 +320,23 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
       }
     }
 
-    final isSavedRemotely =
-        selectedItem.type == ArtifactType.note ? (noteAsyncState.value?.isSavedRemotely ?? true) : true;
+    final isSavedRemotely = selectedItem.type == ArtifactType.note
+        ? (noteAsyncState.value?.isSavedRemotely ?? true)
+        : true;
 
     return Stack(
       children: [
         Scaffold(
           appBar: PreferredSize(
             preferredSize: Size.fromHeight(32),
-            child: _buildAppBar(selectedItem.title),
+            child: _buildAppBar(selectedItem.name),
           ),
           backgroundColor: ThemeHelper.neutral100(context),
           body: SizedBox.expand(child: _buildEditorContent(selectedItem)),
         ),
-        if (widget.saveMode == SaveMode.manual && !isSavedRemotely && !_showNotifyBar)
+        if (widget.saveMode == SaveMode.manual &&
+            !isSavedRemotely &&
+            !_showNotifyBar)
           Align(
             alignment: Alignment.bottomCenter,
             child: SaveChangesBar(

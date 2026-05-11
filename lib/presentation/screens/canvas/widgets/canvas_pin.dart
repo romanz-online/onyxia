@@ -19,7 +19,8 @@ class CanvasPin extends ConsumerStatefulWidget {
   ConsumerState<CanvasPin> createState() => _CanvasPinState();
 }
 
-class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateMixin {
+class _CanvasPinState extends ConsumerState<CanvasPin>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _heightAnimation;
@@ -95,7 +96,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
     super.dispose();
   }
 
-  bool get isExpanded => ref.read(expandedPinProvider.notifier).isExpanded(widget.pin.id);
+  bool get isExpanded =>
+      ref.read(expandedPinProvider.notifier).isExpanded(widget.pin.id);
 
   double _calculateRequiredWidth(String text, BuildContext context) {
     if (text.isEmpty) {
@@ -120,7 +122,11 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
     final double textLeftPadding = 4.0; // left padding for text
     final double textRightPadding = 20.0; // right padding for text
 
-    final double totalWidth = iconPadding + iconWidth + textLeftPadding + textPainter.width + textRightPadding;
+    final double totalWidth = iconPadding +
+        iconWidth +
+        textLeftPadding +
+        textPainter.width +
+        textRightPadding;
 
     return totalWidth.clamp(36.0, 360.0);
   }
@@ -142,7 +148,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
       ref.read(expandedPinProvider.notifier).collapsePin();
       _handleHoverExit();
     } else {
-      _animationController.reset(); // Instantly reset to collapsed state without animation
+      _animationController
+          .reset(); // Instantly reset to collapsed state without animation
       ref.read(expandedPinProvider.notifier).expandPin(widget.pin);
       ref.read(selectedArtifactProvider.notifier).state = item;
     }
@@ -151,7 +158,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
   @override
   Widget build(BuildContext context) {
     try {
-      final double scale = widget.transformationController.value.getMaxScaleOnAxis();
+      final double scale =
+          widget.transformationController.value.getMaxScaleOnAxis();
       final notes = ref.watch(artifactsProvider);
       final notesLoaded = ref.watch(artifactsLoadedProvider);
       final note = notes.firstWhereOrNull(
@@ -159,7 +167,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
       );
 
       // Handle new pins with empty artifactId - use placeholder note
-      final effectiveNote = note ?? (widget.pin.artifactId.isEmpty ? Note(title: '') : null);
+      final effectiveNote =
+          note ?? (widget.pin.artifactId.isEmpty ? Note(name: '') : null);
 
       // Loading state - show spinner while notes are loading
       if (!notesLoaded && effectiveNote == null) {
@@ -167,18 +176,20 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
       }
 
       // Error state - note doesn't exist after loading is complete
-      if (notesLoaded && effectiveNote == null && widget.pin.artifactId.isNotEmpty) {
+      if (notesLoaded &&
+          effectiveNote == null &&
+          widget.pin.artifactId.isNotEmpty) {
         return const SizedBox.shrink();
       }
 
       // Should never happen, but safety check
       if (effectiveNote == null) return const SizedBox.shrink();
 
-      if (_lastNoteName != effectiveNote.title) {
-        _lastNoteName = effectiveNote.title;
+      if (_lastNoteName != effectiveNote.name) {
+        _lastNoteName = effectiveNote.name;
         // Use WidgetsBinding to update animation after current frame
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          _updateWidthAnimation(effectiveNote.title, context);
+          _updateWidthAnimation(effectiveNote.name, context);
         });
       }
 
@@ -219,7 +230,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
                         height: _heightAnimation.value,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: isExpanded ? selectionColor : outerBorderColor,
+                            color:
+                                isExpanded ? selectionColor : outerBorderColor,
                             width: isExpanded ? 2.0 : 1.5,
                           ),
                           borderRadius: BorderRadius.only(
@@ -241,21 +253,26 @@ class _CanvasPinState extends ConsumerState<CanvasPin> with TickerProviderStateM
                           children: [
                             Padding(
                               padding: EdgeInsets.only(
-                                left: _paddingAnimation.value + (isExpanded ? 0.0 : 0.5),
+                                left: _paddingAnimation.value +
+                                    (isExpanded ? 0.0 : 0.5),
                                 right: _paddingAnimation.value,
                                 top: _paddingAnimation.value,
                                 bottom: _paddingAnimation.value,
                               ),
-                              child: const NarwhalIcon(NarwhalIcons.edit, safeMode: true),
+                              child: const NarwhalIcon(NarwhalIcons.edit,
+                                  safeMode: true),
                             ),
                             if (_widthAnimation.value > 36)
                               Expanded(
                                 child: Opacity(
                                   opacity: _opacityAnimation.value,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(right: 12, left: 4),
+                                    padding: const EdgeInsets.only(
+                                        right: 12, left: 4),
                                     child: Text(
-                                      effectiveNote.title.isNotEmpty ? effectiveNote.title : 'Untitled',
+                                      effectiveNote.name.isNotEmpty
+                                          ? effectiveNote.name
+                                          : 'Untitled',
                                       style: NarwhalTextStyle(
                                         fontSize: 14,
                                         fontWeight: FontWeight.w500,

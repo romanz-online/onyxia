@@ -55,8 +55,12 @@ class User {
   int get hashCode => Object.hash(id, email, name, isLogged, pending);
 
   @override
-  String toString() =>
-      'User(id: $id, name: $name, email: $email, isLogged: $isLogged, pending: $pending)';
+  String toString() => 'User(id: $id, '
+      'name: $name, '
+      'email: $email, '
+      'isLogged: $isLogged, '
+      'pending: $pending, '
+      ')';
 }
 
 extension UserInitials on User {

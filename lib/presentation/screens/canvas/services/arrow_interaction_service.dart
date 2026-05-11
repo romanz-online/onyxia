@@ -129,7 +129,7 @@ class ArrowInteractionService {
         .convertToCanvasCoords(details.globalPosition);
     if (part == ArrowMoveType.start) {
       final endObj = arrow.getEndObject(ref);
-      if (endObj.id.isEmpty) return;
+      if (endObj == null) return;
 
       final startObj = ref.read(canvasObjectsProvider).objects.firstWhere(
             (obj) =>
@@ -142,7 +142,7 @@ class ArrowInteractionService {
       arrow.handleMoveStartPoint(ref, startObj, endObj, canvasPosition);
     } else if (part == ArrowMoveType.end) {
       final startObj = arrow.getStartObject(ref);
-      if (startObj.id.isEmpty) return;
+      if (startObj == null) return;
 
       final endObj = ref.read(canvasObjectsProvider).objects.firstWhere(
             (obj) =>

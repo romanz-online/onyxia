@@ -6,7 +6,8 @@ class CanvasSearchOverlay extends ConsumerStatefulWidget {
   const CanvasSearchOverlay({super.key});
 
   @override
-  ConsumerState<CanvasSearchOverlay> createState() => _CanvasSearchOverlayState();
+  ConsumerState<CanvasSearchOverlay> createState() =>
+      _CanvasSearchOverlayState();
 }
 
 class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
@@ -49,13 +50,15 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
   void _closeOverlay() {
     _clearSearch();
     ref.read(dragOffDropPositionProvider.notifier).state = null;
-    ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).state = false;
+    ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).state =
+        false;
   }
 
   void _createArtifact(Artifact item) async {
     await CanvasInteractionService.createArtifactObject(
       ref: ref,
-      position: ref.read(dragOffDropPositionProvider) ?? ref.read(canvasViewportProvider.notifier).getViewportCenter(),
+      position: ref.read(dragOffDropPositionProvider) ??
+          ref.read(canvasViewportProvider.notifier).getViewportCenter(),
       artifact: item,
     );
 
@@ -69,7 +72,9 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
 
     if (searchText.isEmpty) return items;
 
-    return items.where((e) => e.title.toLowerCase().contains(searchText.toLowerCase())).toList();
+    return items
+        .where((e) => e.name.toLowerCase().contains(searchText.toLowerCase()))
+        .toList();
   }
 
   @override
@@ -156,7 +161,8 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
-                            color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
+                            color: ThemeHelper.neutral900(context)
+                                .withValues(alpha: 0.1),
                             blurRadius: 10,
                             offset: const Offset(0, 4),
                           ),
@@ -188,7 +194,9 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
                                   child: Container(
                                     decoration: BoxDecoration(
                                       borderRadius: BorderRadius.circular(6),
-                                      color: isHovering ? ThemeHelper.neutral300(context) : Colors.transparent,
+                                      color: isHovering
+                                          ? ThemeHelper.neutral300(context)
+                                          : Colors.transparent,
                                     ),
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 12,
@@ -198,10 +206,11 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
                                       children: [
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
-                                                note.title,
+                                                note.name,
                                                 style: const NarwhalTextStyle(
                                                   fontSize: 14,
                                                   fontWeight: FontWeight.w500,

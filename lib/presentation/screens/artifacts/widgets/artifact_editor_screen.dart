@@ -47,7 +47,7 @@ class _ArtifactEditorScreenState extends ConsumerState<ArtifactEditorScreen>
 
     final item = ref
         .read(artifactsProvider)
-        .firstWhereOrNull((e) => e.title == selectedTitle);
+        .firstWhereOrNull((e) => e.name == selectedTitle);
     if (item != null) {
       ref.read(selectedArtifactProvider.notifier).state = item;
     }

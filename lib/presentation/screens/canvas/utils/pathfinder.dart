@@ -7,8 +7,8 @@ class Pathfinder {
   static List<Offset> findPath(
     Offset startOffset,
     Offset endOffset,
-    CanvasObject startObject,
-    CanvasObject endObject,
+    CanvasObject? startObject,
+    CanvasObject? endObject,
     ConnectionPoint startPoint,
     ConnectionPoint endPoint,
   ) {
@@ -25,8 +25,12 @@ class Pathfinder {
 
   Pathfinder._internal();
 
-  Offset _calculateJutPoint(Offset connectionOffset, CanvasObject object, ConnectionPoint connectionPoint) {
-    if (object.id.isEmpty || connectionPoint == ConnectionPoint.none) {
+  Offset _calculateJutPoint(
+    Offset connectionOffset,
+    CanvasObject? object,
+    ConnectionPoint connectionPoint,
+  ) {
+    if (object == null || connectionPoint == ConnectionPoint.none) {
       return connectionOffset;
     }
 
@@ -47,14 +51,15 @@ class Pathfinder {
   List<Offset> _executeFindPath(
     Offset startOffset,
     Offset endOffset,
-    CanvasObject startObject,
-    CanvasObject endObject,
+    CanvasObject? startObject,
+    CanvasObject? endObject,
     ConnectionPoint startPoint,
     ConnectionPoint endPoint,
   ) {
     final List<Offset> path = [];
 
-    final Offset startJut = _calculateJutPoint(startOffset, startObject, startPoint);
+    final Offset startJut =
+        _calculateJutPoint(startOffset, startObject, startPoint);
 
     // print('startOffset $startOffset');
     path.add(startOffset);
@@ -106,8 +111,8 @@ class Pathfinder {
   void _wrapAroundStartObject(
     Offset startJut,
     Offset endJut,
-    CanvasObject startObject,
-    CanvasObject endObject,
+    CanvasObject? startObject,
+    CanvasObject? endObject,
     ConnectionPoint startPoint,
     List<Offset> path,
   ) {
@@ -140,7 +145,8 @@ class Pathfinder {
         // Add all intermediate perimeter points we traversed to get here
         for (int j = 0; j <= i; j++) {
           final intermediatePoint = perimeterPoints[j];
-          if (intermediatePoint != startJut && !path.contains(intermediatePoint)) {
+          if (intermediatePoint != startJut &&
+              !path.contains(intermediatePoint)) {
             path.add(intermediatePoint);
             // print('Added intermediate point: $intermediatePoint');
           }
@@ -156,7 +162,8 @@ class Pathfinder {
     }
 
     // no path was found (shouldn't ever happen)
-    throw UnimplementedError('Warning: No path found after wrapping around start object');
+    throw UnimplementedError(
+        'Warning: No path found after wrapping around start object');
   }
 
   bool _shouldWrapClockwise(ConnectionPoint startPoint, Offset directionToEnd) {
@@ -176,25 +183,28 @@ class Pathfinder {
   }
 
   List<Offset> _generatePerimeterPath(
-    CanvasObject startObject,
+    CanvasObject? startObject,
     Offset startJut,
     ConnectionPoint startPoint,
     bool clockwise,
   ) {
     final List<Offset> perimeterPoints = [];
-    final Size objDimensions = startObject.getDimensions();
+    final Size objDimensions = startObject?.getDimensions() ?? Size.zero;
+    final Offset topLeft = startObject?.topLeft ?? Offset.zero;
+    final Offset bottomRight = startObject?.bottomRight ?? Offset.zero;
     final double objWidth = objDimensions.width;
     final double objHeight = objDimensions.height;
 
     // Calculate the rectangle around start object at spacing distance
-    final double leftX = startObject.topLeft.dx - spacing;
-    final double rightX = startObject.bottomRight.dx + spacing;
-    final double topY = startObject.topLeft.dy - spacing;
-    final double bottomY = startObject.bottomRight.dy + spacing;
+    final double leftX = topLeft.dx - spacing;
+    final double rightX = bottomRight.dx + spacing;
+    final double topY = topLeft.dy - spacing;
+    final double bottomY = bottomRight.dy + spacing;
 
     // Calculate total perimeter distance for safety check
     final double perimeterLength = 2 * (objWidth + objHeight + 4 * spacing);
-    final int maxPoints = (perimeterLength / spacing * 2).ceil(); // Safety factor
+    final int maxPoints =
+        (perimeterLength / spacing * 2).ceil(); // Safety factor
 
     Offset currentPoint = startJut;
     ConnectionPoint currentSide = startPoint;
@@ -298,8 +308,8 @@ class Pathfinder {
   Offset? _getVisionOffset(
     Offset start,
     Offset end,
-    CanvasObject startObject,
-    CanvasObject endObject, {
+    CanvasObject? startObject,
+    CanvasObject? endObject, {
     required bool horizontal,
   }) {
     final Offset horizontalOffset = Offset(end.dx, start.dy);
@@ -361,9 +371,12 @@ class Pathfinder {
   bool _isObjectBetween({
     required Offset start,
     required Offset end,
-    required CanvasObject object,
+    required CanvasObject? object,
   }) {
-    final Rect objectRect = Rect.fromPoints(object.topLeft, object.bottomRight).inflate(spacing / 2);
+    final Rect objectRect = Rect.fromPoints(
+      object?.topLeft ?? Offset.zero,
+      object?.bottomRight ?? Offset.infinite,
+    ).inflate(spacing / 2);
 
     final Rect betweenRect = Rect.fromPoints(start, end).inflate(0.1);
 
@@ -373,7 +386,7 @@ class Pathfinder {
   bool _isObjectNotBetween({
     required Offset start,
     required Offset end,
-    required CanvasObject object,
+    required CanvasObject? object,
   }) =>
       !_isObjectBetween(
         start: start,
@@ -386,7 +399,11 @@ class Pathfinder {
     return delta.dx.abs() > delta.dy.abs();
   }
 
-  Offset _getClosestDirection(Offset start, Offset end, {bool? prioritizeHorizontal}) {
+  Offset _getClosestDirection(
+    Offset start,
+    Offset end, {
+    bool? prioritizeHorizontal,
+  }) {
     final delta = end - start;
 
     if (prioritizeHorizontal == true) {

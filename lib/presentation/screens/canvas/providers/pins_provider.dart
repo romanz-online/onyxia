@@ -54,13 +54,6 @@ class PinsNotifier extends StateNotifier<Pins> {
     super.dispose();
   }
 
-  Pin getPinById(String id) {
-    return state.pins.firstWhere(
-      (e) => e.id == id,
-      orElse: () => Pin.initial(),
-    );
-  }
-
   void updatePinState(Pin pin) {
     final index = state.pins.indexWhere((obj) => obj.id == pin.id);
     if (index == -1) return;

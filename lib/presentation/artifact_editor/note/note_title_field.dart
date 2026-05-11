@@ -21,7 +21,8 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
 
   String? _titleOnFocusGain;
 
-  NoteStateProvider get _provider => widget.provider ?? selectedNoteStateProvider;
+  NoteStateProvider get _provider =>
+      widget.provider ?? selectedNoteStateProvider;
 
   @override
   void initState() {
@@ -31,29 +32,37 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final initialItem = ref.read(_provider).value?.note;
-      _controller.text = initialItem?.title ?? '';
+      _controller.text = initialItem?.name ?? '';
 
       _focusNode.addListener(() {
         if (_focusNode.hasFocus) {
-          _titleOnFocusGain = ref.read(_provider).value?.note?.title;
+          _titleOnFocusGain = ref.read(_provider).value?.note?.name;
         } else {
-          final cleaned = ItemTitleValidationService.correctTitle(_controller.text);
+          final cleaned =
+              ItemTitleValidationService.correctTitle(_controller.text);
           if (cleaned != _controller.text) _controller.text = cleaned;
 
-          if (ItemTitleValidationService.errorMessage(ref, cleaned, ref.read(_provider).value?.note?.id ?? '') != null) {
+          if (ItemTitleValidationService.errorMessage(
+                  ref, cleaned, ref.read(_provider).value?.note?.id ?? '') !=
+              null) {
             _controller.text = _titleOnFocusGain ?? cleaned;
             setState(() => _errorMessage = null);
             _overlayController.hide();
             return;
           }
 
-          final previousTitle = ref.read(_provider).value?.note?.title;
+          final previousTitle = ref.read(_provider).value?.note?.name;
           ref.read(_provider.notifier).updateTitle(cleaned);
 
-          if (previousTitle != null && cleaned.isNotEmpty && cleaned != previousTitle && context.mounted) {
-            final urlSelectedId = GoRouterState.of(context).pathParameters['selectedId'];
+          if (previousTitle != null &&
+              cleaned.isNotEmpty &&
+              cleaned != previousTitle &&
+              context.mounted) {
+            final urlSelectedId =
+                GoRouterState.of(context).pathParameters['selectedId'];
             if (urlSelectedId == previousTitle) {
-              final projectId = ref.read(projectsProvider.select((s) => s.selectedProject.id));
+              final projectId = ref
+                  .read(projectsProvider.select((s) => s.selectedProject.id));
               context.go('/project/$projectId/$cleaned');
             }
           }
@@ -65,8 +74,10 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
       _itemListener = ref.listenManual(
         _provider.select((state) => state.value?.note),
         (prev, next) {
-          if (!_focusNode.hasFocus && next != null && next.title != _controller.text) {
-            _controller.text = next.title;
+          if (!_focusNode.hasFocus &&
+              next != null &&
+              next.name != _controller.text) {
+            _controller.text = next.name;
           }
         },
       );
@@ -103,7 +114,8 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
                 height: double.infinity,
                 child: Center(
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
                     child: Text(
                       _errorMessage ?? '',
                       style: NarwhalTextStyle(
@@ -128,7 +140,8 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
           textInputAction: TextInputAction.unspecified,
           onSubmitted: (_) => widget.nextFocusNode?.requestFocus(),
           onChanged: (value) {
-            final msg = ItemTitleValidationService.errorMessage(ref, value, ref.read(_provider).value?.note?.id ?? '');
+            final msg = ItemTitleValidationService.errorMessage(
+                ref, value, ref.read(_provider).value?.note?.id ?? '');
             setState(() => _errorMessage = msg);
             if (msg != null) {
               _overlayController.show();
@@ -151,7 +164,8 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
               color: ThemeHelper.neutral700(context).withValues(alpha: 0.4),
             ),
             border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
             isDense: true,
           ),
         ),
