@@ -6,13 +6,19 @@ export 'package:onyxia/core/constants/admin_config.dart';
 export 'package:onyxia/core/constants/icons.dart';
 export 'package:onyxia/data/providers/theme_provider.dart';
 
-export 'package:onyxia/presentation/screens/artifacts/widgets/artifacts_tree_view.dart';
-export 'package:onyxia/presentation/screens/artifacts/widgets/artifacts_tree_context_menu.dart';
-export 'package:onyxia/presentation/screens/graph_screen.dart';
-export 'package:onyxia/presentation/screens/home/widgets/sidebar.dart';
-export 'package:onyxia/presentation/screens/home/home_screen.dart';
-export 'package:onyxia/presentation/screens/invite_screen.dart';
-export 'package:onyxia/presentation/screens/projects/projects.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_view.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_context_menu.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar_footer.dart';
+export 'package:onyxia/presentation/shell/workspace_host.dart';
+export 'package:onyxia/presentation/workspaces/graph/graph_workspace.dart';
+export 'package:onyxia/presentation/workspaces/artifact_editor/artifact_editor_workspace.dart';
+export 'package:onyxia/presentation/workspaces/project_settings/project_settings_workspace.dart';
+export 'package:onyxia/presentation/shell/master_sidebar.dart';
+export 'package:onyxia/presentation/shell/app_shell.dart';
+export 'package:onyxia/presentation/landing/invite_screen.dart';
+export 'package:onyxia/presentation/landing/landing_background.dart';
+export 'package:onyxia/presentation/landing/landing_overlay.dart';
 export 'package:onyxia/data/models/artifacts/canvas/expandable_pin.dart';
 
 export 'package:onyxia/presentation/common_widget/hover_builder.dart';
@@ -28,7 +34,7 @@ export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_filter_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_checkbox_filter_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_text_filter_select.dart';
-export 'package:onyxia/presentation/screens/home/widgets/project_settings_button.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/project_settings_button.dart';
 export 'package:onyxia/presentation/common_widget/user_profile_overlay.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
@@ -46,12 +52,12 @@ export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/services/item_title_validation_service.dart';
 
 export 'package:onyxia/data/providers/artifacts_diff_preview_provider.dart';
-export 'package:onyxia/presentation/screens/artifacts/widgets/tree_tile.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/tree_tile.dart';
 
 // Editor Views
-export 'package:onyxia/presentation/artifact_editor/artifact_editor.dart';
-export 'package:onyxia/presentation/artifact_editor/canvas/canvas_editor_view.dart';
-export 'package:onyxia/presentation/artifact_editor/pending_action_bar.dart';
+export 'package:onyxia/presentation/workspaces/artifact_editor/artifact_editor.dart';
+export 'package:onyxia/presentation/workspaces/artifact_editor/canvas/canvas_editor_view.dart';
+export 'package:onyxia/presentation/workspaces/artifact_editor/pending_action_bar.dart';
 
 export 'package:onyxia/presentation/routing/router.dart';
 export 'package:onyxia/presentation/routing/routes.dart';
@@ -125,9 +131,9 @@ export 'package:onyxia/helpers/color_helper.dart';
 export 'package:onyxia/helpers/offset_extension.dart';
 export 'package:onyxia/helpers/theme_helper.dart';
 //canvas_utils
-export 'package:onyxia/presentation/screens/canvas/utils/connection_points.dart';
-export 'package:onyxia/presentation/screens/canvas/utils/pathfinder.dart';
-export 'package:onyxia/presentation/screens/canvas/utils/arrow_path_helper.dart';
+export 'package:onyxia/presentation/canvas_engine/utils/connection_points.dart';
+export 'package:onyxia/presentation/canvas_engine/utils/pathfinder.dart';
+export 'package:onyxia/presentation/canvas_engine/utils/arrow_path_helper.dart';
 export 'package:onyxia/helpers/image_helper.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_spinner.dart';
 export 'package:onyxia/helpers/narwhal_enum.dart';

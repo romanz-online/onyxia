@@ -1,5 +1,5 @@
 import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/screens/canvas/providers/providers.dart';
+import 'package:onyxia/presentation/canvas_engine/providers/providers.dart';
 
 enum ArrowTip with NarwhalEnum {
   triangle,

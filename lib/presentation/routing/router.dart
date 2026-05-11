@@ -51,17 +51,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/${Routes.projects}',
         name: Routes.projects,
-        builder: (context, state) => const Home(projectId: ''),
+        builder: (context, state) => const AppShell(projectId: ''),
       ),
       GoRoute(
         path: '/project/:id',
         name: 'project',
-        builder: (context, state) => Home(projectId: state.pathParameters['id']!),
+        builder: (context, state) => AppShell(projectId: state.pathParameters['id']!),
         routes: [
           GoRoute(
             path: ':selectedId',
             name: 'projectItem',
-            builder: (context, state) => Home(
+            builder: (context, state) => AppShell(
               selectedId: state.pathParameters['selectedId'],
               projectId: state.pathParameters['id']!,
             ),
