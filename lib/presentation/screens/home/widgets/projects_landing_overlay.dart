@@ -140,7 +140,7 @@ class _ProjectsLandingOverlayState
     );
   }
 
-  Widget _buildContent(BuildContext context, UserDefinition user) {
+  Widget _buildContent(BuildContext context, User user) {
     if (!user.isLogged) return _buildPreAuth(context);
     if (user.pending) return Center(child: NarwhalSpinner());
 
@@ -247,7 +247,7 @@ class _ProjectsLandingOverlayState
     );
   }
 
-  Widget _buildRightColumn(BuildContext context, UserDefinition user) {
+  Widget _buildRightColumn(BuildContext context, User user) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       child: Column(

@@ -59,7 +59,6 @@ class _HomeState extends ConsumerState<Home> {
   @override
   Widget build(BuildContext context) {
     ref.watch(currentUserProvider);
-    ref.watch(memberDefinitionsProvider);
 
     if (widget.projectId.isNotEmpty) {
       ref.listen<Projects>(projectsProvider, (previous, next) {

@@ -4,20 +4,15 @@ import 'package:onyxia/export.dart';
 final userLookupProvider = Provider<UserLookupService>((ref) => UserLookupService());
 
 class UserLookupService {
-  final Map<String, UserDefinition> _userCache = {};
-  final UserDefinitionsRepository _repository = UserDefinitionsRepository();
+  final Map<String, User> _userCache = {};
+  final UsersRepository _repository = UsersRepository();
 
-  /// Returns a UserDefinition by ID, using the cache when possible. Returns a
-  /// placeholder UserDefinition for empty IDs or missing rows so the caller
-  /// always has something renderable.
-  Future<UserDefinition> getUserById(String userId) async {
+  /// Returns a User by ID, using the cache when possible. Returns a
+  /// placeholder for empty IDs or missing rows so the caller always has
+  /// something renderable.
+  Future<User> getUserById(String userId) async {
     if (userId.isEmpty) {
-      return UserDefinition(
-        id: '',
-        name: 'Unknown User',
-        email: '',
-        isLogged: false,
-      );
+      return const User(id: '', name: 'Unknown User', email: '');
     }
 
     final cached = _userCache[userId];
@@ -29,20 +24,10 @@ class UserLookupService {
         _userCache[userId] = user;
         return user;
       }
-      return UserDefinition(
-        id: userId,
-        name: 'Unknown User',
-        email: '',
-        isLogged: false,
-      );
+      return User(id: userId, name: 'Unknown User', email: '');
     } catch (error) {
       debugPrint('Error fetching user $userId: $error');
-      return UserDefinition(
-        id: userId,
-        name: 'Error',
-        email: '',
-        isLogged: false,
-      );
+      return User(id: userId, name: 'Error', email: '');
     }
   }
 }

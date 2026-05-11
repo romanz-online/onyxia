@@ -19,7 +19,7 @@ class _RouterNotifier extends ChangeNotifier {
       isAuthLoading = next is AsyncLoading;
       notifyListeners();
     });
-    ref.listen<UserDefinition>(currentUserProvider, (_, next) {
+    ref.listen<User>(currentUserProvider, (_, next) {
       isPending = next.pending;
       notifyListeners();
     });

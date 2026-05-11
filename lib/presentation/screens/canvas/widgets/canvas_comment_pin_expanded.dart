@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 
 // Custom Intents for comment input keyboard actions
@@ -141,7 +141,7 @@ class _CanvasCommentPinExpandedState
                     _commentsScrollController.position.maxScrollExtent;
                 if (newMax > maxExtent) {
                   debugPrint(
-                      '📜 Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
+                      'ðŸ“œ Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
                   _commentsScrollController.animateTo(
                     newMax,
                     duration: const Duration(milliseconds: 200),
@@ -152,13 +152,13 @@ class _CanvasCommentPinExpandedState
             });
           } else {
             // Layout not ready, try again
-            debugPrint('⏳ Layout not ready, retrying...');
+            debugPrint('â³ Layout not ready, retrying...');
             Future.delayed(const Duration(milliseconds: 200), () {
               if (_commentsScrollController.hasClients) {
                 final newMax =
                     _commentsScrollController.position.maxScrollExtent;
                 debugPrint(
-                    '📜 Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
+                    'ðŸ“œ Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
                 _commentsScrollController.animateTo(
                   newMax,
                   duration: const Duration(milliseconds: 300),
@@ -432,7 +432,7 @@ class _CanvasCommentPinExpandedState
 
   Widget _buildCommentsList() {
     return SingleChildScrollView(
-      controller: _commentsScrollController, // ✅ ADD: Attach controller
+      controller: _commentsScrollController, // âœ… ADD: Attach controller
       child: Padding(
         padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
         child: Column(
@@ -468,10 +468,10 @@ class _CanvasCommentPinExpandedState
     required DateTime? createdAt,
     required bool isSubComment,
   }) {
-    return FutureBuilder<UserDefinition>(
+    return FutureBuilder<User>(
       future: ref.read(userLookupProvider).getUserById(createdBy),
       builder: (context, snapshot) {
-        final user = snapshot.data ?? UserDefinition.initial();
+        final user = snapshot.data ?? User.initial();
         final timeAgo = createdAt != null
             ? TimestampService.formatTimeAgo(
                 createdAt,

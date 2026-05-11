@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 
@@ -258,7 +258,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       child: Transform.scale(
         alignment: Alignment.topLeft,
         scale: 1 / scale,
-        child: FutureBuilder<UserDefinition>(
+        child: FutureBuilder<User>(
           future: ref
               .read(userLookupProvider)
               .getUserById(widget.comment.createdBy),
@@ -458,13 +458,13 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             ),
                           ],
                         ),
-                        child: FutureBuilder<UserDefinition>(
+                        child: FutureBuilder<User>(
                           future: ref
                               .read(userLookupProvider)
                               .getUserById(widget.comment.createdBy),
                           builder: (context, snapshot) {
                             final user =
-                                snapshot.data ?? UserDefinition.initial();
+                                snapshot.data ?? User.initial();
                             final timeAgo = widget.comment.createdAt != null
                                 ? TimestampService.formatTimeAgo(
                                     widget.comment.createdAt!,

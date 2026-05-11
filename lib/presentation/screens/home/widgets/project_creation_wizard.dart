@@ -1,9 +1,9 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 
 class ProjectWizardData {
   final String projectId;
   final String name;
-  final List<UserDefinition> pendingMembers;
+  final List<User> pendingMembers;
 
   const ProjectWizardData({
     required this.projectId,
@@ -25,14 +25,14 @@ class _ProjectCreationWizardState extends ConsumerState<ProjectCreationWizard> {
   final _nameController = TextEditingController();
   final _acronymController = TextEditingController();
   final _teamSearchController = TextEditingController();
-  List<UserDefinition> _pendingMembers = [];
+  List<User> _pendingMembers = [];
   bool _showSuggestions = false;
 
   // Returns null when valid, or an error string when invalid.
   String? get _acronymError {
     final value = _acronymController.text;
     if (value.isEmpty) return null; // empty = auto-generate, always valid
-    if (!RegExp(r'^[A-Z]{1,4}$').hasMatch(value)) return 'Use 1–4 uppercase letters (A–Z) only';
+    if (!RegExp(r'^[A-Z]{1,4}$').hasMatch(value)) return 'Use 1â€“4 uppercase letters (Aâ€“Z) only';
     return null;
   }
 
@@ -224,7 +224,7 @@ class _ProjectCreationWizardState extends ConsumerState<ProjectCreationWizard> {
     final currentUserEmail = ref.read(currentUserProvider).email;
     final pendingEmails = _pendingMembers.map((m) => m.email).toSet();
     final searchText = _teamSearchController.text.toLowerCase();
-    final allUsers = ref.watch(userDefinitionsProvider).asData?.value ?? [];
+    final allUsers = ref.watch(usersProvider).asData?.value ?? [];
     final filteredUsers = allUsers.where((u) {
       if (u.email == currentUserEmail) return false;
       if (pendingEmails.contains(u.email)) return false;
@@ -367,7 +367,7 @@ class _ProjectCreationWizardState extends ConsumerState<ProjectCreationWizard> {
 }
 
 class _WizardUserSuggestionTile extends StatefulWidget {
-  final UserDefinition user;
+  final User user;
   final VoidCallback onTap;
 
   const _WizardUserSuggestionTile({required this.user, required this.onTap});
@@ -413,7 +413,7 @@ class _WizardUserSuggestionTileState extends State<_WizardUserSuggestionTile> {
 }
 
 class _WizardMemberTile extends StatelessWidget {
-  final UserDefinition member;
+  final User member;
   final VoidCallback onRemove;
 
   const _WizardMemberTile({required this.member, required this.onRemove});

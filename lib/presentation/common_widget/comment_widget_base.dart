@@ -174,7 +174,7 @@ class CommentWidgetBase {
     VoidCallback onSubmit,
     bool isHovered,
     String authorName, {
-    List<UserReference>? availableUsers,
+    List<ProjectMember>? availableUsers,
     String? currentUserId,
   }) {
     return Container(

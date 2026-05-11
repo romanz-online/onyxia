@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'package:intl/intl.dart';
 
 class DiffTile extends ConsumerStatefulWidget {
@@ -8,7 +8,7 @@ class DiffTile extends ConsumerStatefulWidget {
   final VoidCallback onTap;
   final VoidCallback onRestore;
   final Function(String) onRename;
-  final UserDefinition user;
+  final User user;
   final bool isPseudoMilestone;
   final bool hasChildDiffs;
   final bool isExpanded;

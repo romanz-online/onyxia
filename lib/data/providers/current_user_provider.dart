@@ -5,22 +5,22 @@ import 'package:onyxia/export.dart';
 /// or if no project is selected.
 final currentUserRoleProvider = Provider<UserRole?>((ref) {
   final userId = ref.watch(currentUserProvider.select((u) => u.id));
-  final members = ref.watch(userReferencesProvider(null)
+  final members = ref.watch(projectMembersProvider(null)
       .select((async) => async.asData?.value ?? []));
-  return members.firstWhereOrNull((m) => m.definitionId == userId)?.role;
+  return members.firstWhereOrNull((m) => m.userId == userId)?.role;
 });
 
 final currentUserProvider =
-    StateNotifierProvider<CurrentUserNotifier, UserDefinition>((ref) {
+    StateNotifierProvider<CurrentUserNotifier, User>((ref) {
   final authRepository = ref.watch(authRepositoryProvider);
   return CurrentUserNotifier(authRepository);
 });
 
-class CurrentUserNotifier extends StateNotifier<UserDefinition> {
+class CurrentUserNotifier extends StateNotifier<User> {
   final AuthRepository repository;
   StreamSubscription<AuthState>? _authSub;
 
-  CurrentUserNotifier(this.repository) : super(UserDefinition.initial()) {
+  CurrentUserNotifier(this.repository) : super(User.initial()) {
     _listenToAuthChanges();
     // On hot-reload / cold start the auth event stream may have already fired —
     // seed state from the current session.
@@ -34,35 +34,20 @@ class CurrentUserNotifier extends StateNotifier<UserDefinition> {
       if (session != null) {
         _loadUserFromTable(session.user.id);
       } else {
-        state = UserDefinition.initial();
+        state = User.initial();
       }
     });
   }
 
-  /// Read the public.users row populated by the auth → public mirror trigger.
+  /// Read the row from the `public.users` view (a thin projection over
+  /// `auth.users`). The view always resolves for any signed-in user.
   Future<void> _loadUserFromTable(String userId) async {
     try {
-      final user = await UserDefinitionsRepository().get(userId);
+      final user = await UsersRepository().get(userId);
       if (!mounted) return;
-      if (user != null) {
-        state = user.copyWith(isLogged: true);
-      } else {
-        // Mirror trigger hasn't run yet (rare race) — fall back to the auth
-        // user fields so the UI doesn't render an empty state.
-        final authUser = repository.currentUser;
-        if (authUser != null) {
-          state = state.copyWith(
-            id: authUser.id,
-            email: authUser.email ?? '',
-            name: authUser.userMetadata?['name'] ??
-                authUser.userMetadata?['full_name'] ??
-                '',
-            isLogged: true,
-          );
-        }
-      }
+      if (user != null) state = user.copyWith(isLogged: true);
     } catch (e) {
-      debugPrint('Error loading user data from public.users: $e');
+      debugPrint('Error loading user from public.users view: $e');
     }
   }
 
@@ -72,14 +57,6 @@ class CurrentUserNotifier extends StateNotifier<UserDefinition> {
 
   Future<bool> signInWithFakeAccount() async =>
       repository.signInWithFakeAccount();
-
-  /// Updates the user's complete profile in public.users.
-  Future<void> updateUserProfile(UserDefinition updatedUser) async {
-    final ok = await repository.updateUserProfile(updatedUser);
-    if (ok && mounted) {
-      state = updatedUser.copyWith(isLogged: state.isLogged);
-    }
-  }
 
   @override
   void dispose() {

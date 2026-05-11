@@ -26,6 +26,15 @@ abstract class BaseSupabaseRepository<T> {
   /// Default `orderBy` applied to `getStream` when the caller doesn't pass one.
   String? get defaultOrderBy => null;
 
+  /// Primary-key column(s). Override for composite-key tables (e.g.
+  /// `project_members` keyed on `(project_id, user_id)`). Used by realtime
+  /// `.stream()` setup.
+  List<String> get primaryKeyFields => const ['id'];
+
+  /// Equality filter used for update/delete. Override for composite-key tables
+  /// to return all key columns. Default keys off the single `id` column.
+  Map<String, dynamic> keyFilter(T item) => {'id': getIdFromItem(item)};
+
   SupabaseClient get _client => Supabase.instance.client;
   SupabaseQueryBuilder get _table => _client.from(tableName);
 
@@ -76,7 +85,9 @@ abstract class BaseSupabaseRepository<T> {
 
   Future<void> update(T item) {
     return _execute(() async {
-      await _table.update(_writeMap(item)).eq('id', getIdFromItem(item));
+      dynamic q = _table.update(_writeMap(item));
+      keyFilter(item).forEach((k, v) => q = q.eq(k, v));
+      await q;
     });
   }
 
@@ -91,16 +102,18 @@ abstract class BaseSupabaseRepository<T> {
   }
 
   Future<void> delete(dynamic item) {
-    final String id;
+    final Map<String, dynamic> filter;
     if (item is String) {
-      id = item;
+      filter = {'id': item};
     } else if (item is T) {
-      id = getIdFromItem(item);
+      filter = keyFilter(item);
     } else {
       throw ArgumentError('Invalid parameter: $item');
     }
     return _execute(() async {
-      await _table.delete().eq('id', id);
+      dynamic q = _table.delete();
+      filter.forEach((k, v) => q = q.eq(k, v));
+      await q;
     });
   }
 
@@ -178,7 +191,7 @@ abstract class BaseSupabaseRepository<T> {
   Stream<T?> getDocumentStream(String id) {
     return _executeStream<T?>(() {
       return _table
-          .stream(primaryKey: ['id'])
+          .stream(primaryKey: primaryKeyFields)
           .eq('id', id)
           .map((rows) => rows.isEmpty ? null : fromMap(rows.first));
     }, null);
@@ -194,7 +207,7 @@ abstract class BaseSupabaseRepository<T> {
     int? limit,
   }) {
     return _executeStream<List<T>>(() {
-      final filter = _table.stream(primaryKey: ['id']);
+      final filter = _table.stream(primaryKey: primaryKeyFields);
       SupabaseStreamBuilder stream = (field != null && isEqualTo != null)
           ? filter.eq(field, isEqualTo)
           : filter;

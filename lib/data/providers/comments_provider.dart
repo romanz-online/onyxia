@@ -55,7 +55,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   final CommentsRepository repository;
   final String projectId;
   final String targetId;
-  final UserDefinition user;
+  final User user;
   final Ref ref;
   StreamSubscription<List<Comment>>? _subscription;
 

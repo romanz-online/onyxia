@@ -115,10 +115,10 @@ class ProjectsNotifier extends StateNotifier<Projects> {
 
   Future<void> removeMember({
     required String projectId,
-    required UserReference member,
+    required ProjectMember member,
   }) async {
     try {
-      await UserReferencesRepository(projectId: projectId).delete(member);
+      await ProjectMembersRepository(projectId: projectId).delete(member);
       NarwhalToast.show(text: 'Member removed', type: ToastType.success);
     } catch (e) {
       NarwhalToast.show(text: 'Error removing member', type: ToastType.error);
@@ -131,8 +131,7 @@ class ProjectsNotifier extends StateNotifier<Projects> {
     required UserRole role,
   }) async {
     try {
-      final user =
-          await UserDefinitionsRepository(projectId: 'root').getByEmail(email);
+      final user = await UsersRepository().getByEmail(email);
 
       if (user == null) {
         NarwhalToast.show(
@@ -142,8 +141,9 @@ class ProjectsNotifier extends StateNotifier<Projects> {
         return;
       }
 
-      await UserReferencesRepository(projectId: projectId)
-          .add([UserReference(definitionId: user.id, role: role)]);
+      await ProjectMembersRepository(projectId: projectId).add([
+        ProjectMember(projectId: projectId, userId: user.id, role: role),
+      ]);
       NarwhalToast.show(
         text: 'User with email $email added successfully',
         type: ToastType.success,

@@ -45,7 +45,7 @@ class DiffHistoryList extends ConsumerStatefulWidget {
 }
 
 class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
-  final Map<String, UserDefinition> _userCache = {};
+  final Map<String, User> _userCache = {};
   final Set<String> _expandedGroups = {};
   late List<MilestoneGroup> _groups;
   bool _hasReceivedInitialDiffs = false;
@@ -136,21 +136,21 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
   String _getGroupId(HistoryDiff milestone) =>
       milestone.timestamp.millisecondsSinceEpoch.toString();
 
-  Future<UserDefinition> _getUser(String userId) async {
-    if (userId.isEmpty) return UserDefinition.initial();
+  Future<User> _getUser(String userId) async {
+    if (userId.isEmpty) return User.initial();
 
     if (_userCache.containsKey(userId)) return _userCache[userId]!;
 
     try {
-      if (!mounted) return UserDefinition.initial();
+      if (!mounted) return User.initial();
       final user = await ref.read(userLookupProvider).getUserById(userId);
-      if (!mounted) return UserDefinition.initial();
+      if (!mounted) return User.initial();
       _userCache[userId] = user;
       return user;
     } catch (e) {
-      if (!mounted) return UserDefinition.initial();
+      if (!mounted) return User.initial();
       final fallbackUser =
-          UserDefinition.initial().copyWith(name: userId, id: userId);
+          User.initial().copyWith(name: userId, id: userId);
       _userCache[userId] = fallbackUser;
       return fallbackUser;
     }
@@ -433,7 +433,7 @@ class MilestoneGroupWidget extends ConsumerWidget {
   final Function(HistoryDiff, String) onRename;
   final HistoryDiff? selectedDiff;
   final bool isCurrent;
-  final Future<UserDefinition> Function(String) getUser;
+  final Future<User> Function(String) getUser;
 
   const MilestoneGroupWidget({
     super.key,
@@ -455,11 +455,11 @@ class MilestoneGroupWidget extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         // Milestone header
-        FutureBuilder<UserDefinition>(
+        FutureBuilder<User>(
           future: getUser(group.milestone.createdBy),
           builder: (context, snapshot) {
             final user = snapshot.data ??
-                UserDefinition.initial()
+                User.initial()
                     .copyWith(name: group.milestone.createdBy);
 
             return Padding(
@@ -484,14 +484,14 @@ class MilestoneGroupWidget extends ConsumerWidget {
         isExpanded
             ? Column(
                 children: group.diffs.map((diff) {
-                  return FutureBuilder<UserDefinition>(
+                  return FutureBuilder<User>(
                       future: getUser(diff.createdBy),
                       builder: (context, snapshot) => DiffTile(
                             diff: diff,
                             isSelected: diff == selectedDiff,
                             isCurrent: false,
                             user: snapshot.data ??
-                                UserDefinition.initial()
+                                User.initial()
                                     .copyWith(name: diff.createdBy),
                             onTap: () => onDiffTap(diff),
                             onRestore: () => onRestore(diff),
