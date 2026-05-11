@@ -19,17 +19,17 @@ class StorageFile {
   /// MIME type of the file (e.g., 'image/jpeg', 'application/pdf')
   final String mimeType;
 
-  /// When the file was uploaded
-  final DateTime? createdAt;
-
-  /// User ID who uploaded the file
-  final String createdBy;
-
   /// Optional project ID this file belongs to
   final String? projectId;
 
   /// Optional metadata for additional information
   final Map<String, dynamic>? metadata;
+
+  //
+  final DateTime? createdAt;
+  final String? createdBy;
+  final DateTime? updatedAt;
+  final String? updatedBy;
 
   StorageFile({
     required this.id,
@@ -38,26 +38,29 @@ class StorageFile {
     required this.downloadUrl,
     required this.sizeBytes,
     required this.mimeType,
-    this.createdAt,
-    required this.createdBy,
     this.projectId,
     this.metadata,
+    //
+    this.createdAt,
+    this.createdBy,
+    this.updatedAt,
+    this.updatedBy,
   });
 
-  factory StorageFile.fromMap(Map<String, dynamic> map) {
-    return StorageFile(
-      id: map['id'] as String,
-      name: (map['name'] as String?) ?? '',
-      storagePath: (map['path'] as String?) ?? '',
-      downloadUrl: (map['download_url'] as String?) ?? '',
-      sizeBytes: (map['size'] as num?)?.toInt() ?? 0,
-      mimeType: (map['mime'] as String?) ?? '',
-      createdAt: TimestampService.fromMap(map['created_at']),
-      createdBy: (map['created_by'] as String?) ?? '',
-      projectId: map['project_id'] as String?,
-      metadata: map['metadata'] as Map<String, dynamic>?,
-    );
-  }
+  StorageFile.fromMap(Map<String, dynamic> map)
+      : id = map['id'] ?? '',
+        name = map['name'] ?? '',
+        storagePath = map['path'] ?? '',
+        downloadUrl = map['download_url'] ?? '',
+        sizeBytes = (map['size'] as num?)?.toInt() ?? 0,
+        mimeType = map['mime'] ?? '',
+        projectId = map['project_id'] ?? '',
+        metadata = map['metadata'] as Map<String, dynamic>?,
+        //
+        createdAt = TimestampService.fromMap(map['created_at']),
+        createdBy = map['created_by'] ?? '',
+        updatedAt = TimestampService.fromMap(map['updated_at']),
+        updatedBy = map['updated_by'] ?? '';
 
   /// Top-level Postgres columns. `download_url` is computed from `path` at read
   /// time via Supabase Storage and is never persisted.
@@ -68,7 +71,6 @@ class StorageFile {
       'path': storagePath,
       'size': sizeBytes,
       'mime': mimeType,
-      'created_by': createdBy,
       'project_id': projectId,
       'metadata': metadata,
     };
@@ -108,8 +110,6 @@ class StorageFile {
     String? downloadUrl,
     int? sizeBytes,
     String? mimeType,
-    DateTime? createdAt,
-    String? createdBy,
     String? projectId,
     Map<String, dynamic>? metadata,
   }) {
@@ -120,8 +120,6 @@ class StorageFile {
       downloadUrl: downloadUrl ?? this.downloadUrl,
       sizeBytes: sizeBytes ?? this.sizeBytes,
       mimeType: mimeType ?? this.mimeType,
-      createdAt: createdAt ?? this.createdAt,
-      createdBy: createdBy ?? this.createdBy,
       projectId: projectId ?? this.projectId,
       metadata: metadata ?? this.metadata,
     );
@@ -129,7 +127,16 @@ class StorageFile {
 
   @override
   String toString() {
-    return 'StorageFile(id: $id, name: $name, size: $formattedSize, type: $mimeType)';
+    return 'StorageFile(id: $id, '
+        'name: $name, '
+        'size: $formattedSize, '
+        'type: $mimeType, '
+        //
+        'createdAt: $createdAt, '
+        'createdBy: $createdBy, '
+        'updatedAt: $updatedAt, '
+        'updatedBy: $updatedBy, '
+        ')';
   }
 
   @override

@@ -1,34 +1,26 @@
 ﻿export 'package:onyxia/presentation/app.dart';
-
-//Colors and Theme
+ 
 export 'package:onyxia/core/constants/colors.dart';
 export 'package:onyxia/core/constants/styles.dart';
 export 'package:onyxia/core/constants/admin_config.dart';
 export 'package:onyxia/core/constants/icons.dart';
 export 'package:onyxia/data/providers/theme_provider.dart';
 
-//screens
 export 'package:onyxia/presentation/screens/artifacts/widgets/artifacts_tree_view.dart';
 export 'package:onyxia/presentation/screens/artifacts/widgets/artifacts_tree_context_menu.dart';
 export 'package:onyxia/presentation/screens/graph_screen.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_angry.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_switch.dart';
 export 'package:onyxia/presentation/screens/home/widgets/sidebar.dart';
-
 export 'package:onyxia/presentation/screens/home/home_screen.dart';
-
 export 'package:onyxia/presentation/screens/invite_screen.dart';
-
 export 'package:onyxia/presentation/screens/projects/projects.dart';
-
 export 'package:onyxia/data/models/artifacts/canvas/expandable_pin.dart';
 
-//common widgets
 export 'package:onyxia/presentation/common_widget/hover_builder.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_card.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_drawer_layout.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_right_click_menu.dart';
-
+export 'package:onyxia/presentation/common_widget/narwhal_angry.dart';
+export 'package:onyxia/presentation/common_widget/narwhal_switch.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_overlay.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_dropdown_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_tooltip.dart';
@@ -38,8 +30,6 @@ export 'package:onyxia/presentation/common_widget/narwhal_filter_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_checkbox_filter_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_text_filter_select.dart';
 export 'package:onyxia/presentation/screens/home/widgets/project_settings_button.dart';
-export 'package:onyxia/presentation/common_widget/diff_history_list.dart';
-export 'package:onyxia/presentation/common_widget/diff_tile.dart';
 export 'package:onyxia/presentation/common_widget/user_profile_overlay.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
@@ -80,7 +70,6 @@ export 'package:onyxia/data/providers/canvases_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_item_provider.dart';
 export 'package:onyxia/data/providers/note_state_provider.dart';
-export 'package:onyxia/data/providers/diffs_provider.dart';
 
 //packages
 export 'package:flutter_riverpod/flutter_riverpod.dart' hide AsyncError;
@@ -89,6 +78,7 @@ export 'package:go_router/go_router.dart';
 export 'package:supabase_flutter/supabase_flutter.dart' hide User;
 export 'package:contextmenu/contextmenu.dart';
 export 'package:flutter_svg/svg.dart';
+export 'package:super_tree/super_tree.dart';
 
 //models
 export 'package:onyxia/data/models/artifacts/note/note.dart';
@@ -98,7 +88,6 @@ export 'package:onyxia/data/models/artifacts/canvas/canvas_model.dart';
 export 'package:onyxia/data/models/artifacts/folder/folder.dart';
 export 'package:onyxia/data/models/user.dart';
 export 'package:onyxia/data/models/project_member.dart';
-export 'package:onyxia/data/models/user_role.dart';
 export 'package:onyxia/data/models/artifacts/canvas/comment.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas_object.dart';
 export 'package:onyxia/data/models/artifacts/canvas/sub_comment.dart';
@@ -127,7 +116,6 @@ export 'package:onyxia/repository/storage_files_repository.dart';
 
 //services
 export 'package:onyxia/services/canvas_serializer_service.dart';
-export 'package:onyxia/services/note_serializer_service.dart';
 export 'package:onyxia/services/images/image_service.dart';
 export 'package:onyxia/services/images/image_cache_service.dart';
 export 'package:onyxia/services/images/image_encoding_service.dart';
@@ -155,6 +143,3 @@ export 'package:flutter/foundation.dart' hide shortHash, describeIdentity;
 export 'package:flutter/services.dart';
 export 'package:file_picker/file_picker.dart';
 export 'package:collection/collection.dart' hide binarySearch, mergeSort;
-
-//vendor
-export 'package:super_tree/super_tree.dart';

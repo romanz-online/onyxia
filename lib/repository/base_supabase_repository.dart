@@ -73,8 +73,7 @@ abstract class BaseSupabaseRepository<T> {
     });
   }
 
-  Future<List<T>> getAll() =>
-      query(field: scopeField, isEqualTo: scopeValue);
+  Future<List<T>> getAll() => query(field: scopeField, isEqualTo: scopeValue);
 
   Future<void> add(List<T> items) {
     return _execute(() async {

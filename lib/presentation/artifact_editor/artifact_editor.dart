@@ -29,13 +29,6 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
   NoteStateProvider get _noteProvider =>
       widget.noteProvider ?? selectedNoteStateProvider;
 
-  Artifact? get _artifact {
-    if (widget.noteProvider != null) {
-      return ref.read(widget.noteProvider!).value?.note;
-    }
-    return ref.read(selectedArtifactProvider);
-  }
-
   Future<void> _handleSave() async {
     setState(() => _isSaving = true);
     try {
@@ -64,47 +57,6 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
     ref.invalidate(_noteProvider);
   }
 
-  void _restoreArtifact(WidgetRef ref, ArtifactsDiffPreview diffPreview) async {
-    final artifact = _artifact;
-
-    if (artifact is! Note) {
-      debugPrint('History restore only supported for Notes currently');
-      return;
-    }
-
-    if (diffPreview.note == null || diffPreview.targetDiff == null) {
-      debugPrint('RestoreArtifact: Missing note or targetDiff');
-      return;
-    }
-
-    try {
-      final projectId = ref.read(projectsProvider).selectedProject.id;
-
-      await HistoryService.restore(
-        ref: ref,
-        projectId: projectId,
-        targetDiff: diffPreview.targetDiff!,
-        serializer: NoteSerializerService(
-          itemId: artifact.id,
-          projectId: projectId,
-          repository: ArtifactsRepository(projectId: projectId),
-        ),
-      );
-
-      try {
-        final refreshedState = ref.refresh(_noteProvider);
-        debugPrint(
-            '_restoreArtifact: Editor refreshed with state: ${refreshedState.hasValue ? "loaded" : "loading"}');
-      } catch (e) {
-        debugPrint('_restoreArtifact: Editor refresh failed: $e');
-      }
-
-      ref.read(artifactsDiffPreviewProvider.notifier).clearPreview();
-    } catch (e) {
-      debugPrint('Failed to restore item: $e');
-    }
-  }
-
   Widget _buildEditorContent(Artifact artifact) {
     return switch (artifact.type) {
       ArtifactType.note => NoteEditorView(
@@ -120,106 +72,6 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
           : const SizedBox.shrink(),
       ArtifactType.folder => const SizedBox.shrink(),
     };
-  }
-
-  Widget _buildHistoryPreview() {
-    return Consumer(
-      builder: (context, ref, child) {
-        final selectedItem = ref.watch(selectedArtifactProvider);
-        if (selectedItem is! Note) return const SizedBox.shrink();
-
-        final diffPreview = ref.watch(artifactsDiffPreviewProvider);
-        final isPreviewMode = diffPreview != null && diffPreview.note != null;
-
-        if (!isPreviewMode) return const SizedBox.shrink();
-
-        return Positioned(
-          top: 16,
-          right: 50,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: ThemeHelper.blue500(context).withValues(alpha: 0.9),
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: ThemeHelper.black(context).withValues(alpha: 0.2),
-                  blurRadius: 4,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.history,
-                  color: ThemeHelper.white(context),
-                  size: 16,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'Previewing: ${diffPreview.note?.createdAt ?? 'Historical Content'}',
-                  style: NarwhalTextStyle(
-                    color: ThemeHelper.white(context),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                InkWell(
-                  onTap: () => _restoreArtifact(ref, diffPreview),
-                  borderRadius: BorderRadius.circular(4),
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: ThemeHelper.green().withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                          color: ThemeHelper.green().withValues(alpha: 0.5)),
-                    ),
-                    child: Text(
-                      'Restore',
-                      style: NarwhalTextStyle(
-                        color: ThemeHelper.white(context),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 8),
-                InkWell(
-                  onTap: () => ref
-                      .read(artifactsDiffPreviewProvider.notifier)
-                      .clearPreview(),
-                  borderRadius: BorderRadius.circular(4),
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: ThemeHelper.red().withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(4),
-                      border: Border.all(
-                          color: ThemeHelper.red().withValues(alpha: 0.5)),
-                    ),
-                    child: Text(
-                      'Close',
-                      style: NarwhalTextStyle(
-                        color: ThemeHelper.white(context),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
   }
 
   AppBar _buildAppBar(String title) {
@@ -345,7 +197,6 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
               onReset: _handleReset,
             ),
           ),
-        _buildHistoryPreview(),
       ],
     );
   }

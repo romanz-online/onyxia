@@ -68,15 +68,15 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
     }
     ref
         .read(artifactsProvider.notifier)
-        .updateItem(widget.item.copyWith(title: newName));
+        .updateItem(widget.item.copyWith(name: newName));
 
     if (context.mounted) {
       final urlSelectedId =
           GoRouterState.of(context).pathParameters['selectedId'];
       if (urlSelectedId == widget.item.name) {
         final projectId =
-            ref.read(projectsProvider.select((s) => s.selectedProject.id));
-        context.go('/project/$projectId/$newName');
+            ref.read(projectsProvider.select((s) => s.selectedProject?.id));
+        context.go(widget.item.navigationUrl(projectId));
       }
     }
   }

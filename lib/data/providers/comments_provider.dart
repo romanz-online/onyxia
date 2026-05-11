@@ -39,13 +39,13 @@ class CommentsState {
 final commentsProvider =
     StateNotifierProvider.family<CommentsNotifier, CommentsState, String>(
         (ref, targetId) {
-  final projectId = ref.watch(projectsProvider).selectedProject.id;
+  final projectId = ref.watch(projectsProvider).selectedProject?.id;
   final repository = CommentsRepository(projectId: projectId);
 
   return CommentsNotifier(
     repository: repository,
     projectId: projectId,
-    targetId: targetId,
+    canvasId: targetId,
     user: ref.watch(currentUserProvider),
     ref: ref,
   );
@@ -53,8 +53,8 @@ final commentsProvider =
 
 class CommentsNotifier extends StateNotifier<CommentsState> {
   final CommentsRepository repository;
-  final String projectId;
-  final String targetId;
+  final String? projectId;
+  final String canvasId;
   final User user;
   final Ref ref;
   StreamSubscription<List<Comment>>? _subscription;
@@ -62,7 +62,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   CommentsNotifier({
     required this.repository,
     required this.projectId,
-    required this.targetId,
+    required this.canvasId,
     required this.user,
     required this.ref,
   }) : super(CommentsState.initial()) {
@@ -72,7 +72,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   void _watchComments() {
     _subscription?.cancel();
     _subscription =
-        repository.watchComments(targetId: targetId).listen((comments) {
+        repository.watchComments(targetId: canvasId).listen((comments) {
       final sortedComments = List<Comment>.from(comments);
       sortedComments.sort((a, b) => (a.createdAt ??
               DateTime.fromMillisecondsSinceEpoch(0))
@@ -106,7 +106,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       position: position,
     );
 
-    await repository.addComment(targetId: targetId, comment: newComment);
+    await repository.addComment(canvasId: canvasId, comment: newComment);
   }
 
   Future<void> updateComment({
@@ -121,7 +121,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       );
     }
 
-    await repository.updateComment(targetId: targetId, comment: newComment);
+    await repository.updateComment(canvasId: canvasId, comment: newComment);
 
     // Update local state
     state = state.copyWith(
@@ -149,7 +149,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     );
 
     await repository.updateComment(
-      targetId: targetId,
+      canvasId: canvasId,
       comment: updatedComment,
     );
   }
@@ -174,7 +174,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     );
 
     await repository.updateComment(
-      targetId: targetId,
+      canvasId: canvasId,
       comment: updatedComment,
     );
   }
@@ -187,7 +187,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     final updatedComment = comment.copyWith(subComments: updatedSubComments);
 
     await repository.updateComment(
-      targetId: targetId,
+      canvasId: canvasId,
       comment: updatedComment,
     );
   }
@@ -254,7 +254,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     final commentToSave = state.temporaryComment!.copyWith(text: text.trim());
 
     await repository.addComment(
-      targetId: targetId,
+      canvasId: canvasId,
       comment: commentToSave,
     );
 

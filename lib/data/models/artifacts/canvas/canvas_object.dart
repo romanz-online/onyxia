@@ -63,7 +63,6 @@ class CanvasObject {
   Color color;
   CanvasObjectType type;
   StrokeType stroke;
-  DateTime createdAt;
   Offset topLeft;
   Offset bottomRight;
   String content;
@@ -71,9 +70,13 @@ class CanvasObject {
   ImageProperties? _imageProps;
   BrushProperties? _brushProps;
   ArtifactProperties? _artifactProps;
+  //
+  final DateTime? createdAt;
+  final String? createdBy;
+  final DateTime? updatedAt;
+  final String? updatedBy;
 
   CanvasObject({
-    DateTime? createdAt,
     required this.id,
     this.layer = 0,
     this.color = Colors.transparent,
@@ -86,8 +89,12 @@ class CanvasObject {
     ImageProperties? imageProperties,
     BrushProperties? brushProperties,
     ArtifactProperties? artifactProperties,
-  })  : createdAt = createdAt ?? DateTime.now(),
-        _arrowProps = arrowProperties,
+    //
+    this.createdAt,
+    this.createdBy,
+    this.updatedAt,
+    this.updatedBy,
+  })  : _arrowProps = arrowProperties,
         _imageProps = imageProperties,
         _brushProps = brushProperties,
         _artifactProps = artifactProperties {
@@ -165,7 +172,6 @@ class CanvasObject {
     Color? color,
     CanvasObjectType? type,
     StrokeType? stroke,
-    DateTime? createdAt,
     Offset? topLeft,
     Offset? bottomRight,
     String? content,
@@ -181,7 +187,6 @@ class CanvasObject {
       color: color ?? this.color,
       type: type ?? this.type,
       stroke: stroke ?? this.stroke,
-      createdAt: createdAt ?? this.createdAt,
       topLeft: topLeft ?? this.topLeft,
       bottomRight: bottomRight ?? this.bottomRight,
       content: content ?? this.content,
@@ -247,15 +252,6 @@ class CanvasObject {
         color = Colors.transparent;
       }
 
-      DateTime createdAt = DateTime.now();
-      try {
-        final ts = map['created_at'];
-        if (ts is String) createdAt = DateTime.tryParse(ts) ?? DateTime.now();
-        if (ts is int) createdAt = DateTime.fromMillisecondsSinceEpoch(ts);
-      } catch (e) {
-        createdAt = DateTime.now();
-      }
-
       Offset topLeft = Offset.zero;
       try {
         if (payload['top_left'] != null) {
@@ -283,7 +279,6 @@ class CanvasObject {
         color: color,
         type: type,
         stroke: stroke,
-        createdAt: createdAt,
         topLeft: topLeft,
         bottomRight: bottomRight,
         content: content,
@@ -303,6 +298,11 @@ class CanvasObject {
                 payload['artifact_props'] != null
             ? ArtifactProperties.fromMap(payload['artifact_props'])
             : null,
+        //
+        createdAt: TimestampService.fromMap(map['created_at']),
+        createdBy: map['created_by'] ?? '',
+        updatedAt: TimestampService.fromMap(map['updated_at']),
+        updatedBy: map['updated_by'] ?? '',
       );
     } catch (e) {
       return CanvasObject.initial();
@@ -317,7 +317,6 @@ class CanvasObject {
         'color: $color, '
         'type: $type, '
         'stroke: $stroke, '
-        'createdAt: $createdAt, '
         'topLeft: $topLeft, '
         'bottomRight: $bottomRight, '
         'content: $content, '
@@ -325,6 +324,11 @@ class CanvasObject {
         'imageProps: $_imageProps, '
         'brushProps: $_brushProps, '
         'artifactProps: $_artifactProps, '
+        //
+        'createdAt: $createdAt, '
+        'createdBy: $createdBy, '
+        'updatedAt: $updatedAt, '
+        'updatedBy: $updatedBy, '
         ')';
   }
 
@@ -342,14 +346,18 @@ class CanvasObject {
         color.hashCode ^
         type.hashCode ^
         stroke.hashCode ^
-        createdAt.hashCode ^
         topLeft.hashCode ^
         bottomRight.hashCode ^
         content.hashCode ^
         _arrowProps.hashCode ^
         _imageProps.hashCode ^
         _brushProps.hashCode ^
-        _artifactProps.hashCode;
+        _artifactProps.hashCode ^
+        //
+        createdAt.hashCode ^
+        createdBy.hashCode ^
+        updatedAt.hashCode ^
+        updatedBy.hashCode;
   }
 
   bool get isContentEmpty => content.trim().isEmpty;

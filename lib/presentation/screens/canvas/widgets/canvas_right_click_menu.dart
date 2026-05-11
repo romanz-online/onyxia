@@ -359,7 +359,7 @@ class _CanvasRightClickMenuState extends State<CanvasRightClickMenu> {
         final fileName = file.name;
 
         // Get current project info
-        final projectId = ref.read(projectsProvider).selectedProject.id;
+        final projectId = ref.read(projectsProvider).selectedProject?.id;
         final userName = ref.read(currentUserProvider).name;
 
         // Upload using ImageService

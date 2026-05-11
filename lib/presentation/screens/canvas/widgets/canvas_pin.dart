@@ -163,12 +163,12 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
       final notes = ref.watch(artifactsProvider);
       final notesLoaded = ref.watch(artifactsLoadedProvider);
       final note = notes.firstWhereOrNull(
-        (req) => req.id == widget.pin.artifactId,
+        (req) => req.id == widget.pin.linkedArtifactId,
       );
 
       // Handle new pins with empty artifactId - use placeholder note
       final effectiveNote =
-          note ?? (widget.pin.artifactId.isEmpty ? Note(name: '') : null);
+          note ?? (widget.pin.linkedArtifactId.isEmpty ? Note(name: '') : null);
 
       // Loading state - show spinner while notes are loading
       if (!notesLoaded && effectiveNote == null) {
@@ -178,7 +178,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
       // Error state - note doesn't exist after loading is complete
       if (notesLoaded &&
           effectiveNote == null &&
-          widget.pin.artifactId.isNotEmpty) {
+          widget.pin.linkedArtifactId.isNotEmpty) {
         return const SizedBox.shrink();
       }
 

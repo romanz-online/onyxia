@@ -151,7 +151,7 @@ void pasteArtifactAtPosition(
           ref,
           Pin(
             id: const Uuid().v4(),
-            artifactId: note.id,
+            linkedArtifactId: note.id,
             canvasId: ref.read(currentCanvasProvider)?.id ?? '',
             position: newPosition,
             pinnedObjectId: object.id,

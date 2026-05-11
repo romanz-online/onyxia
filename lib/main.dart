@@ -2,6 +2,8 @@ import 'export.dart';
 import 'supabase_config.dart';
 
 void main() async {
+  if (!kIsWeb) return;
+
   WidgetsFlutterBinding.ensureInitialized();
 
   BrowserContextMenu.disableContextMenu();

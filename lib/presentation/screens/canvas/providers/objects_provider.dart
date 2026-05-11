@@ -14,8 +14,8 @@ final urlCanvasIdProvider = StateProvider.autoDispose<String?>((ref) => null);
 // Provides current canvas with URL-first priority
 // Auto-disposes when widget unmounts
 final currentCanvasProvider = Provider.autoDispose<CanvasModel?>((ref) {
-  final projectId = ref.watch(projectsProvider).selectedProject.id;
-  if (projectId.isEmpty) return null;
+  final projectId = ref.watch(projectsProvider).selectedProject?.id;
+  if (projectId == null) return null;
 
   // Priority 1: URL canvas ID (set by CanvasLoaderService)
   final urlCanvasId = ref.watch(urlCanvasIdProvider);
@@ -35,7 +35,7 @@ final canvasObjectsProvider =
     StateNotifierProvider.autoDispose<ObjectsNotifier, CanvasObjects>((ref) {
   // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
   final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-  final projectId = ref.watch(projectsProvider).selectedProject.id;
+  final projectId = ref.watch(projectsProvider).selectedProject?.id;
 
   final notifier = ObjectsNotifier(
     CanvasObjects.initial(),
@@ -59,7 +59,7 @@ final canvasObjectsProvider =
 class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   final CanvasObjectsRepository repository;
   final String canvasId;
-  final String projectId;
+  final String? projectId;
   StreamSubscription? _subscription;
   int _maxLayer = 0;
 
@@ -83,7 +83,7 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
       objects..sort((a, b) => a.layer.compareTo(b.layer));
 
   void _init() {
-    if (canvasId.isEmpty) return;
+    if (canvasId.isEmpty || projectId == null) return;
 
     _subscription =
         repository.getCanvasObjectsStream().listen((remoteObjects) async {
@@ -421,6 +421,9 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
     if (HistoryService.pipeActive) {
       await operation.call();
     } else {
+      final projectId = ref.read(projectsProvider).selectedProject?.id;
+      if (projectId == null) return;
+
       await HistoryService.pipe(
         ref: ref,
         projectId: projectId,
@@ -428,8 +431,7 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
         serializer: CanvasSerializerService(
           canvasId: canvasId,
           projectId: projectId,
-          repository: ArtifactsRepository(
-              projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(projectId: projectId),
         ),
       );
     }

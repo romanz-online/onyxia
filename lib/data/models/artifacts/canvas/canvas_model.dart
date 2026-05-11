@@ -12,13 +12,14 @@ class CanvasModel extends Artifact {
 
   CanvasModel({
     super.id,
-    super.createdAt,
-    super.parentFolderId,
-    super.createdBy,
-    super.name = 'Canvas',
     super.type = ArtifactType.canvas,
-    super.updatedBy,
+    super.name = 'Canvas',
+    super.parentFolderId,
+    //
+    super.createdAt,
+    super.createdBy,
     super.updatedAt,
+    super.updatedBy,
     //
     this.canvasType = CanvasType.whiteboard,
     this.imageUrl,
@@ -39,25 +40,15 @@ class CanvasModel extends Artifact {
   @override
   CanvasModel copyWith({
     String? id,
+    String? name,
     String? parentFolderId,
-    String? title,
-    DateTime? createdAt,
-    String? createdBy,
-    ArtifactType? type,
-    String? updatedBy,
-    DateTime? updatedAt,
     CanvasType? canvasType,
     String? imageUrl,
   }) {
     return CanvasModel(
       id: id ?? this.id,
       parentFolderId: parentFolderId ?? this.parentFolderId,
-      createdAt: createdAt ?? this.createdAt,
-      createdBy: createdBy ?? this.createdBy,
-      name: title ?? this.name,
-      type: type ?? this.type,
-      updatedBy: updatedBy ?? this.updatedBy,
-      updatedAt: updatedAt ?? this.updatedAt,
+      name: name ?? this.name,
       //
       canvasType: canvasType ?? this.canvasType,
       imageUrl: imageUrl ?? this.imageUrl,

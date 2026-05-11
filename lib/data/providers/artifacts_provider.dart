@@ -3,7 +3,7 @@
 final artifactsProvider =
     StateNotifierProvider<ArtifactsTreeNotifier, List<Artifact>>((ref) {
   final projectId =
-      ref.watch(projectsProvider.select((s) => s.selectedProject.id));
+      ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
   return ArtifactsTreeNotifier(
     ArtifactsRepository(projectId: projectId),
     projectId,
@@ -13,8 +13,8 @@ final artifactsProvider =
 
 final artifactsLoadedProvider = Provider<bool>((ref) {
   final projectId =
-      ref.watch(projectsProvider.select((s) => s.selectedProject.id));
-  if (projectId.isEmpty) return true;
+      ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+  if (projectId == null) return true;
   final dataReceived = ref.watch(artifactsReceivedProvider(projectId));
   final hasError = ref.watch(artifactsErrorProvider(projectId));
   return dataReceived && !hasError;
@@ -22,16 +22,16 @@ final artifactsLoadedProvider = Provider<bool>((ref) {
 
 final artifactsReceivedProvider =
     StateProvider.family<bool, String>((ref, projectId) => false);
+
 final artifactsErrorProvider =
     StateProvider.family<bool, String>((ref, projectId) => false);
 
-final wikiLinkTitlesProvider = Provider<List<String>>((ref) {
-  return ref.watch(artifactsProvider).map((item) => item.name).toList();
-});
+final wikiLinkTitlesProvider = Provider<List<String>>(
+    (ref) => ref.watch(artifactsProvider).map((item) => item.name).toList());
 
 class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
   final ArtifactsRepository repository;
-  final String projectId;
+  final String? projectId;
   StreamSubscription<List<Artifact>>? _subscription;
   List<Artifact> _snapshot = [];
   final Ref ref;
@@ -53,13 +53,13 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
   void _listen() {
     _subscription?.cancel();
-    if (projectId.isEmpty) return;
+    if (projectId == null) return;
 
     _subscription = repository.getStream().listen(
       (data) {
         _snapshot = data;
-        ref.read(_receivedProvider(projectId).notifier).state = true;
-        ref.read(_errorProvider(projectId).notifier).state = false;
+        ref.read(_receivedProvider(projectId!).notifier).state = true;
+        ref.read(_errorProvider(projectId!).notifier).state = false;
 
         if (_isOperationInProgress) return;
 
@@ -69,8 +69,8 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
       },
       onError: (error) {
         debugPrint('TreeNotifier: Error listening: $error');
-        ref.read(_receivedProvider(projectId).notifier).state = true;
-        ref.read(_errorProvider(projectId).notifier).state = true;
+        ref.read(_receivedProvider(projectId!).notifier).state = true;
+        ref.read(_errorProvider(projectId!).notifier).state = true;
       },
     );
   }

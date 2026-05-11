@@ -5,56 +5,62 @@ class Pin implements ExpandablePin {
 
   @override
   String id;
-  String artifactId;
+  String linkedArtifactId;
   String canvasId;
   @override
   Offset position;
   String? pinnedObjectId;
+  //
+  final DateTime? createdAt;
+  final String? createdBy;
+  final DateTime? updatedAt;
+  final String? updatedBy;
 
   Pin({
     this.id = '',
-    this.artifactId = '',
+    this.linkedArtifactId = '',
     this.canvasId = '',
     this.position = Offset.zero,
     this.pinnedObjectId,
+    //
+    this.createdAt,
+    this.createdBy,
+    this.updatedAt,
+    this.updatedBy,
   });
-
-  factory Pin.initial() => Pin();
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'linked_artifact_id': artifactId.isEmpty ? null : artifactId,
+      'linked_artifact_id': linkedArtifactId.isEmpty ? null : linkedArtifactId,
       'canvas_artifact_id': canvasId,
       'position': position.toMap(),
-      'target_object_id': pinnedObjectId,
+      'pinned_object_id': pinnedObjectId,
     };
   }
 
-  factory Pin.fromMap(Map<String, dynamic> map) {
-    try {
-      return Pin(
-        id: map['id'] ?? '',
-        artifactId: map['linked_artifact_id'] ?? '',
-        canvasId: map['canvas_artifact_id'] ?? '',
-        position: OffsetExtension.fromMap(map['position']),
-        pinnedObjectId: map['target_object_id']?.toString(),
-      );
-    } catch (e) {
-      return Pin();
-    }
-  }
+  Pin.fromMap(Map<String, dynamic> map)
+      : id = map['id'] ?? '',
+        linkedArtifactId = map['linked_artifact_id'] ?? '',
+        canvasId = map['canvas_artifact_id'] ?? '',
+        position = OffsetExtension.fromMap(map['position']),
+        pinnedObjectId = map['pinned_object_id'] ?? '',
+        //
+        createdAt = TimestampService.fromMap(map['created_at']),
+        createdBy = map['created_by'] ?? '',
+        updatedAt = TimestampService.fromMap(map['updated_at']),
+        updatedBy = map['updated_by'] ?? '';
 
   Pin copyWith({
     String? id,
-    String? artifactId,
+    String? linkedArtifactId,
     String? canvasId,
     Offset? position,
     String? pinnedObjectId,
   }) {
     return Pin(
       id: id ?? this.id,
-      artifactId: artifactId ?? this.artifactId,
+      linkedArtifactId: linkedArtifactId ?? this.linkedArtifactId,
       canvasId: canvasId ?? this.canvasId,
       position: position ?? this.position,
       pinnedObjectId: pinnedObjectId ?? this.pinnedObjectId,
@@ -65,9 +71,14 @@ class Pin implements ExpandablePin {
   String toString() {
     return 'Pin('
         'id: $id, '
-        'artifactId: $artifactId '
+        'linkedArtifactId: $linkedArtifactId '
         'canvasId: $canvasId '
         'position: $position '
+        //
+        'createdAt: $createdAt, '
+        'createdBy: $createdBy, '
+        'updatedAt: $updatedAt, '
+        'updatedBy: $updatedBy, '
         ')';
   }
 
@@ -77,17 +88,27 @@ class Pin implements ExpandablePin {
 
     return other is Pin &&
         other.id == id &&
-        other.artifactId == artifactId &&
+        other.linkedArtifactId == linkedArtifactId &&
         other.canvasId == canvasId &&
-        other.position == other.position;
+        other.position == other.position &&
+        //
+        other.createdAt == createdAt &&
+        other.createdBy == createdBy &&
+        other.updatedAt == updatedAt &&
+        other.updatedBy == updatedBy;
   }
 
   @override
   int get hashCode {
     return id.hashCode ^
-        artifactId.hashCode ^
+        linkedArtifactId.hashCode ^
         canvasId.hashCode ^
-        position.hashCode;
+        position.hashCode ^
+        //
+        createdAt.hashCode ^
+        createdBy.hashCode ^
+        updatedAt.hashCode ^
+        updatedBy.hashCode;
   }
 
   @override

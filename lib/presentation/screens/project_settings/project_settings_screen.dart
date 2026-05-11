@@ -6,7 +6,8 @@ class ProjectSettingsScreen extends ConsumerStatefulWidget {
   const ProjectSettingsScreen({super.key});
 
   @override
-  ConsumerState<ProjectSettingsScreen> createState() => _ProjectSettingsScreenState();
+  ConsumerState<ProjectSettingsScreen> createState() =>
+      _ProjectSettingsScreenState();
 }
 
 class _ProjectSettingsScreenState extends ConsumerState<ProjectSettingsScreen> {
@@ -40,7 +41,9 @@ class _ProjectSettingsScreenState extends ConsumerState<ProjectSettingsScreen> {
   }
 
   void _initControllers() {
-    activeProject = ref.read(projectsProvider).selectedProject;
+    final p = ref.read(projectsProvider).selectedProject;
+    if (p == null) return;
+    activeProject = p;
     _projectNameController.text = activeProject.name;
     _originalProjectName = activeProject.name;
     _projectNameController.addListener(_checkForChanges);
@@ -49,7 +52,8 @@ class _ProjectSettingsScreenState extends ConsumerState<ProjectSettingsScreen> {
   void _checkForChanges() {
     final hasNameChange = _projectNameController.text != _originalProjectName;
     final hasImageChange = _newProjectImageUrl != _originalProjectImageUrl;
-    final hasBarImageChange = _newProjectImageBarUrl != _originalProjectBarImageUrl;
+    final hasBarImageChange =
+        _newProjectImageBarUrl != _originalProjectBarImageUrl;
 
     setState(() {
       _hasChanges = hasNameChange || hasImageChange || hasBarImageChange;
@@ -67,7 +71,9 @@ class _ProjectSettingsScreenState extends ConsumerState<ProjectSettingsScreen> {
 
     // Save project name if changed
     if (_projectNameController.text != _originalProjectName) {
-      ref.read(projectsProvider.notifier).renameProject(projectId, _projectNameController.text);
+      ref
+          .read(projectsProvider.notifier)
+          .renameProject(projectId, _projectNameController.text);
       _originalProjectName = _projectNameController.text;
     }
 

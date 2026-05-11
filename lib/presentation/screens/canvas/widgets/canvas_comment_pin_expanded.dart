@@ -463,7 +463,7 @@ class _CanvasCommentPinExpandedState
 
   Widget _buildComment({
     required String commentId,
-    required String createdBy,
+    required String? createdBy,
     required String text,
     required DateTime? createdAt,
     required bool isSubComment,
@@ -521,7 +521,6 @@ class _CanvasCommentPinExpandedState
                 closingDelay: const Duration(milliseconds: 100),
                 builder: (context, closeOverlay) => _buildCommentMenuOverlay(
                   commentId,
-                  createdBy,
                   isSubComment,
                   _commentMenuKeys[commentId]!,
                   closeOverlay,
@@ -726,7 +725,6 @@ class _CanvasCommentPinExpandedState
 
   Widget _buildCommentMenuOverlay(
     String commentId,
-    String createdBy,
     bool isSubComment,
     GlobalKey buttonKey,
     VoidCallback closeOverlay,

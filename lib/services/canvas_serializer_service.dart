@@ -74,7 +74,7 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
 
       // Update canvas title if present
       if (canvasData.containsKey('title')) {
-        final updatedCanvas = canvas.copyWith(title: canvasData['title']);
+        final updatedCanvas = canvas.copyWith(name: canvasData['title']);
         await repository.update(updatedCanvas);
       }
 

@@ -6,7 +6,9 @@ class SidebarFooter extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedProject = ref.watch(projectsProvider).selectedProject;
-    final projectName = selectedProject.name.isNotEmpty ? selectedProject.name : 'Onyxia';
+    final projectName = selectedProject == null || selectedProject.name.isEmpty
+        ? 'Onyxia'
+        : selectedProject.name;
 
     return Container(
       decoration: BoxDecoration(

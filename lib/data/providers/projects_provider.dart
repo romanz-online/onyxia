@@ -34,9 +34,10 @@ class ProjectsNotifier extends StateNotifier<Projects> {
       if (!mounted) return;
 
       state = state.copyWith(
-          projects: projects,
-          selectedProject: Project.initial(),
-          isLoading: false);
+        projects: projects,
+        selectedProject: null,
+        isLoading: false,
+      );
     } catch (e) {
       if (!mounted) return;
       print('_loadProjects $e');
@@ -155,6 +156,6 @@ class ProjectsNotifier extends StateNotifier<Projects> {
   }
 
   void clearSelectedProject() {
-    state = state.copyWith(selectedProject: Project.initial());
+    state = state.copyWith(clearSelectedProject: true);
   }
 }

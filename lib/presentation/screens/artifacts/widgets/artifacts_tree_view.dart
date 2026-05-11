@@ -53,7 +53,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     treeController.setSelectedNodeId(item.id);
     ref.read(selectedArtifactProvider.notifier).state = item;
     context
-        .go(item.navigationUrl(ref.read(projectsProvider).selectedProject.id));
+        .go(item.navigationUrl(ref.read(projectsProvider).selectedProject?.id));
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {
@@ -96,8 +96,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     final itemNodes = ref.watch(artifactsProvider);
     final isDataLoaded = ref.watch(artifactsLoadedProvider);
     final projectId =
-        ref.watch(projectsProvider.select((s) => s.selectedProject.id));
-    final hasError = ref.watch(artifactsErrorProvider(projectId));
+        ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+    final hasError = ref.watch(artifactsErrorProvider(projectId ?? ''));
 
     final selectedItem = ref.read(selectedArtifactProvider);
     if (selectedItem != null &&

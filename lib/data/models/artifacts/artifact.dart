@@ -2,35 +2,38 @@
 
 abstract class Artifact {
   final String id;
-  final String parentFolderId;
+  final ArtifactType type;
   final String name;
+  final String parentFolderId;
+  //
   final DateTime? createdAt;
   final String? createdBy;
-  final ArtifactType type;
-  final String? updatedBy;
   final DateTime? updatedAt;
+  final String? updatedBy;
 
   Artifact({
     String? id,
-    this.parentFolderId = '',
-    required this.name,
-    this.createdAt,
-    this.createdBy = 'Unknown',
     required this.type,
-    this.updatedBy,
+    required this.name,
+    this.parentFolderId = '',
+    //
+    this.createdAt,
+    this.createdBy,
     this.updatedAt,
+    this.updatedBy,
   }) : this.id = id == null || id.isEmpty ? const Uuid().v4() : id;
 
   // Named constructor for shared field deserialization
   Artifact.fromMap(Map<String, dynamic> map)
       : id = map['id'] ?? '',
-        parentFolderId = map['parent_folder_id'] ?? '',
-        name = map['name'] ?? '',
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'],
         type = ArtifactType.values.fromString(map['type']),
-        updatedBy = map['updated_by'],
-        updatedAt = TimestampService.fromMap(map['updated_at']);
+        name = map['name'] ?? '',
+        parentFolderId = map['parent_folder_id'] ?? '',
+        //
+        createdAt = TimestampService.fromMap(map['created_at']),
+        createdBy = map['created_by'] ?? '',
+        updatedAt = TimestampService.fromMap(map['updated_at']),
+        updatedBy = map['updated_by'] ?? '';  
 
   /// Factory constructor that creates the appropriate concrete Artifact subclass
   /// based on the 'type' field in the map
@@ -54,36 +57,30 @@ abstract class Artifact {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'parent_folder_id': parentFolderId.isEmpty ? null : parentFolderId,
-      'name': name,
       'type': type.value,
+      'name': name,
+      'parent_folder_id': parentFolderId.isEmpty ? null : parentFolderId,
       'body': toMapSub(),
     };
   }
 
   Artifact copyWith({
     String? id,
+    String? name,
     String? parentFolderId,
-    String? title,
-    DateTime? createdAt,
-    String? createdBy,
-    ArtifactType? type,
-    String? updatedBy,
-    DateTime? updatedAt,
   });
-
-  String toJson() => json.encode(toMap());
 
   @override
   String toString() {
     return 'Artifact('
-        'parentFolderId: $parentFolderId, '
+        'type: $type, '
         'name: $name, '
+        'parentFolderId: $parentFolderId, '
+        //
         'createdAt: $createdAt, '
         'createdBy: $createdBy, '
-        'type: $type, '
-        'updatedBy: $updatedBy, '
-        'updatedAt: $updatedAt, ';
+        'updatedAt: $updatedAt, '
+        'updatedBy: $updatedBy, ';
   }
 
   @override
@@ -92,13 +89,14 @@ abstract class Artifact {
 
     return other is Artifact &&
         other.id == id &&
-        other.parentFolderId == parentFolderId &&
+        other.type == type &&
         other.name == name &&
+        other.parentFolderId == parentFolderId &&
+        //
         other.createdAt == createdAt &&
         other.createdBy == createdBy &&
-        other.type == type &&
-        other.updatedBy == updatedBy &&
-        other.updatedAt == updatedAt;
+        other.updatedAt == updatedAt &&
+        other.updatedBy == updatedBy;
   }
 
   @override
@@ -106,21 +104,17 @@ abstract class Artifact {
     return id.hashCode ^
         parentFolderId.hashCode ^
         name.hashCode ^
+        type.hashCode ^
+        //
         createdAt.hashCode ^
         createdBy.hashCode ^
-        type.hashCode ^
-        updatedBy.hashCode ^
-        updatedAt.hashCode;
+        updatedAt.hashCode ^
+        updatedBy.hashCode;
   }
 
-  DateTime get getCreatedAt => createdAt ?? DateTime.now();
-  DateTime get getUpdatedAt => updatedAt ?? DateTime.now();
-
-  String get getCreatedBy => createdBy ?? 'Unknown';
-  String get getUpdatedBy => updatedBy ?? 'Unknown';
-
   /// Returns the navigation URL for this item within the given project.
-  String navigationUrl(String projectId) => '/project/$projectId/$name';
+  String navigationUrl(String? projectId) =>
+      projectId == null ? '' : '/project/$projectId/$name';
 
   dynamic castToSubtype() => switch (type) {
         ArtifactType.note => this as Note,

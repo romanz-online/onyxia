@@ -33,7 +33,7 @@ class NoteState {
 }
 
 class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
-  final String projectId;
+  final String? projectId;
   final Note _note;
   final Ref ref;
 
@@ -45,7 +45,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
   NoteNotifier({required this.projectId, required Note note, required this.ref})
       : _note = note,
         super(const AsyncValue.loading()) {
-    if (projectId.isEmpty) {
+    if (projectId == null) {
       state = const AsyncValue.data(NoteState());
       return;
     }
@@ -108,7 +108,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
     final current = state.value;
     if (current == null || current.note == null) return;
     state = AsyncData(current.copyWith(
-      note: current.note!.copyWith(title: title),
+      note: current.note!.copyWith(name: title),
       isSavedRemotely: false,
     ));
     if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
@@ -142,22 +142,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
     final current = state.value;
     if (current == null || current.note == null) return;
 
-    final serializer = NoteSerializerService(
-      projectId: projectId,
-      itemId: _note.id,
-      repository: ArtifactsRepository(projectId: projectId),
-    );
-
-    if (HistoryService.pipeActive) {
-      await _saveDocument();
-    } else {
-      await HistoryService.pipe(
-        ref: widgetRef,
-        projectId: projectId,
-        operation: _saveDocument,
-        serializer: serializer,
-      );
-    }
+    await _saveDocument();
   }
 
   void resetChanges() {
@@ -189,11 +174,11 @@ final selectedNoteStateProvider =
         (ref) {
   final item = ref.watch(selectedArtifactProvider);
   final projectId =
-      ref.watch(projectsProvider.select((s) => s.selectedProject.id));
+      ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
   final authState = ref.watch(authProvider);
 
-  if (item is! Note || projectId.isEmpty || authState.value == null) {
-    return NoteNotifier(projectId: '', note: Note(), ref: ref);
+  if (item is! Note || projectId == null || authState.value == null) {
+    return NoteNotifier(projectId: projectId, note: Note(), ref: ref);
   }
 
   return NoteNotifier(projectId: projectId, note: item, ref: ref);

@@ -2,19 +2,18 @@ import 'package:onyxia/export.dart';
 
 class Projects {
   final List<Project> projects;
-  final Project selectedProject;
+  final Project? selectedProject;
   final bool isLoading;
 
   Projects({
     required this.projects,
-    required this.selectedProject,
+    this.selectedProject,
     this.isLoading = false,
   });
 
   factory Projects.initial() {
     return Projects(
       projects: [],
-      selectedProject: Project.initial(),
       isLoading: true,
     );
   }
@@ -22,18 +21,21 @@ class Projects {
   Projects copyWith({
     List<Project>? projects,
     Project? selectedProject,
+    bool clearSelectedProject = false,
     bool? isLoading,
   }) {
     return Projects(
       projects: projects ?? this.projects,
-      selectedProject: selectedProject ?? this.selectedProject,
+      selectedProject:
+          clearSelectedProject ? null : selectedProject ?? this.selectedProject,
       isLoading: isLoading ?? this.isLoading,
     );
   }
 
   @override
-  String toString() =>
-      'Projects(projects: $projects, selectedProject: $selectedProject)';
+  String toString() => 'Projects(projects: $projects, '
+      'selectedProject: $selectedProject, '
+      ')';
 
   @override
   bool operator ==(Object other) {

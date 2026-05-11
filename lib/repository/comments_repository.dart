@@ -21,11 +21,15 @@ class CommentsRepository extends BaseSupabaseRepository<Comment> {
     return queryStream(field: 'target_id', isEqualTo: targetId);
   }
 
-  Future<void> addComment(
-          {required String targetId, required Comment comment}) async =>
-      add([comment.copyWith(targetId: targetId)]);
+  Future<void> addComment({
+    required String canvasId,
+    required Comment comment,
+  }) async =>
+      add([comment.copyWith(targetId: canvasId)]);
 
-  Future<void> updateComment(
-          {required String targetId, required Comment comment}) async =>
-      update(comment.copyWith(targetId: targetId));
+  Future<void> updateComment({
+    required String canvasId,
+    required Comment comment,
+  }) async =>
+      update(comment.copyWith(targetId: canvasId));
 }

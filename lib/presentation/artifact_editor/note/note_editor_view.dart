@@ -343,7 +343,7 @@ class _NoteEditorField extends ConsumerWidget {
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
                   onWikiLinkTapped: (title) {
                     final projectId =
-                        ref.read(projectsProvider).selectedProject.id;
+                        ref.read(projectsProvider).selectedProject?.id;
                     context.go('/project/$projectId/$title');
                   },
                 ),

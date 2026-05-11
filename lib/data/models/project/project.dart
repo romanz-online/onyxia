@@ -2,60 +2,44 @@ import 'package:onyxia/export.dart';
 
 class Project {
   final String id;
-  final String createdBy;
-  final DateTime? createdAt;
-  final DateTime? updatedAt;
   final String name;
+  //
+  final DateTime? createdAt;
+  final String? createdBy;
+  final DateTime? updatedAt;
+  final String? updatedBy;
 
   Project({
     required this.id,
-    required this.createdBy,
-    this.createdAt,
-    this.updatedAt,
     required this.name,
+    //
+    this.createdAt,
+    this.createdBy,
+    this.updatedAt,
+    this.updatedBy,
   });
-
-  factory Project.initial() {
-    return Project(
-      id: '',
-      createdBy: '',
-      name: '',
-    );
-  }
 
   Project copyWith({
     String? id,
-    String? ownerId,
+    String? name,
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? name,
   }) {
-    return Project(
-      id: id ?? this.id,
-      createdBy: ownerId ?? this.createdBy,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-      name: name ?? this.name,
-    );
+    return Project(id: id ?? this.id, name: name ?? this.name);
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'created_by': createdBy,
-      'name': name,
-    };
+    return {'id': id, 'name': name};
   }
 
-  factory Project.fromMap(Map<String, dynamic> map) {
-    return Project(
-      id: map['id'] ?? '',
-      createdBy: map['created_by'] ?? '',
-      createdAt: TimestampService.fromMap(map['created_at']),
-      updatedAt: TimestampService.fromMap(map['updated_at']),
-      name: map['name'] ?? '',
-    );
-  }
+  Project.fromMap(Map<String, dynamic> map)
+      : id = map['id'] ?? '',
+        name = map['name'] ?? '',
+        //
+        createdAt = TimestampService.fromMap(map['created_at']),
+        createdBy = map['created_by'] ?? '',
+        updatedAt = TimestampService.fromMap(map['updated_at']),
+        updatedBy = map['updated_by'] ?? '';
 
   String toJson() => json.encode(toMap());
 

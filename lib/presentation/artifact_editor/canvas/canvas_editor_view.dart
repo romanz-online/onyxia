@@ -14,7 +14,6 @@ import 'package:onyxia/presentation/screens/canvas/widgets/canvas_cursor_overlay
 import 'package:onyxia/presentation/screens/canvas/widgets/canvas_object_menu.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/canvas_object_text_areas.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/canvas_pin_expanded.dart';
-import 'package:onyxia/presentation/screens/canvas/widgets/diff_preview_overlay.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/drag_off_bar.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/headless_palette.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/minimap.dart';
@@ -178,7 +177,6 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
               HeadlessPalette(
                 arrow: headlessState.headlessArrow!,
               ),
-            DiffPreviewOverlay(),
             Minimap(canvas: currentCanvas),
           ],
         ),

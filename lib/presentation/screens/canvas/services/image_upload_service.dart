@@ -14,7 +14,7 @@ class CanvasImageUploadService {
           file.bytes!,
           file.name,
           userName: ref.read(currentUserProvider).name,
-          projectId: ref.read(projectsProvider).selectedProject.id,
+          projectId: ref.read(projectsProvider).selectedProject?.id,
           canvasId: ref.read(currentCanvasProvider)?.id ?? '',
         );
 

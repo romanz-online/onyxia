@@ -1,7 +1,8 @@
 import 'package:onyxia/export.dart';
 
 /// Caches user data by ID to avoid repeated Supabase lookups.
-final userLookupProvider = Provider<UserLookupService>((ref) => UserLookupService());
+final userLookupProvider =
+    Provider<UserLookupService>((ref) => UserLookupService());
 
 class UserLookupService {
   final Map<String, User> _userCache = {};
@@ -10,8 +11,8 @@ class UserLookupService {
   /// Returns a User by ID, using the cache when possible. Returns a
   /// placeholder for empty IDs or missing rows so the caller always has
   /// something renderable.
-  Future<User> getUserById(String userId) async {
-    if (userId.isEmpty) {
+  Future<User> getUserById(String? userId) async {
+    if (userId == null || userId.isEmpty) {
       return const User(id: '', name: 'Unknown User', email: '');
     }
 

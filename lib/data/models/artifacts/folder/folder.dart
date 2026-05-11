@@ -3,13 +3,14 @@
 class FolderModel extends Artifact {
   FolderModel({
     super.id,
-    super.createdAt,
-    super.parentFolderId,
-    super.createdBy,
-    super.name = 'Folder',
     super.type = ArtifactType.folder,
-    super.updatedBy,
+    super.name = 'Folder',
+    super.parentFolderId,
+    //
+    super.createdAt,
+    super.createdBy,
     super.updatedAt,
+    super.updatedBy,
     //
   });
 
@@ -21,23 +22,13 @@ class FolderModel extends Artifact {
   @override
   FolderModel copyWith({
     String? id,
+    String? name,
     String? parentFolderId,
-    String? title,
-    DateTime? createdAt,
-    String? createdBy,
-    ArtifactType? type,
-    String? updatedBy,
-    DateTime? updatedAt,
   }) {
     return FolderModel(
       id: id ?? this.id,
+      name: name ?? this.name,
       parentFolderId: parentFolderId ?? this.parentFolderId,
-      createdAt: createdAt ?? this.createdAt,
-      createdBy: createdBy ?? this.createdBy,
-      name: title ?? this.name,
-      type: type ?? this.type,
-      updatedBy: updatedBy ?? this.updatedBy,
-      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 }

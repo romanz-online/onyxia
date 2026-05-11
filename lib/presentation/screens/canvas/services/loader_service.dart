@@ -9,9 +9,10 @@ import 'loader_paste_listener.dart';
 /// Provides centralized initialization logic for both whiteboard and markup screens
 class CanvasLoaderService {
   // Internal state management for current canvas
-  static bool _hasReceivedInitialDiffs = false;
+  // static bool _hasReceivedInitialDiffs = false;
   static bool Function(KeyEvent)? _currentKeyboardHandler;
-  static final CanvasCursorService _cursorManager = CanvasCursorService.instance;
+  static final CanvasCursorService _cursorManager =
+      CanvasCursorService.instance;
   static PasteListenerHandle? _pasteListener;
 
   static void setupCanvas({
@@ -20,7 +21,7 @@ class CanvasLoaderService {
     required BuildContext context,
   }) {
     // Reset state for new canvas
-    _hasReceivedInitialDiffs = false;
+    // _hasReceivedInitialDiffs = false;
 
     // Setup keyboard handler (wraps async handleKeyEvent)
     _currentKeyboardHandler = (event) {
@@ -39,18 +40,23 @@ class CanvasLoaderService {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!context.mounted) return;
 
+      final projectId = ref.read(projectsProvider).selectedProject?.id;
+      if (projectId == null) return;
+
+      initCanvas(ref: ref, context: context, canvasId: canvasId);
+
       // Listen for the first diffs callback, then initialize
-      final params = HistoryDiffsParams(
-        projectId: ref.read(projectsProvider).selectedProject.id,
-        itemId: canvasId,
-        itemType: ArtifactType.canvas,
-      );
-      ref.listenManual(historyDiffsProvider(params), (previous, next) {
-        if (!_hasReceivedInitialDiffs) {
-          _hasReceivedInitialDiffs = true;
-          initCanvas(ref: ref, context: context, canvasId: canvasId);
-        }
-      });
+      // final params = HistoryDiffsParams(
+      //   projectId: projectId,
+      //   itemId: canvasId,
+      //   itemType: ArtifactType.canvas,
+      // );
+      // ref.listenManual(historyDiffsProvider(params), (previous, next) {
+      //   if (!_hasReceivedInitialDiffs) {
+      //     _hasReceivedInitialDiffs = true;
+      //     initCanvas(ref: ref, context: context, canvasId: canvasId);
+      //   }
+      // });
     });
   }
 
@@ -65,7 +71,7 @@ class CanvasLoaderService {
     removePasteListenerImpl(_pasteListener);
 
     // Reset state
-    _hasReceivedInitialDiffs = false;
+    // _hasReceivedInitialDiffs = false;
   }
 
   static Future<void> initCanvas({
@@ -77,25 +83,28 @@ class CanvasLoaderService {
 
     CanvasModel? currentCanvas = ref.read(currentCanvasProvider);
 
+    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    if (projectId == null) return;
+
     // add initial diff if this is the first time the canvas is being loaded
     // only check after we've received the initial Firebase stream callback
-    final params = HistoryDiffsParams(
-      projectId: ref.read(projectsProvider).selectedProject.id,
-      itemId: canvasId,
-      itemType: ArtifactType.canvas,
-    );
-    if (_hasReceivedInitialDiffs && ref.read(historyDiffsProvider(params)).remoteDiffs.isEmpty) {
-      final projectId = ref.read(projectsProvider).selectedProject.id;
-      HistoryService.initHistory(
-        ref: ref,
-        projectId: projectId,
-        serializer: CanvasSerializerService(
-          canvasId: canvasId,
-          projectId: projectId,
-          repository: ArtifactsRepository(projectId: projectId),
-        ),
-      );
-    }
+    // final params = HistoryDiffsParams(
+    //   projectId: projectId,
+    //   itemId: canvasId,
+    //   itemType: ArtifactType.canvas,
+    // );
+    // if (_hasReceivedInitialDiffs &&
+    //     ref.read(historyDiffsProvider(params)).remoteDiffs.isEmpty) {
+    //   HistoryService.initHistory(
+    //     ref: ref,
+    //     projectId: projectId,
+    //     serializer: CanvasSerializerService(
+    //       canvasId: canvasId,
+    //       projectId: projectId,
+    //       repository: ArtifactsRepository(projectId: projectId),
+    //     ),
+    //   );
+    // }
 
     // Loader service owns the full initialization sequence.
     // Always reinitialize bounds to guarantee correct state on every canvas entry.
@@ -117,6 +126,6 @@ class CanvasLoaderService {
 
     if (!context.mounted) return;
 
-    ref.read(canvasDiffPreviewProvider.notifier).clearPreview();
+    // ref.read(canvasDiffPreviewProvider.notifier).clearPreview();
   }
 }

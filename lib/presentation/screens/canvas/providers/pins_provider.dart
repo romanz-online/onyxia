@@ -4,7 +4,7 @@ import 'objects_provider.dart';
 final pinsProvider =
     StateNotifierProvider.autoDispose<PinsNotifier, Pins>((ref) {
   final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-  final projectId = ref.watch(projectsProvider).selectedProject.id;
+  final projectId = ref.watch(projectsProvider).selectedProject?.id;
   return PinsNotifier(
     Pins.initial(),
     repository: PinsRepository(
@@ -19,7 +19,7 @@ final pinsProvider =
 class PinsNotifier extends StateNotifier<Pins> {
   final PinsRepository repository;
   final String canvasId;
-  final String projectId;
+  final String? projectId;
   StreamSubscription? _subscription;
 
   DateTime _lastUpdateTime = DateTime.now();
@@ -36,7 +36,7 @@ class PinsNotifier extends StateNotifier<Pins> {
   }
 
   void _init() {
-    if (canvasId.isEmpty) return;
+    if (canvasId.isEmpty || projectId == null) return;
 
     _subscription = repository.getPinsStream().listen((remotePins) async {
       if (mounted) state = state.copyWith(pins: remotePins.pins);
@@ -178,6 +178,9 @@ class PinsNotifier extends StateNotifier<Pins> {
     if (HistoryService.pipeActive) {
       await operation.call();
     } else {
+      final projectId = ref.read(projectsProvider).selectedProject?.id;
+      if (projectId == null) return;
+
       await HistoryService.pipe(
         ref: ref,
         projectId: projectId,
@@ -185,8 +188,7 @@ class PinsNotifier extends StateNotifier<Pins> {
         serializer: CanvasSerializerService(
           canvasId: canvasId,
           projectId: projectId,
-          repository: ArtifactsRepository(
-              projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(projectId: projectId),
         ),
       );
     }

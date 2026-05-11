@@ -1,6 +1,5 @@
 ﻿import 'package:onyxia/export.dart';
 import 'package:json_patch/json_patch.dart';
-import 'package:onyxia/presentation/screens/canvas/providers/diff_preview_provider.dart';
 
 class HistoryService {
   static const Symbol _pipeKey = Symbol('pipeActive');
@@ -17,20 +16,18 @@ class HistoryService {
       final ops = JsonPatch.diff({}, state);
       if (ops.isEmpty) return; // no changes; nothing to save
 
-      final diff = HistoryDiff(
-        createdBy: ref.read(currentUserProvider).id,
-        timestamp: DateTime.now(),
-        operations: ops,
-        isMilestone: true,
-        isRestored: false,
-      );
+      // final diff = HistoryDiff(
+      //   operations: ops,
+      //   isMilestone: true,
+      //   isRestored: false,
+      // );
 
-      final params = HistoryDiffsParams(
-        projectId: serializer.projectId,
-        itemId: serializer.itemId,
-        itemType: serializer.itemType,
-      );
-      ref.read(historyDiffsProvider(params).notifier).addDiff(diff);
+      // final params = HistoryDiffsParams(
+      //   projectId: serializer.projectId,
+      //   itemId: serializer.itemId,
+      //   itemType: serializer.itemType,
+      // );
+      // ref.read(historyDiffsProvider(params).notifier).addDiff(diff);
     } catch (e) {
       debugPrint('Failed to pipe operation: $e');
       rethrow;
@@ -48,20 +45,18 @@ class HistoryService {
       final ops = JsonPatch.diff({}, state);
       if (ops.isEmpty) return; // no changes; nothing to save
 
-      final diff = HistoryDiff(
-        createdBy: ref.read(currentUserProvider).id,
-        timestamp: DateTime.now(),
-        operations: ops,
-        isMilestone: true,
-        isRestored: false,
-      );
+      // final diff = HistoryDiff(
+      //   operations: ops,
+      //   isMilestone: true,
+      //   isRestored: false,
+      // );
 
-      final params = HistoryDiffsParams(
-        projectId: serializer.projectId,
-        itemId: serializer.itemId,
-        itemType: serializer.itemType,
-      );
-      ref.read(historyDiffsProvider(params).notifier).addDiff(diff);
+      // final params = HistoryDiffsParams(
+      //   projectId: serializer.projectId,
+      //   itemId: serializer.itemId,
+      //   itemType: serializer.itemType,
+      // );
+      // ref.read(historyDiffsProvider(params).notifier).addDiff(diff);
     } catch (e) {
       debugPrint('Failed to pipe operation: $e');
       rethrow;
@@ -101,35 +96,33 @@ class HistoryService {
       final ops = JsonPatch.diff(beforeState, afterState);
       if (ops.isEmpty) return;
 
-      final params = HistoryDiffsParams(
-        projectId: serializer.projectId,
-        itemId: serializer.itemId,
-        itemType: serializer.itemType,
-      );
-      final historyNotifier = ref.read(historyDiffsProvider(params).notifier);
+      // final params = HistoryDiffsParams(
+      //   projectId: serializer.projectId,
+      //   itemId: serializer.itemId,
+      //   itemType: serializer.itemType,
+      // );
+      // final historyNotifier = ref.read(historyDiffsProvider(params).notifier);
 
-      // Check if 2 hours have passed since the last diff
-      final historyDiffs = ref.read(historyDiffsProvider(params));
-      final lastDiff = historyDiffs.remoteDiffs.lastOrNull;
-      final now = DateTime.now();
-      final has2HoursPassed =
-          lastDiff != null && now.difference(lastDiff.timestamp).inHours >= 2;
+      // // Check if 2 hours have passed since the last diff
+      // final historyDiffs = ref.read(historyDiffsProvider(params));
+      // final lastDiff = historyDiffs.remoteDiffs.lastOrNull;
+      // final now = DateTime.now();
+      // final has2HoursPassed =
+      //     lastDiff != null && now.difference(lastDiff.timestamp).inHours >= 2;
 
-      if (lastDiff != null) {
-        if ((has2HoursPassed || forceMilestone) && !lastDiff.isMilestone) {
-          historyNotifier.updateDiff(lastDiff.copyWith(isMilestone: true));
-        }
-      }
+      // if (lastDiff != null) {
+      //   if ((has2HoursPassed || forceMilestone) && !lastDiff.isMilestone) {
+      //     historyNotifier.updateDiff(lastDiff.copyWith(isMilestone: true));
+      //   }
+      // }
 
-      final diff = HistoryDiff(
-        createdBy: ref.read(currentUserProvider).id,
-        timestamp: now,
-        operations: ops,
-        isMilestone: markCurrentAsMilestone || has2HoursPassed,
-        isRestored: false,
-      );
+      // final diff = HistoryDiff(
+      //   operations: ops,
+      //   isMilestone: markCurrentAsMilestone || has2HoursPassed,
+      //   isRestored: false,
+      // );
 
-      historyNotifier.addDiff(diff);
+      // historyNotifier.addDiff(diff);
 
       // Update canvas metadata if this is a canvas operation
       if (serializer.itemType == ArtifactType.canvas) {
@@ -236,19 +229,18 @@ class HistoryService {
         }
 
         // Extract historical canvas imageUrl
-        String? historicalImageUrl;
+        // String? historicalImageUrl;
         if (reconstructedState.containsKey('canvas')) {
-          final canvasData =
-              Map<String, dynamic>.from(reconstructedState['canvas']);
-          historicalImageUrl = canvasData['imageUrl'] as String?;
+          // final canvasData = Map<String, dynamic>.from(reconstructedState['canvas']);
+          // historicalImageUrl = canvasData['imageUrl'] as String?;
         }
 
-        ref.read(canvasDiffPreviewProvider.notifier).showHistoricalState(
-              objects: historicalObjects,
-              comments: historicalComments,
-              pins: historicalPins,
-              imageUrl: historicalImageUrl,
-            );
+        // ref.read(canvasDiffPreviewProvider.notifier).showHistoricalState(
+        //       objects: historicalObjects,
+        //       comments: historicalComments,
+        //       pins: historicalPins,
+        //       imageUrl: historicalImageUrl,
+        //     );
       }
     } catch (e) {
       debugPrint('Failed to travel to diff: $e');
@@ -265,9 +257,9 @@ class HistoryService {
   }) async {
     // Use the appropriate preview provider based on feature type
     if (serializer.itemType == ArtifactType.canvas) {
-      final previewNotifier = ref.read(canvasDiffPreviewProvider.notifier);
-      if (previewNotifier.isRestoring) return;
-      previewNotifier.setRestoring(true);
+      // final previewNotifier = ref.read(canvasDiffPreviewProvider.notifier);
+      // if (previewNotifier.isRestoring) return;
+      // previewNotifier.setRestoring(true);
     } else {
       final previewNotifier = ref.read(artifactsDiffPreviewProvider.notifier);
       if (previewNotifier.isRestoring) return;
@@ -287,50 +279,48 @@ class HistoryService {
       if (ops.isEmpty) return;
 
       // update the previous diff to a milestone if it isn't one
-      final params = HistoryDiffsParams(
-        projectId: projectId,
-        itemId: serializer.itemId,
-        itemType: serializer.itemType,
-      );
-      final lastDiff =
-          ref.read(historyDiffsProvider(params)).remoteDiffs.lastOrNull;
-      if (!lastDiff!.isMilestone) {
-        ref.read(historyDiffsProvider(params).notifier).updateDiff(
-              lastDiff.copyWith(isMilestone: true),
-            );
-      }
+      // final params = HistoryDiffsParams(
+      //   projectId: projectId,
+      //   itemId: serializer.itemId,
+      //   itemType: serializer.itemType,
+      // );
+      // final lastDiff =
+      //     ref.read(historyDiffsProvider(params)).remoteDiffs.lastOrNull;
+      // if (!lastDiff!.isMilestone) {
+      //   ref.read(historyDiffsProvider(params).notifier).updateDiff(
+      //         lastDiff.copyWith(isMilestone: true),
+      //       );
+      // }
 
-      final diff = HistoryDiff(
-        createdBy: ref.read(currentUserProvider).id,
-        timestamp: DateTime.now(),
-        operations: ops,
-        isMilestone: false,
-        isRestored: true,
-        title: targetDiff.title,
-      );
-      ref.read(historyDiffsProvider(params).notifier).addDiff(diff);
+      // final diff = HistoryDiff(
+      //   operations: ops,
+      //   isMilestone: false,
+      //   isRestored: true,
+      //   title: targetDiff.title,
+      // );
+      // ref.read(historyDiffsProvider(params).notifier).addDiff(diff);
 
-      await serializer.deserialize(reconstructedState);
+      // await serializer.deserialize(reconstructedState);
     } catch (e) {
       debugPrint('Failed to restore diff: $e');
       rethrow;
     } finally {
       // Clear restoration state based on feature type
       if (serializer.itemType == ArtifactType.canvas) {
-        final previewNotifier = ref.read(canvasDiffPreviewProvider.notifier);
-        previewNotifier.setRestoring(false);
-        previewNotifier.clearPreview();
+        // final previewNotifier = ref.read(canvasDiffPreviewProvider.notifier);
+        // previewNotifier.setRestoring(false);
+        // previewNotifier.clearPreview();
       } else {
         final previewNotifier = ref.read(artifactsDiffPreviewProvider.notifier);
         previewNotifier.setRestoring(false);
         previewNotifier.clearPreview();
       }
-      final params = HistoryDiffsParams(
-        projectId: projectId,
-        itemId: serializer.itemId,
-        itemType: serializer.itemType,
-      );
-      ref.read(historyDiffsProvider(params).notifier).resetSelection();
+      // final params = HistoryDiffsParams(
+      //   projectId: projectId,
+      //   itemId: serializer.itemId,
+      //   itemType: serializer.itemType,
+      // );
+      // ref.read(historyDiffsProvider(params).notifier).resetSelection();
     }
   }
 
@@ -339,38 +329,39 @@ class HistoryService {
     required HistoryDiff targetDiff,
     required Serializer serializer,
   }) {
-    final params = HistoryDiffsParams(
-      projectId: serializer.projectId,
-      itemId: serializer.itemId,
-      itemType: serializer.itemType,
-    );
-    final diffs = ref.read(historyDiffsProvider(params));
+    return {};
+    // final params = HistoryDiffsParams(
+    //   projectId: serializer.projectId,
+    //   itemId: serializer.itemId,
+    //   itemType: serializer.itemType,
+    // );
+    // final diffs = ref.read(historyDiffsProvider(params));
 
-    if (!diffs.remoteDiffs.contains(targetDiff)) {
-      throw Exception('targetDiff not found in remoteDiffs');
-    }
+    // if (!diffs.remoteDiffs.contains(targetDiff)) {
+    //   throw Exception('targetDiff not found in remoteDiffs');
+    // }
 
-    final ops = diffs.remoteDiffs
-        .sublist(
-          0,
-          diffs.remoteDiffs.indexOf(targetDiff) + 1,
-        )
-        .map((e) => e.operations)
-        .flattened
-        .toList();
-    if (ops.isEmpty) throw Exception('diffsToApply is empty');
+    // final ops = diffs.remoteDiffs
+    //     .sublist(
+    //       0,
+    //       diffs.remoteDiffs.indexOf(targetDiff) + 1,
+    //     )
+    //     .map((e) => e.operations)
+    //     .flattened
+    //     .toList();
+    // if (ops.isEmpty) throw Exception('diffsToApply is empty');
 
-    Map<String, dynamic> reconstructedState = JsonPatch.apply(
-      {},
-      ops,
-      strict: true,
-    );
+    // Map<String, dynamic> reconstructedState = JsonPatch.apply(
+    //   {},
+    //   ops,
+    //   strict: true,
+    // );
 
-    if (reconstructedState.isEmpty) {
-      throw Exception('reconstructed state is empty');
-    }
+    // if (reconstructedState.isEmpty) {
+    //   throw Exception('reconstructed state is empty');
+    // }
 
-    return reconstructedState;
+    // return reconstructedState;
   }
 
   static Future<Map<String, dynamic>> _serializeData(

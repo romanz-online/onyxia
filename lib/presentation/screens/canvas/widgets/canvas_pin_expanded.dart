@@ -133,8 +133,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   void _navigateToArtifact(Artifact item) {
-    context.go(
-        '/project/${ref.read(projectsProvider).selectedProject.id}/${item.id}');
+    context.go(item.navigationUrl(
+      ref.read(projectsProvider).selectedProject?.id,
+    ));
   }
 
   void _togglePinActionMenu({required bool isOpen}) {
@@ -185,7 +186,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       final newArtifact = Note(name: newTitle, content: newContent);
       ref.read(pinsProvider.notifier).updatePin(
             ref,
-            widget.pin.copyWith(artifactId: newArtifact.id),
+            widget.pin.copyWith(linkedArtifactId: newArtifact.id),
           );
       ref.read(artifactsProvider.notifier).addItem(newArtifact);
 
@@ -193,14 +194,14 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       _saving = true;
     } else {
       ref.read(artifactsProvider.notifier).updateItem(
-            item.copyWith(title: newTitle, content: newContent),
+            item.copyWith(name: newTitle, content: newContent),
           );
     }
 
     _exitEditMode(save: true);
   }
 
-  bool get _isNewPin => widget.pin.artifactId.isEmpty;
+  bool get _isNewPin => widget.pin.linkedArtifactId.isEmpty;
 
   @override
   void initState() {
@@ -337,7 +338,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
           widget.transformationController.value.getMaxScaleOnAxis();
 
       final artifact = ref.watch(artifactsProvider).firstWhere(
-            (req) => req.id == widget.pin.artifactId,
+            (req) => req.id == widget.pin.linkedArtifactId,
             orElse: () => Note(),
           );
 

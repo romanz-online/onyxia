@@ -20,8 +20,8 @@ class CanvasInteractionService {
       final newTitle = titleController.text.trim();
       if (newTitle.isNotEmpty && newTitle != oldTitle) {
         ArtifactsRepository(
-                projectId: ref.read(projectsProvider).selectedProject.id)
-            .update(currentCanvas.copyWith(title: newTitle));
+          projectId: ref.read(projectsProvider).selectedProject?.id,
+        ).update(currentCanvas.copyWith(name: newTitle));
       } else {
         titleController.text = oldTitle;
       }
@@ -45,7 +45,7 @@ class CanvasInteractionService {
       final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
       final isModifierPressed = CanvasInteractionService.isModifierPressed();
 
-      // Zoom In (= key is the same as + key. we don't account for shift here)
+      // Zoom In (= key is the same as + key. don't account for shift here)
       if (isModifierPressed && key == LogicalKeyboardKey.equal) {
         ref.read(canvasViewportProvider.notifier).updateZoom(increment: 0.1);
         return true;
@@ -108,7 +108,7 @@ class CanvasInteractionService {
             HardwareKeyboard.instance.logicalKeysPressed
                 .contains(LogicalKeyboardKey.shiftRight);
 
-        ref.read(canvasDiffPreviewProvider.notifier).clearPreview();
+        // ref.read(canvasDiffPreviewProvider.notifier).clearPreview();
 
         if (shiftPressed) {
           // Ctrl+Shift+Z = Redo
@@ -281,85 +281,93 @@ class CanvasInteractionService {
     required WidgetRef ref,
     required Future<void> Function() operation,
   }) async {
+    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    if (projectId == null) return;
     await HistoryService.pipe(
       ref: ref,
-      projectId: ref.read(projectsProvider).selectedProject.id,
+      projectId: projectId,
       operation: operation,
       serializer: CanvasSerializerService(
         canvasId: ref.read(currentCanvasProvider)?.id ?? '',
-        projectId: ref.read(projectsProvider).selectedProject.id,
+        projectId: projectId,
         repository: ArtifactsRepository(
-            projectId: ref.read(projectsProvider).selectedProject.id),
+          projectId: projectId,
+        ),
       ),
     );
   }
 
   static void performUndo({required WidgetRef ref}) async {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    try {
-      final params = HistoryDiffsParams(
-        projectId: ref.read(projectsProvider).selectedProject.id,
-        itemId: ref.read(currentCanvasProvider)?.id ?? '',
-        itemType: ArtifactType.canvas,
-      );
-      if (await ref.read(historyDiffsProvider(params).notifier).undo()) {
-        await _applyCurrentDiffState(ref: ref);
-      }
-    } catch (e) {
-      debugPrint('Error in undo: $e');
-    }
+    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    if (projectId == null) return;
+    // try {
+    //   final params = HistoryDiffsParams(
+    //     projectId: projectId,
+    //     itemId: ref.read(currentCanvasProvider)?.id ?? '',
+    //     itemType: ArtifactType.canvas,
+    //   );
+    //   if (await ref.read(historyDiffsProvider(params).notifier).undo()) {
+    //     await _applyCurrentDiffState(ref: ref);
+    //   }
+    // } catch (e) {
+    //   debugPrint('Error in undo: $e');
+    // }
   }
 
   static void performRedo({required WidgetRef ref}) async {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    try {
-      final params = HistoryDiffsParams(
-        projectId: ref.read(projectsProvider).selectedProject.id,
-        itemId: ref.read(currentCanvasProvider)?.id ?? '',
-        itemType: ArtifactType.canvas,
-      );
-      if (await ref.read(historyDiffsProvider(params).notifier).redo()) {
-        await _applyCurrentDiffState(ref: ref);
-      }
-    } catch (e) {
-      debugPrint('Error in redo: $e');
-    }
+    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    if (projectId == null) return;
+    // try {
+    //   final params = HistoryDiffsParams(
+    //     projectId: projectId,
+    //     itemId: ref.read(currentCanvasProvider)?.id ?? '',
+    //     itemType: ArtifactType.canvas,
+    //   );
+    //   if (await ref.read(historyDiffsProvider(params).notifier).redo()) {
+    //     await _applyCurrentDiffState(ref: ref);
+    //   }
+    // } catch (e) {
+    //   debugPrint('Error in redo: $e');
+    // }
   }
 
-  static Future<void> _applyCurrentDiffState({required WidgetRef ref}) async {
-    try {
-      final projectId = ref.read(projectsProvider).selectedProject.id;
-      final canvasId = ref.read(currentCanvasProvider)?.id ?? '';
+  // static Future<void> _applyCurrentDiffState({required WidgetRef ref}) async {
+  //   try {
+  //     final projectId = ref.read(projectsProvider).selectedProject?.id;
+  //     if (projectId == null) return;
+  //     final canvasId = ref.read(currentCanvasProvider)?.id ?? '';
 
-      final serializer = CanvasSerializerService(
-        canvasId: canvasId,
-        projectId: projectId,
-        repository: ArtifactsRepository(projectId: projectId),
-      );
+  //     final serializer = CanvasSerializerService(
+  //       canvasId: canvasId,
+  //       projectId: projectId,
+  //       repository: ArtifactsRepository(projectId: projectId),
+  //     );
 
-      final params = HistoryDiffsParams(
-        projectId: projectId,
-        itemId: canvasId,
-        itemType: ArtifactType.canvas,
-      );
-      final diff = ref.read(historyDiffsProvider(params)).currentDiff;
+  //     final params = HistoryDiffsParams(
+  //       projectId: projectId,
+  //       itemId: canvasId,
+  //       itemType: ArtifactType.canvas,
+  //     );
+  //     final diff = ref.read(historyDiffsProvider(params)).currentDiff;
 
-      if (diff == null) throw Exception('currentDiff is null');
+  //     if (diff == null) throw Exception('currentDiff is null');
 
-      // Reconstruct canvas state from current diff position
-      final reconstructedState = HistoryService.reconstructState(
-        ref: ref,
-        targetDiff: diff,
-        serializer: serializer,
-      );
+  //     // Reconstruct canvas state from current diff position
+  //     final reconstructedState = HistoryService.reconstructState(
+  //       ref: ref,
+  //       targetDiff: diff,
+  //       serializer: serializer,
+  //     );
 
-      // Apply the reconstructed state to canvas without creating new diff
-      await serializer.deserialize(reconstructedState);
-    } catch (e) {
-      debugPrint('Failed to apply diff state: $e');
-      rethrow;
-    }
-  }
+  //     // Apply the reconstructed state to canvas without creating new diff
+  //     await serializer.deserialize(reconstructedState);
+  //   } catch (e) {
+  //     debugPrint('Failed to apply diff state: $e');
+  //     rethrow;
+  //   }
+  // }
 
   static void closeHeadlessPalette({required WidgetRef ref}) {
     if (ref.read(headlessProvider).headlessArrow != null) {
@@ -453,7 +461,7 @@ class CanvasInteractionService {
 
     final pin = Pin(
       id: Uuid().v4(),
-      artifactId: item?.id ?? '',
+      linkedArtifactId: item?.id ?? '',
       canvasId: ref.read(currentCanvasProvider)?.id ?? '',
       position: finalPosition,
       pinnedObjectId: targetObject?.id,

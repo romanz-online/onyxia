@@ -63,9 +63,8 @@ void _handleOpenInNewTab(
   TreeNode<Artifact> node,
   Set<String> _,
 ) {
-  final projectId = ref.read(projectsProvider).selectedProject.id;
-  final url = NavigationUrlBuilder.buildArtifactUrl(projectId, node.data.id);
-  NavigationContextMenu.openInNewTab(url);
+  final projectId = ref.read(projectsProvider).selectedProject?.id;
+  NavigationContextMenu.openInNewTab(node.data.navigationUrl(projectId));
 }
 
 void _handleCopyLink(
@@ -74,9 +73,8 @@ void _handleCopyLink(
   TreeNode<Artifact> node,
   Set<String> _,
 ) {
-  final projectId = ref.read(projectsProvider).selectedProject.id;
-  final url = NavigationUrlBuilder.buildArtifactUrl(projectId, node.data.id);
-  NavigationContextMenu.copyLinkToClipboard(url);
+  final projectId = ref.read(projectsProvider).selectedProject?.id;
+  NavigationContextMenu.copyLinkToClipboard(node.data.navigationUrl(projectId));
 }
 
 void _handleRemove(

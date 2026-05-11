@@ -65,7 +65,8 @@ class _HomeState extends ConsumerState<Home> {
         final wasLoading = previous?.isLoading ?? true;
         if (wasLoading &&
             !next.isLoading &&
-            next.selectedProject.id != widget.projectId) {
+            (next.selectedProject == null ||
+                next.selectedProject!.id != widget.projectId)) {
           ref
               .read(projectsProvider.notifier)
               .selectProjectById(widget.projectId);

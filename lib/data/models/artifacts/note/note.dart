@@ -5,38 +5,29 @@ class Note extends Artifact {
 
   Note({
     super.id,
+    super.type = ArtifactType.note,
     super.name = 'Untitled',
     super.parentFolderId,
+    //
     super.createdAt,
     super.createdBy,
-    super.type = ArtifactType.note,
-    super.updatedBy,
     super.updatedAt,
+    super.updatedBy,
     //
     this.content = '',
   });
 
   @override
   Note copyWith({
-    String? id,
+    String? id, 
+    String? name,
     String? parentFolderId,
-    String? title,
-    DateTime? createdAt,
-    String? createdBy,
-    ArtifactType? type,
-    String? updatedBy,
-    DateTime? updatedAt,
     String? content,
   }) {
     return Note(
       id: id ?? this.id,
-      name: title ?? this.name,
+      name: name ?? this.name, 
       parentFolderId: parentFolderId ?? this.parentFolderId,
-      createdAt: createdAt ?? this.createdAt,
-      createdBy: createdBy ?? this.createdBy,
-      type: type ?? this.type,
-      updatedBy: updatedBy ?? this.updatedBy,
-      updatedAt: updatedAt ?? this.updatedAt,
       //
       content: content ?? this.content,
     );
@@ -53,8 +44,6 @@ class Note extends Artifact {
                 '',
         super.fromMap();
 
-  factory Note.fromJson(String source) => Note.fromMap(json.decode(source));
-
   @override
   String toString() {
     return '${super.toString()}'
@@ -65,6 +54,7 @@ class Note extends Artifact {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
+
     return super == other && other is Note && other.content == content;
   }
 

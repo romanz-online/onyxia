@@ -8,13 +8,11 @@ class ProjectSettingsButton extends ConsumerStatefulWidget {
 }
 
 class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
-  late Project activeProject;
-
   @override
   Widget build(BuildContext context) {
-    activeProject = ref.read(projectsProvider).selectedProject;
+    final projectId = ref.read(projectsProvider).selectedProject?.id;
 
-    if (activeProject.id.isEmpty) return const SizedBox.shrink();
+    if (projectId == null) return const SizedBox.shrink();
 
     final currentId = GoRouterState.of(context).pathParameters['selectedId'];
     final isOnSettings = currentId == Routes.settings;
@@ -23,9 +21,9 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
       icon: NarwhalIcons.settingsGear,
       onPressed: () {
         if (isOnSettings) {
-          context.go('/project/${activeProject.id}/graph');
+          context.go('/project/$projectId/graph');
         } else {
-          context.go('/project/${activeProject.id}/${Routes.settings}');
+          context.go('/project/$projectId/${Routes.settings}');
         }
       },
     );
