@@ -108,9 +108,9 @@ This barrel includes ALL providers, models, common widgets, and helpers. Never a
 
 ### File Path Conventions
 
-- Provider + its Notifier → same file at `lib/data/data_providers/<name>_provider.dart`
+- Provider + its Notifier → same file at `lib/data/providers/<name>_provider.dart`
 - Canvas-specific providers → `lib/presentation/screens/canvas/providers/<name>_provider.dart`
-- Repositories → `lib/repository/<name>_repository.dart` (all extend `BaseFirestoreRepository<T>`)
+- Repositories → `lib/repository/<name>_repository.dart` (all extend `BaseSupabaseRepository<T>`)
 - Screens → `lib/presentation/screens/<name>/<name>_screen.dart` + `widgets/` subdirectory
 - Models → `lib/data/models/<domain>/<name>.dart`
 
@@ -118,16 +118,16 @@ This barrel includes ALL providers, models, common widgets, and helpers. Never a
 
 ```dart
 final authState = ref.watch(authProvider);
-final userState = ref.watch(currentUserProvider);
-if (authState.value == null || userState.id.isEmpty) return <Name>Notifier(<State>.initial());
+final currentUser = ref.watch(currentUserProvider);
+if (authState.value == null || currentUser.id.isEmpty) return <Name>Notifier(<State>.initial());
 ```
 
-See `lib/data/data_providers/notifications_provider.dart` for the canonical example.
+See `lib/data/providers/projects_provider.dart` for the canonical example.
 
 ### Key Providers
 
-- `authProvider` → `AsyncValue<User?>` (StreamProvider from Firebase Auth)
-- `currentUserProvider` → `UserDefinition` (StateNotifierProvider, sync)
+- `authProvider` → `AsyncValue<Session?>` (StreamProvider over Supabase auth state changes; `Session` is `supabase_flutter`'s type)
+- `currentUserProvider` → `User` (StateNotifierProvider, sync)
 - Both must be watched in every auth-dependent provider
 
 ---
@@ -155,7 +155,7 @@ All methods are `static` on `ThemeHelper`. **Never invent or guess a method name
 
 ## Scaffolding Templates
 
-Use these verbatim when creating new files. Replace `<Name>` / `<name>` / `<Model>` / `<State>` / `<collection>` with actual names.
+Use these verbatim when creating new files. Replace `<Name>` / `<name>` / `<Model>` / `<State>` / `<table>` with actual names.
 
 ### Repository
 
@@ -163,11 +163,11 @@ Use these verbatim when creating new files. Replace `<Name>` / `<name>` / `<Mode
 // lib/repository/<name>_repository.dart
 import 'package:onyxia/export.dart';
 
-class <Name>Repository extends BaseFirestoreRepository<<Model>> {
-  <Name>Repository({required super.projectId});
+class <Name>Repository extends BaseSupabaseRepository<<Model>> {
+  <Name>Repository({super.projectId});
 
   @override
-  String get collectionPath => 'projects/$projectId/<collection>';
+  String get tableName => '<table>';
 
   @override
   <Model> fromMap(Map<String, dynamic> map) => <Model>.fromMap(map);
@@ -177,19 +177,24 @@ class <Name>Repository extends BaseFirestoreRepository<<Model>> {
 
   @override
   String getIdFromItem(<Model> item) => item.id;
+
+  // Optional overrides:
+  // @override bool get requireProjectId => false;        // for non-project-scoped tables (e.g. users)
+  // @override String? get scopeField => 'canvas_id';     // when scoping by a column other than project_id
+  // @override String? get defaultOrderBy => 'created_at';
 }
 ```
 
 ### Provider + Notifier
 
 ```dart
-// lib/data/data_providers/<name>_provider.dart
+// lib/data/providers/<name>_provider.dart
 import 'package:onyxia/export.dart';
 
 final <name>Provider = StateNotifierProvider.autoDispose<<Name>Notifier, <State>>((ref) {
   final authState = ref.watch(authProvider);
-  final userState = ref.watch(currentUserProvider);
-  if (authState.value == null || userState.id.isEmpty) return <Name>Notifier(<State>.initial());
+  final currentUser = ref.watch(currentUserProvider);
+  if (authState.value == null || currentUser.id.isEmpty) return <Name>Notifier(<State>.initial());
   return <Name>Notifier(<State>.initial());
 });
 
