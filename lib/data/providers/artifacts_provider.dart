@@ -33,9 +33,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
   final ArtifactsRepository repository;
   final String? projectId;
   StreamSubscription<List<Artifact>>? _subscription;
-  List<Artifact> _snapshot = [];
   final Ref ref;
-  bool _isOperationInProgress = false;
   final StateProviderFamily<bool, String> _receivedProvider;
   final StateProviderFamily<bool, String> _errorProvider;
 
@@ -57,18 +55,12 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
     _subscription = repository.getStream().listen(
       (data) {
-        _snapshot = data;
+        state = data;
         ref.read(_receivedProvider(projectId!).notifier).state = true;
         ref.read(_errorProvider(projectId!).notifier).state = false;
-
-        if (_isOperationInProgress) return;
-
-        if (!listEquals(state, data)) {
-          state = data;
-        }
       },
       onError: (error) {
-        debugPrint('TreeNotifier: Error listening: $error');
+        debugPrint('ArtifactsTreeNotifier: Error listening: $error');
         ref.read(_receivedProvider(projectId!).notifier).state = true;
         ref.read(_errorProvider(projectId!).notifier).state = true;
       },
@@ -81,8 +73,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
     super.dispose();
   }
 
-  Artifact? getItemById(String id) =>
-      _snapshot.firstWhereOrNull((e) => e.id == id);
+  Artifact? getItemById(String id) => state.firstWhereOrNull((e) => e.id == id);
 
   Future<void> addItems(List<Artifact> items) async {
     if (items.isEmpty) return;
@@ -114,12 +105,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
     state = state.where((e) => !idsToDelete.contains(e.id)).toList();
 
-    _isOperationInProgress = true;
-    try {
-      await repository.deleteMultiple(idsToDelete);
-    } finally {
-      _isOperationInProgress = false;
-    }
+    await repository.deleteMultiple(idsToDelete);
   }
 
   // --- Re-parent ---

@@ -1,5 +1,5 @@
 ﻿export 'package:onyxia/presentation/app.dart';
- 
+
 export 'package:onyxia/core/constants/colors.dart';
 export 'package:onyxia/core/constants/styles.dart';
 export 'package:onyxia/core/constants/admin_config.dart';
@@ -47,7 +47,6 @@ export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/services/item_title_validation_service.dart';
 
 export 'package:onyxia/data/providers/artifacts_diff_preview_provider.dart';
-export 'package:onyxia/presentation/screens/artifacts/widgets/editor_link_dialog.dart';
 export 'package:onyxia/presentation/screens/artifacts/widgets/tree_tile.dart';
 
 // Editor Views

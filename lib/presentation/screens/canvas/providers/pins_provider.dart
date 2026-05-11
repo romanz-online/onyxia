@@ -22,10 +22,6 @@ class PinsNotifier extends StateNotifier<Pins> {
   final String? projectId;
   StreamSubscription? _subscription;
 
-  DateTime _lastUpdateTime = DateTime.now();
-  Timer? _throttleTimer;
-  final List<Pin> _pendingPins = [];
-
   PinsNotifier(
     super.state, {
     required this.repository,
@@ -43,14 +39,9 @@ class PinsNotifier extends StateNotifier<Pins> {
     });
   }
 
-  void _cancelSubscriptions() {
-    _subscription?.cancel();
-  }
-
   @override
   void dispose() {
-    _cancelSubscriptions();
-    _throttleTimer?.cancel();
+    _subscription?.cancel();
     super.dispose();
   }
 
@@ -67,23 +58,7 @@ class PinsNotifier extends StateNotifier<Pins> {
   void updatePin(WidgetRef ref, Pin pin) {
     pipe(ref, () async {
       updatePinState(pin);
-      if (!_pendingPins.contains(pin)) {
-        _pendingPins.add(pin);
-      }
-
-      final now = DateTime.now();
-      if (now.difference(_lastUpdateTime).inMilliseconds >= 1000) {
-        _doUpdate();
-        return;
-      }
-
-      if (_throttleTimer == null || !_throttleTimer!.isActive) {
-        final timeToWait =
-            1000 - now.difference(_lastUpdateTime).inMilliseconds;
-        _throttleTimer = Timer(Duration(milliseconds: timeToWait), () {
-          if (mounted) _doUpdate();
-        });
-      }
+      repository.update(pin);
     }).catchError((e, stack) {
       debugPrint('pipe error in updatePin: $e');
     });
@@ -93,35 +68,11 @@ class PinsNotifier extends StateNotifier<Pins> {
     pipe(ref, () async {
       for (final pin in pins) {
         updatePinState(pin);
-        if (!_pendingPins.contains(pin)) {
-          _pendingPins.add(pin);
-        }
       }
-
-      final now = DateTime.now();
-      if (now.difference(_lastUpdateTime).inMilliseconds >= 1000) {
-        _doUpdate();
-        return;
-      }
-
-      if (_throttleTimer == null || !_throttleTimer!.isActive) {
-        final timeToWait =
-            1000 - now.difference(_lastUpdateTime).inMilliseconds;
-        _throttleTimer = Timer(Duration(milliseconds: timeToWait), () {
-          if (mounted) _doUpdate();
-        });
-      }
+      repository.updateMultiple(pins);
     }).catchError((e, stack) {
       debugPrint('pipe error in updatePins: $e');
     });
-  }
-
-  void _doUpdate() {
-    if (_pendingPins.isNotEmpty) {
-      repository.updateMultiple(_pendingPins);
-      _pendingPins.clear();
-      _lastUpdateTime = DateTime.now();
-    }
   }
 
   void addPinState(Pin pin) {
