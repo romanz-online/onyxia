@@ -79,19 +79,19 @@ class ArrowProperties {
   Map<String, dynamic> toMap() {
     return {
       'points': points.map((x) => x.toMap()).toList(),
-      'startObjectId': startObjectId,
-      'endObjectId': endObjectId,
-      'startTip': startTip.value,
-      'endTip': endTip.value,
-      'startConnectionPoint': startPoint.toShortString(),
-      'startRelativeOffset': startRelativeOffset?.toMap(),
-      'startAbsoluteOffset': startAbsoluteOffset?.toMap(),
-      'endConnectionPoint': endPoint.toShortString(),
-      'endRelativeOffset': endRelativeOffset?.toMap(),
-      'endAbsoluteOffset': endAbsoluteOffset?.toMap(),
-      'textPosition': textPosition,
-      'curvedMidpoint': curvedMidpoint?.toMap(),
-      'arrowType': arrowType.value,
+      'start_object_id': startObjectId,
+      'end_object_id': endObjectId,
+      'start_tip': startTip.value,
+      'end_tip': endTip.value,
+      'start_connection_point': startPoint.toShortString(),
+      'start_relative_offset': startRelativeOffset?.toMap(),
+      'start_absolute_offset': startAbsoluteOffset?.toMap(),
+      'end_connection_point': endPoint.toShortString(),
+      'end_relative_offset': endRelativeOffset?.toMap(),
+      'end_absolute_offset': endAbsoluteOffset?.toMap(),
+      'text_position': textPosition,
+      'curved_midpoint': curvedMidpoint?.toMap(),
+      'arrow_type': arrowType.value,
     };
   }
 
@@ -101,7 +101,8 @@ class ArrowProperties {
       List<Offset> points = <Offset>[];
       try {
         if (map['points'] != null) {
-          points = List<Offset>.from(map['points'].map((x) => OffsetExtension.fromMap(x)));
+          points = List<Offset>.from(
+              map['points'].map((x) => OffsetExtension.fromMap(x)));
         }
       } catch (e) {
         points = <Offset>[];
@@ -110,8 +111,8 @@ class ArrowProperties {
       // Safe enum parsing
       ArrowTip startTip = ArrowTip.none;
       try {
-        if (map['startTip'] != null) {
-          startTip = ArrowTip.values.fromString(map['startTip']);
+        if (map['start_tip'] != null) {
+          startTip = ArrowTip.values.fromString(map['start_tip']);
         }
       } catch (e) {
         startTip = ArrowTip.none;
@@ -119,8 +120,8 @@ class ArrowProperties {
 
       ArrowTip endTip = ArrowTip.triangle;
       try {
-        if (map['endTip'] != null) {
-          endTip = ArrowTip.values.fromString(map['endTip']);
+        if (map['end_tip'] != null) {
+          endTip = ArrowTip.values.fromString(map['end_tip']);
         }
       } catch (e) {
         endTip = ArrowTip.triangle;
@@ -128,8 +129,9 @@ class ArrowProperties {
 
       ConnectionPoint startPoint = ConnectionPoint.none;
       try {
-        if (map['startConnectionPoint'] != null) {
-          startPoint = ConnectionPointTypeExtension.fromString(map['startConnectionPoint']);
+        if (map['start_connection_point'] != null) {
+          startPoint = ConnectionPointTypeExtension.fromString(
+              map['start_connection_point']);
         }
       } catch (e) {
         startPoint = ConnectionPoint.none;
@@ -137,8 +139,9 @@ class ArrowProperties {
 
       ConnectionPoint endPoint = ConnectionPoint.none;
       try {
-        if (map['endConnectionPoint'] != null) {
-          endPoint = ConnectionPointTypeExtension.fromString(map['endConnectionPoint']);
+        if (map['end_connection_point'] != null) {
+          endPoint = ConnectionPointTypeExtension.fromString(
+              map['end_connection_point']);
         }
       } catch (e) {
         endPoint = ConnectionPoint.none;
@@ -146,8 +149,8 @@ class ArrowProperties {
 
       ArrowType arrowType = ArrowType.segmented;
       try {
-        if (map['arrowType'] != null) {
-          arrowType = ArrowType.values.fromString(map['arrowType']);
+        if (map['arrow_type'] != null) {
+          arrowType = ArrowType.values.fromString(map['arrow_type']);
         }
       } catch (e) {
         arrowType = ArrowType.segmented;
@@ -156,8 +159,9 @@ class ArrowProperties {
       // Safe offset parsing
       Offset? startRelativeOffset;
       try {
-        if (map['startRelativeOffset'] != null) {
-          startRelativeOffset = OffsetExtension.fromMap(map['startRelativeOffset']);
+        if (map['start_relative_offset'] != null) {
+          startRelativeOffset =
+              OffsetExtension.fromMap(map['start_relative_offset']);
         }
       } catch (e) {
         startRelativeOffset = null;
@@ -165,8 +169,9 @@ class ArrowProperties {
 
       Offset? startAbsoluteOffset;
       try {
-        if (map['startAbsoluteOffset'] != null) {
-          startAbsoluteOffset = OffsetExtension.fromMap(map['startAbsoluteOffset']);
+        if (map['start_absolute_offset'] != null) {
+          startAbsoluteOffset =
+              OffsetExtension.fromMap(map['start_absolute_offset']);
         }
       } catch (e) {
         startAbsoluteOffset = null;
@@ -174,8 +179,9 @@ class ArrowProperties {
 
       Offset? endRelativeOffset;
       try {
-        if (map['endRelativeOffset'] != null) {
-          endRelativeOffset = OffsetExtension.fromMap(map['endRelativeOffset']);
+        if (map['end_relative_offset'] != null) {
+          endRelativeOffset =
+              OffsetExtension.fromMap(map['end_relative_offset']);
         }
       } catch (e) {
         endRelativeOffset = null;
@@ -183,8 +189,9 @@ class ArrowProperties {
 
       Offset? endAbsoluteOffset;
       try {
-        if (map['endAbsoluteOffset'] != null) {
-          endAbsoluteOffset = OffsetExtension.fromMap(map['endAbsoluteOffset']);
+        if (map['end_absolute_offset'] != null) {
+          endAbsoluteOffset =
+              OffsetExtension.fromMap(map['end_absolute_offset']);
         }
       } catch (e) {
         endAbsoluteOffset = null;
@@ -192,8 +199,8 @@ class ArrowProperties {
 
       Offset? curvedMidpoint;
       try {
-        if (map['curvedMidpoint'] != null) {
-          curvedMidpoint = OffsetExtension.fromMap(map['curvedMidpoint']);
+        if (map['curved_midpoint'] != null) {
+          curvedMidpoint = OffsetExtension.fromMap(map['curved_midpoint']);
         }
       } catch (e) {
         curvedMidpoint = null;
@@ -201,8 +208,8 @@ class ArrowProperties {
 
       return ArrowProperties(
         points: points,
-        startObjectId: map['startObjectId'],
-        endObjectId: map['endObjectId'],
+        startObjectId: map['start_object_id'],
+        endObjectId: map['end_object_id'],
         startTip: startTip,
         endTip: endTip,
         startPoint: startPoint,
@@ -211,7 +218,7 @@ class ArrowProperties {
         endPoint: endPoint,
         endRelativeOffset: endRelativeOffset,
         endAbsoluteOffset: endAbsoluteOffset,
-        textPosition: map['textPosition']?.toDouble() ?? 0.5,
+        textPosition: map['text_position']?.toDouble() ?? 0.5,
         curvedMidpoint: curvedMidpoint,
         arrowType: arrowType,
       );

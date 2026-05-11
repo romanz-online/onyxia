@@ -197,14 +197,14 @@ class CanvasObject {
       'layer': layer,
       'color': color.toARGB32(),
       'stroke': stroke.value,
-      'topLeft': topLeft.toMap(),
-      'bottomRight': bottomRight.toMap(),
+      'top_left': topLeft.toMap(),
+      'bottom_right': bottomRight.toMap(),
       'content': content,
     };
-    if (isArrow) payload['arrowProps'] = _arrowProps!.toMap();
-    if (isImage) payload['imageProps'] = _imageProps!.toMap();
-    if (isBrush) payload['brushProps'] = _brushProps!.toMap();
-    if (isArtifact) payload['artifactProps'] = _artifactProps!.toMap();
+    if (isArrow) payload['arrow_props'] = _arrowProps!.toMap();
+    if (isImage) payload['image_props'] = _imageProps!.toMap();
+    if (isBrush) payload['brush_props'] = _brushProps!.toMap();
+    if (isArtifact) payload['artifact_props'] = _artifactProps!.toMap();
 
     // Top-level Postgres columns; repository injects `canvas_artifact_id`.
     return {
@@ -258,8 +258,8 @@ class CanvasObject {
 
       Offset topLeft = Offset.zero;
       try {
-        if (payload['topLeft'] != null) {
-          topLeft = OffsetExtension.fromMap(payload['topLeft']);
+        if (payload['top_left'] != null) {
+          topLeft = OffsetExtension.fromMap(payload['top_left']);
         }
       } catch (e) {
         topLeft = Offset.zero;
@@ -267,8 +267,8 @@ class CanvasObject {
 
       Offset bottomRight = Offset.zero;
       try {
-        if (payload['bottomRight'] != null) {
-          bottomRight = OffsetExtension.fromMap(payload['bottomRight']);
+        if (payload['bottom_right'] != null) {
+          bottomRight = OffsetExtension.fromMap(payload['bottom_right']);
         }
       } catch (e) {
         bottomRight = Offset.zero;
@@ -288,20 +288,20 @@ class CanvasObject {
         bottomRight: bottomRight,
         content: content,
         arrowProperties:
-            type == CanvasObjectType.arrow && payload['arrowProps'] != null
-                ? ArrowProperties.fromMap(payload['arrowProps'])
+            type == CanvasObjectType.arrow && payload['arrow_props'] != null
+                ? ArrowProperties.fromMap(payload['arrow_props'])
                 : null,
         imageProperties:
-            type == CanvasObjectType.image && payload['imageProps'] != null
-                ? ImageProperties.fromMap(payload['imageProps'])
+            type == CanvasObjectType.image && payload['image_props'] != null
+                ? ImageProperties.fromMap(payload['image_props'])
                 : null,
         brushProperties:
-            type == CanvasObjectType.brush && payload['brushProps'] != null
-                ? BrushProperties.fromMap(payload['brushProps'])
+            type == CanvasObjectType.brush && payload['brush_props'] != null
+                ? BrushProperties.fromMap(payload['brush_props'])
                 : null,
         artifactProperties: type == CanvasObjectType.artifact &&
-                payload['artifactProps'] != null
-            ? ArtifactProperties.fromMap(payload['artifactProps'])
+                payload['artifact_props'] != null
+            ? ArtifactProperties.fromMap(payload['artifact_props'])
             : null,
       );
     } catch (e) {
@@ -2251,4 +2251,41 @@ extension BrushCanvasObjectExtension on CanvasObject {
 extension ArtifactCanvasObjectExtension on CanvasObject {
   bool get isArtifact => type == CanvasObjectType.artifact;
   ArtifactProperties get obj => artifactProps;
+}
+
+class CanvasObjects {
+  final List<CanvasObject> objects;
+  final List<CanvasObject> selectedObjects;
+
+  CanvasObjects({required this.objects, required this.selectedObjects});
+
+  factory CanvasObjects.initial() {
+    return CanvasObjects(objects: [], selectedObjects: []);
+  }
+
+  CanvasObjects copyWith({
+    List<CanvasObject>? objects,
+    List<CanvasObject>? selectedObjects,
+  }) {
+    return CanvasObjects(
+      objects: objects ?? this.objects,
+      selectedObjects: selectedObjects ?? this.selectedObjects,
+    );
+  }
+
+  @override
+  String toString() =>
+      'Objects(objects: $objects, selectedObjects: $selectedObjects)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is CanvasObjects &&
+        listEquals(other.objects, objects) &&
+        listEquals(other.selectedObjects, selectedObjects);
+  }
+
+  @override
+  int get hashCode => objects.hashCode ^ selectedObjects.hashCode;
 }

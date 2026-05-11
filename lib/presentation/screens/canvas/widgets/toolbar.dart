@@ -2,19 +2,19 @@
 import '../canvas_config.dart';
 import '../providers/providers.dart';
 
-class ToolBarWidget extends ConsumerStatefulWidget {
+class Toolbar extends ConsumerStatefulWidget {
   final Function closeTextEditor;
 
-  const ToolBarWidget({
+  const Toolbar({
     super.key,
     required this.closeTextEditor,
   });
 
   @override
-  ConsumerState<ToolBarWidget> createState() => ToolBarWidgetState();
+  ConsumerState<Toolbar> createState() => ToolBarWidgetState();
 }
 
-class ToolBarWidgetState extends ConsumerState<ToolBarWidget> {
+class ToolBarWidgetState extends ConsumerState<Toolbar> {
   // Comprehensive mapping of all tools to their icons
   static const Map<ToolMode, NarwhalIcons> _toolIcons = {
     // Basic tools
@@ -56,9 +56,11 @@ class ToolBarWidgetState extends ConsumerState<ToolBarWidget> {
 
   // --- Helper methods ---
 
-  bool _isShapeTool(ToolMode? tool) => tool != null && _shapeTools.contains(tool);
+  bool _isShapeTool(ToolMode? tool) =>
+      tool != null && _shapeTools.contains(tool);
 
-  bool _hasShapeTools(CanvasConfig config) => config.toolbar.any((tool) => _isShapeTool(tool));
+  bool _hasShapeTools(CanvasConfig config) =>
+      config.toolbar.any((tool) => _isShapeTool(tool));
 
   BoxDecoration _getPanelDecoration() {
     return BoxDecoration(
@@ -124,7 +126,8 @@ class ToolBarWidgetState extends ConsumerState<ToolBarWidget> {
     return Stack(
       children: [
         _buildMainToolBar(selectedTool, config),
-        if (toolbarState.showShapesSubmenu && _hasShapeTools(config)) _buildShapesSubMenu(config),
+        if (toolbarState.showShapesSubmenu && _hasShapeTools(config))
+          _buildShapesSubMenu(config),
       ],
     );
   }
@@ -194,7 +197,8 @@ class ToolBarWidgetState extends ConsumerState<ToolBarWidget> {
     );
   }
 
-  Widget _buildToolButton(ToolMode tool, ToolMode selectedTool, double iconSize) {
+  Widget _buildToolButton(
+      ToolMode tool, ToolMode selectedTool, double iconSize) {
     final icon = _toolIcons[tool];
     if (icon == null) return const SizedBox.shrink();
 
@@ -207,12 +211,16 @@ class ToolBarWidgetState extends ConsumerState<ToolBarWidget> {
           onPressed: () {
             if (selectedTool == ToolMode.artifact) {
               // If artifact tool is already selected, hide tree drawer and switch to pointer
-              ref.read(canvasSettingsProvider(Setting.showMinimap).notifier).state = true;
+              ref
+                  .read(canvasSettingsProvider(Setting.showMinimap).notifier)
+                  .state = true;
               _onToolSelected(ToolMode.pointer);
             } else {
               // If artifact tool is not selected, select it and show tree drawer
               _onToolSelected(ToolMode.artifact);
-              ref.read(canvasSettingsProvider(Setting.showMinimap).notifier).state = false;
+              ref
+                  .read(canvasSettingsProvider(Setting.showMinimap).notifier)
+                  .state = false;
             }
           },
           isSelected: selectedTool == tool,
@@ -229,7 +237,10 @@ class ToolBarWidgetState extends ConsumerState<ToolBarWidget> {
 
   Widget _buildShapesSubMenu(CanvasConfig config) {
     final selectedTool = ref.watch(toolModeProvider);
-    final availableShapeTools = config.toolbar.where((tool) => _isShapeTool(tool)).cast<ToolMode>().toList();
+    final availableShapeTools = config.toolbar
+        .where((tool) => _isShapeTool(tool))
+        .cast<ToolMode>()
+        .toList();
 
     return Positioned.fill(
       bottom: 76,

@@ -4,10 +4,12 @@ class ProjectsLandingOverlay extends ConsumerStatefulWidget {
   const ProjectsLandingOverlay({super.key});
 
   @override
-  ConsumerState<ProjectsLandingOverlay> createState() => _ProjectsLandingOverlayState();
+  ConsumerState<ProjectsLandingOverlay> createState() =>
+      _ProjectsLandingOverlayState();
 }
 
-class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay> {
+class _ProjectsLandingOverlayState
+    extends ConsumerState<ProjectsLandingOverlay> {
   static const double _width = 600;
   static const double _height = 400;
   static const double _leftColumnWidth = 180;
@@ -15,7 +17,8 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
   Offset _position = const Offset(100, 100);
   bool _positionInitialized = false;
 
-  final TextEditingController _newProjectNameController = TextEditingController();
+  final TextEditingController _newProjectNameController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -68,13 +71,15 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Project Name', style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext)),
+              Text('Project Name',
+                  style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext)),
               const SizedBox(height: 10),
               TextFormField(
                 maxLength: 50,
                 controller: _newProjectNameController,
                 autofocus: true,
-                decoration: NarwhalModalInputDecoration.create(dialogContext, hintText: 'Enter project name'),
+                decoration: NarwhalModalInputDecoration.create(dialogContext,
+                    hintText: 'Enter project name'),
               ),
             ],
           ),
@@ -87,7 +92,7 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
             final now = DateTime.now();
             final newProject = Project(
               id: const Uuid().v4(),
-              ownerId: currentUserId,
+              createdBy: currentUserId,
               createdAt: now,
               updatedAt: now,
               name: name,
@@ -117,7 +122,8 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
           decoration: BoxDecoration(
             color: ThemeHelper.neutral100(context),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: ThemeHelper.neutral300(context), width: 2),
+            border:
+                Border.all(color: ThemeHelper.neutral300(context), width: 2),
             boxShadow: [
               BoxShadow(
                 color: ThemeHelper.neutral900(context).withValues(alpha: 0.15),
@@ -138,12 +144,7 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
     if (!user.isLogged) return _buildPreAuth(context);
     if (user.pending) return Center(child: NarwhalSpinner());
 
-    final projects = ref.watch(
-      projectsProvider.select((s) {
-        final sorted = List<Project>.of(s.projects)..sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-        return sorted;
-      }),
-    );
+    final projects = ref.watch(projectsProvider).projects;
 
     return Row(
       children: [
@@ -216,7 +217,8 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
                   )
                 : ListView.builder(
                     itemCount: projects.length,
-                    itemBuilder: (context, index) => _buildProjectRow(context, projects[index]),
+                    itemBuilder: (context, index) =>
+                        _buildProjectRow(context, projects[index]),
                   ),
           ),
         ],
@@ -228,14 +230,16 @@ class _ProjectsLandingOverlayState extends ConsumerState<ProjectsLandingOverlay>
     return OnyxiaButton(
       label: project.name,
       onTap: () {
-        final bool isCtrlOrCmd = HardwareKeyboard.instance.logicalKeysPressed.intersection({
+        final bool isCtrlOrCmd =
+            HardwareKeyboard.instance.logicalKeysPressed.intersection({
           LogicalKeyboardKey.controlLeft,
           LogicalKeyboardKey.controlRight,
           LogicalKeyboardKey.metaLeft,
           LogicalKeyboardKey.metaRight,
         }).isNotEmpty;
         if (isCtrlOrCmd) {
-          NavigationContextMenu.openInNewTab(NavigationUrlBuilder.buildProjectDashboardUrl(project.id));
+          NavigationContextMenu.openInNewTab(
+              NavigationUrlBuilder.buildProjectDashboardUrl(project.id));
         } else {
           _navigateToProject(project);
         }

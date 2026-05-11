@@ -1,13 +1,9 @@
 ﻿class ArtifactProperties {
   final String artifactId;
 
-  ArtifactProperties({
-    required this.artifactId,
-  });
+  ArtifactProperties({required this.artifactId});
 
-  factory ArtifactProperties.initial() {
-    return ArtifactProperties(artifactId: '');
-  }
+  factory ArtifactProperties.initial() => ArtifactProperties(artifactId: '');
 
   @override
   String toString() {
@@ -17,11 +13,11 @@
   }
 
   Map<String, dynamic> toMap() {
-    return {'artifactId': artifactId};
+    return {'artifact_id': artifactId};
   }
 
   factory ArtifactProperties.fromMap(Map<String, dynamic> map) {
-    return ArtifactProperties(artifactId: map['artifactId'] ?? '');
+    return ArtifactProperties(artifactId: map['artifact_id'] ?? '');
   }
 
   @override

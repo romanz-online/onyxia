@@ -29,7 +29,8 @@ class CanvasCommentPin extends ConsumerStatefulWidget {
   ConsumerState<CanvasCommentPin> createState() => _CanvasCommentPinState();
 }
 
-class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with TickerProviderStateMixin {
+class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
+    with TickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _widthAnimation;
   late Animation<double> _heightAnimation;
@@ -61,7 +62,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
   }
 
   double _calculateInputHeight() {
-    final RenderBox? renderBox = _inputContainerKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _inputContainerKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox != null) {
       return renderBox.size.height;
     }
@@ -130,10 +132,15 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
     super.dispose();
   }
 
-  bool get isExpanded => ref.read(expandedPinProvider.notifier).isExpanded(widget.comment.id);
+  bool get isExpanded =>
+      ref.read(expandedPinProvider.notifier).isExpanded(widget.comment.id);
 
   bool get isTemporaryComment =>
-      ref.read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')).temporaryComment?.id == widget.comment.id;
+      ref
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? ''))
+          .temporaryComment
+          ?.id ==
+      widget.comment.id;
 
   Offset get _position {
     if (widget.position != null) {
@@ -148,7 +155,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
     // Expanded pin width: 276px (from _widthAnimation.end)
     // Avatar: 27px + avatar padding (8px on left/right = 16px total)
     // Text content padding: left 4px + right 12px = 16px
-    final double availableTextWidth = 276.0 - 27.0 - 16.0 - 4.0 - 12.0; // = 217px
+    final double availableTextWidth =
+        276.0 - 27.0 - 16.0 - 4.0 - 12.0; // = 217px
 
     final TextPainter textPainter = TextPainter(
       text: TextSpan(
@@ -163,11 +171,14 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
     )..layout(maxWidth: availableTextWidth);
 
     final double textHeight = textPainter.height;
-    final double avatarAndPaddingHeight = 27.0 + 16.0; // avatar size + avatar padding (8px top/bottom)
-    final double headerHeight = 20.0; // height for author name and timestamp row
+    final double avatarAndPaddingHeight =
+        27.0 + 16.0; // avatar size + avatar padding (8px top/bottom)
+    final double headerHeight =
+        20.0; // height for author name and timestamp row
     final double textPadding = 8.0 * 2; // text area top + bottom padding
     final double minHeight = 60.0; // minimum expanded height
-    final double textHeightBuffer = textHeight > 20 ? textHeight * 0.2 : 0; // 10% buffer for multi-line
+    final double textHeightBuffer =
+        textHeight > 20 ? textHeight * 0.2 : 0; // 10% buffer for multi-line
     final double calculatedHeight = headerHeight +
         4.0 + // spacing between header and text (SizedBox(height: 4))
         textHeight +
@@ -209,7 +220,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
       ref.read(expandedPinProvider.notifier).collapsePin();
       _handleHoverExit();
     } else {
-      _animationController.reset(); // Instantly reset to collapsed state without animation
+      _animationController
+          .reset(); // Instantly reset to collapsed state without animation
       ref.read(expandedPinProvider.notifier).expandPin(widget.comment);
     }
   }
@@ -217,17 +229,24 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
   void _saveComment() {
     final text = _commentController.text.trim();
     if (text.isNotEmpty) {
-      ref.read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier).saveTemporaryComment(ref, text);
+      ref
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+              .notifier)
+          .saveTemporaryComment(ref, text);
       _commentController.clear();
     } else {
       // If text is empty, treat it as cancel
-      ref.read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '').notifier).clearTemporaryComment();
+      ref
+          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
+              .notifier)
+          .clearTemporaryComment();
       _commentController.clear();
     }
   }
 
   Widget _buildEditableCommentInput() {
-    final double scale = widget.transformationController.value.getMaxScaleOnAxis();
+    final double scale =
+        widget.transformationController.value.getMaxScaleOnAxis();
     final containerWidth = 360.0;
 
     // Update height after widget is rendered
@@ -240,7 +259,9 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
         alignment: Alignment.topLeft,
         scale: 1 / scale,
         child: FutureBuilder<UserDefinition>(
-          future: ref.read(userLookupProvider).getUserById(widget.comment.authorId),
+          future: ref
+              .read(userLookupProvider)
+              .getUserById(widget.comment.createdBy),
           builder: (context, snapshot) {
             return Container(
               key: _inputContainerKey,
@@ -272,21 +293,28 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                     padding: const EdgeInsets.only(left: 41),
                     child: Shortcuts(
                       shortcuts: <LogicalKeySet, Intent>{
-                        LogicalKeySet(LogicalKeyboardKey.shift, LogicalKeyboardKey.enter): const NewLineIntent(),
-                        LogicalKeySet(LogicalKeyboardKey.enter): const SubmitIntent(),
+                        LogicalKeySet(LogicalKeyboardKey.shift,
+                            LogicalKeyboardKey.enter): const NewLineIntent(),
+                        LogicalKeySet(LogicalKeyboardKey.enter):
+                            const SubmitIntent(),
                       },
                       child: Actions(
                         actions: <Type, Action<Intent>>{
-                          NewLineIntent: CallbackAction<NewLineIntent>(onInvoke: (intent) {
+                          NewLineIntent:
+                              CallbackAction<NewLineIntent>(onInvoke: (intent) {
                             // Insert newline manually at cursor position
                             final selection = _commentController.selection;
-                            _commentController.value = _commentController.value.copyWith(
-                              text: _commentController.text.replaceRange(selection.start, selection.end, '\n'),
-                              selection: TextSelection.collapsed(offset: selection.start + 1),
+                            _commentController.value =
+                                _commentController.value.copyWith(
+                              text: _commentController.text.replaceRange(
+                                  selection.start, selection.end, '\n'),
+                              selection: TextSelection.collapsed(
+                                  offset: selection.start + 1),
                             );
                             return null;
                           }),
-                          SubmitIntent: CallbackAction<SubmitIntent>(onInvoke: (intent) {
+                          SubmitIntent:
+                              CallbackAction<SubmitIntent>(onInvoke: (intent) {
                             _saveComment();
                             return null;
                           }),
@@ -366,7 +394,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
       if (isTemporaryComment) return _buildEditableCommentInput();
 
       // Regular pin display logic
-      final double scale = widget.transformationController.value.getMaxScaleOnAxis();
+      final double scale =
+          widget.transformationController.value.getMaxScaleOnAxis();
 
       if (_lastCommentText != widget.comment.text) {
         _lastCommentText = widget.comment.text;
@@ -411,7 +440,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                         height: _heightAnimation.value,
                         decoration: BoxDecoration(
                           border: Border.all(
-                            color: isSelected ? selectionColor : outerBorderColor,
+                            color:
+                                isSelected ? selectionColor : outerBorderColor,
                             width: isSelected ? 1.5 : 1.0,
                           ),
                           borderRadius: const BorderRadius.only(
@@ -429,9 +459,12 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                           ],
                         ),
                         child: FutureBuilder<UserDefinition>(
-                          future: ref.read(userLookupProvider).getUserById(widget.comment.authorId),
+                          future: ref
+                              .read(userLookupProvider)
+                              .getUserById(widget.comment.createdBy),
                           builder: (context, snapshot) {
-                            final user = snapshot.data ?? UserDefinition.initial();
+                            final user =
+                                snapshot.data ?? UserDefinition.initial();
                             final timeAgo = widget.comment.createdAt != null
                                 ? TimestampService.formatTimeAgo(
                                     widget.comment.createdAt!,
@@ -444,7 +477,9 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                               children: [
                                 // Avatar (always visible, position unchanged)
                                 Padding(
-                                  padding: EdgeInsets.all(isSelected ? 3.0 : _paddingAnimation.value),
+                                  padding: EdgeInsets.all(isSelected
+                                      ? 3.0
+                                      : _paddingAnimation.value),
                                   child: GestureDetector(
                                     onTap: _onTap,
                                     child: InitialsCircle(
@@ -468,9 +503,11 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                                         child: SizedBox(
                                           height: _heightAnimation.value,
                                           child: SingleChildScrollView(
-                                            physics: NeverScrollableScrollPhysics(),
+                                            physics:
+                                                NeverScrollableScrollPhysics(),
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 // Header row: username and timestamp
                                                 Row(
@@ -478,12 +515,18 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                                                   children: [
                                                     Flexible(
                                                       child: Text(
-                                                        user.name.isNotEmpty ? user.name : 'Unknown User',
-                                                        overflow: TextOverflow.fade,
+                                                        user.name.isNotEmpty
+                                                            ? user.name
+                                                            : 'Unknown User',
+                                                        overflow:
+                                                            TextOverflow.fade,
                                                         style: NarwhalTextStyle(
                                                           fontSize: 12,
-                                                          fontWeight: FontWeight.bold,
-                                                          color: ThemeHelper.neutral900(context),
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: ThemeHelper
+                                                              .neutral900(
+                                                                  context),
                                                         ),
                                                       ),
                                                     ),
@@ -492,12 +535,19 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                                                       Flexible(
                                                         child: Text(
                                                           timeAgo,
-                                                          overflow: TextOverflow.fade,
-                                                          style: NarwhalTextStyle(
+                                                          overflow:
+                                                              TextOverflow.fade,
+                                                          style:
+                                                              NarwhalTextStyle(
                                                             fontSize: 12,
-                                                            fontWeight: FontWeight.normal,
-                                                            color:
-                                                                ThemeHelper.neutral900(context).withValues(alpha: 0.7),
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            color: ThemeHelper
+                                                                    .neutral900(
+                                                                        context)
+                                                                .withValues(
+                                                                    alpha: 0.7),
                                                           ),
                                                         ),
                                                       ),
@@ -514,7 +564,9 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin> with Ticker
                                                   style: NarwhalTextStyle(
                                                     fontSize: 14,
                                                     fontWeight: FontWeight.w500,
-                                                    color: ThemeHelper.neutral900(context),
+                                                    color:
+                                                        ThemeHelper.neutral900(
+                                                            context),
                                                   ),
                                                 ),
                                               ],

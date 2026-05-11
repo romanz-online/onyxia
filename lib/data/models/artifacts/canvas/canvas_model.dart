@@ -13,7 +13,7 @@ class CanvasModel extends Artifact {
   CanvasModel({
     super.id,
     super.createdAt,
-    super.parent,
+    super.parentFolderId,
     super.createdBy,
     super.title = 'Canvas',
     super.type = ArtifactType.canvas,
@@ -25,19 +25,21 @@ class CanvasModel extends Artifact {
   });
 
   CanvasModel.fromMap(super.map)
-      : canvasType = CanvasType.values.fromString((map['body'] as Map<String, dynamic>?)?['canvasType'] ?? ''),
-        imageUrl = (map['body'] as Map<String, dynamic>?)?['imageUrl'] as String?,
+      : canvasType = CanvasType.values.fromString(
+            (map['body'] as Map<String, dynamic>?)?['canvas_type'] ?? ''),
+        imageUrl =
+            (map['body'] as Map<String, dynamic>?)?['image_url'] as String?,
         super.fromMap();
 
   @override
   Map<String, dynamic> toMapSub() {
-    return {'canvasType': canvasType.value, 'imageUrl': imageUrl};
+    return {'canvas_type': canvasType.value, 'image_url': imageUrl};
   }
 
   @override
   CanvasModel copyWith({
     String? id,
-    String? parentId,
+    String? parentFolderId,
     String? title,
     DateTime? createdAt,
     String? createdBy,
@@ -49,7 +51,7 @@ class CanvasModel extends Artifact {
   }) {
     return CanvasModel(
       id: id ?? this.id,
-      parent: parentId ?? this.parent,
+      parentFolderId: parentFolderId ?? this.parentFolderId,
       createdAt: createdAt ?? this.createdAt,
       createdBy: createdBy ?? this.createdBy,
       title: title ?? this.title,
@@ -62,7 +64,8 @@ class CanvasModel extends Artifact {
     );
   }
 
-  factory CanvasModel.fromJson(String source) => CanvasModel.fromMap(json.decode(source));
+  factory CanvasModel.fromJson(String source) =>
+      CanvasModel.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -76,7 +79,10 @@ class CanvasModel extends Artifact {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return super == other && other is CanvasModel && other.canvasType == canvasType && other.imageUrl == imageUrl;
+    return super == other &&
+        other is CanvasModel &&
+        other.canvasType == canvasType &&
+        other.imageUrl == imageUrl;
   }
 
   @override

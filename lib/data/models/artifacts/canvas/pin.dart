@@ -21,33 +21,23 @@ class Pin implements ExpandablePin {
 
   factory Pin.initial() => Pin();
 
-  factory Pin.fromJson(String jsonStr) {
-    final Map<String, dynamic> map = json.decode(jsonStr);
-    return Pin.fromMap(map);
-  }
-
-  String toJson() => json.encode(toMap());
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'linked_artifact_id': artifactId.isEmpty ? null : artifactId,
       'canvas_artifact_id': canvasId,
-      'x': position.dx,
-      'y': position.dy,
+      'position': position.toMap(),
       'target_object_id': pinnedObjectId,
     };
   }
 
   factory Pin.fromMap(Map<String, dynamic> map) {
     try {
-      final dx = (map['x'] as num?)?.toDouble() ?? 0.0;
-      final dy = (map['y'] as num?)?.toDouble() ?? 0.0;
       return Pin(
         id: map['id'] ?? '',
         artifactId: map['linked_artifact_id'] ?? '',
         canvasId: map['canvas_artifact_id'] ?? '',
-        position: Offset(dx, dy),
+        position: OffsetExtension.fromMap(map['position']),
         pinnedObjectId: map['target_object_id']?.toString(),
       );
     } catch (e) {
@@ -94,7 +84,10 @@ class Pin implements ExpandablePin {
 
   @override
   int get hashCode {
-    return id.hashCode ^ artifactId.hashCode ^ canvasId.hashCode ^ position.hashCode;
+    return id.hashCode ^
+        artifactId.hashCode ^
+        canvasId.hashCode ^
+        position.hashCode;
   }
 
   @override
@@ -115,4 +108,28 @@ class Pin implements ExpandablePin {
           );
     }
   }
+}
+
+class Pins {
+  final List<Pin> pins;
+  Pins({required this.pins});
+
+  factory Pins.initial() => Pins(pins: []);
+
+  Pins copyWith({List<Pin>? pins}) {
+    return Pins(pins: pins ?? this.pins);
+  }
+
+  @override
+  String toString() => 'Pins(pins: $pins)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Pins && listEquals(other.pins, pins);
+  }
+
+  @override
+  int get hashCode => pins.hashCode;
 }

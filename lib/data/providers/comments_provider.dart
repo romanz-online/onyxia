@@ -2,7 +2,6 @@ import 'package:onyxia/export.dart';
 
 class CommentsState {
   final List<Comment> comments;
-  final Comment selectedComment;
   final bool shouldEditOnOpen;
   final String? editingSubCommentId;
   final Comment? temporaryComment;
@@ -10,7 +9,6 @@ class CommentsState {
 
   CommentsState({
     required this.comments,
-    required this.selectedComment,
     this.shouldEditOnOpen = false,
     this.editingSubCommentId,
     this.temporaryComment,
@@ -18,15 +16,11 @@ class CommentsState {
   });
 
   factory CommentsState.initial() {
-    return CommentsState(
-      comments: [],
-      selectedComment: Comment.initial(),
-    );
+    return CommentsState(comments: []);
   }
 
   CommentsState copyWith({
     List<Comment>? comments,
-    Comment? selectedComment,
     bool? shouldEditOnOpen,
     String? editingSubCommentId,
     Comment? temporaryComment,
@@ -34,7 +28,6 @@ class CommentsState {
   }) {
     return CommentsState(
       comments: comments ?? this.comments,
-      selectedComment: selectedComment ?? this.selectedComment,
       shouldEditOnOpen: shouldEditOnOpen ?? false,
       editingSubCommentId: editingSubCommentId,
       temporaryComment: temporaryComment,
@@ -103,16 +96,14 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   Future<void> addComment({
     required String text,
     required String commentId,
-    required CommentTargetType targetType,
-    Offset? position,
+    required Offset position,
   }) async {
     final newComment = Comment(
       id: commentId,
       text: text,
       subComments: [],
-      authorId: user.id,
+      createdBy: user.id,
       position: position,
-      targetType: targetType,
     );
 
     await repository.addComment(targetId: targetId, comment: newComment);
@@ -124,9 +115,9 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   }) async {
     Comment newComment = updatedComment;
 
-    if (delta != null && updatedComment.position != null) {
+    if (delta != null) {
       newComment = updatedComment.copyWith(
-        position: updatedComment.position! + delta,
+        position: updatedComment.position + delta,
       );
     }
 
@@ -141,21 +132,15 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     );
   }
 
-  Future<void> deleteComment({required String commentId}) async {
-    await repository.delete(commentId);
-
-    // If the deleted comment was the selected one, deselect it
-    if (state.selectedComment.id == commentId) {
-      state = state.copyWith(selectedComment: Comment.initial());
-    }
-  }
+  Future<void> deleteComment({required String commentId}) async =>
+      await repository.delete(commentId);
 
   Future<void> addSubComment(String commentId, String text) async {
     final comment = state.comments.firstWhere((c) => c.id == commentId);
     final subComment = SubComment(
       id: const Uuid().v4(),
-      text: text,
-      authorId: user.id,
+      content: text,
+      createdBy: user.id,
       createdAt: DateTime.now(),
     );
 
@@ -179,7 +164,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     // Find and update the specific subcomment
     final updatedSubComments = comment.subComments.map((subComment) {
       if (subComment.id == subCommentId) {
-        return subComment.copyWith(text: text);
+        return subComment.copyWith(content: text);
       }
       return subComment;
     }).toList();
@@ -213,11 +198,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       comments: [
         for (final comment in state.comments)
           if (comment.id == commentId)
-            comment.copyWith(
-              position: comment.position != null
-                  ? comment.position! + delta
-                  : throw StateError('Cannot move comment: position is null'),
-            )
+            comment.copyWith(position: comment.position + delta)
           else
             comment
       ],
@@ -231,34 +212,6 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
         (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
             .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
     return sortedComments.indexOf(comment) + 1; // 1-based index
-  }
-
-  // Set or deselect the currently selected comment
-  void setSelectedComment(Comment? comment) {
-    if (comment == null || comment.id == state.selectedComment.id) {
-      // Deselect the comment if it's already selected or null
-      state = state.copyWith(selectedComment: Comment.initial());
-      return;
-    }
-    state = state.copyWith(selectedComment: comment);
-  }
-
-  // Set selected comment with edit intent
-  void setSelectedCommentForEdit(Comment comment, {String? subCommentId}) {
-    // If the comment is already selected, just update the edit intent
-    if (state.selectedComment.id == comment.id) {
-      state = state.copyWith(
-        shouldEditOnOpen: true,
-        editingSubCommentId: subCommentId,
-      );
-    } else {
-      // Otherwise, select the comment with edit intent
-      state = state.copyWith(
-        selectedComment: comment,
-        shouldEditOnOpen: true,
-        editingSubCommentId: subCommentId,
-      );
-    }
   }
 
   // Clear edit intent while keeping the selected comment
@@ -280,14 +233,13 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       id: commentId,
       text: '',
       subComments: [],
-      authorId: user.id,
+      createdBy: user.id,
       position: position,
       pinnedObjectId: pinnedObjectId,
     );
 
     state = state.copyWith(
       temporaryComment: tempComment,
-      selectedComment: tempComment,
       objectId: objectId,
     );
   }
@@ -299,10 +251,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       return;
     }
 
-    final commentToSave = state.temporaryComment!.copyWith(
-      text: text.trim(),
-      targetType: CommentTargetType.canvas,
-    );
+    final commentToSave = state.temporaryComment!.copyWith(text: text.trim());
 
     await repository.addComment(
       targetId: targetId,
@@ -314,11 +263,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
 
   // Clear temporary comment without saving
   void clearTemporaryComment() {
-    state = state.copyWith(
-      temporaryComment: null,
-      selectedComment: Comment.initial(),
-      objectId: null,
-    );
+    state = state.copyWith(temporaryComment: null, objectId: null);
   }
 
   @override

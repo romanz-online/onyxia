@@ -2,27 +2,27 @@ import 'package:onyxia/services/timestamp_service.dart';
 
 class SubComment {
   final String id;
-  final String text;
-  final String authorId;
+  final String content;
+  final String createdBy;
   final DateTime? createdAt;
 
   SubComment({
     required this.id,
-    required this.text,
-    required this.authorId,
+    required this.content,
+    required this.createdBy,
     this.createdAt,
   });
 
   SubComment copyWith({
     String? id,
-    String? text,
-    String? authorId,
+    String? content,
+    String? createdBy,
     DateTime? createdAt,
   }) {
     return SubComment(
       id: id ?? this.id,
-      text: text ?? this.text,
-      authorId: authorId ?? this.authorId,
+      content: content ?? this.content,
+      createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -31,38 +31,29 @@ class SubComment {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'author_id': authorId,
-      'body': text,
+      'created_by': createdBy,
+      'created_at': createdAt,
+      'content': content,
     };
   }
 
   factory SubComment.fromMap(Map<String, dynamic> map) {
     return SubComment(
       id: map['id'] ?? '',
-      text: map['body'] ?? '',
-      authorId: map['author_id'] ?? '',
-      createdAt: map['created_at'] != null ? _parseDateTime(map['created_at']) : null,
+      content: map['content'] ?? '',
+      createdBy: map['created_by'] ?? '',
+      createdAt: TimestampService.fromMap(map['created_at']),
     );
   }
 
-  static DateTime _parseDateTime(dynamic value) {
-    if (value is num) {
-      // Handle timestamp (milliseconds since epoch)
-      return DateTime.fromMillisecondsSinceEpoch(value.toInt());
-    } else if (value is String) {
-      // Handle ISO string format
-      return DateTime.parse(value);
-    } else {
-      throw ArgumentError('Invalid DateTime format: $value');
-    }
-  }
-
-  String timeAgo() {
-    return createdAt != null ? TimestampService.formatTimeAgo(createdAt!) : '';
-  }
+  String timeAgo() => TimestampService.formatTimeAgo(createdAt);
 
   @override
   String toString() {
-    return 'SubComment(id: $id, text: $text, authorId: $authorId, createdAt: $createdAt)';
+    return 'SubComment(id: $id, '
+        'text: $content, '
+        'createdBy: $createdBy, '
+        'createdAt: $createdAt, '
+        ')';
   }
 }

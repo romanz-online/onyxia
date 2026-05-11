@@ -5,30 +5,28 @@ class Comment implements ExpandablePin {
   final String id;
   final String text;
   @override
-  final Offset? position;
+  final Offset position;
   final List<SubComment> subComments;
-  final String authorId;
+  final String createdBy;
   final DateTime? createdAt;
   final String? pinnedObjectId;
   final String? targetId;
-  final CommentTargetType? targetType;
 
   Comment({
     required this.id,
     required this.text,
-    this.position,
+    this.position = Offset.zero,
     required this.subComments,
-    required this.authorId,
+    required this.createdBy,
     this.createdAt,
     this.pinnedObjectId,
     this.targetId,
-    this.targetType,
   });
 
   factory Comment.initial() => Comment(
         id: '',
         text: '',
-        authorId: '',
+        createdBy: '',
         subComments: [],
         pinnedObjectId: null,
       );
@@ -36,7 +34,7 @@ class Comment implements ExpandablePin {
   static final empty = Comment(
     id: '',
     text: '',
-    authorId: '',
+    createdBy: '',
     subComments: [],
     pinnedObjectId: null,
   );
@@ -46,22 +44,20 @@ class Comment implements ExpandablePin {
     String? text,
     Offset? position,
     List<SubComment>? subComments,
-    String? authorId,
+    String? createdBy,
     DateTime? createdAt,
     String? pinnedObjectId,
     String? targetId,
-    CommentTargetType? targetType,
   }) {
     return Comment(
       id: id ?? this.id,
       text: text ?? this.text,
       position: position ?? this.position,
       subComments: subComments ?? this.subComments,
-      authorId: authorId ?? this.authorId,
+      createdBy: createdBy ?? this.createdBy,
       createdAt: createdAt ?? this.createdAt,
       pinnedObjectId: pinnedObjectId ?? this.pinnedObjectId,
       targetId: targetId ?? this.targetId,
-      targetType: targetType ?? this.targetType,
     );
   }
 
@@ -70,48 +66,28 @@ class Comment implements ExpandablePin {
   Map<String, dynamic> toMap() => {
         'id': id,
         'target_id': targetId,
-        'target_type': (targetType ?? CommentTargetType.canvas).name,
-        'author_id': authorId,
+        'created_by': createdBy,
         'body': text,
-        'x': position?.dx,
-        'y': position?.dy,
+        'position': position.toMap(),
         'pinned_object_id': pinnedObjectId,
       };
 
   factory Comment.fromMap(Map<String, dynamic> map) {
     try {
-      final dx = (map['x'] as num?)?.toDouble();
-      final dy = (map['y'] as num?)?.toDouble();
       return Comment(
         id: map['id']?.toString() ?? '',
         text: map['body']?.toString() ?? '',
-        position: (dx != null && dy != null) ? Offset(dx, dy) : null,
+        position: OffsetExtension.fromMap(map['position']),
         subComments: const [],
-        authorId: map['author_id']?.toString() ?? '',
-        createdAt: map['created_at'] != null
-            ? _parseDateTime(map['created_at'])
-            : null,
+        createdBy: map['created_by']?.toString() ?? '',
+        createdAt: TimestampService.fromMap(map['created_at']),
         pinnedObjectId: map['pinned_object_id']?.toString(),
         targetId: map['target_id']?.toString(),
-        targetType:
-            CommentTargetType.fromString(map['target_type']?.toString()),
       );
     } catch (e) {
       debugPrint('Error in Comment.fromMap with data: $map');
       debugPrint('Error details: $e');
       rethrow;
-    }
-  }
-
-  static DateTime _parseDateTime(dynamic value) {
-    if (value is num) {
-      // Handle timestamp (milliseconds since epoch)
-      return DateTime.fromMillisecondsSinceEpoch(value.toInt());
-    } else if (value is String) {
-      // Handle ISO string format
-      return DateTime.parse(value);
-    } else {
-      throw ArgumentError('Invalid DateTime format: $value');
     }
   }
 
@@ -125,21 +101,19 @@ class Comment implements ExpandablePin {
   /// If parent is provided, uses relative positioning as a percentage of the parent object.
   @override
   Offset getOffset({CanvasObject? parent}) {
-    if (position == null) return Offset.zero;
-
     if (parent == null) {
-      return position!;
+      return position;
     } else if (parent.isArrow) {
       // Arrow positioning: position.dx is percentage along arrow path (0.0-1.0)
       final arrowPoints = parent.arrowProps.points;
-      return ArrowPathHelper.getPointAtPercentage(arrowPoints, position!.dx);
+      return ArrowPathHelper.getPointAtPercentage(arrowPoints, position.dx);
     } else {
       // Regular object positioning: relative positioning based on dimensions
       final objSize = parent.getDimensions();
       return parent.topLeft +
           Offset(
-            position!.dx * objSize.width,
-            position!.dy * objSize.height,
+            position.dx * objSize.width,
+            position.dy * objSize.height,
           );
     }
   }
@@ -154,28 +128,32 @@ class Comment implements ExpandablePin {
       'text: $text, '
       'position: $position, '
       'subComments: $subComments, '
-      'authorId: $authorId, '
+      'createdBy: $createdBy, '
       'createdAt: $createdAt, '
       'pinnedObjectId: $pinnedObjectId, '
       ')';
 }
 
-/// Type of target for a comment
-enum CommentTargetType {
-  canvas,
-  note;
+class Comments {
+  final List<Comment> comments;
+  Comments({required this.comments});
 
-  /// Parse from string, returns canvas as default for backward compatibility
-  static CommentTargetType fromString(String? value) {
-    if (value == null) return CommentTargetType.canvas;
+  factory Comments.initial() => Comments(comments: []);
 
-    switch (value.toLowerCase()) {
-      case 'canvas':
-        return CommentTargetType.canvas;
-      case 'note':
-        return CommentTargetType.note;
-      default:
-        return CommentTargetType.canvas;
-    }
+  Comments copyWith({List<Comment>? comments}) {
+    return Comments(comments: comments ?? this.comments);
   }
+
+  @override
+  String toString() => 'Comments(comments: $comments)';
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Comments && listEquals(other.comments, comments);
+  }
+
+  @override
+  int get hashCode => comments.hashCode;
 }

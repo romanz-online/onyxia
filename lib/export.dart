@@ -37,7 +37,6 @@ export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_filter_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_checkbox_filter_select.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_text_filter_select.dart';
-export 'package:onyxia/presentation/common_widget/comments_list.dart';
 export 'package:onyxia/presentation/screens/home/widgets/project_settings_button.dart';
 export 'package:onyxia/presentation/common_widget/diff_history_list.dart';
 export 'package:onyxia/presentation/common_widget/diff_tile.dart';
@@ -59,10 +58,6 @@ export 'package:onyxia/services/item_title_validation_service.dart';
 
 export 'package:onyxia/data/providers/artifacts_diff_preview_provider.dart';
 export 'package:onyxia/presentation/screens/artifacts/widgets/editor_link_dialog.dart';
-export 'package:onyxia/presentation/screens/artifacts/widgets/editor_context_menu.dart';
-export 'package:onyxia/presentation/screens/artifacts/widgets/hover_comment_container.dart';
-export 'package:onyxia/presentation/screens/artifacts/widgets/artifact_comment.dart'
-    hide CommentMenu, SubCommentMenuAction;
 export 'package:onyxia/presentation/screens/artifacts/widgets/tree_tile.dart';
 
 // Editor Views
@@ -99,26 +94,20 @@ export 'package:flutter_svg/svg.dart';
 //models
 export 'package:onyxia/data/models/artifacts/note/note.dart';
 export 'package:onyxia/data/models/project/projects.dart';
-export 'package:onyxia/data/models/history/history_diff.dart';
-export 'package:onyxia/data/models/history/history_diffs.dart';
+export 'package:onyxia/data/models/history_diff.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas_model.dart';
 export 'package:onyxia/data/models/artifacts/folder/folder.dart';
-export 'package:onyxia/data/models/artifacts/canvas/comments.dart';
 export 'package:onyxia/data/models/attributes/attribute.dart';
 export 'package:onyxia/data/models/attributes/user.dart';
 export 'package:onyxia/data/models/user_role.dart';
 export 'package:onyxia/data/models/artifacts/canvas/comment.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas_object.dart';
-export 'package:onyxia/data/models/artifacts/canvas/canvas_objects.dart';
 export 'package:onyxia/data/models/artifacts/canvas/sub_comment.dart';
-
 export 'package:onyxia/data/models/artifacts/canvas/pin.dart';
-export 'package:onyxia/data/models/artifacts/canvas/pins.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/arrow.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/image.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/brush.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/artifact_subobject.dart';
-export 'package:onyxia/data/models/artifacts/canvas/user_cursor.dart';
 export 'package:onyxia/data/models/project/project.dart';
 export 'package:onyxia/data/models/artifacts/artifact_type.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
@@ -126,7 +115,6 @@ export 'package:onyxia/data/models/artifacts/artifact.dart';
 //repositories
 export 'package:onyxia/repository/base_supabase_repository.dart';
 export 'package:onyxia/repository/auth_repository.dart';
-export 'package:onyxia/repository/canvas_cursors_repository.dart';
 export 'package:onyxia/repository/canvas_objects_repository.dart';
 export 'package:onyxia/repository/comments_repository.dart';
 export 'package:onyxia/repository/file_storage.dart' show FileStorage;

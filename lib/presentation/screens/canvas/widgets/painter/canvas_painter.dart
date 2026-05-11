@@ -17,7 +17,6 @@ class CanvasPainter extends CustomPainter {
   final List<CanvasObject> arrowPrimedObjects;
   final Rect? dragSelect;
   final String? textEditedObjId;
-  final List<UserCursor> usersCursors;
   final String? potentialDropTargetId;
   final ArrowPreview? arrowPreview;
   final ArrowToolPrimedData? arrowToolPrimedData;
@@ -36,7 +35,6 @@ class CanvasPainter extends CustomPainter {
     this.arrowPrimedObjects = const <CanvasObject>[],
     this.dragSelect,
     this.textEditedObjId,
-    this.usersCursors = const <UserCursor>[],
     this.potentialDropTargetId,
     this.arrowPreview,
     this.arrowToolPrimedData,
@@ -64,7 +62,6 @@ class CanvasPainter extends CustomPainter {
     _drawCanvasObjects(touchyCanvas, canvas);
     _drawSelectionHighlights(touchyCanvas, canvas);
     _drawArrowToolWell(touchyCanvas, canvas);
-    _drawUsersCursor(canvas);
     paintDragSelect(context, canvas, dragSelect);
     _drawAlignment(canvas);
 
@@ -128,85 +125,6 @@ class CanvasPainter extends CustomPainter {
         gestureRouter: gestureRouter,
         interactionContext: ObjectFillInteractionContext(targetObject: object),
         isInteractive: isInteractive,
-      );
-    }
-  }
-
-  void _drawUsersCursor(Canvas canvas) {
-    for (final userCursor in usersCursors) {
-      final position = userCursor.position;
-
-      const double scale = 0.4;
-
-      // Draw the white border around the cursor
-      final borderPath = Path()
-        ..moveTo(position.dx, position.dy)
-        ..lineTo(position.dx + 14.29 * scale, position.dy + 44.84 * scale)
-        ..lineTo(position.dx + 20.35 * scale, position.dy + 25.93 * scale)
-        ..lineTo(position.dx + 39.85 * scale, position.dy + 24.51 * scale)
-        ..lineTo(position.dx, position.dy);
-
-      canvas.drawPath(
-        borderPath,
-        Paint()
-          ..color = ThemeHelper.white(context) // White border color
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 1.0, // Border thickness
-      );
-
-      // Draw the scaled-down cursor
-      final path = Path()
-        ..moveTo(position.dx, position.dy)
-        ..lineTo(position.dx + 14.29 * scale, position.dy + 44.84 * scale)
-        ..lineTo(position.dx + 20.35 * scale, position.dy + 25.93 * scale)
-        ..lineTo(position.dx + 39.85 * scale, position.dy + 24.51 * scale)
-        ..lineTo(position.dx, position.dy);
-
-      canvas.drawPath(
-        path,
-        Paint()..color = userCursor.color,
-      );
-
-      // Prepare the text to display
-      final textPainter = TextPainter(
-        text: TextSpan(
-          text: userCursor.userEmail.isNotEmpty
-              ? userCursor.userEmail
-              : userCursor.userId,
-          style: NarwhalTextStyle(
-            color: ThemeHelper.white(context), // Text color
-            fontSize: 10, // Font size
-          ),
-        ),
-        textDirection: TextDirection.ltr,
-      )..layout();
-
-      // Calculate the size and position of the text box
-      final textWidth = textPainter.width + 8; // Add padding
-      final textHeight = textPainter.height + 4; // Add padding
-      final textOffset = Offset(
-        position.dx + 15, // Center the box horizontally under the cursor
-        position.dy + 60 * scale, // Place below the cursor
-      );
-
-      // Draw the rounded rectangle background
-      final rect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(textOffset.dx, textOffset.dy, textWidth, textHeight),
-        const Radius.circular(6), // Rounded corners
-      );
-
-      canvas.drawRRect(
-        rect,
-        Paint()..color = userCursor.color, // Match the cursor's color
-      );
-
-      // Draw the text on top of the rectangle
-      textPainter.paint(
-        canvas,
-        Offset(
-          textOffset.dx + 4, // Add horizontal padding
-          textOffset.dy + 2, // Add vertical padding
-        ),
       );
     }
   }
@@ -735,7 +653,6 @@ class CanvasPainter extends CustomPainter {
         oldDelegate.arrowPrimedObjects != arrowPrimedObjects ||
         oldDelegate.dragSelect != dragSelect ||
         oldDelegate.textEditedObjId != textEditedObjId ||
-        oldDelegate.usersCursors != usersCursors ||
         oldDelegate.potentialDropTargetId != potentialDropTargetId ||
         oldDelegate.arrowPreview != arrowPreview ||
         oldDelegate.arrowToolPrimedData != arrowToolPrimedData;

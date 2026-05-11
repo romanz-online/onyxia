@@ -176,8 +176,8 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
         for (final subComment in comment.subComments) {
           final newSubComment = SubComment(
             id: const Uuid().v4(),
-            text: subComment.text,
-            authorId: subComment.authorId,
+            content: subComment.content,
+            createdBy: subComment.createdBy,
             createdAt: subComment.createdAt,
           );
           newSubComments.add(newSubComment);
@@ -189,7 +189,7 @@ class CanvasSerializerService extends Serializer<CanvasModel> {
           text: comment.text,
           position: comment.position,
           subComments: newSubComments,
-          authorId: comment.authorId,
+          createdBy: comment.createdBy,
           createdAt: comment.createdAt,
           pinnedObjectId: comment.pinnedObjectId,
         );

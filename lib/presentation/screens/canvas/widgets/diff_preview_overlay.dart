@@ -84,7 +84,8 @@ class DiffPreviewOverlay extends ConsumerWidget {
                     children: [
                       // Non-interactive canvas content
                       AbsorbPointer(
-                        absorbing: true, // Block interactions for canvas objects
+                        absorbing:
+                            true, // Block interactions for canvas objects
                         child: SizedBox(
                           width: canvasBounds.width,
                           height: canvasBounds.height,
@@ -98,12 +99,13 @@ class DiffPreviewOverlay extends ConsumerWidget {
                                   painter: CanvasPainter(
                                     ref: ref,
                                     context: context,
-                                    gestureRouter: null, // No gestures in preview
+                                    gestureRouter:
+                                        null, // No gestures in preview
                                     objects: previewObjects,
                                     selectedObjects: [], // No selections in preview
                                     draggedObjects: [], // No dragging in preview
-                                    textEditedObjId: null, // No editing in preview
-                                    usersCursors: [], // No user cursors in preview
+                                    textEditedObjId:
+                                        null, // No editing in preview
                                   ),
                                 ),
                               ),
@@ -144,7 +146,8 @@ class DiffPreviewOverlay extends ConsumerWidget {
                               (pin) {
                                 CanvasObject? targetObject;
                                 if (pin.pinnedObjectId != null) {
-                                  targetObject = previewObjects.firstWhereOrNull(
+                                  targetObject =
+                                      previewObjects.firstWhereOrNull(
                                     (obj) => obj.id == pin.pinnedObjectId,
                                   );
                                 }
@@ -153,7 +156,8 @@ class DiffPreviewOverlay extends ConsumerWidget {
                                   pin: pin,
                                   canvasObject: targetObject,
                                   position: pin.getOffset(parent: targetObject),
-                                  transformationController: transformationController,
+                                  transformationController:
+                                      transformationController,
                                 );
                               },
                             ),
@@ -189,7 +193,8 @@ class DiffPreviewOverlay extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(8),
                 boxShadow: [
                   BoxShadow(
-                    color: ThemeHelper.neutral900(context).withValues(alpha: 0.2),
+                    color:
+                        ThemeHelper.neutral900(context).withValues(alpha: 0.2),
                     blurRadius: 4,
                     offset: const Offset(0, 2),
                   ),
@@ -222,7 +227,8 @@ class DiffPreviewOverlay extends ConsumerWidget {
                     ),
                     borderRadius: BorderRadius.circular(4),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
                       decoration: BoxDecoration(
                         color: ThemeHelper.green().withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(4),
@@ -278,7 +284,8 @@ class DiffPreviewOverlay extends ConsumerWidget {
       );
 
       // Only reload canvas if it's a markup canvas and callback is provided
-      if (currentCanvas?.canvasType == CanvasType.markup && onCanvasReload != null) {
+      if (currentCanvas?.canvasType == CanvasType.markup &&
+          onCanvasReload != null) {
         onCanvasReload();
       }
     } catch (e) {
@@ -297,10 +304,12 @@ class _HistoricalBackgroundWidget extends StatefulWidget {
   });
 
   @override
-  State<_HistoricalBackgroundWidget> createState() => _HistoricalBackgroundWidgetState();
+  State<_HistoricalBackgroundWidget> createState() =>
+      _HistoricalBackgroundWidgetState();
 }
 
-class _HistoricalBackgroundWidgetState extends State<_HistoricalBackgroundWidget> {
+class _HistoricalBackgroundWidgetState
+    extends State<_HistoricalBackgroundWidget> {
   ui.Image? _loadedImage;
   bool _isLoading = false;
   bool _hasError = false;
@@ -327,7 +336,8 @@ class _HistoricalBackgroundWidgetState extends State<_HistoricalBackgroundWidget
   }
 
   void _loadImage() {
-    if (widget.historicalImageUrl == null || widget.historicalImageUrl!.isEmpty) {
+    if (widget.historicalImageUrl == null ||
+        widget.historicalImageUrl!.isEmpty) {
       setState(() {
         _loadedImage = null;
         _isLoading = false;
@@ -428,7 +438,8 @@ class _HistoricalBackgroundWidgetState extends State<_HistoricalBackgroundWidget
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(ThemeHelper.white(context)),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        ThemeHelper.white(context)),
                   ),
                   SizedBox(height: 12),
                   Text(
@@ -532,8 +543,12 @@ class _HistoricalBackgroundPainter extends NarwhalPainter {
       );
 
       final List<Offset> points = [];
-      for (double x = canvasBounds.bounds.left; x < canvasBounds.bounds.right; x += CanvasBounds.gridSpacing) {
-        for (double y = canvasBounds.bounds.top; y < canvasBounds.bounds.bottom; y += CanvasBounds.gridSpacing) {
+      for (double x = canvasBounds.bounds.left;
+          x < canvasBounds.bounds.right;
+          x += CanvasBounds.gridSpacing) {
+        for (double y = canvasBounds.bounds.top;
+            y < canvasBounds.bounds.bottom;
+            y += CanvasBounds.gridSpacing) {
           points.add(Offset(x, y));
         }
       }
@@ -547,6 +562,7 @@ class _HistoricalBackgroundPainter extends NarwhalPainter {
     if (oldDelegate is! _HistoricalBackgroundPainter) {
       return true;
     }
-    return canvasBounds != oldDelegate.canvasBounds || loadedImage != oldDelegate.loadedImage;
+    return canvasBounds != oldDelegate.canvasBounds ||
+        loadedImage != oldDelegate.loadedImage;
   }
 }

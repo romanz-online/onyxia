@@ -6,7 +6,7 @@ class Note extends Artifact {
   Note({
     super.id,
     super.title = 'Untitled',
-    super.parent,
+    super.parentFolderId,
     super.createdAt,
     super.createdBy,
     super.type = ArtifactType.note,
@@ -19,7 +19,7 @@ class Note extends Artifact {
   @override
   Note copyWith({
     String? id,
-    String? parentId,
+    String? parentFolderId,
     String? title,
     DateTime? createdAt,
     String? createdBy,
@@ -31,7 +31,7 @@ class Note extends Artifact {
     return Note(
       id: id ?? this.id,
       title: title ?? this.title,
-      parent: parentId ?? this.parent,
+      parentFolderId: parentFolderId ?? this.parentFolderId,
       createdAt: createdAt ?? this.createdAt,
       createdBy: createdBy ?? this.createdBy,
       type: type ?? this.type,

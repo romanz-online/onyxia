@@ -19,21 +19,39 @@ class FileStorageService {
   static const int maxAudioSize = 50 * 1024 * 1024;
 
   static const List<String> allowedImageTypes = [
-    'image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp',
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/gif',
+    'image/webp',
   ];
   static const List<String> allowedMediaTypes = [
-    'video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/webm',
-    'video/quicktime', 'video/x-msvideo', 'video/x-matroska',
+    'video/mp4',
+    'video/avi',
+    'video/mov',
+    'video/wmv',
+    'video/webm',
+    'video/quicktime',
+    'video/x-msvideo',
+    'video/x-matroska',
   ];
   static const List<String> allowedAudioTypes = [
-    'audio/mpeg', 'audio/wav', 'audio/ogg', 'audio/mp4', 'audio/aac',
-    'audio/flac', 'audio/x-flac',
+    'audio/mpeg',
+    'audio/wav',
+    'audio/ogg',
+    'audio/mp4',
+    'audio/aac',
+    'audio/flac',
+    'audio/x-flac',
   ];
   static const List<String> allowedDocumentTypes = [
     'application/pdf',
     'application/msword',
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'text/plain', 'text/csv', 'text/markdown', 'text/html',
+    'text/plain',
+    'text/csv',
+    'text/markdown',
+    'text/html',
     'application/rtf',
     'application/vnd.ms-excel',
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -100,8 +118,8 @@ class FileStorageService {
       downloadUrl: downloadUrl,
       sizeBytes: bytes.length,
       mimeType: mimeType,
-      uploadedAt: DateTime.now(),
-      uploadedBy: uploadedBy,
+      createdAt: DateTime.now(),
+      createdBy: uploadedBy,
       projectId: projectId,
       metadata: metadata,
     );
@@ -119,7 +137,8 @@ class FileStorageService {
     Function(int completed, int total)? onProgress,
     Map<String, dynamic>? metadata,
   }) async {
-    if (fileDataList.length != fileNames.length || fileNames.length != mimeTypes.length) {
+    if (fileDataList.length != fileNames.length ||
+        fileNames.length != mimeTypes.length) {
       throw ArgumentError('All lists must have the same length');
     }
 
@@ -146,17 +165,23 @@ class FileStorageService {
     int maxSize = 10 * 1024 * 1024,
   }) async {
     final bucket = _bucketForPath(storagePath);
-    return _client.storage.from(bucket).download(_stripBucketPrefix(storagePath));
+    return _client.storage
+        .from(bucket)
+        .download(_stripBucketPrefix(storagePath));
   }
 
   Future<String> getDownloadUrl(String storagePath) async {
     final bucket = _bucketForPath(storagePath);
-    return _client.storage.from(bucket).getPublicUrl(_stripBucketPrefix(storagePath));
+    return _client.storage
+        .from(bucket)
+        .getPublicUrl(_stripBucketPrefix(storagePath));
   }
 
   Future<void> deleteFile(String storagePath) async {
     final bucket = _bucketForPath(storagePath);
-    await _client.storage.from(bucket).remove([_stripBucketPrefix(storagePath)]);
+    await _client.storage
+        .from(bucket)
+        .remove([_stripBucketPrefix(storagePath)]);
   }
 
   Future<List<String>> deleteMultipleFiles(List<String> storagePaths) async {
@@ -217,13 +242,20 @@ class FileStorageService {
     }
 
     if (allowedImageTypes.contains(mimeType) && fileSize > maxImageSize) {
-      throw ArgumentError('Image file too large. Max: ${maxImageSize ~/ (1024 * 1024)}MB');
-    } else if (allowedMediaTypes.contains(mimeType) && fileSize > maxMediaSize) {
-      throw ArgumentError('Media file too large. Max: ${maxMediaSize ~/ (1024 * 1024)}MB');
-    } else if (allowedAudioTypes.contains(mimeType) && fileSize > maxAudioSize) {
-      throw ArgumentError('Audio file too large. Max: ${maxAudioSize ~/ (1024 * 1024)}MB');
-    } else if (allowedDocumentTypes.contains(mimeType) && fileSize > maxDocumentSize) {
-      throw ArgumentError('Document file too large. Max: ${maxDocumentSize ~/ (1024 * 1024)}MB');
+      throw ArgumentError(
+          'Image file too large. Max: ${maxImageSize ~/ (1024 * 1024)}MB');
+    } else if (allowedMediaTypes.contains(mimeType) &&
+        fileSize > maxMediaSize) {
+      throw ArgumentError(
+          'Media file too large. Max: ${maxMediaSize ~/ (1024 * 1024)}MB');
+    } else if (allowedAudioTypes.contains(mimeType) &&
+        fileSize > maxAudioSize) {
+      throw ArgumentError(
+          'Audio file too large. Max: ${maxAudioSize ~/ (1024 * 1024)}MB');
+    } else if (allowedDocumentTypes.contains(mimeType) &&
+        fileSize > maxDocumentSize) {
+      throw ArgumentError(
+          'Document file too large. Max: ${maxDocumentSize ~/ (1024 * 1024)}MB');
     }
   }
 
@@ -239,15 +271,21 @@ class FileStorageService {
     final parts = <String>[];
 
     if (userId != null) {
-      parts..add('users')..add(userId);
+      parts
+        ..add('users')
+        ..add(userId);
     } else if (projectId != null) {
-      parts..add('projects')..add(projectId);
+      parts
+        ..add('projects')
+        ..add(projectId);
     } else {
       parts.add('general');
     }
 
     if (canvasId != null) {
-      parts..add('userExperience')..add(canvasId);
+      parts
+        ..add('userExperience')
+        ..add(canvasId);
     } else if (folderId != null) {
       parts..addAll(['userExperience', 'markup', folderId]);
     } else if (folder == 'file-uploads') {

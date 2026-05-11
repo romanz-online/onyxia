@@ -4,7 +4,7 @@ class FolderModel extends Artifact {
   FolderModel({
     super.id,
     super.createdAt,
-    super.parent,
+    super.parentFolderId,
     super.createdBy,
     super.title = 'Folder',
     super.type = ArtifactType.folder,
@@ -21,7 +21,7 @@ class FolderModel extends Artifact {
   @override
   FolderModel copyWith({
     String? id,
-    String? parentId,
+    String? parentFolderId,
     String? title,
     DateTime? createdAt,
     String? createdBy,
@@ -31,7 +31,7 @@ class FolderModel extends Artifact {
   }) {
     return FolderModel(
       id: id ?? this.id,
-      parent: parentId ?? this.parent,
+      parentFolderId: parentFolderId ?? this.parentFolderId,
       createdAt: createdAt ?? this.createdAt,
       createdBy: createdBy ?? this.createdBy,
       title: title ?? this.title,
@@ -40,6 +40,4 @@ class FolderModel extends Artifact {
       updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-
-  factory FolderModel.fromJson(String source) => FolderModel.fromMap(json.decode(source));
 }

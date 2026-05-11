@@ -1,19 +1,27 @@
 class TimestampService {
   TimestampService();
 
+  static DateTime? fromMap(dynamic v) {
+    if (v == null) return null;
+    if (v is String) return DateTime.tryParse(v);
+    if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
+    return null;
+  }
+
   static String getFixedLengthTimestamp() {
     final now = DateTime.now();
     final milliseconds = now.millisecond.toString().padLeft(3, '0');
     return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}T${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}.$milliseconds';
   }
 
-  static String formatLastUpdated(String pretext, DateTime? dateTime) => dateTime != null
-      ? '$pretext ${formatTimeAgo(
-          dateTime,
-          useShortFormat: true,
-          usePlural: false,
-        )}'
-      : 'Never edited';
+  static String formatLastUpdated(String pretext, DateTime? dateTime) =>
+      dateTime != null
+          ? '$pretext ${formatTimeAgo(
+              dateTime,
+              useShortFormat: true,
+              usePlural: false,
+            )}'
+          : 'Never edited';
 
   /// Formats a DateTime as a "time ago" string (e.g., "5 minutes ago", "2 hours ago")
   ///
@@ -22,11 +30,13 @@ class TimestampService {
   /// [usePlural] If true, uses plural forms (e.g., "minutes" vs "minute")
   /// [daysOnly] If true, rounds to days only - shows "Today" for < 1 day, "X days ago" otherwise
   static String formatTimeAgo(
-    DateTime dateTime, {
+    DateTime? dateTime, {
     bool useShortFormat = false,
     bool usePlural = true,
     bool daysOnly = false,
   }) {
+    if (dateTime == null) return '';
+
     final now = DateTime.now();
     final difference = now.difference(dateTime);
 

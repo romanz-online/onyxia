@@ -74,13 +74,25 @@ class FileStorage {
   Future<StorageFile?> getFileMetadata(String fileId) => _metaRepo.get(fileId);
 
   Future<List<StorageFile>> getFilesByProject(String projectId) =>
-      _metaRepo.query(field: 'project_id', isEqualTo: projectId, orderBy: 'created_at', descending: true);
+      _metaRepo.query(
+          field: 'project_id',
+          isEqualTo: projectId,
+          orderBy: 'created_at',
+          descending: true);
 
-  Future<List<StorageFile>> getFilesByCanvas(String projectId, String canvasId) =>
-      _metaRepo.query(field: 'canvas_id', isEqualTo: canvasId, orderBy: 'created_at', descending: true);
+  Future<List<StorageFile>> getFilesByCanvas(
+          String projectId, String canvasId) =>
+      _metaRepo.query(
+          field: 'canvas_id',
+          isEqualTo: canvasId,
+          orderBy: 'created_at',
+          descending: true);
 
-  Future<List<StorageFile>> getFilesByUser(String userId) =>
-      _metaRepo.query(field: 'user_id', isEqualTo: userId, orderBy: 'created_at', descending: true);
+  Future<List<StorageFile>> getFilesByUser(String userId) => _metaRepo.query(
+      field: 'user_id',
+      isEqualTo: userId,
+      orderBy: 'created_at',
+      descending: true);
 
   Future<List<StorageFile>> getFilesByType({
     String? projectId,
@@ -103,10 +115,15 @@ class FileStorage {
     // Multi-condition queries: scope server-side by project_id (most selective)
     // and post-filter mime/canvas client-side.
     final all = projectId != null
-        ? await _metaRepo.query(field: 'project_id', isEqualTo: projectId, orderBy: 'created_at', descending: true)
+        ? await _metaRepo.query(
+            field: 'project_id',
+            isEqualTo: projectId,
+            orderBy: 'created_at',
+            descending: true)
         : await _metaRepo.getAll();
     return all.where((f) {
-      if (canvasId != null && f.metadata?['canvas_id'] != canvasId) return false;
+      if (canvasId != null && f.metadata?['canvas_id'] != canvasId)
+        return false;
       return mimeTypes.contains(f.mimeType);
     }).toList();
   }
@@ -120,11 +137,16 @@ class FileStorage {
   }) {
     if (projectId != null) {
       return _metaRepo
-          .queryStream(field: 'project_id', isEqualTo: projectId, orderBy: 'created_at', descending: true)
+          .queryStream(
+              field: 'project_id',
+              isEqualTo: projectId,
+              orderBy: 'created_at',
+              descending: true)
           .map((rows) {
         return rows.where((f) {
-          if (canvasId != null && f.metadata?['canvas_id'] != canvasId) return false;
-          if (uploadedBy != null && f.uploadedBy != uploadedBy) return false;
+          if (canvasId != null && f.metadata?['canvas_id'] != canvasId)
+            return false;
+          if (uploadedBy != null && f.createdBy != uploadedBy) return false;
           return true;
         }).toList();
       });
@@ -132,9 +154,11 @@ class FileStorage {
     return _metaRepo.getStream(orderBy: 'created_at', descending: true);
   }
 
-  Future<Uint8List?> downloadFile(String storagePath) => _storageService.downloadFile(storagePath);
+  Future<Uint8List?> downloadFile(String storagePath) =>
+      _storageService.downloadFile(storagePath);
 
-  Future<String> getDownloadUrl(String storagePath) => _storageService.getDownloadUrl(storagePath);
+  Future<String> getDownloadUrl(String storagePath) =>
+      _storageService.getDownloadUrl(storagePath);
 
   Future<void> deleteFile(String fileId) async {
     final fileMetadata = await getFileMetadata(fileId);
@@ -158,7 +182,8 @@ class FileStorage {
     return failed;
   }
 
-  Future<bool> fileExists(String storagePath) => _storageService.fileExists(storagePath);
+  Future<bool> fileExists(String storagePath) =>
+      _storageService.fileExists(storagePath);
 
   Future<void> _saveFileMetadata(StorageFile storageFile) async {
     try {

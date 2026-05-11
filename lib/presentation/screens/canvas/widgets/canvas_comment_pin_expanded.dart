@@ -441,7 +441,7 @@ class _CanvasCommentPinExpandedState
           children: [
             _buildComment(
               commentId: widget.comment.id,
-              authorId: widget.comment.authorId,
+              createdBy: widget.comment.createdBy,
               text: widget.comment.text,
               createdAt: widget.comment.createdAt,
               isSubComment: false,
@@ -449,8 +449,8 @@ class _CanvasCommentPinExpandedState
             ...widget.comment.subComments.map(
               (subComment) => _buildComment(
                 commentId: subComment.id,
-                authorId: subComment.authorId,
-                text: subComment.text,
+                createdBy: subComment.createdBy,
+                text: subComment.content,
                 createdAt: subComment.createdAt,
                 isSubComment: true,
               ),
@@ -463,13 +463,13 @@ class _CanvasCommentPinExpandedState
 
   Widget _buildComment({
     required String commentId,
-    required String authorId,
+    required String createdBy,
     required String text,
     required DateTime? createdAt,
     required bool isSubComment,
   }) {
     return FutureBuilder<UserDefinition>(
-      future: ref.read(userLookupProvider).getUserById(authorId),
+      future: ref.read(userLookupProvider).getUserById(createdBy),
       builder: (context, snapshot) {
         final user = snapshot.data ?? UserDefinition.initial();
         final timeAgo = createdAt != null
@@ -521,7 +521,7 @@ class _CanvasCommentPinExpandedState
                 closingDelay: const Duration(milliseconds: 100),
                 builder: (context, closeOverlay) => _buildCommentMenuOverlay(
                   commentId,
-                  authorId,
+                  createdBy,
                   isSubComment,
                   _commentMenuKeys[commentId]!,
                   closeOverlay,
@@ -531,7 +531,7 @@ class _CanvasCommentPinExpandedState
                       commentId, () => GlobalKey()),
                   icon: NarwhalIcons.moreDots,
                   size: 28,
-                  enabled: _isCurrentUserAuthor(authorId),
+                  enabled: ref.read(currentUserProvider).id == createdBy,
                   isPressed: _openCommentMenuId == commentId,
                   onPressed: () => setState(() => _openCommentMenuId =
                       _openCommentMenuId == commentId ? null : commentId),
@@ -726,7 +726,7 @@ class _CanvasCommentPinExpandedState
 
   Widget _buildCommentMenuOverlay(
     String commentId,
-    String authorId,
+    String createdBy,
     bool isSubComment,
     GlobalKey buttonKey,
     VoidCallback closeOverlay,
@@ -796,11 +796,6 @@ class _CanvasCommentPinExpandedState
       text: 'Edit - Unimplemented',
       type: ToastType.info,
     );
-  }
-
-  bool _isCurrentUserAuthor(String authorId) {
-    final currentUser = ref.read(currentUserProvider);
-    return currentUser.id == authorId;
   }
 
   void _removeComment(String commentId, bool isSubComment) {

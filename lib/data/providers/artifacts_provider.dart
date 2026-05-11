@@ -96,7 +96,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
   }
 
   List<Artifact> getChildren(Artifact parent) =>
-      state.where((e) => e.parent == parent.id).toList();
+      state.where((e) => e.parentFolderId == parent.id).toList();
 
   // --- Add ---
 
@@ -135,7 +135,8 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
     if (itemId.isEmpty) return;
 
     List<String> collectDescendantIds(String parentId) {
-      final children = state.where((e) => e.parent == parentId).toList();
+      final children =
+          state.where((e) => e.parentFolderId == parentId).toList();
       final ids = children.map((c) => c.id).toList();
       for (final child in children) {
         ids.addAll(collectDescendantIds(child.id));
@@ -166,7 +167,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
   bool updateParent(String itemId, {required String newParentId}) {
     final item = state.firstWhereOrNull((e) => e.id == itemId);
     if (item == null) return false;
-    if (item.parent == newParentId) return false;
+    if (item.parentFolderId == newParentId) return false;
 
     if (item.type == ArtifactType.folder && newParentId.isNotEmpty) {
       final newParent = state.firstWhereOrNull((e) => e.id == newParentId);
@@ -174,7 +175,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
         return false;
     }
 
-    final updated = item.copyWith(parentId: newParentId);
+    final updated = item.copyWith(parentFolderId: newParentId);
     updateItemState(updated);
     repository.update(updated);
     return true;

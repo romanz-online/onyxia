@@ -2,7 +2,7 @@
 
 abstract class Artifact {
   final String id;
-  final String parent;
+  final String parentFolderId;
   final String title;
   final DateTime? createdAt;
   final String? createdBy;
@@ -10,13 +10,9 @@ abstract class Artifact {
   final String? updatedBy;
   final DateTime? updatedAt;
 
-  /// The sub-type label for this item (e.g. 'note', 'canvas').
-  /// Used by GenUI catalog widgets for display grouping.
-  String get noteType => type.value;
-
   Artifact({
     this.id = '',
-    this.parent = '',
+    this.parentFolderId = '',
     required this.title,
     this.createdAt,
     this.createdBy = 'Unknown',
@@ -28,20 +24,13 @@ abstract class Artifact {
   // Named constructor for shared field deserialization
   Artifact.fromMap(Map<String, dynamic> map)
       : id = map['id'] ?? '',
-        parent = map['parent_folder_id'] ?? '',
+        parentFolderId = map['parent_folder_id'] ?? '',
         title = map['name'] ?? '',
-        createdAt = _parseTs(map['created_at']),
+        createdAt = TimestampService.fromMap(map['created_at']),
         createdBy = map['created_by'],
-        type = ArtifactType.values.fromString(map['type'] ?? ''),
+        type = ArtifactType.values.fromString(map['type']),
         updatedBy = map['updated_by'],
-        updatedAt = _parseTs(map['updated_at']);
-
-  static DateTime? _parseTs(dynamic v) {
-    if (v == null) return null;
-    if (v is String) return DateTime.tryParse(v);
-    if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-    return null;
-  }
+        updatedAt = TimestampService.fromMap(map['updated_at']);
 
   /// Factory constructor that creates the appropriate concrete Artifact subclass
   /// based on the 'type' field in the map
@@ -65,7 +54,7 @@ abstract class Artifact {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'parent_folder_id': parent.isEmpty ? null : parent,
+      'parent_folder_id': parentFolderId.isEmpty ? null : parentFolderId,
       'name': title,
       'type': type.value,
       'body': toMapSub(),
@@ -74,7 +63,7 @@ abstract class Artifact {
 
   Artifact copyWith({
     String? id,
-    String? parentId,
+    String? parentFolderId,
     String? title,
     DateTime? createdAt,
     String? createdBy,
@@ -88,7 +77,7 @@ abstract class Artifact {
   @override
   String toString() {
     return 'Artifact('
-        'parentId: $parent, '
+        'parentFolderId: $parentFolderId, '
         'title: $title, '
         'createdAt: $createdAt, '
         'createdBy: $createdBy, '
@@ -103,7 +92,7 @@ abstract class Artifact {
 
     return other is Artifact &&
         other.id == id &&
-        other.parent == parent &&
+        other.parentFolderId == parentFolderId &&
         other.title == title &&
         other.createdAt == createdAt &&
         other.createdBy == createdBy &&
@@ -115,7 +104,7 @@ abstract class Artifact {
   @override
   int get hashCode {
     return id.hashCode ^
-        parent.hashCode ^
+        parentFolderId.hashCode ^
         title.hashCode ^
         createdAt.hashCode ^
         createdBy.hashCode ^

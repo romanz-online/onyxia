@@ -18,7 +18,7 @@ class HistoryService {
       if (ops.isEmpty) return; // no changes; nothing to save
 
       final diff = HistoryDiff(
-        userId: ref.read(currentUserProvider).id,
+        createdBy: ref.read(currentUserProvider).id,
         timestamp: DateTime.now(),
         operations: ops,
         isMilestone: true,
@@ -49,7 +49,7 @@ class HistoryService {
       if (ops.isEmpty) return; // no changes; nothing to save
 
       final diff = HistoryDiff(
-        userId: ref.read(currentUserProvider).id,
+        createdBy: ref.read(currentUserProvider).id,
         timestamp: DateTime.now(),
         operations: ops,
         isMilestone: true,
@@ -112,7 +112,8 @@ class HistoryService {
       final historyDiffs = ref.read(historyDiffsProvider(params));
       final lastDiff = historyDiffs.remoteDiffs.lastOrNull;
       final now = DateTime.now();
-      final has2HoursPassed = lastDiff != null && now.difference(lastDiff.timestamp).inHours >= 2;
+      final has2HoursPassed =
+          lastDiff != null && now.difference(lastDiff.timestamp).inHours >= 2;
 
       if (lastDiff != null) {
         if ((has2HoursPassed || forceMilestone) && !lastDiff.isMilestone) {
@@ -121,7 +122,7 @@ class HistoryService {
       }
 
       final diff = HistoryDiff(
-        userId: ref.read(currentUserProvider).id,
+        createdBy: ref.read(currentUserProvider).id,
         timestamp: now,
         operations: ops,
         isMilestone: markCurrentAsMilestone || has2HoursPassed,
@@ -133,10 +134,12 @@ class HistoryService {
       // Update canvas metadata if this is a canvas operation
       if (serializer.itemType == ArtifactType.canvas) {
         try {
-          final currentCanvas = await ArtifactsRepository(projectId: projectId).get(serializer.itemId);
+          final currentCanvas = await ArtifactsRepository(projectId: projectId)
+              .get(serializer.itemId);
           if (currentCanvas != null) {
             // The Postgres set_updated_audit trigger sets updated_at / updated_by on this UPDATE.
-            await ArtifactsRepository(projectId: projectId).update(currentCanvas);
+            await ArtifactsRepository(projectId: projectId)
+                .update(currentCanvas);
           }
         } catch (canvasUpdateError) {
           debugPrint('Failed to update canvas metadata: $canvasUpdateError');
@@ -184,7 +187,8 @@ class HistoryService {
         final List<Pin> historicalPins = [];
 
         if (reconstructedState.containsKey('objects')) {
-          final objectsData = List<Map<String, dynamic>>.from(reconstructedState['objects']);
+          final objectsData =
+              List<Map<String, dynamic>>.from(reconstructedState['objects']);
 
           for (int i = 0; i < objectsData.length; i++) {
             final objData = objectsData[i];
@@ -199,7 +203,8 @@ class HistoryService {
 
         // Parse historical comments
         if (reconstructedState.containsKey('comments')) {
-          final commentsData = List<Map<String, dynamic>>.from(reconstructedState['comments']);
+          final commentsData =
+              List<Map<String, dynamic>>.from(reconstructedState['comments']);
 
           for (int i = 0; i < commentsData.length; i++) {
             final commentData = commentsData[i];
@@ -215,7 +220,8 @@ class HistoryService {
 
         // Parse historical note pins
         if (reconstructedState.containsKey('pins')) {
-          final pinsData = List<Map<String, dynamic>>.from(reconstructedState['pins']);
+          final pinsData =
+              List<Map<String, dynamic>>.from(reconstructedState['pins']);
 
           for (int i = 0; i < pinsData.length; i++) {
             final pinData = pinsData[i];
@@ -232,7 +238,8 @@ class HistoryService {
         // Extract historical canvas imageUrl
         String? historicalImageUrl;
         if (reconstructedState.containsKey('canvas')) {
-          final canvasData = Map<String, dynamic>.from(reconstructedState['canvas']);
+          final canvasData =
+              Map<String, dynamic>.from(reconstructedState['canvas']);
           historicalImageUrl = canvasData['imageUrl'] as String?;
         }
 
@@ -285,7 +292,8 @@ class HistoryService {
         itemId: serializer.itemId,
         itemType: serializer.itemType,
       );
-      final lastDiff = ref.read(historyDiffsProvider(params)).remoteDiffs.lastOrNull;
+      final lastDiff =
+          ref.read(historyDiffsProvider(params)).remoteDiffs.lastOrNull;
       if (!lastDiff!.isMilestone) {
         ref.read(historyDiffsProvider(params).notifier).updateDiff(
               lastDiff.copyWith(isMilestone: true),
@@ -293,7 +301,7 @@ class HistoryService {
       }
 
       final diff = HistoryDiff(
-        userId: ref.read(currentUserProvider).id,
+        createdBy: ref.read(currentUserProvider).id,
         timestamp: DateTime.now(),
         operations: ops,
         isMilestone: false,
@@ -365,7 +373,8 @@ class HistoryService {
     return reconstructedState;
   }
 
-  static Future<Map<String, dynamic>> _serializeData(Serializer serializer) async {
+  static Future<Map<String, dynamic>> _serializeData(
+      Serializer serializer) async {
     try {
       return await serializer.serialize();
     } catch (e) {

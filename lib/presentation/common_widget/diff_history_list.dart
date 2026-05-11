@@ -74,7 +74,8 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
       }
 
       if (mounted) {
-        _historyListener = ref.listenManual(historyDiffsProvider(_providerParams), (previous, next) {
+        _historyListener = ref.listenManual(
+            historyDiffsProvider(_providerParams), (previous, next) {
           if (!_hasReceivedInitialDiffs && mounted) {
             setState(() {
               _hasReceivedInitialDiffs = true;
@@ -93,11 +94,14 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
 
   void toggleGroup(String groupId) {
     if (!mounted) return;
-    final selectedDiff = ref.read(historyDiffsProvider(_providerParams)).selectedDiff;
+    final selectedDiff =
+        ref.read(historyDiffsProvider(_providerParams)).selectedDiff;
 
     // Check if this group or any of its diffs are selected
-    final group = _groups.firstWhere((g) => _getGroupId(g.milestone) == groupId);
-    final isGroupSelected = group.milestone == selectedDiff || group.diffs.contains(selectedDiff);
+    final group =
+        _groups.firstWhere((g) => _getGroupId(g.milestone) == groupId);
+    final isGroupSelected =
+        group.milestone == selectedDiff || group.diffs.contains(selectedDiff);
 
     // If selected, don't allow toggling closed
     if (isGroupSelected && _expandedGroups.contains(groupId)) {
@@ -129,7 +133,8 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
     }
   }
 
-  String _getGroupId(HistoryDiff milestone) => milestone.timestamp.millisecondsSinceEpoch.toString();
+  String _getGroupId(HistoryDiff milestone) =>
+      milestone.timestamp.millisecondsSinceEpoch.toString();
 
   Future<UserDefinition> _getUser(String userId) async {
     if (userId.isEmpty) return UserDefinition.initial();
@@ -144,7 +149,8 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
       return user;
     } catch (e) {
       if (!mounted) return UserDefinition.initial();
-      final fallbackUser = UserDefinition.initial().copyWith(name: userId, id: userId);
+      final fallbackUser =
+          UserDefinition.initial().copyWith(name: userId, id: userId);
       _userCache[userId] = fallbackUser;
       return fallbackUser;
     }
@@ -173,14 +179,16 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
         serializer = CanvasSerializerService(
           canvasId: ref.read(currentCanvasProvider)?.id ?? '',
           projectId: projectId,
-          repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(
+              projectId: ref.read(projectsProvider).selectedProject.id),
         );
       } else {
         // For notes, use NoteSerializerService
         serializer = NoteSerializerService(
           itemId: widget.itemId,
           projectId: projectId,
-          repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(
+              projectId: ref.read(projectsProvider).selectedProject.id),
         );
       }
 
@@ -211,7 +219,8 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
       // Only reload canvas if it's a markup canvas and callback is provided
       final selectedItem = ref.read(selectedArtifactProvider);
       final currentCanvas = selectedItem is CanvasModel ? selectedItem : null;
-      if (currentCanvas?.canvasType == CanvasType.markup && widget.onCanvasReload != null) {
+      if (currentCanvas?.canvasType == CanvasType.markup &&
+          widget.onCanvasReload != null) {
         widget.onCanvasReload!();
       }
     } catch (e) {
@@ -315,14 +324,16 @@ class _DiffHistoryListState extends ConsumerState<DiffHistoryList> {
         serializer = CanvasSerializerService(
           canvasId: widget.itemId,
           projectId: widget.projectId,
-          repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(
+              projectId: ref.read(projectsProvider).selectedProject.id),
         );
       } else {
         // For notes, use NoteSerializerService
         serializer = NoteSerializerService(
           itemId: widget.itemId,
           projectId: widget.projectId,
-          repository: ArtifactsRepository(projectId: ref.read(projectsProvider).selectedProject.id),
+          repository: ArtifactsRepository(
+              projectId: ref.read(projectsProvider).selectedProject.id),
         );
       }
 
@@ -445,9 +456,11 @@ class MilestoneGroupWidget extends ConsumerWidget {
       children: [
         // Milestone header
         FutureBuilder<UserDefinition>(
-          future: getUser(group.milestone.userId),
+          future: getUser(group.milestone.createdBy),
           builder: (context, snapshot) {
-            final user = snapshot.data ?? UserDefinition.initial().copyWith(name: group.milestone.userId);
+            final user = snapshot.data ??
+                UserDefinition.initial()
+                    .copyWith(name: group.milestone.createdBy);
 
             return Padding(
               padding: EdgeInsets.only(top: 8),
@@ -472,12 +485,14 @@ class MilestoneGroupWidget extends ConsumerWidget {
             ? Column(
                 children: group.diffs.map((diff) {
                   return FutureBuilder<UserDefinition>(
-                      future: getUser(diff.userId),
+                      future: getUser(diff.createdBy),
                       builder: (context, snapshot) => DiffTile(
                             diff: diff,
                             isSelected: diff == selectedDiff,
                             isCurrent: false,
-                            user: snapshot.data ?? UserDefinition.initial().copyWith(name: diff.userId),
+                            user: snapshot.data ??
+                                UserDefinition.initial()
+                                    .copyWith(name: diff.createdBy),
                             onTap: () => onDiffTap(diff),
                             onRestore: () => onRestore(diff),
                             onRename: (newName) => onRename(diff, newName),

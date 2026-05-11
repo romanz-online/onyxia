@@ -33,7 +33,7 @@ class AuthRepository {
   Future<bool> signInWithFakeAccount() async {
     try {
       await _client.auth.signInWithPassword(
-        email: 'narwhalstagingaccount@test.com',
+        email: 'onyxia@test.com',
         password: '123456',
       );
       return true;

@@ -273,7 +273,7 @@ class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
 
     // Filter notes where parentId matches the source item
     final children =
-        notes.where((req) => req.parent == parentArtifactId).toList();
+        notes.where((req) => req.parentFolderId == parentArtifactId).toList();
 
     return children.isNotEmpty ? children : null;
   }

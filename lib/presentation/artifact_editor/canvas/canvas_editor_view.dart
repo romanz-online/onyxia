@@ -19,7 +19,7 @@ import 'package:onyxia/presentation/screens/canvas/widgets/drag_off_bar.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/headless_palette.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/minimap.dart';
 import 'package:onyxia/presentation/screens/canvas/widgets/painter/canvas_painter.dart';
-import 'package:onyxia/presentation/screens/canvas/widgets/tool_bar.dart';
+import 'package:onyxia/presentation/screens/canvas/widgets/toolbar.dart';
 import 'package:onyxia/presentation/screens/canvas/canvas_config.dart';
 import 'package:onyxia/presentation/screens/canvas/utils/image_drag_data.dart';
 
@@ -103,7 +103,6 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final objects = ref.watch(canvasObjectsProvider);
     final selectedTool = ref.watch(toolModeProvider);
     final objectText = ref.watch(canvasTextProvider);
-    final usersCursors = ref.watch(usersCursorProvider);
     final canvasId = ref.watch(currentCanvasProvider)?.id ?? '';
     final canvasCommentsState = canvasId.isNotEmpty
         ? ref.watch(commentsProvider(canvasId))
@@ -139,7 +138,6 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
               objects: objects,
               selectedTool: selectedTool,
               objectTextState: objectText,
-              usersCursors: usersCursors,
               comments: comments,
               pins: pins,
               showArtifacts: showArtifacts,
@@ -172,7 +170,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                   ],
                 )
               else
-                ToolBarWidget(
+                Toolbar(
                   closeTextEditor: () =>
                       CanvasInteractionService.closeTextEditor(ref: ref),
                 ),
@@ -193,7 +191,6 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     required CanvasObjects objects,
     required ToolMode selectedTool,
     required CanvasTextState objectTextState,
-    required List<UserCursor> usersCursors,
     required List<Comment> comments,
     required Pins pins,
     required bool showArtifacts,
@@ -269,7 +266,6 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                                   ref.watch(arrowToolPrimedObjectsProvider),
                               textEditedObjId:
                                   ref.watch(canvasTextProvider).editingObjId,
-                              usersCursors: usersCursors,
                               arrowPreview: arrowPreview,
                             );
 

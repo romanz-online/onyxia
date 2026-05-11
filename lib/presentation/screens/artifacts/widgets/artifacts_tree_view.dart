@@ -280,8 +280,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
 List<TreeNode<Artifact>> populateTree(List<Artifact> items) {
   final Map<String, List<Artifact>> childrenMap = {};
-  for (final item in items.where((i) => i.parent.isNotEmpty)) {
-    childrenMap.putIfAbsent(item.parent, () => []).add(item);
+  for (final item in items.where((i) => i.parentFolderId.isNotEmpty)) {
+    childrenMap.putIfAbsent(item.parentFolderId, () => []).add(item);
   }
 
   TreeNode<Artifact> buildNode(Artifact item) {
@@ -294,6 +294,6 @@ List<TreeNode<Artifact>> populateTree(List<Artifact> items) {
     );
   }
 
-  final rootItems = items.where((i) => i.parent.isEmpty).toList();
+  final rootItems = items.where((i) => i.parentFolderId.isEmpty).toList();
   return rootItems.map(buildNode).toList();
 }

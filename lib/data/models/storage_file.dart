@@ -1,3 +1,5 @@
+import 'package:onyxia/export.dart';
+
 class StorageFile {
   /// Unique identifier for the file
   final String id;
@@ -18,10 +20,10 @@ class StorageFile {
   final String mimeType;
 
   /// When the file was uploaded
-  final DateTime uploadedAt;
+  final DateTime? createdAt;
 
   /// User ID who uploaded the file
-  final String uploadedBy;
+  final String createdBy;
 
   /// Optional project ID this file belongs to
   final String? projectId;
@@ -36,19 +38,13 @@ class StorageFile {
     required this.downloadUrl,
     required this.sizeBytes,
     required this.mimeType,
-    required this.uploadedAt,
-    required this.uploadedBy,
+    this.createdAt,
+    required this.createdBy,
     this.projectId,
     this.metadata,
   });
 
   factory StorageFile.fromMap(Map<String, dynamic> map) {
-    DateTime parseTs(dynamic v) {
-      if (v is String) return DateTime.tryParse(v) ?? DateTime.now();
-      if (v is int) return DateTime.fromMillisecondsSinceEpoch(v);
-      return DateTime.now();
-    }
-
     return StorageFile(
       id: map['id'] as String,
       name: (map['name'] as String?) ?? '',
@@ -56,8 +52,8 @@ class StorageFile {
       downloadUrl: (map['download_url'] as String?) ?? '',
       sizeBytes: (map['size'] as num?)?.toInt() ?? 0,
       mimeType: (map['mime'] as String?) ?? '',
-      uploadedAt: parseTs(map['created_at']),
-      uploadedBy: (map['user_id'] as String?) ?? '',
+      createdAt: TimestampService.fromMap(map['created_at']),
+      createdBy: (map['created_by'] as String?) ?? '',
       projectId: map['project_id'] as String?,
       metadata: map['metadata'] as Map<String, dynamic>?,
     );
@@ -72,45 +68,35 @@ class StorageFile {
       'path': storagePath,
       'size': sizeBytes,
       'mime': mimeType,
-      'user_id': uploadedBy,
+      'created_by': createdBy,
       'project_id': projectId,
       'metadata': metadata,
     };
   }
 
-  /// Get file extension from name
   String get fileExtension {
     final parts = name.split('.');
     return parts.length > 1 ? parts.last.toLowerCase() : '';
   }
 
-  /// Check if file is an image
-  bool get isImage {
-    return mimeType.startsWith('image/');
-  }
+  bool get isImage => mimeType.startsWith('image/');
 
-  /// Check if file is a video
-  bool get isMedia {
-    return mimeType.startsWith('video/');
-  }
+  bool get isMedia => mimeType.startsWith('video/');
 
-  /// Check if file is audio
-  bool get isAudio {
-    return mimeType.startsWith('audio/');
-  }
+  bool get isAudio => mimeType.startsWith('audio/');
 
-  /// Check if file is a document
-  bool get isDocument {
-    return mimeType.startsWith('application/') ||
-        mimeType.startsWith('text/') ||
-        ['pdf', 'doc', 'docx', 'txt', 'rtf'].contains(fileExtension);
-  }
+  bool get isDocument =>
+      mimeType.startsWith('application/') ||
+      mimeType.startsWith('text/') ||
+      ['pdf', 'doc', 'docx', 'txt', 'rtf'].contains(fileExtension);
 
   /// Get human-readable file size
   String get formattedSize {
     if (sizeBytes < 1024) return '$sizeBytes B';
-    if (sizeBytes < 1024 * 1024) return '${(sizeBytes / 1024).toStringAsFixed(1)} KB';
-    if (sizeBytes < 1024 * 1024 * 1024) return '${(sizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+    if (sizeBytes < 1024 * 1024)
+      return '${(sizeBytes / 1024).toStringAsFixed(1)} KB';
+    if (sizeBytes < 1024 * 1024 * 1024)
+      return '${(sizeBytes / (1024 * 1024)).toStringAsFixed(1)} MB';
     return '${(sizeBytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
   }
 
@@ -122,8 +108,8 @@ class StorageFile {
     String? downloadUrl,
     int? sizeBytes,
     String? mimeType,
-    DateTime? uploadedAt,
-    String? uploadedBy,
+    DateTime? createdAt,
+    String? createdBy,
     String? projectId,
     Map<String, dynamic>? metadata,
   }) {
@@ -134,8 +120,8 @@ class StorageFile {
       downloadUrl: downloadUrl ?? this.downloadUrl,
       sizeBytes: sizeBytes ?? this.sizeBytes,
       mimeType: mimeType ?? this.mimeType,
-      uploadedAt: uploadedAt ?? this.uploadedAt,
-      uploadedBy: uploadedBy ?? this.uploadedBy,
+      createdAt: createdAt ?? this.createdAt,
+      createdBy: createdBy ?? this.createdBy,
       projectId: projectId ?? this.projectId,
       metadata: metadata ?? this.metadata,
     );

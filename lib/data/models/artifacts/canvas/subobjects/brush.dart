@@ -3,13 +3,9 @@ import 'package:onyxia/export.dart';
 class BrushProperties {
   List<Offset> points;
 
-  BrushProperties({
-    this.points = const <Offset>[],
-  });
+  BrushProperties({this.points = const <Offset>[]});
 
-  factory BrushProperties.initial() {
-    return BrushProperties(points: []);
-  }
+  factory BrushProperties.initial() => BrushProperties(points: []);
 
   @override
   String toString() {

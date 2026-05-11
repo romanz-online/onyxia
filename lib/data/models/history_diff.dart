@@ -1,7 +1,9 @@
+import 'package:onyxia/export.dart';
+
 class HistoryDiff {
   final String id;
   final int seq;
-  final String userId;
+  final String createdBy;
   final String title;
   final DateTime timestamp;
   final List<Map<String, dynamic>> operations;
@@ -11,7 +13,7 @@ class HistoryDiff {
   const HistoryDiff({
     this.id = '',
     this.seq = 0,
-    required this.userId,
+    required this.createdBy,
     this.title = '',
     required this.timestamp,
     required this.operations,
@@ -24,16 +26,17 @@ class HistoryDiff {
   Map<String, dynamic> toMap() => {
         if (id.isNotEmpty) 'id': id,
         'diff': {
-          'userId': userId,
+          'created_by': createdBy,
           'title': title,
           'operations': operations,
-          'isMilestone': isMilestone,
-          'isRestored': isRestored,
+          'is_milestone': isMilestone,
+          'is_restored': isRestored,
         },
       };
 
   factory HistoryDiff.fromMap(Map<String, dynamic> map) {
-    final diff = (map['diff'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
+    final diff =
+        (map['diff'] as Map<String, dynamic>?) ?? const <String, dynamic>{};
     DateTime ts = DateTime.now();
     final raw = map['created_at'];
     if (raw is String) ts = DateTime.tryParse(raw) ?? DateTime.now();
@@ -41,33 +44,14 @@ class HistoryDiff {
     return HistoryDiff(
       id: map['id'] ?? '',
       seq: (map['seq'] as num?)?.toInt() ?? 0,
-      userId: diff['userId'] ?? '',
+      createdBy: diff['created_by'] ?? '',
       title: diff['title'] ?? '',
       timestamp: ts,
       operations: List<Map<String, dynamic>>.from(diff['operations'] ?? []),
-      isMilestone: diff['isMilestone'] ?? false,
-      isRestored: diff['isRestored'] ?? false,
+      isMilestone: diff['is_milestone'] ?? false,
+      isRestored: diff['is_restored'] ?? false,
     );
   }
-
-  /// Backwards-compat alias used by existing serializers.
-  Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'title': title,
-        'timestamp': timestamp.toIso8601String(),
-        'operations': operations,
-        'isMilestone': isMilestone,
-        'isRestored': isRestored,
-      };
-
-  factory HistoryDiff.fromJson(Map<String, dynamic> json) => HistoryDiff(
-        userId: json['userId'],
-        title: json['title'],
-        timestamp: DateTime.parse(json['timestamp']),
-        operations: List<Map<String, dynamic>>.from(json['operations'] ?? []),
-        isMilestone: json['isMilestone'] ?? false,
-        isRestored: json['isRestored'] ?? false,
-      );
 
   HistoryDiff copyWith({
     String? id,
@@ -82,7 +66,7 @@ class HistoryDiff {
     return HistoryDiff(
       id: id ?? this.id,
       seq: seq ?? this.seq,
-      userId: userId ?? this.userId,
+      createdBy: userId ?? this.createdBy,
       title: title ?? this.title,
       timestamp: timestamp ?? this.timestamp,
       operations: operations ?? this.operations,
@@ -93,7 +77,7 @@ class HistoryDiff {
 
   @override
   String toString() {
-    return 'CanvasChangeDiff(userId: $userId, '
+    return 'HistoryDiff(userId: $createdBy, '
         'title: $title, '
         'timestamp: $timestamp, '
         'isMilestone: $isMilestone, '
@@ -105,16 +89,73 @@ class HistoryDiff {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is HistoryDiff && other.timestamp == timestamp && other.userId == userId;
+    return other is HistoryDiff &&
+        other.timestamp == timestamp &&
+        other.createdBy == createdBy;
   }
 
   @override
   int get hashCode {
-    return userId.hashCode ^
+    return createdBy.hashCode ^
         title.hashCode ^
         timestamp.hashCode ^
         operations.hashCode ^
         isMilestone.hashCode ^
         isRestored.hashCode;
   }
+}
+
+class HistoryDiffs {
+  final HistoryDiff? selectedDiff;
+  final HistoryDiff? currentDiff;
+  final List<HistoryDiff> remoteDiffs;
+  final List<HistoryDiff> localDiffs;
+  final DateTime? createdAt;
+
+  HistoryDiffs({
+    this.selectedDiff,
+    this.currentDiff,
+    required this.remoteDiffs,
+    required this.localDiffs,
+    this.createdAt,
+  });
+
+  factory HistoryDiffs.initial() => HistoryDiffs(
+        remoteDiffs: [],
+        localDiffs: [],
+      );
+
+  HistoryDiffs copyWith({
+    HistoryDiff? selectedDiff,
+    HistoryDiff? currentDiff,
+    List<HistoryDiff>? remoteDiffs,
+    List<HistoryDiff>? localDiffs,
+    DateTime? createdAt,
+  }) {
+    return HistoryDiffs(
+      selectedDiff: selectedDiff ?? this.selectedDiff,
+      currentDiff: currentDiff ?? this.currentDiff,
+      remoteDiffs: remoteDiffs ?? this.remoteDiffs,
+      localDiffs: localDiffs ?? this.localDiffs,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is HistoryDiffs &&
+        listEquals(other.remoteDiffs, remoteDiffs) &&
+        listEquals(other.localDiffs, localDiffs) &&
+        other.currentDiff == currentDiff &&
+        other.createdAt == createdAt;
+  }
+
+  @override
+  int get hashCode =>
+      remoteDiffs.hashCode ^
+      localDiffs.hashCode ^
+      currentDiff.hashCode ^
+      createdAt.hashCode;
 }

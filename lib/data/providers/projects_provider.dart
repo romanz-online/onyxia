@@ -61,7 +61,7 @@ class ProjectsNotifier extends StateNotifier<Projects> {
         final project = await projectsRepository.get(projectId);
 
         if (project != null && mounted) {
-          if (project.ownerId == currentUserId) {
+          if (project.createdBy == currentUserId) {
             final updatedProjects = [...state.projects, project];
             state = state.copyWith(
               projects: updatedProjects,
@@ -97,10 +97,6 @@ class ProjectsNotifier extends StateNotifier<Projects> {
     }).toList();
 
     state = state.copyWith(projects: updatedProjects);
-  }
-
-  void setSearchString(String searchString) {
-    state = state.copyWith(searchString: searchString);
   }
 
   void updateSelectedProject(Project updatedProject) {

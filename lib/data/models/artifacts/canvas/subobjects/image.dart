@@ -3,11 +3,7 @@ class ImageProperties {
 
   ImageProperties({this.imageUrl = ''});
 
-  factory ImageProperties.initial() {
-    return ImageProperties(
-      imageUrl: '',
-    );
-  }
+  factory ImageProperties.initial() => ImageProperties(imageUrl: '');
 
   @override
   String toString() {
@@ -17,12 +13,12 @@ class ImageProperties {
   }
 
   Map<String, dynamic> toMap() {
-    return {'imageUrl': imageUrl};
+    return {'image_url': imageUrl};
   }
 
   factory ImageProperties.fromMap(Map<String, dynamic> map) {
     try {
-      return ImageProperties(imageUrl: map['imageUrl'] ?? '');
+      return ImageProperties(imageUrl: map['image_url'] ?? '');
     } catch (e) {
       // Return a completely default ImageProperties if parsing fails entirely
       return ImageProperties();

@@ -14,35 +14,24 @@ class NoteEditorView extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<NoteEditorView> createState() => _EditorState();
+  ConsumerState<NoteEditorView> createState() => _NoteEditorState();
 }
 
-class _EditorState extends ConsumerState<NoteEditorView> {
+class _NoteEditorState extends ConsumerState<NoteEditorView> {
   NoteStateProvider get _provider =>
       widget.provider ?? selectedNoteStateProvider;
-  Note? get _artifact => ref.read(_provider).value?.note;
-  String get _selectedNoteId => _artifact?.id ?? '';
 
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
 
-  // Comment state
-  bool _showComment = false;
-  Comment? _currentComment;
-  String? _selectedCommentId;
-  Offset? _localPosition;
-  final GlobalKey _commentWidgetKey = GlobalKey();
-
   // Hover state
   bool _showHoverContainer = false;
   Offset? _hoverPosition;
-  String? _hoveredCommentId;
 
   // Drag state
   bool _isDragOver = false;
 
   String? _currentNoteId;
-  Comment? _previousSelectedComment;
 
   // TODO: handle inserting images
   // static const _imageFormats = [Formats.png, Formats.jpeg, Formats.bmp, Formats.gif];
@@ -78,55 +67,9 @@ class _EditorState extends ConsumerState<NoteEditorView> {
 
   void _resetEditorState() {
     setState(() {
-      _showComment = false;
-      _currentComment = null;
-      _selectedCommentId = null;
-      _localPosition = null;
       _showHoverContainer = false;
       _hoverPosition = null;
-      _hoveredCommentId = null;
       _isDragOver = false;
-      _previousSelectedComment = null;
-    });
-    ref
-        .read(commentsProvider(_selectedNoteId).notifier)
-        .setSelectedComment(null);
-  }
-
-  void _handleCommentCreate([Offset? contextMenuPosition]) {
-    final position =
-        contextMenuPosition ?? _localPosition ?? const Offset(100, 100);
-    final newComment = Comment(
-      id: const Uuid().v4(),
-      text: '',
-      authorId: ref.read(currentUserProvider).id,
-      position: position,
-      subComments: [],
-      createdAt: DateTime.now(),
-    );
-    setState(() {
-      _showComment = true;
-      _currentComment = newComment;
-      _localPosition = position;
-    });
-    ref
-        .read(commentsProvider(_selectedNoteId).notifier)
-        .setSelectedComment(newComment);
-  }
-
-  void _clearCommentSelection() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {
-          _showComment = false;
-          _currentComment = null;
-          _localPosition = null;
-          _selectedCommentId = null;
-        });
-        ref
-            .read(commentsProvider(_selectedNoteId).notifier)
-            .setSelectedComment(null);
-      }
     });
   }
 
@@ -174,16 +117,6 @@ class _EditorState extends ConsumerState<NoteEditorView> {
           child: Text('No item selected', style: NarwhalTextStyle()));
     }
 
-    final selectedComment = ref.watch(commentsProvider(_selectedNoteId)
-        .select((state) => state.selectedComment));
-
-    if (selectedComment != _previousSelectedComment) {
-      _previousSelectedComment = selectedComment;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _handleExternalCommentSelection(selectedComment);
-      });
-    }
-
     authState.whenData((user) {
       if (user == null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -215,61 +148,24 @@ class _EditorState extends ConsumerState<NoteEditorView> {
         });
 
         return SizedBox.expand(
-          child: _EditorContent(
+          child: _NoteEditorContent(
             controller: controller,
             state: state,
             focusNode: _focusNode,
             scrollController: _scrollController,
-            showComment: _showComment,
-            currentComment: _currentComment,
-            localPosition: _localPosition,
             showHoverContainer: _showHoverContainer,
             hoverPosition: _hoverPosition,
-            hoveredCommentId: _hoveredCommentId,
             isDragOver: _isDragOver,
-            commentWidgetKey: _commentWidgetKey,
-            selectedComment: selectedComment,
             provider: _provider,
-            onCommentCreate: _handleCommentCreate,
-            onCommentClose: _clearCommentSelection,
             onDragOver: (over) => setState(() => _isDragOver = over),
             onImageDrop: _handleImageDrop,
             onTapDown: (details) {
-              setState(() => _localPosition = details.localPosition);
               _focusNode.requestFocus();
-            },
-            onCommentTapOutside: () {
-              if (_showComment && _currentComment != null) {
-                _clearCommentSelection();
-              }
             },
           ),
         );
       },
     );
-  }
-
-  void _handleExternalCommentSelection(Comment selectedComment) {
-    if (selectedComment.id.isNotEmpty) {
-      if (_currentComment == null ||
-          _currentComment!.id != selectedComment.id) {
-        if (mounted) {
-          setState(() {
-            _showComment = true;
-            _currentComment = selectedComment;
-            _localPosition = selectedComment.position ??
-                _localPosition ??
-                const Offset(100, 100);
-            _selectedCommentId = selectedComment.id;
-          });
-        }
-      } else if (_currentComment != null &&
-          _currentComment!.id == selectedComment.id) {
-        _currentComment = selectedComment;
-      }
-    } else if (_selectedCommentId != null) {
-      if (mounted) _clearCommentSelection();
-    }
   }
 }
 
@@ -300,56 +196,38 @@ class _ErrorView extends StatelessWidget {
   }
 }
 
-class _EditorContent extends StatefulWidget {
+class _NoteEditorContent extends StatefulWidget {
   final BardController controller;
   final NoteState state;
   final FocusNode focusNode;
   final ScrollController scrollController;
-  final bool showComment;
-  final Comment? currentComment;
-  final Offset? localPosition;
   final bool showHoverContainer;
   final Offset? hoverPosition;
-  final String? hoveredCommentId;
   final bool isDragOver;
-  final GlobalKey commentWidgetKey;
-  final Comment selectedComment;
   final NoteStateProvider provider;
-  final void Function([Offset?]) onCommentCreate;
-  final VoidCallback onCommentClose;
   final void Function(bool) onDragOver;
   final Future<void> Function(PerformDropEvent) onImageDrop;
   final void Function(TapDownDetails) onTapDown;
-  final VoidCallback onCommentTapOutside;
 
-  const _EditorContent({
+  const _NoteEditorContent({
     required this.controller,
     required this.state,
     required this.focusNode,
     required this.scrollController,
-    required this.showComment,
-    required this.currentComment,
-    required this.localPosition,
     required this.showHoverContainer,
     required this.hoverPosition,
-    required this.hoveredCommentId,
     required this.isDragOver,
-    required this.commentWidgetKey,
-    required this.selectedComment,
     required this.provider,
-    required this.onCommentCreate,
-    required this.onCommentClose,
     required this.onDragOver,
     required this.onImageDrop,
     required this.onTapDown,
-    required this.onCommentTapOutside,
   });
 
   @override
-  State<_EditorContent> createState() => _EditorContentState();
+  State<_NoteEditorContent> createState() => _NoteEditorContentState();
 }
 
-class _EditorContentState extends State<_EditorContent> {
+class _NoteEditorContentState extends State<_NoteEditorContent> {
   final GlobalKey _editorKey = GlobalKey();
   double? _editorHeight;
   double? _editorWidth;
@@ -381,73 +259,37 @@ class _EditorContentState extends State<_EditorContent> {
       builder: (context, constraints) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: EditorContextMenu(
-            onComment: widget.onCommentCreate,
-            child: LayoutBuilder(
-              builder: (context, cardConstraints) {
-                WidgetsBinding.instance
-                    .addPostFrameCallback((_) => _updateEditorHeight());
+          child: LayoutBuilder(
+            builder: (context, cardConstraints) {
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => _updateEditorHeight());
 
-                return DropRegion(
-                  key: _editorKey,
-                  formats: Formats.standardFormats,
-                  hitTestBehavior: HitTestBehavior.opaque,
-                  onDropOver: (event) {
-                    widget.onDragOver(true);
-                    return event.session.allowedOperations.firstOrNull ??
-                        DropOperation.none;
-                  },
-                  onPerformDrop: widget.onImageDrop,
-                  onDropLeave: (_) => widget.onDragOver(false),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      _EditorField(
-                        controller: widget.controller,
-                        focusNode: widget.focusNode,
-                        scrollController: widget.scrollController,
-                        selectedComment: widget.selectedComment,
-                        provider: widget.provider,
-                        onTapDown: widget.onTapDown,
-                        showComment: widget.showComment,
-                        currentComment: widget.currentComment,
-                        commentWidgetKey: widget.commentWidgetKey,
-                        onCommentTapOutside: widget.onCommentTapOutside,
-                      ),
-                      _DragOverlay(isDragOver: widget.isDragOver),
-                      if (widget.showHoverContainer &&
-                          !widget.showComment &&
-                          widget.hoverPosition != null &&
-                          widget.hoveredCommentId != null)
-                        Positioned(
-                          left: widget.hoverPosition!.dx + 10.0,
-                          top: widget.hoverPosition!.dy + -40.0,
-                          child: IgnorePointer(
-                            child: HoverCommentContainer(
-                              hoveredCommentId: widget.hoveredCommentId!,
-                            ),
-                          ),
-                        ),
-                      if (widget.showComment &&
-                          widget.currentComment != null &&
-                          widget.localPosition != null)
-                        Builder(
-                          builder: (context) {
-                            return ArtifactComment(
-                              key: widget.commentWidgetKey,
-                              comment: widget.currentComment!,
-                              localPosition: widget.localPosition,
-                              onClose: widget.onCommentClose,
-                              editorHeight: _editorHeight,
-                              editorWidth: _editorWidth,
-                            );
-                          },
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
+              return DropRegion(
+                key: _editorKey,
+                formats: Formats.standardFormats,
+                hitTestBehavior: HitTestBehavior.opaque,
+                onDropOver: (event) {
+                  widget.onDragOver(true);
+                  return event.session.allowedOperations.firstOrNull ??
+                      DropOperation.none;
+                },
+                onPerformDrop: widget.onImageDrop,
+                onDropLeave: (_) => widget.onDragOver(false),
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    _NoteEditorField(
+                      controller: widget.controller,
+                      focusNode: widget.focusNode,
+                      scrollController: widget.scrollController,
+                      provider: widget.provider,
+                      onTapDown: widget.onTapDown,
+                    ),
+                    _DragOverlay(isDragOver: widget.isDragOver),
+                  ],
+                ),
+              );
+            },
           ),
         );
       },
@@ -455,29 +297,19 @@ class _EditorContentState extends State<_EditorContent> {
   }
 }
 
-class _EditorField extends ConsumerWidget {
+class _NoteEditorField extends ConsumerWidget {
   final BardController controller;
   final FocusNode focusNode;
   final ScrollController scrollController;
-  final Comment selectedComment;
   final NoteStateProvider provider;
   final void Function(TapDownDetails) onTapDown;
-  final bool showComment;
-  final Comment? currentComment;
-  final GlobalKey commentWidgetKey;
-  final VoidCallback onCommentTapOutside;
 
-  const _EditorField({
+  const _NoteEditorField({
     required this.controller,
     required this.focusNode,
     required this.scrollController,
-    required this.selectedComment,
     required this.provider,
     required this.onTapDown,
-    required this.showComment,
-    required this.currentComment,
-    required this.commentWidgetKey,
-    required this.onCommentTapOutside,
   });
 
   @override

@@ -3,7 +3,9 @@ import 'dart:math' as math;
 import '../providers/providers.dart';
 import 'interaction_service.dart';
 import '../../../../helpers/clipboard_helper.dart' as web_helper;
-import 'clipboard_paste_handler.dart' as paste_handler;
+import 'package:web/web.dart' as web;
+import 'dart:js_interop';
+import 'image_upload_service.dart';
 
 /// Service for handling canvas object clipboard operations using system clipboard
 /// with NCON (Narwhal Canvas Object Notation) format
@@ -25,7 +27,63 @@ class CanvasClipboardService {
 
   /// Handle paste events (web-specific, delegates to platform implementation)
   void handleJsPaste(dynamic event, WidgetRef ref, BuildContext context) {
-    paste_handler.handleJsPasteImpl(event, ref, context);
+    if (!ref.read(canvasConfigProvider).allowPasting) return;
+
+    final clipboardData = (event as web.ClipboardEvent).clipboardData;
+    if (clipboardData == null) return;
+
+    // upload images
+    final files = clipboardData.files;
+    if (files.length > 0) {
+      final platformFiles = <PlatformFile>[];
+
+      for (var i = 0; i < files.length; i++) {
+        final file = files.item(i);
+        if (file != null && _isImageFile(file.name)) {
+          // Read file bytes
+          final reader = web.FileReader();
+          reader.readAsArrayBuffer(file);
+          reader.onLoadEnd.listen((event) async {
+            final bytes = (reader.result as JSArrayBuffer).toDart.asUint8List();
+            platformFiles.add(PlatformFile(
+              name: file.name,
+              size: file.size,
+              bytes: bytes,
+            ));
+
+            // Process after all files are read
+            if (platformFiles.length == files.length) {
+              if (context.mounted) {
+                CanvasImageUploadService.uploadAndPlaceImages(
+                  ref: ref,
+                  context: context,
+                  files: platformFiles,
+                );
+              }
+            }
+          });
+        }
+      }
+      return;
+    }
+  }
+
+  bool _isImageFile(String path) {
+    final lowerPath = path.toLowerCase();
+    final imageExtensions = [
+      '.png',
+      '.jpg',
+      '.jpeg',
+      '.gif',
+      '.bmp',
+      '.tiff',
+      '.webp',
+      '.heic',
+      '.heif',
+      '.ico',
+      '.svg'
+    ];
+    return imageExtensions.any((ext) => lowerPath.endsWith(ext));
   }
 
   /// Pastes canvas objects from system clipboard if in NCON format

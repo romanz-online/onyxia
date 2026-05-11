@@ -28,10 +28,6 @@ class CanvasCursorOverlay extends ConsumerWidget {
         if (kIsWeb && _cursorService.currentCssCursor != null && web.document.body != null) {
           web.document.body!.style.cursor = _cursorService.currentCssCursor!;
         }
-
-        ref
-            .read(usersCursorProvider.notifier)
-            .updateMyCursor(ref.read(canvasViewportProvider.notifier).convertToCanvasCoords(event.position));
       },
       onExit: (event) {
         if (kIsWeb && web.document.body != null) {
