@@ -66,7 +66,6 @@ export 'package:onyxia/presentation/routing/routes.dart';
 
 //data providers
 export 'package:onyxia/data/providers/auth_provider.dart';
-export 'package:onyxia/data/providers/comments_provider.dart';
 export 'package:onyxia/data/providers/projects_provider.dart';
 export 'package:onyxia/data/providers/current_user_provider.dart';
 export 'package:onyxia/data/providers/users_provider.dart';

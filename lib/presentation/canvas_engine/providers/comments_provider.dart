@@ -1,4 +1,5 @@
 import 'package:onyxia/export.dart';
+import 'objects_provider.dart';
 
 class CommentsState {
   final List<Comment> comments;
@@ -37,47 +38,47 @@ class CommentsState {
 }
 
 final commentsProvider =
-    StateNotifierProvider.family<CommentsNotifier, CommentsState, String>(
-        (ref, targetId) {
+    StateNotifierProvider.autoDispose<CommentsNotifier, CommentsState>((ref) {
+  final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
   final projectId = ref.watch(projectsProvider).selectedProject?.id;
-  final repository = CommentsRepository(projectId: projectId);
-
   return CommentsNotifier(
-    repository: repository,
+    CommentsState.initial(),
+    repository: CommentsRepository(
+      projectId: projectId,
+      canvasId: canvasId,
+    ),
+    canvasId: canvasId,
     projectId: projectId,
-    canvasId: targetId,
     user: ref.watch(currentUserProvider),
-    ref: ref,
   );
 });
 
 class CommentsNotifier extends StateNotifier<CommentsState> {
   final CommentsRepository repository;
-  final String? projectId;
   final String canvasId;
+  final String? projectId;
   final User user;
-  final Ref ref;
   StreamSubscription<List<Comment>>? _subscription;
 
-  CommentsNotifier({
+  CommentsNotifier(
+    super.state, {
     required this.repository,
-    required this.projectId,
     required this.canvasId,
+    required this.projectId,
     required this.user,
-    required this.ref,
-  }) : super(CommentsState.initial()) {
-    _watchComments();
+  }) {
+    _init();
   }
 
-  void _watchComments() {
-    _subscription?.cancel();
-    _subscription =
-        repository.watchComments(targetId: canvasId).listen((comments) {
+  void _init() {
+    if (canvasId.isEmpty || projectId == null) return;
+
+    _subscription = repository.getStream().listen((comments) {
+      if (!mounted) return;
       final sortedComments = List<Comment>.from(comments);
       sortedComments.sort((a, b) => (a.createdAt ??
               DateTime.fromMillisecondsSinceEpoch(0))
           .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
-
       state = state.copyWith(comments: sortedComments);
     }, onError: (error) {
       debugPrint('Error watching comments: $error');
@@ -88,7 +89,6 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     try {
       return state.comments.firstWhere((comment) => comment.id == commentId);
     } catch (e) {
-      // If the comment is not found in the state, return null
       return null;
     }
   }
@@ -104,9 +104,10 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       subComments: [],
       createdBy: user.id,
       position: position,
+      canvasId: canvasId,
     );
 
-    await repository.addComment(canvasId: canvasId, comment: newComment);
+    await repository.add([newComment]);
   }
 
   Future<void> updateComment({
@@ -121,9 +122,8 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       );
     }
 
-    await repository.updateComment(canvasId: canvasId, comment: newComment);
+    await repository.update(newComment.copyWith(canvasId: canvasId));
 
-    // Update local state
     state = state.copyWith(
       comments: [
         for (final comment in state.comments)
@@ -148,10 +148,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       subComments: [...comment.subComments, subComment],
     );
 
-    await repository.updateComment(
-      canvasId: canvasId,
-      comment: updatedComment,
-    );
+    await repository.update(updatedComment.copyWith(canvasId: canvasId));
   }
 
   Future<void> updateSubComment({
@@ -161,7 +158,6 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
   }) async {
     final comment = state.comments.firstWhere((c) => c.id == commentId);
 
-    // Find and update the specific subcomment
     final updatedSubComments = comment.subComments.map((subComment) {
       if (subComment.id == subCommentId) {
         return subComment.copyWith(content: text);
@@ -173,10 +169,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       subComments: updatedSubComments,
     );
 
-    await repository.updateComment(
-      canvasId: canvasId,
-      comment: updatedComment,
-    );
+    await repository.update(updatedComment.copyWith(canvasId: canvasId));
   }
 
   Future<void> deleteSubComment(String commentId, String subCommentId) async {
@@ -186,13 +179,9 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
 
     final updatedComment = comment.copyWith(subComments: updatedSubComments);
 
-    await repository.updateComment(
-      canvasId: canvasId,
-      comment: updatedComment,
-    );
+    await repository.update(updatedComment.copyWith(canvasId: canvasId));
   }
 
-  // Move a comment's position locally (for canvas comments)
   void moveCommentLocally(String commentId, Offset delta) {
     state = state.copyWith(
       comments: [
@@ -205,16 +194,14 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     );
   }
 
-  // Get the 1-based index of a comment based on creation time
   int getCommentIndex(Comment comment) {
     final sortedComments = List<Comment>.from(state.comments);
     sortedComments.sort((a, b) =>
         (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
             .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
-    return sortedComments.indexOf(comment) + 1; // 1-based index
+    return sortedComments.indexOf(comment) + 1;
   }
 
-  // Clear edit intent while keeping the selected comment
   void clearEditIntent() {
     state = state.copyWith(
       shouldEditOnOpen: false,
@@ -222,7 +209,6 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     );
   }
 
-  // Create a temporary comment (not saved to Firebase until text is provided)
   void createTemporaryComment({
     required String commentId,
     required Offset position,
@@ -236,6 +222,7 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
       createdBy: user.id,
       position: position,
       pinnedObjectId: pinnedObjectId,
+      canvasId: canvasId,
     );
 
     state = state.copyWith(
@@ -244,24 +231,22 @@ class CommentsNotifier extends StateNotifier<CommentsState> {
     );
   }
 
-  // Save temporary comment to Firebase with actual text
-  Future<void> saveTemporaryComment(WidgetRef ref, String text) async {
+  Future<void> saveTemporaryComment(String text) async {
     if (state.temporaryComment == null || text.trim().isEmpty) {
       clearTemporaryComment();
       return;
     }
 
-    final commentToSave = state.temporaryComment!.copyWith(text: text.trim());
-
-    await repository.addComment(
+    final commentToSave = state.temporaryComment!.copyWith(
+      text: text.trim(),
       canvasId: canvasId,
-      comment: commentToSave,
     );
+
+    await repository.add([commentToSave]);
 
     clearTemporaryComment();
   }
 
-  // Clear temporary comment without saving
   void clearTemporaryComment() {
     state = state.copyWith(temporaryComment: null, objectId: null);
   }

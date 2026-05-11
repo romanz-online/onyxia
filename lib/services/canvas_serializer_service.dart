@@ -14,8 +14,8 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
     required this.canvasId,
     required this.repository,
     CommentsRepository? commentsRepository,
-  })  : commentsRepository =
-            commentsRepository ?? CommentsRepository(projectId: projectId),
+  })  : commentsRepository = commentsRepository ??
+            CommentsRepository(projectId: projectId, canvasId: canvasId),
         pinsRepository = PinsRepository(
           projectId: projectId,
           canvasId: canvasId,
@@ -43,9 +43,7 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
         await canvasObjectsRepository.getCanvasObjectsStream().first;
     final objects = objectsStream.objects;
 
-    // Fetch canvas comments using new canvas comments repository
-    final commentsStream =
-        await commentsRepository.watchComments(targetId: canvasId).first;
+    final commentsStream = await commentsRepository.getStream().first;
 
     final pinsStream = await pinsRepository.getStream().first;
     final pins = pinsStream;
@@ -139,13 +137,9 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
 
   Future<void> _deleteExistingComments() async {
     try {
-      // Get all canvas comments
-      final commentsStream =
-          await commentsRepository.watchComments(targetId: canvasId).first;
-
-      // Delete each comment
-      for (final comment in commentsStream) {
-        await commentsRepository.delete(comment.id);
+      final comments = await commentsRepository.getStream().first;
+      if (comments.isNotEmpty) {
+        await commentsRepository.deleteMultiple(comments);
       }
     } catch (e) {
       debugPrint(

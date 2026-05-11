@@ -1,7 +1,8 @@
 export 'arrow_preview_provider.dart';
 export 'arrow_primed_objects_provider.dart';
 export 'bounds_provider.dart';
-export 'canvas_text_provider.dart'; 
+export 'canvas_text_provider.dart';
+export 'comments_provider.dart';
 export 'drag_select_provider.dart';
 export 'dragged_objects_provider.dart';
 export 'dragoff_drop_provider.dart';

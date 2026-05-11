@@ -102,10 +102,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final objects = ref.watch(canvasObjectsProvider);
     final selectedTool = ref.watch(toolModeProvider);
     final objectText = ref.watch(canvasTextProvider);
-    final canvasId = ref.watch(currentCanvasProvider)?.id ?? '';
-    final canvasCommentsState = canvasId.isNotEmpty
-        ? ref.watch(commentsProvider(canvasId))
-        : CommentsState.initial();
+    final canvasCommentsState = ref.watch(commentsProvider);
     final showArtifacts =
         ref.watch(canvasSettingsProvider(Setting.showArtifacts));
     final showComments =

@@ -35,7 +35,7 @@ class Comment implements ExpandablePin {
     Offset? position,
     List<SubComment>? subComments,
     String? pinnedObjectId,
-    String? targetId,
+    String? canvasId,
   }) {
     return Comment(
       id: id ?? this.id,
@@ -43,7 +43,7 @@ class Comment implements ExpandablePin {
       position: position ?? this.position,
       subComments: subComments ?? this.subComments,
       pinnedObjectId: pinnedObjectId ?? this.pinnedObjectId,
-      canvasId: targetId ?? this.canvasId,
+      canvasId: canvasId ?? this.canvasId,
     );
   }
 
@@ -54,7 +54,7 @@ class Comment implements ExpandablePin {
         'body': text,
         'position': position.toMap(),
         'pinned_object_id': pinnedObjectId,
-        'canvas_id': canvasId,
+        'canvas_artifact_id': canvasId,
       };
 
   Comment.fromMap(Map<String, dynamic> map)
@@ -63,7 +63,7 @@ class Comment implements ExpandablePin {
         position = OffsetExtension.fromMap(map['position']),
         subComments = const [],
         pinnedObjectId = map['pinned_object_id'] ?? '',
-        canvasId = map['canvas_id'] ?? '',
+        canvasId = map['canvas_artifact_id'] ?? '',
         //
         createdAt = TimestampService.fromMap(map['created_at']),
         createdBy = map['created_by'] ?? '',

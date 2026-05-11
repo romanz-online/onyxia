@@ -1,10 +1,18 @@
 import 'package:onyxia/export.dart';
 
 class CommentsRepository extends BaseSupabaseRepository<Comment> {
-  CommentsRepository({required super.projectId});
+  final String canvasId;
+
+  CommentsRepository({required super.projectId, required this.canvasId});
 
   @override
   String get tableName => 'comments';
+
+  @override
+  String get scopeField => 'canvas_artifact_id';
+
+  @override
+  dynamic get scopeValue => canvasId;
 
   @override
   Comment fromMap(Map<String, dynamic> map) => Comment.fromMap(map);
@@ -14,22 +22,4 @@ class CommentsRepository extends BaseSupabaseRepository<Comment> {
 
   @override
   String getIdFromItem(Comment item) => item.id;
-
-  /// Watch comments attached to a target artifact (canvas or note).
-  /// `targetId` is the artifact's UUID — NOT its title (legacy bug).
-  Stream<List<Comment>> watchComments({required String targetId}) {
-    return queryStream(field: 'target_id', isEqualTo: targetId);
-  }
-
-  Future<void> addComment({
-    required String canvasId,
-    required Comment comment,
-  }) async =>
-      add([comment.copyWith(targetId: canvasId)]);
-
-  Future<void> updateComment({
-    required String canvasId,
-    required Comment comment,
-  }) async =>
-      update(comment.copyWith(targetId: canvasId));
 }

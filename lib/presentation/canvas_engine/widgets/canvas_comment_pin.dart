@@ -136,11 +136,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       ref.read(expandedPinProvider.notifier).isExpanded(widget.comment.id);
 
   bool get isTemporaryComment =>
-      ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? ''))
-          .temporaryComment
-          ?.id ==
-      widget.comment.id;
+      ref.read(commentsProvider).temporaryComment?.id == widget.comment.id;
 
   Offset get _position {
     if (widget.position != null) {
@@ -229,17 +225,10 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
   void _saveComment() {
     final text = _commentController.text.trim();
     if (text.isNotEmpty) {
-      ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-              .notifier)
-          .saveTemporaryComment(ref, text);
+      ref.read(commentsProvider.notifier).saveTemporaryComment(text);
       _commentController.clear();
     } else {
-      // If text is empty, treat it as cancel
-      ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-              .notifier)
-          .clearTemporaryComment();
+      ref.read(commentsProvider.notifier).clearTemporaryComment();
       _commentController.clear();
     }
   }

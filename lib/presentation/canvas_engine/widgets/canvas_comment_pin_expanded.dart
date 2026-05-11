@@ -119,8 +119,7 @@ class _CanvasCommentPinExpandedState
     final text = _replyController.text.trim();
     if (text.isNotEmpty) {
       ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-              .notifier)
+          .read(commentsProvider.notifier)
           .addSubComment(widget.comment.id, text);
       _replyController.clear();
 
@@ -801,13 +800,11 @@ class _CanvasCommentPinExpandedState
 
     if (isSubComment) {
       ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-              .notifier)
+          .read(commentsProvider.notifier)
           .deleteSubComment(widget.comment.id, commentId);
     } else {
       ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-              .notifier)
+          .read(commentsProvider.notifier)
           .deleteComment(commentId: commentId);
       NarwhalToast.show(
         text: 'Comment removed',

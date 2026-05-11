@@ -271,10 +271,7 @@ class CanvasInteractionService {
 
   /// Clears temporary comment state
   static void clearTemporaryComment({required WidgetRef ref}) {
-    ref
-        .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-            .notifier)
-        .clearTemporaryComment();
+    ref.read(commentsProvider.notifier).clearTemporaryComment();
   }
 
   static Future<void> pipeHistory({
@@ -540,8 +537,7 @@ class CanvasInteractionService {
   }) async {
     try {
       await ref
-          .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-              .notifier)
+          .read(commentsProvider.notifier)
           .deleteComment(commentId: commentId);
     } catch (e) {
       debugPrint('Error deleting comment: $e');
@@ -577,10 +573,7 @@ class CanvasInteractionService {
 
     final commentId = const Uuid().v4();
 
-    ref
-        .read(commentsProvider(ref.read(currentCanvasProvider)?.id ?? '')
-            .notifier)
-        .createTemporaryComment(
+    ref.read(commentsProvider.notifier).createTemporaryComment(
           commentId: commentId,
           position: finalPosition,
           objectId: targetObject?.id,
