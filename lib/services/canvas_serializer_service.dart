@@ -1,6 +1,6 @@
 ﻿import 'package:onyxia/export.dart';
 
-class CanvasSerializerService extends Serializer<CanvasModel> {
+class CanvasSerializerService extends Serializer<CanvasArtifact> {
   @override
   final String projectId;
   final String canvasId;

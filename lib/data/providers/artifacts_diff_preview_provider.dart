@@ -1,7 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 
 class ArtifactsDiffPreview {
-  final Note? note;
+  final NoteArtifact? note;
   final HistoryDiff? targetDiff;
   final bool isRestoring;
 
@@ -12,7 +12,7 @@ class ArtifactsDiffPreview {
   });
 
   ArtifactsDiffPreview copyWith({
-    Note? note,
+    NoteArtifact? note,
     HistoryDiff? targetDiff,
     bool? isRestoring,
   }) {
@@ -24,11 +24,12 @@ class ArtifactsDiffPreview {
   }
 }
 
-class ArtifactsDiffPreviewNotifier extends StateNotifier<ArtifactsDiffPreview?> {
+class ArtifactsDiffPreviewNotifier
+    extends StateNotifier<ArtifactsDiffPreview?> {
   ArtifactsDiffPreviewNotifier() : super(null);
 
   void showHistoricalState({
-    required Note note,
+    required NoteArtifact note,
     required HistoryDiff targetDiff,
   }) {
     state = ArtifactsDiffPreview(
@@ -51,7 +52,7 @@ class ArtifactsDiffPreviewNotifier extends StateNotifier<ArtifactsDiffPreview?> 
 
   bool get isPreviewActive => state != null;
   bool get isRestoring => state?.isRestoring ?? false;
-  Note? get previewNote => state?.note;
+  NoteArtifact? get previewNote => state?.note;
 }
 
 final artifactsDiffPreviewProvider =

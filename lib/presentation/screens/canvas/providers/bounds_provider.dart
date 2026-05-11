@@ -107,7 +107,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
   }
 
   /// Initialize bounds based on canvas type
-  Future<void> initializeBounds(CanvasModel? canvas) async {
+  Future<void> initializeBounds(CanvasArtifact? canvas) async {
     if (_disposed || !mounted) return;
 
     _loadGeneration++;
@@ -115,7 +115,8 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
 
     if (canvas == null) {
       if (!_disposed && _loadGeneration == myGeneration) {
-        state = const CanvasBounds(bounds: CanvasBounds.defaultBounds, isLoading: false);
+        state = const CanvasBounds(
+            bounds: CanvasBounds.defaultBounds, isLoading: false);
       }
       return;
     }
@@ -124,7 +125,8 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
       case CanvasType.whiteboard:
       case CanvasType.flow:
         if (mounted && !_disposed && _loadGeneration == myGeneration) {
-          state = const CanvasBounds(bounds: CanvasBounds.defaultBounds, isLoading: false);
+          state = const CanvasBounds(
+              bounds: CanvasBounds.defaultBounds, isLoading: false);
         }
         break;
 
@@ -142,7 +144,8 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
           await _loadImageAndSetBounds(canvas.imageUrl!, myGeneration);
         } else {
           if (mounted && !_disposed && _loadGeneration == myGeneration) {
-            state = const CanvasBounds(bounds: CanvasBounds.defaultBounds, isLoading: false);
+            state = const CanvasBounds(
+                bounds: CanvasBounds.defaultBounds, isLoading: false);
           }
         }
         break;
@@ -164,13 +167,16 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
 
       // Use ImageService to load the image with a reasonable target size for Firebase Storage compatibility
       // Instead of using getMaxSafeSize() which returns 16K on web, use a more reasonable size
-      const targetSize = Size(2048, 2048); // 2K resolution should be sufficient for most canvases
-      image = await ImageService.getImageAsync(imageUrl, targetSize: targetSize);
+      const targetSize = Size(
+          2048, 2048); // 2K resolution should be sufficient for most canvases
+      image =
+          await ImageService.getImageAsync(imageUrl, targetSize: targetSize);
 
       if (image != null) {
         // For animated images, we need to get the bytes to create codec
         if (imageUrl.endsWith('.gif')) {
-          final bytes = await ImageService.getImageBytes(imageUrl, targetSize: targetSize);
+          final bytes = await ImageService.getImageBytes(imageUrl,
+              targetSize: targetSize);
           if (bytes != null) {
             codec = await ui.instantiateImageCodec(bytes);
             frameCount = codec.frameCount;
@@ -218,7 +224,10 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
         }
 
         // Start animation if it's an animated GIF
-        if (!_disposed && _loadGeneration == generation && isAnimated && codec != null) {
+        if (!_disposed &&
+            _loadGeneration == generation &&
+            isAnimated &&
+            codec != null) {
           _startAnimation(codec);
         }
       } else {
@@ -290,17 +299,23 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
   }
 
   void resumeAnimation() {
-    if (state.isAnimated && state.backgroundCodec != null && _animationTimer == null) {
+    if (state.isAnimated &&
+        state.backgroundCodec != null &&
+        _animationTimer == null) {
       _startAnimation(state.backgroundCodec!);
     }
   }
 
   /// Snap position to grid
-  Offset snap(Offset position) => Offset((position.dx / CanvasBounds.gridSpacing).round() * CanvasBounds.gridSpacing,
-      (position.dy / CanvasBounds.gridSpacing).round() * CanvasBounds.gridSpacing);
+  Offset snap(Offset position) => Offset(
+      (position.dx / CanvasBounds.gridSpacing).round() *
+          CanvasBounds.gridSpacing,
+      (position.dy / CanvasBounds.gridSpacing).round() *
+          CanvasBounds.gridSpacing);
 
   /// Clamp position to canvas bounds
-  Offset clamp(Offset position) => Offset(position.dx.clamp(state.bounds.left, state.bounds.right),
+  Offset clamp(Offset position) => Offset(
+      position.dx.clamp(state.bounds.left, state.bounds.right),
       position.dy.clamp(state.bounds.top, state.bounds.bottom));
 
   /// Get current bounds
@@ -310,7 +325,9 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
   ui.Image? get backgroundImage => state.backgroundImage;
 }
 
-final canvasBoundsProvider = StateNotifierProvider.autoDispose<CanvasBoundsNotifier, CanvasBounds>((ref) {
+final canvasBoundsProvider =
+    StateNotifierProvider.autoDispose<CanvasBoundsNotifier, CanvasBounds>(
+        (ref) {
   final notifier = CanvasBoundsNotifier();
 
   // Watch for canvas changes and re-initialize bounds automatically
@@ -324,7 +341,8 @@ final canvasBoundsProvider = StateNotifierProvider.autoDispose<CanvasBoundsNotif
         needsReinitialize = true;
       } else if (previous.canvasType != next.canvasType) {
         needsReinitialize = true;
-      } else if (next.canvasType == CanvasType.markup && previous.imageUrl != next.imageUrl) {
+      } else if (next.canvasType == CanvasType.markup &&
+          previous.imageUrl != next.imageUrl) {
         needsReinitialize = true;
       }
 

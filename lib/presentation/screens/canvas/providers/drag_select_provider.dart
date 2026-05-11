@@ -71,7 +71,8 @@ class DragSelectNotifier extends StateNotifier<DragSelectState> {
     ref.read(canvasObjectsProvider.notifier).selectObjects(ref
         .read(canvasObjectsProvider)
         .objects
-        .where((e) => newDragRect.overlaps(Rect.fromPoints(e.topLeft, e.bottomRight)))
+        .where((e) =>
+            newDragRect.overlaps(Rect.fromPoints(e.topLeft, e.bottomRight)))
         .toList());
   }
 
@@ -81,11 +82,7 @@ class DragSelectNotifier extends StateNotifier<DragSelectState> {
 }
 
 /// Provider for drag selection functionality
-final dragSelectProvider = StateNotifierProvider.autoDispose<DragSelectNotifier, DragSelectState>(
+final dragSelectProvider =
+    StateNotifierProvider.autoDispose<DragSelectNotifier, DragSelectState>(
   (ref) => DragSelectNotifier(ref),
 );
-
-/// Convenience providers for specific state aspects
-final dragSelectRectProvider = Provider.autoDispose<Rect?>((ref) {
-  return ref.watch(dragSelectProvider).dragRect;
-});

@@ -145,7 +145,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   void _enterEditMode(Artifact item) {
-    if (item is! Note) return;
+    if (item is! NoteArtifact) return;
 
     setState(() {
       _isEditing = true;
@@ -177,13 +177,13 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       return;
     }
 
-    if (item is! Note) return;
+    if (item is! NoteArtifact) return;
 
     final newTitle = _titleController!.text;
     final newContent = _contentController!.text;
 
     if (_isNewPin) {
-      final newArtifact = Note(name: newTitle, content: newContent);
+      final newArtifact = NoteArtifact(name: newTitle, content: newContent);
       ref.read(pinsProvider.notifier).updatePin(
             ref,
             widget.pin.copyWith(linkedArtifactId: newArtifact.id),
@@ -339,7 +339,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
       final artifact = ref.watch(artifactsProvider).firstWhere(
             (req) => req.id == widget.pin.linkedArtifactId,
-            orElse: () => Note(),
+            orElse: () => NoteArtifact(),
           );
 
       // Auto-enter edit mode for new pins (but not right after saving)
@@ -584,7 +584,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                   padding: EdgeInsets.only(left: 9, top: 13),
                                   child: SingleChildScrollView(
                                     child: Text(
-                                      artifact is Note ? artifact.content : '',
+                                      artifact is NoteArtifact
+                                          ? artifact.content
+                                          : '',
                                       style: NarwhalTextStyle(
                                         fontSize: 13,
                                         color: ThemeHelper.neutral900(context),

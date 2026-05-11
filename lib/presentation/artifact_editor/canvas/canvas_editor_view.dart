@@ -185,7 +185,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
   }
 
   Widget _buildCanvas({
-    required CanvasModel canvas,
+    required CanvasArtifact canvas,
     required CanvasObjects objects,
     required ToolMode selectedTool,
     required CanvasTextState objectTextState,
@@ -257,7 +257,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                               objects: objects.objects,
                               selectedObjects: objects.selectedObjects,
                               draggedObjects: ref.watch(draggedObjectsProvider),
-                              dragSelect: ref.watch(dragSelectRectProvider),
+                              dragSelect:
+                                  ref.watch(dragSelectProvider).dragRect,
                               arrowPrimedObjects:
                                   ref.watch(arrowPrimedObjectsProvider),
                               arrowToolPrimedData:

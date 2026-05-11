@@ -35,7 +35,7 @@ ConstellationLayout _buildWikiLinks(
 
   final edges = <ConstellationEdge>[];
   for (final item in items) {
-    if (item is! Note) continue;
+    if (item is! NoteArtifact) continue;
     for (final rawLink in extractWikiLinks(item.content)) {
       final canonical = titleLookup[rawLink.toLowerCase()];
       if (canonical != null && canonical != item.name) {

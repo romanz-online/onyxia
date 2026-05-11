@@ -1,9 +1,9 @@
 ﻿import 'package:onyxia/export.dart';
 
-class Note extends Artifact {
+class NoteArtifact extends Artifact {
   final String content;
 
-  Note({
+  NoteArtifact({
     super.id,
     super.type = ArtifactType.note,
     super.name = 'Untitled',
@@ -18,15 +18,15 @@ class Note extends Artifact {
   });
 
   @override
-  Note copyWith({
-    String? id, 
+  NoteArtifact copyWith({
+    String? id,
     String? name,
     String? parentFolderId,
     String? content,
   }) {
-    return Note(
+    return NoteArtifact(
       id: id ?? this.id,
-      name: name ?? this.name, 
+      name: name ?? this.name,
       parentFolderId: parentFolderId ?? this.parentFolderId,
       //
       content: content ?? this.content,
@@ -38,7 +38,7 @@ class Note extends Artifact {
     return {'content': content};
   }
 
-  Note.fromMap(super.map)
+  NoteArtifact.fromMap(super.map)
       : content =
             ((map['body'] as Map<String, dynamic>?)?['content'] as String?) ??
                 '',
@@ -55,7 +55,7 @@ class Note extends Artifact {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return super == other && other is Note && other.content == content;
+    return super == other && other is NoteArtifact && other.content == content;
   }
 
   @override

@@ -6,11 +6,11 @@ enum CanvasType with NarwhalEnum {
   flow,
 }
 
-class CanvasModel extends Artifact {
+class CanvasArtifact extends Artifact {
   final CanvasType canvasType;
   final String? imageUrl;
 
-  CanvasModel({
+  CanvasArtifact({
     super.id,
     super.type = ArtifactType.canvas,
     super.name = 'Canvas',
@@ -25,7 +25,7 @@ class CanvasModel extends Artifact {
     this.imageUrl,
   });
 
-  CanvasModel.fromMap(super.map)
+  CanvasArtifact.fromMap(super.map)
       : canvasType = CanvasType.values.fromString(
             (map['body'] as Map<String, dynamic>?)?['canvas_type'] ?? ''),
         imageUrl =
@@ -38,14 +38,14 @@ class CanvasModel extends Artifact {
   }
 
   @override
-  CanvasModel copyWith({
+  CanvasArtifact copyWith({
     String? id,
     String? name,
     String? parentFolderId,
     CanvasType? canvasType,
     String? imageUrl,
   }) {
-    return CanvasModel(
+    return CanvasArtifact(
       id: id ?? this.id,
       parentFolderId: parentFolderId ?? this.parentFolderId,
       name: name ?? this.name,
@@ -55,8 +55,8 @@ class CanvasModel extends Artifact {
     );
   }
 
-  factory CanvasModel.fromJson(String source) =>
-      CanvasModel.fromMap(json.decode(source));
+  factory CanvasArtifact.fromJson(String source) =>
+      CanvasArtifact.fromMap(json.decode(source));
 
   @override
   String toString() {
@@ -71,7 +71,7 @@ class CanvasModel extends Artifact {
     if (identical(this, other)) return true;
 
     return super == other &&
-        other is CanvasModel &&
+        other is CanvasArtifact &&
         other.canvasType == canvasType &&
         other.imageUrl == imageUrl;
   }

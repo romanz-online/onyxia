@@ -5,7 +5,7 @@ const _500ms = Duration(milliseconds: 500);
 const _100ms = Duration(milliseconds: 100);
 
 class NoteState {
-  final Note? note;
+  final NoteArtifact? note;
   final BardController? bardController;
   final FocusNode? focusNode;
   final bool isSavedRemotely;
@@ -18,7 +18,7 @@ class NoteState {
   });
 
   NoteState copyWith({
-    Note? note,
+    NoteArtifact? note,
     BardController? bardController,
     FocusNode? focusNode,
     bool? isSavedRemotely,
@@ -34,7 +34,7 @@ class NoteState {
 
 class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
   final String? projectId;
-  final Note _note;
+  final NoteArtifact _note;
   final Ref ref;
 
   bool _mounted = true;
@@ -42,7 +42,8 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
   FocusNode? _focusNode;
   Timer? _debounceTimer;
 
-  NoteNotifier({required this.projectId, required Note note, required this.ref})
+  NoteNotifier(
+      {required this.projectId, required NoteArtifact note, required this.ref})
       : _note = note,
         super(const AsyncValue.loading()) {
     if (projectId == null) {
@@ -58,7 +59,7 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
     try {
       final latestNote = await ArtifactsRepository(projectId: projectId)
               .getDocumentStream(_note.id)
-              .first as Note? ??
+              .first as NoteArtifact? ??
           _note;
 
       final controller = BardController(text: latestNote.content);
@@ -177,8 +178,8 @@ final selectedNoteStateProvider =
       ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
   final authState = ref.watch(authProvider);
 
-  if (item is! Note || projectId == null || authState.value == null) {
-    return NoteNotifier(projectId: projectId, note: Note(), ref: ref);
+  if (item is! NoteArtifact || projectId == null || authState.value == null) {
+    return NoteNotifier(projectId: projectId, note: NoteArtifact(), ref: ref);
   }
 
   return NoteNotifier(projectId: projectId, note: item, ref: ref);

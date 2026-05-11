@@ -4,7 +4,7 @@ import 'dart:math' as math;
 import '../providers/providers.dart';
 
 class Minimap extends ConsumerStatefulWidget {
-  final CanvasModel canvas;
+  final CanvasArtifact canvas;
   const Minimap({super.key, required this.canvas});
 
   @override
@@ -39,7 +39,7 @@ class MinimapState extends ConsumerState<Minimap> {
   /// Extract all image URLs that need to be preloaded
   List<String> _extractImageUrls(
     List<CanvasObject> objects,
-    CanvasModel? currentCanvas,
+    CanvasArtifact? currentCanvas,
   ) {
     final imageUrls = <String>[];
 
@@ -550,7 +550,7 @@ class MinimapCanvasPainter extends CustomPainter {
   final WidgetRef ref;
   final List<CanvasObject> objects;
   final List<CanvasObject> selectedObjects;
-  final CanvasModel? currentCanvas;
+  final CanvasArtifact? currentCanvas;
   final Rect canvasBounds;
   final double scale;
 

@@ -36,7 +36,8 @@ class Sidebar extends ConsumerWidget {
                 tooltip: 'New note',
                 onPressed: () async {
                   if (projectId.isEmpty) return;
-                  await ArtifactsRepository(projectId: projectId).add([Note()]);
+                  await ArtifactsRepository(projectId: projectId)
+                      .add([NoteArtifact()]);
                 },
               ),
               NarwhalIconButton(
@@ -45,7 +46,7 @@ class Sidebar extends ConsumerWidget {
                 onPressed: () async {
                   if (projectId.isEmpty) return;
                   await ArtifactsRepository(projectId: projectId)
-                      .add([FolderModel()]);
+                      .add([FolderArtifact()]);
                 },
               ),
               NarwhalIconButton(
@@ -54,7 +55,7 @@ class Sidebar extends ConsumerWidget {
                 onPressed: () async {
                   if (projectId.isEmpty) return;
                   await ArtifactsRepository(projectId: projectId)
-                      .add([CanvasModel()]);
+                      .add([CanvasArtifact()]);
                 },
               ),
             ],

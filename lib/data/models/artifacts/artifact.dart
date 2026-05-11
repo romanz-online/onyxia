@@ -33,7 +33,7 @@ abstract class Artifact {
         createdAt = TimestampService.fromMap(map['created_at']),
         createdBy = map['created_by'] ?? '',
         updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';  
+        updatedBy = map['updated_by'] ?? '';
 
   /// Factory constructor that creates the appropriate concrete Artifact subclass
   /// based on the 'type' field in the map
@@ -42,9 +42,9 @@ abstract class Artifact {
     final itemType = ArtifactType.values.fromString(typeString ?? '');
 
     return switch (itemType) {
-      ArtifactType.canvas => CanvasModel.fromMap(map),
-      ArtifactType.note => Note.fromMap(map),
-      ArtifactType.folder => FolderModel.fromMap(map),
+      ArtifactType.canvas => CanvasArtifact.fromMap(map),
+      ArtifactType.note => NoteArtifact.fromMap(map),
+      ArtifactType.folder => FolderArtifact.fromMap(map),
     };
   }
 
@@ -117,8 +117,8 @@ abstract class Artifact {
       projectId == null ? '' : '/project/$projectId/$name';
 
   dynamic castToSubtype() => switch (type) {
-        ArtifactType.note => this as Note,
-        ArtifactType.canvas => this as CanvasModel,
-        ArtifactType.folder => this as FolderModel,
+        ArtifactType.note => this as NoteArtifact,
+        ArtifactType.canvas => this as CanvasArtifact,
+        ArtifactType.folder => this as FolderArtifact,
       };
 }

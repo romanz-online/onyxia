@@ -167,8 +167,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
       );
 
       // Handle new pins with empty artifactId - use placeholder note
-      final effectiveNote =
-          note ?? (widget.pin.linkedArtifactId.isEmpty ? Note(name: '') : null);
+      final effectiveNote = note ??
+          (widget.pin.linkedArtifactId.isEmpty ? NoteArtifact(name: '') : null);
 
       // Loading state - show spinner while notes are loading
       if (!notesLoaded && effectiveNote == null) {

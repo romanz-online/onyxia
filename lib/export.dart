@@ -82,7 +82,7 @@ export 'package:super_tree/super_tree.dart';
 export 'package:onyxia/data/models/artifacts/note/note.dart';
 export 'package:onyxia/data/models/project/projects.dart';
 export 'package:onyxia/data/models/history_diff.dart';
-export 'package:onyxia/data/models/artifacts/canvas/canvas_model.dart';
+export 'package:onyxia/data/models/artifacts/canvas/canvas.dart';
 export 'package:onyxia/data/models/artifacts/folder/folder.dart';
 export 'package:onyxia/data/models/user.dart';
 export 'package:onyxia/data/models/project_member.dart';

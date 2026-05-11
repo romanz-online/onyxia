@@ -1,7 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 
-class FolderModel extends Artifact {
-  FolderModel({
+class FolderArtifact extends Artifact {
+  FolderArtifact({
     super.id,
     super.type = ArtifactType.folder,
     super.name = 'Folder',
@@ -14,18 +14,18 @@ class FolderModel extends Artifact {
     //
   });
 
-  FolderModel.fromMap(super.map) : super.fromMap();
+  FolderArtifact.fromMap(super.map) : super.fromMap();
 
   @override
   Map<String, dynamic> toMapSub() => {};
 
   @override
-  FolderModel copyWith({
+  FolderArtifact copyWith({
     String? id,
     String? name,
     String? parentFolderId,
   }) {
-    return FolderModel(
+    return FolderArtifact(
       id: id ?? this.id,
       name: name ?? this.name,
       parentFolderId: parentFolderId ?? this.parentFolderId,

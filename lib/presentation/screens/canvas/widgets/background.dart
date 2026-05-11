@@ -3,14 +3,15 @@ import '../providers/providers.dart';
 import 'dart:ui' as ui;
 
 class Background extends ConsumerStatefulWidget {
-  final CanvasModel canvas;
+  final CanvasArtifact canvas;
   const Background({super.key, required this.canvas});
 
   @override
   ConsumerState<Background> createState() => BackgroundState();
 }
 
-class BackgroundState extends ConsumerState<Background> with WidgetsBindingObserver {
+class BackgroundState extends ConsumerState<Background>
+    with WidgetsBindingObserver {
   bool _disposed = false;
 
   @override
@@ -128,8 +129,12 @@ class _CanvasBackgroundPainter extends NarwhalPainter {
     );
 
     final List<Offset> points = [];
-    for (double x = bounds.left; x < bounds.right; x += CanvasBounds.gridSpacing) {
-      for (double y = bounds.top; y < bounds.bottom; y += CanvasBounds.gridSpacing) {
+    for (double x = bounds.left;
+        x < bounds.right;
+        x += CanvasBounds.gridSpacing) {
+      for (double y = bounds.top;
+          y < bounds.bottom;
+          y += CanvasBounds.gridSpacing) {
         points.add(Offset(x, y));
       }
     }

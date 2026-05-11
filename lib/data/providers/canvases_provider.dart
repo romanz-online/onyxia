@@ -7,13 +7,13 @@ final canvasesProvider = StreamProvider.family((ref, String projectId) {
 
 // Provider to get a specific canvas by ID
 final canvasByIdProvider =
-    Provider.family<CanvasModel?, ({String projectId, String canvasId})>(
+    Provider.family<CanvasArtifact?, ({String projectId, String canvasId})>(
         (ref, params) {
   final canvasesAsync = ref.watch(canvasesProvider(params.projectId));
 
   return canvasesAsync.when(
     data: (canvases) => canvases
-        .cast<CanvasModel?>()
+        .cast<CanvasArtifact?>()
         .firstWhereOrNull((canvas) => canvas?.name == params.canvasId),
     loading: () => null,
     error: (err, stack) => null,

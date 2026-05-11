@@ -164,7 +164,7 @@ class HistoryService {
       if (serializer.itemType == ArtifactType.note) {
         // Parse note data directly from reconstructed state
         try {
-          final note = Note.fromMap(reconstructedState);
+          final note = NoteArtifact.fromMap(reconstructedState);
           ref.read(artifactsDiffPreviewProvider.notifier).showHistoricalState(
                 note: note,
                 targetDiff: targetDiff,

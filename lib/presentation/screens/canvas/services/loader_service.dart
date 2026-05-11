@@ -81,7 +81,7 @@ class CanvasLoaderService {
   }) async {
     if (!context.mounted) return;
 
-    CanvasModel? currentCanvas = ref.read(currentCanvasProvider);
+    CanvasArtifact? currentCanvas = ref.read(currentCanvasProvider);
 
     final projectId = ref.read(projectsProvider).selectedProject?.id;
     if (projectId == null) return;

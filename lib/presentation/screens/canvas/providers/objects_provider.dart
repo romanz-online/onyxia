@@ -13,7 +13,7 @@ final urlCanvasIdProvider = StateProvider.autoDispose<String?>((ref) => null);
 
 // Provides current canvas with URL-first priority
 // Auto-disposes when widget unmounts
-final currentCanvasProvider = Provider.autoDispose<CanvasModel?>((ref) {
+final currentCanvasProvider = Provider.autoDispose<CanvasArtifact?>((ref) {
   final projectId = ref.watch(projectsProvider).selectedProject?.id;
   if (projectId == null) return null;
 
@@ -28,7 +28,7 @@ final currentCanvasProvider = Provider.autoDispose<CanvasModel?>((ref) {
 
   // Priority 2: Selected item (fallback)
   final selectedItem = ref.watch(selectedArtifactProvider);
-  return selectedItem is CanvasModel ? selectedItem : null;
+  return selectedItem is CanvasArtifact ? selectedItem : null;
 });
 
 final canvasObjectsProvider =

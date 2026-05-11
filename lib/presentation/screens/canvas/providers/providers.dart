@@ -14,5 +14,5 @@ export 'pins_provider.dart';
 export 'settings.dart';
 export 'tool_mode_provider.dart';
 export 'toolbar_state_provider.dart';
-export 'user_cursor_provider.dart';
+export 'cursor_icon_provider.dart';
 export 'viewport_provider.dart';
