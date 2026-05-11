@@ -47,8 +47,8 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
     final commentsStream =
         await commentsRepository.watchComments(targetId: canvasId).first;
 
-    final pinsStream = await pinsRepository.getPinsStream().first;
-    final pins = pinsStream.pins;
+    final pinsStream = await pinsRepository.getStream().first;
+    final pins = pinsStream;
 
     final serializedData = {
       'exportDate': TimestampService.getFixedLengthTimestamp(),
@@ -156,11 +156,12 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
 
   Future<void> _deleteExistingPins() async {
     try {
-      final pinsStream = await pinsRepository.getPinsStream().first;
+      final pinsStream = await pinsRepository.getStream().first;
+      final pins = pinsStream;
 
       // Delete every pin
-      if (pinsStream.pins.isNotEmpty) {
-        await pinsRepository.deleteMultiple(pinsStream.pins);
+      if (pins.isNotEmpty) {
+        await pinsRepository.deleteMultiple(pins);
       }
     } catch (e) {
       debugPrint('Error deleting existing pins: $e');

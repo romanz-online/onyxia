@@ -34,8 +34,8 @@ class PinsNotifier extends StateNotifier<Pins> {
   void _init() {
     if (canvasId.isEmpty || projectId == null) return;
 
-    _subscription = repository.getPinsStream().listen((remotePins) async {
-      if (mounted) state = state.copyWith(pins: remotePins.pins);
+    _subscription = repository.getStream().listen((remotePins) async {
+      if (mounted) state = state.copyWith(pins: remotePins);
     });
   }
 
