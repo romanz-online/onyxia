@@ -6,4 +6,5 @@ abstract final class Routes {
   static const String settings = 'settings';
 
   static const String invite = '/invite';
+  static const String resetPassword = '/reset-password';
 }

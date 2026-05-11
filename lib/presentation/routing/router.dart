@@ -49,6 +49,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: Routes.resetPassword,
+        name: 'resetPassword',
+        builder: (context, state) => const ResetPasswordScreen(),
+      ),
+      GoRoute(
         path: '/${Routes.projects}',
         name: Routes.projects,
         builder: (context, state) => const AppShell(projectId: ''),
@@ -100,7 +105,11 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
       }
 
-      if (!isAuth && state.matchedLocation != '/${Routes.projects}') return '/${Routes.projects}';
+      if (!isAuth &&
+          state.matchedLocation != '/${Routes.projects}' &&
+          state.matchedLocation != Routes.resetPassword) {
+        return '/${Routes.projects}';
+      }
 
       return null;
     },

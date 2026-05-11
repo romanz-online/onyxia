@@ -4,12 +4,10 @@ class LandingOverlay extends ConsumerStatefulWidget {
   const LandingOverlay({super.key});
 
   @override
-  ConsumerState<LandingOverlay> createState() =>
-      _LandingOverlayState();
+  ConsumerState<LandingOverlay> createState() => _LandingOverlayState();
 }
 
-class _LandingOverlayState
-    extends ConsumerState<LandingOverlay> {
+class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   static const double _width = 600;
   static const double _height = 400;
   static const double _leftColumnWidth = 180;
@@ -71,15 +69,20 @@ class _LandingOverlayState
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Project Name',
-                  style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext)),
+              Text(
+                'Project Name',
+                style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext),
+              ),
               const SizedBox(height: 10),
               TextFormField(
                 maxLength: 50,
                 controller: _newProjectNameController,
                 autofocus: true,
-                decoration: NarwhalModalInputDecoration.create(dialogContext,
-                    hintText: 'Enter project name'),
+                decoration: NarwhalModalInputDecoration.create(
+                  dialogContext,
+                  hintText: 'Enter project name',
+                ),
+                style: NarwhalTextStyle(),
               ),
             ],
           ),
@@ -165,23 +168,26 @@ class _LandingOverlayState
 
   Widget _buildPreAuth(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            'Onyxia',
-            style: NarwhalTextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: ThemeHelper.neutral700(context),
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Onyxia',
+              style: NarwhalTextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: ThemeHelper.neutral700(context),
+              ),
             ),
-          ),
-          const SizedBox(height: 32),
-          OnyxiaButton(
-            label: 'Sign in with Google',
-            onTap: ref.read(currentUserProvider.notifier).signInWithGoogle,
-          ),
-        ],
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 320,
+              child: AutofillGroup(child: const EmailAuthForm()),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -193,17 +199,18 @@ class _LandingOverlayState
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 6,
         children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 4),
-            child: Text(
-              'Your projects',
-              style: NarwhalTextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: ThemeHelper.neutral500(context),
+          if (projects.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(left: 4),
+              child: Text(
+                'Your projects',
+                style: NarwhalTextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  color: ThemeHelper.neutral500(context),
+                ),
               ),
             ),
-          ),
           Expanded(
             child: projects.isEmpty
                 ? Center(

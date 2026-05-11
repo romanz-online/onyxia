@@ -58,6 +58,24 @@ class CurrentUserNotifier extends StateNotifier<User> {
   Future<bool> signInWithFakeAccount() async =>
       repository.signInWithFakeAccount();
 
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async =>
+      repository.signUpWithEmail(email: email, password: password);
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async =>
+      repository.signInWithEmail(email: email, password: password);
+
+  Future<void> sendPasswordResetEmail(String email) async =>
+      repository.sendPasswordResetEmail(email);
+
+  Future<void> updatePassword(String newPassword) async =>
+      repository.updatePassword(newPassword);
+
   @override
   void dispose() {
     _authSub?.cancel();

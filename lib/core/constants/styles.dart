@@ -2,7 +2,7 @@ import 'package:onyxia/export.dart';
 
 class NarwhalStyles {
   NarwhalStyles._();
- 
+
   static modalTitleStyle(BuildContext context) {
     return NarwhalTextStyle(
       fontSize: 20,
@@ -65,7 +65,8 @@ class NarwhalStyles {
   static modalTextFieldFocusedBorderStyle(BuildContext context) {
     return OutlineInputBorder(
       borderRadius: BorderRadius.all(Radius.circular(6.0)),
-      borderSide: BorderSide(color: ThemeHelper.neutral400(context), width: 1.5),
+      borderSide:
+          BorderSide(color: ThemeHelper.neutral400(context), width: 1.5),
     );
   }
 

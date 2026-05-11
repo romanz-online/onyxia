@@ -40,6 +40,35 @@ class AuthRepository {
     }
   }
 
+  Future<void> signUpWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    await _client.auth.signUp(
+      email: email,
+      password: password,
+      emailRedirectTo: '${Uri.base.origin}/${Routes.projects}',
+    );
+  }
+
+  Future<void> signInWithEmail({
+    required String email,
+    required String password,
+  }) async {
+    await _client.auth.signInWithPassword(email: email, password: password);
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    await _client.auth.resetPasswordForEmail(
+      email,
+      redirectTo: '${Uri.base.origin}${Routes.resetPassword}',
+    );
+  }
+
+  Future<void> updatePassword(String newPassword) async {
+    await _client.auth.updateUser(UserAttributes(password: newPassword));
+  }
+
   Future<void> signOut() async {
     try {
       await _client.auth.signOut();
