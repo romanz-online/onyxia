@@ -186,13 +186,11 @@ class CanvasObjectTextArea extends ConsumerWidget {
               onSecondaryTapUp:
                   gestureRouter.getHandleSecondaryTapUp(interactionContext),
               child: Center(
-                child: MarkdownBody(
-                  data: canvasObject.content,
-                  styleSheet: MarkdownStyleSheet(
-                    p: NarwhalTextStyle(
-                      color: ThemeHelper.neutral900(context),
-                      fontSize: 16,
-                    ),
+                child: Text(
+                  canvasObject.content,
+                  style: NarwhalTextStyle(
+                    color: ThemeHelper.neutral900(context),
+                    fontSize: 16,
                   ),
                 ),
               ),
@@ -285,13 +283,11 @@ class CanvasObjectTextArea extends ConsumerWidget {
           padding: const EdgeInsets.all(5.0),
           child: IntrinsicWidth(
             child: IntrinsicHeight(
-              child: MarkdownBody(
-                data: canvasObject.content,
-                styleSheet: MarkdownStyleSheet(
-                  p: NarwhalTextStyle(
-                    color: ThemeHelper.neutral900(context),
-                    fontSize: 16,
-                  ),
+              child: Text(
+                canvasObject.content,
+                style: NarwhalTextStyle(
+                  color: ThemeHelper.neutral900(context),
+                  fontSize: 16,
                 ),
               ),
             ),
@@ -455,13 +451,11 @@ class CanvasArrowTextArea extends ConsumerWidget {
                       ),
                       borderRadius: BorderRadius.circular(8.0),
                     ),
-                    child: MarkdownBody(
-                      data: canvasObject.content,
-                      styleSheet: MarkdownStyleSheet(
-                        p: NarwhalTextStyle(
-                          color: ThemeHelper.neutral900(context),
-                          fontSize: 16,
-                        ),
+                    child: Text(
+                      canvasObject.content,
+                      style: NarwhalTextStyle(
+                        color: ThemeHelper.neutral900(context),
+                        fontSize: 16,
                       ),
                     ),
                   ),

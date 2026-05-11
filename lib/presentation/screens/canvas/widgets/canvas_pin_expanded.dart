@@ -19,10 +19,12 @@ class CanvasPinExpanded extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<CanvasPinExpanded> createState() => _CanvasPinExpandedWidgetState();
+  ConsumerState<CanvasPinExpanded> createState() =>
+      _CanvasPinExpandedWidgetState();
 }
 
-class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> with TickerProviderStateMixin {
+class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
+    with TickerProviderStateMixin {
   static const Size _defaultSize = Size(420, 300);
 
   late final AnimationController _entranceController;
@@ -45,27 +47,33 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
   ) {
     // Get actual screen viewport bounds
     final screenSize = MediaQuery.of(context).size;
-    final screenViewport = Rect.fromLTWH(0, 0, screenSize.width, screenSize.height);
+    final screenViewport =
+        Rect.fromLTWH(0, 0, screenSize.width, screenSize.height);
 
     // Test in preference order: right-side first, then left-side
     final anchors = [
-      HorizontalAnchor.rightBottomLeft, // Default: right side, pin at bottom-left
+      HorizontalAnchor
+          .rightBottomLeft, // Default: right side, pin at bottom-left
       HorizontalAnchor.rightTopLeft, // Right side, pin at top-left
       HorizontalAnchor.leftBottomRight, // Left side, pin at bottom-right
       HorizontalAnchor.leftTopRight, // Left side, pin at top-right
     ];
 
     for (final anchor in anchors) {
-      final expandedRect = _calculateExpandedRect(pinPosition, size, anchor, scale);
+      final expandedRect =
+          _calculateExpandedRect(pinPosition, size, anchor, scale);
 
       // Convert canvas coordinates to screen coordinates
       final transform = widget.transformationController.value;
-      final screenTopLeft = MatrixUtils.transformPoint(transform, expandedRect.topLeft);
-      final screenBottomRight = MatrixUtils.transformPoint(transform, expandedRect.bottomRight);
+      final screenTopLeft =
+          MatrixUtils.transformPoint(transform, expandedRect.topLeft);
+      final screenBottomRight =
+          MatrixUtils.transformPoint(transform, expandedRect.bottomRight);
       final screenRect = Rect.fromPoints(screenTopLeft, screenBottomRight);
 
       // Check if widget fits in actual screen viewport
-      if (screenViewport.contains(screenRect.topLeft) && screenViewport.contains(screenRect.bottomRight)) {
+      if (screenViewport.contains(screenRect.topLeft) &&
+          screenViewport.contains(screenRect.bottomRight)) {
         return anchor;
       }
     }
@@ -125,7 +133,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
   }
 
   void _navigateToArtifact(Artifact item) {
-    context.go('/project/${ref.read(projectsProvider).selectedProject.id}/${item.id}');
+    context.go(
+        '/project/${ref.read(projectsProvider).selectedProject.id}/${item.id}');
   }
 
   void _togglePinActionMenu({required bool isOpen}) {
@@ -218,7 +227,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
   }
 
   Widget _buildPinActionOverlay(VoidCallback closeOverlay, Artifact item) {
-    final RenderBox? renderBox = _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? renderBox =
+        _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
     if (renderBox == null) return const SizedBox.shrink();
 
     final position = renderBox.localToGlobal(Offset.zero);
@@ -226,14 +236,17 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
 
     // Calculate left-aligned and right-aligned positions
     final leftAlignedPosition = position.dx;
-    final rightAlignedPosition = position.dx - minDropdownWidth + renderBox.size.width;
+    final rightAlignedPosition =
+        position.dx - minDropdownWidth + renderBox.size.width;
 
     // Get viewport width to check for overflow
     final viewportWidth = MediaQuery.of(context).size.width;
-    final wouldOverflowRight = leftAlignedPosition + minDropdownWidth > viewportWidth;
+    final wouldOverflowRight =
+        leftAlignedPosition + minDropdownWidth > viewportWidth;
 
     // Use left-aligned by default, right-aligned if it would overflow
-    final finalLeft = wouldOverflowRight ? rightAlignedPosition : leftAlignedPosition;
+    final finalLeft =
+        wouldOverflowRight ? rightAlignedPosition : leftAlignedPosition;
 
     return Positioned(
       left: finalLeft,
@@ -289,7 +302,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
     return HoverBuilder(
       builder: (context, isHovered) {
         return Container(
-          color: isHovered ? ThemeHelper.blue400(context).withValues(alpha: 0.5) : Colors.transparent,
+          color: isHovered
+              ? ThemeHelper.blue400(context).withValues(alpha: 0.5)
+              : Colors.transparent,
           child: ListTile(
             title: Text(
               title,
@@ -318,7 +333,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
   @override
   Widget build(BuildContext context) {
     try {
-      final double scale = widget.transformationController.value.getMaxScaleOnAxis();
+      final double scale =
+          widget.transformationController.value.getMaxScaleOnAxis();
 
       final artifact = ref.watch(artifactsProvider).firstWhere(
             (req) => req.id == widget.pin.artifactId,
@@ -380,7 +396,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                     border: Border.all(color: borderColor, width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: ThemeHelper.neutral900(context).withValues(alpha: 0.3),
+                        color: ThemeHelper.neutral900(context)
+                            .withValues(alpha: 0.3),
                         blurRadius: 4,
                         offset: Offset(0, 0),
                       ),
@@ -418,17 +435,21 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                                       ),
                                       decoration: InputDecoration(
                                         hintText: 'Untitled',
-                                        hoverColor: ThemeHelper.neutral100(context),
-                                        fillColor: ThemeHelper.neutral100(context),
+                                        hoverColor:
+                                            ThemeHelper.neutral100(context),
+                                        fillColor:
+                                            ThemeHelper.neutral100(context),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color: ThemeHelper.neutral400(context),
+                                            color:
+                                                ThemeHelper.neutral400(context),
                                             width: 1,
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color: ThemeHelper.neutral400(context),
+                                            color:
+                                                ThemeHelper.neutral400(context),
                                             width: 1,
                                           ),
                                         ),
@@ -448,11 +469,14 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                                         bottom: 4,
                                       ),
                                       child: Text(
-                                        artifact.title.isEmpty ? 'Untitled' : artifact.title,
+                                        artifact.title.isEmpty
+                                            ? 'Untitled'
+                                            : artifact.title,
                                         style: NarwhalTextStyle(
                                           fontSize: 16,
                                           fontWeight: FontWeight.w600,
-                                          color: ThemeHelper.neutral900(context),
+                                          color:
+                                              ThemeHelper.neutral900(context),
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -469,15 +493,19 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                             const SizedBox(width: 6),
                             NarwhalOverlay(
                               isOpen: _isPinActionMenuOpen,
-                              onClose: () => _togglePinActionMenu(isOpen: false),
+                              onClose: () =>
+                                  _togglePinActionMenu(isOpen: false),
                               closingDelay: const Duration(milliseconds: 100),
-                              builder: (context, closeOverlay) => _buildPinActionOverlay(closeOverlay, artifact),
+                              builder: (context, closeOverlay) =>
+                                  _buildPinActionOverlay(
+                                      closeOverlay, artifact),
                               child: NarwhalIconButton(
                                 key: _moreButtonKey,
                                 icon: NarwhalIcons.moreDots,
                                 size: 32,
                                 isPressed: _isPinActionMenuOpen,
-                                onPressed: () => _togglePinActionMenu(isOpen: !_isPinActionMenuOpen),
+                                onPressed: () => _togglePinActionMenu(
+                                    isOpen: !_isPinActionMenuOpen),
                               ),
                             ),
                             const SizedBox(width: 6),
@@ -504,10 +532,12 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                                       child: Container(
                                         decoration: BoxDecoration(
                                           border: Border.all(
-                                            color: ThemeHelper.neutral400(context),
+                                            color:
+                                                ThemeHelper.neutral400(context),
                                             width: 1,
                                           ),
-                                          borderRadius: BorderRadius.circular(4),
+                                          borderRadius:
+                                              BorderRadius.circular(4),
                                         ),
                                         padding: const EdgeInsets.all(8),
                                         child: TextField(
@@ -516,7 +546,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                                           expands: true,
                                           style: NarwhalTextStyle(
                                             fontSize: 13,
-                                            color: ThemeHelper.neutral900(context),
+                                            color:
+                                                ThemeHelper.neutral900(context),
                                             height: 1.5,
                                           ),
                                           decoration: const InputDecoration(
@@ -535,7 +566,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                                       children: [
                                         NarwhalButton(
                                           text: 'Cancel',
-                                          onTap: () => _exitEditMode(save: false),
+                                          onTap: () =>
+                                              _exitEditMode(save: false),
                                           type: NarwhalButtonType.light,
                                         ),
                                         NarwhalButton(
@@ -550,14 +582,12 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded> wit
                               : Padding(
                                   padding: EdgeInsets.only(left: 9, top: 13),
                                   child: SingleChildScrollView(
-                                    child: MarkdownBody(
-                                      data: artifact is Note ? artifact.content : '',
-                                      styleSheet: MarkdownStyleSheet(
-                                        p: NarwhalTextStyle(
-                                          fontSize: 13,
-                                          color: ThemeHelper.neutral900(context),
-                                          height: 1.5,
-                                        ),
+                                    child: Text(
+                                      artifact is Note ? artifact.content : '',
+                                      style: NarwhalTextStyle(
+                                        fontSize: 13,
+                                        color: ThemeHelper.neutral900(context),
+                                        height: 1.5,
                                       ),
                                     ),
                                   ),

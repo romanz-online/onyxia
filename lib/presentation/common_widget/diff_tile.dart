@@ -101,8 +101,9 @@ class _DiffTileState extends ConsumerState<DiffTile> {
 
   @override
   Widget build(BuildContext context) {
-    final backgroundColor =
-        widget.isSelected ? ThemeHelper.blue400(context).withValues(alpha: 0.5) : Colors.transparent;
+    final backgroundColor = widget.isSelected
+        ? ThemeHelper.blue400(context).withValues(alpha: 0.5)
+        : Colors.transparent;
 
     return Card(
       elevation: 0,
@@ -133,9 +134,12 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                     onTap: widget.onCaretTap,
                     borderRadius: BorderRadius.circular(4),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 4, vertical: 4),
                       child: NarwhalIcon(
-                        widget.isExpanded ? NarwhalIcons.expandArrowExpanded : NarwhalIcons.expandArrowCollapsed,
+                        widget.isExpanded
+                            ? NarwhalIcons.expandArrowExpanded
+                            : NarwhalIcons.expandArrowCollapsed,
                         size: 16,
                         color: ThemeHelper.neutral600(context),
                       ),
@@ -155,7 +159,10 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                               child: TextField(
                                 controller: editingController,
                                 autofocus: true,
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .bodyMedium
+                                    ?.copyWith(
                                       fontWeight: FontWeight.w500,
                                       fontSize: 14,
                                       color: ThemeHelper.neutral800(context),
@@ -180,7 +187,8 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                                 Flexible(
                                   child: Text(
                                     widget.diff.title.isEmpty
-                                        ? DateFormat('MMM d, h:mm a').format(widget.diff.timestamp)
+                                        ? DateFormat('MMM d, h:mm a')
+                                            .format(widget.diff.timestamp)
                                         : widget.diff.title,
                                     style: NarwhalTextStyle(
                                       fontSize: 14,
@@ -195,7 +203,8 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                                 if (widget.diff.title.isNotEmpty) ...[
                                   const SizedBox(width: 10),
                                   Text(
-                                    DateFormat('MMM d, h:mm a').format(widget.diff.timestamp),
+                                    DateFormat('MMM d, h:mm a')
+                                        .format(widget.diff.timestamp),
                                     style: NarwhalTextStyle(
                                       fontSize: 12,
                                       color: ThemeHelper.neutral500(context),
@@ -215,7 +224,8 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                             vertical: 3,
                           ),
                           decoration: BoxDecoration(
-                            color: ThemeHelper.blue700(context).withValues(alpha: 0.5),
+                            color: ThemeHelper.blue700(context)
+                                .withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
@@ -240,9 +250,12 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                     closingDelay: const Duration(milliseconds: 100),
                     builder: (context, closeOverlay) {
                       final RenderBox? buttonRenderBox =
-                          _menuButtonKey.currentContext?.findRenderObject() as RenderBox?;
+                          _menuButtonKey.currentContext?.findRenderObject()
+                              as RenderBox?;
                       final buttonSize = buttonRenderBox?.size ?? Size.zero;
-                      final buttonOffset = buttonRenderBox?.localToGlobal(Offset.zero) ?? Offset.zero;
+                      final buttonOffset =
+                          buttonRenderBox?.localToGlobal(Offset.zero) ??
+                              Offset.zero;
 
                       return _DiffTileMenuOverlay(
                         isCurrent: widget.isCurrent,
@@ -265,7 +278,9 @@ class _DiffTileState extends ConsumerState<DiffTile> {
                         child: NarwhalIcon(
                           NarwhalIcons.moreDots,
                           size: 20,
-                          color: isMenuHovered ? ThemeHelper.neutral500(context) : ThemeHelper.neutral800(context),
+                          color: isMenuHovered
+                              ? ThemeHelper.neutral500(context)
+                              : ThemeHelper.neutral800(context),
                         ),
                       );
                     }),
@@ -368,7 +383,8 @@ class _DiffTileMenuOverlay extends ConsumerWidget {
   }) {
     return InkWell(
       onTap: isActive ? onTap : () {},
-      mouseCursor: isActive ? SystemMouseCursors.click : SystemMouseCursors.basic,
+      mouseCursor:
+          isActive ? SystemMouseCursors.click : SystemMouseCursors.basic,
       borderRadius: BorderRadius.circular(8),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
@@ -378,7 +394,9 @@ class _DiffTileMenuOverlay extends ConsumerWidget {
               child: Text(
                 title,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: isActive ? ThemeHelper.neutral900(context) : ThemeHelper.neutral600(context),
+                      color: isActive
+                          ? ThemeHelper.neutral900(context)
+                          : ThemeHelper.neutral600(context),
                     ),
               ),
             ),

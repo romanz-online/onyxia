@@ -94,7 +94,6 @@ export 'package:uuid/uuid.dart';
 export 'package:go_router/go_router.dart';
 export 'package:supabase_flutter/supabase_flutter.dart';
 export 'package:contextmenu/contextmenu.dart';
-export 'package:flutter_markdown/flutter_markdown.dart';
 export 'package:flutter_svg/svg.dart';
 
 //models

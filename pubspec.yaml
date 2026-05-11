@@ -35,12 +35,7 @@ dependencies:
   flutter_svg: ^2.2.1
   uuid: ^4.5.1
   go_router: ^14.8.1
-  image_picker: ^1.1.2
-  flutter_colorpicker: ^1.1.0
-  equatable: ^2.0.7
   path: ^1.8.3
-  super_tree:
-    path: lib/vendor/super_tree
   contextmenu: ^3.0.0
   file_picker: ^10.1.2
   super_drag_and_drop: ^0.8.24
@@ -50,21 +45,18 @@ dependencies:
   intl: ^0.19.0
   shared_preferences: ^2.2.2
   http: ^1.2.0
-  universal_html: ^2.2.4
-  crypto: ^3.0.6
-  flutter_markdown: ^0.7.3+1
   vector_math: any
   collection: ^1.19.1
   json_patch: ^3.0.0
   lottie: ^3.3.0
   web: ^1.0.0
-  custom_mouse_cursor: ^1.1.3
-  touchable:
-    path: lib/vendor/touchable
-  pasteboard: ^0.4.0
-  package_info_plus: ^9.0.0
   speech_balloon: ^0.0.4
   supabase_flutter: ^2.12.4
+
+  touchable:
+    path: lib/vendor/touchable
+  super_tree:
+    path: lib/vendor/super_tree
 
 dependency_overrides:
   super_tree:
