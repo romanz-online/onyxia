@@ -24,7 +24,7 @@ class ArtifactsSidebarFooter extends ConsumerWidget {
             onTap: () => context.go('/${Routes.projects}'),
           ),
           const Spacer(),
-          const ProjectSettingsButton(),
+          if (selectedProject != null) const ProjectSettingsButton(),
         ],
       ),
     );
