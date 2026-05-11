@@ -1,28 +1,320 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'package:onyxia/helpers/safe_right_click_menu_position.dart';
-import 'package:onyxia/presentation/screens/canvas/utils/image_drag_data.dart';
-import 'canvas_right_click.dart';
 import '../providers/providers.dart';
 import '../services/services.dart';
 import 'package:web/web.dart' as web;
 
+class RightClickMenuItem {
+  final String label;
+  final IconData? icon;
+  final VoidCallback? onTap;
+  final List<RightClickMenuItem>? submenu;
+  final bool dividerBefore;
+
+  const RightClickMenuItem({
+    required this.label,
+    this.icon,
+    this.onTap,
+    this.submenu,
+    this.dividerBefore = false,
+  });
+
+  bool get enabled => onTap != null || submenu != null;
+  bool get hasSubmenu => submenu != null;
+}
+
+OverlayEntry? _activeMenuOverlay;
+
+void _closeAllMenus() {
+  if (_activeMenuOverlay != null) {
+    _activeMenuOverlay!.remove();
+    _activeMenuOverlay!.dispose();
+    _activeMenuOverlay = null;
+  }
+}
+
+void canvasRightClick(
+  BuildContext context,
+  bool isMarkup,
+  Offset globalPosition,
+  Offset localPosition,
+  WidgetRef ref, {
+  CanvasObject? clickedObj,
+}) {
+  _closeAllMenus();
+
+  final List<RightClickMenuItem> items;
+  if (clickedObj == null) {
+    items = _whitespaceItems(ref, isMarkup, localPosition);
+  } else {
+    if (!ref.read(canvasObjectsProvider).selectedObjects.contains(clickedObj)) {
+      ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+      ref.read(canvasObjectsProvider.notifier).selectObject(clickedObj);
+    }
+    items = _objectItems(ref, isMarkup, localPosition, clickedObj);
+  }
+
+  _activeMenuOverlay = OverlayEntry(
+    builder: (_) => CanvasRightClickMenu(
+      items: items,
+      globalPosition: globalPosition,
+      onClose: _closeAllMenus,
+    ),
+  );
+  Overlay.of(context).insert(_activeMenuOverlay!);
+}
+
+List<RightClickMenuItem> _whitespaceItems(
+  WidgetRef ref,
+  bool isMarkup,
+  Offset position,
+) {
+  final snapToGrid = ref.read(canvasSettingsProvider(Setting.snapToGrid));
+  final showMinimap = ref.read(canvasSettingsProvider(Setting.showMinimap));
+  final showToolbar = ref.read(canvasSettingsProvider(Setting.showToolbar));
+
+  return [
+    RightClickMenuItem(
+      label: 'Add Comment',
+      icon: Icons.comment,
+      onTap: () => _addComment(ref, position, null),
+    ),
+    if (isMarkup)
+      RightClickMenuItem(
+        label: 'Add Pin',
+        icon: Icons.track_changes,
+        onTap: () => _addArtifact(ref, position, null, isMarkup),
+      ),
+    if (!isMarkup)
+      RightClickMenuItem(
+        label: 'Paste',
+        icon: Icons.content_paste,
+        onTap: () => _paste(ref, position),
+        dividerBefore: true,
+      ),
+    if (!isMarkup)
+      RightClickMenuItem(
+        label: 'Turn ${snapToGrid ? 'off' : 'on'} snap to grid',
+        icon: Icons.grid_on,
+        onTap: () => _toggleSetting(ref, Setting.snapToGrid),
+        dividerBefore: true,
+      ),
+    RightClickMenuItem(
+      label: '${showMinimap ? 'Hide' : 'Show'} mini-map',
+      icon: Icons.map,
+      onTap: () => _toggleSetting(ref, Setting.showMinimap),
+    ),
+    if (!isMarkup)
+      RightClickMenuItem(
+        label: '${showToolbar ? 'Hide' : 'Show'} toolbar',
+        icon: Icons.build,
+        onTap: () => _toggleSetting(ref, Setting.showToolbar),
+      ),
+    RightClickMenuItem(
+      label: 'Get link to diagram',
+      icon: Icons.link,
+      onTap: _copyDiagramLink,
+    ),
+  ];
+}
+
+List<RightClickMenuItem> _objectItems(
+  WidgetRef ref,
+  bool isMarkup,
+  Offset position,
+  CanvasObject clickedObj,
+) {
+  final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
+  final canMoveBackward = objectsNotifier.canMoveBackward(clickedObj);
+  final canMoveForward = objectsNotifier.canMoveForward(clickedObj);
+
+  return [
+    RightClickMenuItem(
+      label: 'Add Comment',
+      icon: Icons.comment,
+      onTap: () => _addComment(ref, position, clickedObj),
+    ),
+    RightClickMenuItem(
+      label: 'Add Pin',
+      icon: Icons.track_changes,
+      onTap: () => _addArtifact(ref, position, clickedObj, isMarkup),
+    ),
+    RightClickMenuItem(
+      label: 'Cut',
+      icon: Icons.content_cut,
+      onTap: () => _cut(ref),
+      dividerBefore: true,
+    ),
+    RightClickMenuItem(
+      label: 'Copy',
+      icon: Icons.content_copy,
+      onTap: () => _copy(ref),
+    ),
+    RightClickMenuItem(
+      label: 'Delete',
+      icon: Icons.delete_outline,
+      onTap: () => _delete(ref),
+    ),
+    RightClickMenuItem(
+      label: 'Arrange',
+      icon: Icons.layers,
+      dividerBefore: true,
+      submenu: [
+        RightClickMenuItem(
+          label: 'Bring Forward',
+          icon: Icons.keyboard_arrow_up,
+          onTap: canMoveForward
+              ? () => _moveObjects(ref, clickedObj, _MoveDirection.forward)
+              : null,
+        ),
+        RightClickMenuItem(
+          label: 'Bring to Front',
+          icon: Icons.keyboard_double_arrow_up,
+          onTap: canMoveForward
+              ? () => _moveObjects(ref, clickedObj, _MoveDirection.toFront)
+              : null,
+        ),
+        RightClickMenuItem(
+          label: 'Send Backward',
+          icon: Icons.keyboard_arrow_down,
+          onTap: canMoveBackward
+              ? () => _moveObjects(ref, clickedObj, _MoveDirection.backward)
+              : null,
+        ),
+        RightClickMenuItem(
+          label: 'Send to Back',
+          icon: Icons.keyboard_double_arrow_down,
+          onTap: canMoveBackward
+              ? () => _moveObjects(ref, clickedObj, _MoveDirection.toBack)
+              : null,
+        ),
+      ],
+    ),
+  ];
+}
+
+// ---------------------------------------------------------------------------
+// Action handlers
+// ---------------------------------------------------------------------------
+
+Future<void> _addComment(
+  WidgetRef ref,
+  Offset position,
+  CanvasObject? targetObject,
+) =>
+    CanvasInteractionService.createComment(
+      ref: ref,
+      position: position,
+      targetObject: targetObject,
+    );
+
+void _addArtifact(
+  WidgetRef ref,
+  Offset position,
+  CanvasObject? targetObject,
+  bool isMarkup,
+) {
+  if (targetObject == null && !isMarkup) return;
+  CanvasInteractionService.createPin(
+    ref: ref,
+    position: position,
+    item: null,
+    targetObject: targetObject,
+  );
+}
+
+Future<void> _paste(WidgetRef ref, Offset position) async {
+  final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
+  final pasted = await CanvasClipboardService.paste(
+    targetPosition: position,
+    ref: ref,
+  );
+  objectsNotifier.addObjects(ref, pasted.$1);
+  objectsNotifier.clearSelectedObjects();
+  ref.read(pinsProvider.notifier).addPins(ref, pasted.$2);
+}
+
+Future<void> _cut(WidgetRef ref) async {
+  final selected = ref.read(canvasObjectsProvider).selectedObjects;
+  await CanvasClipboardService.copy(objects: selected);
+  ref.read(canvasObjectsProvider.notifier).deleteObjects(ref, selected);
+}
+
+Future<void> _copy(WidgetRef ref) async {
+  final selected = ref.read(canvasObjectsProvider).selectedObjects;
+  await CanvasClipboardService.copy(objects: selected);
+}
+
+void _delete(WidgetRef ref) {
+  final selected = ref.read(canvasObjectsProvider).selectedObjects;
+  ref.read(canvasObjectsProvider.notifier).deleteObjects(ref, selected);
+}
+
+void _toggleSetting(WidgetRef ref, Setting setting) {
+  ref.read(canvasSettingsProvider(setting).notifier).update((state) => !state);
+}
+
+void _copyDiagramLink() {
+  Clipboard.setData(ClipboardData(text: web.window.location.href));
+  NarwhalToast.show(
+    text: 'Link copied to clipboard',
+    type: ToastType.success,
+  );
+}
+
+enum _MoveDirection { forward, backward, toFront, toBack }
+
+void _moveObjects(
+  WidgetRef ref,
+  CanvasObject clickedObj,
+  _MoveDirection direction,
+) {
+  final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
+  final selected = ref.read(canvasObjectsProvider).selectedObjects;
+  final targets = selected.isNotEmpty ? selected : [clickedObj];
+
+  for (final obj in targets) {
+    switch (direction) {
+      case _MoveDirection.forward:
+        objectsNotifier.moveObjectForward(ref, obj);
+        break;
+      case _MoveDirection.backward:
+        objectsNotifier.moveObjectBackward(ref, obj);
+        break;
+      case _MoveDirection.toFront:
+        objectsNotifier.moveObjectToFront(ref, obj);
+        break;
+      case _MoveDirection.toBack:
+        objectsNotifier.moveObjectToBack(ref, obj);
+        break;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Widget
+// ---------------------------------------------------------------------------
+
+const double _menuWidth = 220;
+const double _submenuWidth = 200;
+const double _itemHeight = 40;
+const double _itemRowHeight = 42; // item + 2px vertical margin
+const double _submenuItemHeight = 36;
+const double _submenuItemRowHeight = 38;
+const double _dividerSlot = 9; // 1px line + 8px vertical margin
+const double _menuVerticalPadding = 16; // 8px top + 8px bottom
+const Duration _submenuOpenDelay = Duration(milliseconds: 200);
+const Duration _submenuCloseDelay = Duration(milliseconds: 150);
+
 class CanvasRightClickMenu extends StatefulWidget {
-  final bool isMarkup;
-  final List<RightClickMenuOption> options;
+  final List<RightClickMenuItem> items;
   final Offset globalPosition;
-  final Offset localPosition;
-  final WidgetRef ref;
-  final CanvasObject? clickedObj;
   final VoidCallback onClose;
 
   const CanvasRightClickMenu({
     super.key,
-    required this.isMarkup,
-    required this.options,
+    required this.items,
     required this.globalPosition,
-    required this.localPosition,
-    required this.ref,
-    required this.clickedObj,
     required this.onClose,
   });
 
@@ -31,740 +323,239 @@ class CanvasRightClickMenu extends StatefulWidget {
 }
 
 class _CanvasRightClickMenuState extends State<CanvasRightClickMenu> {
-  bool _isSubmenuOpen = false;
-  bool _isHoveringArrange = false;
-  bool _isHoveringSubmenu = false;
+  int _hoveredIndex = -1;
+  int _submenuParentIndex = -1;
+  bool _hoveringSubmenu = false;
   OverlayEntry? _submenuOverlay;
-  Timer? _closeTimer;
-  Timer? _hoverDelayTimer;
-  OverlayEntry? _importSubmenuOverlay;
-  Timer? _importCloseTimer;
-  Timer? _importHoverDelayTimer;
-  Offset _actualMenuPosition = Offset.zero;
-  String _hoveredItemId = ''; // Track which regular item is hovered
-  final List<RightClickMenuOption> _arrangeOptions = [
-    RightClickMenuOption.bringForward,
-    RightClickMenuOption.bringToFront,
-    RightClickMenuOption.sendBackward,
-    RightClickMenuOption.sendToBack,
-  ];
+  Timer? _openDelay;
+  Timer? _closeDelay;
+  Offset _menuPosition = Offset.zero;
 
   @override
-  void initState() {
-    super.initState();
-    // Menu is created directly in build() - no need for overlay creation
+  void dispose() {
+    _openDelay?.cancel();
+    _closeDelay?.cancel();
+    _closeSubmenu();
+    super.dispose();
   }
 
-  void _showSubmenu() {
-    if (_submenuOverlay != null) return;
+  double _menuHeight(List<RightClickMenuItem> items) {
+    final dividerCount = items.where((i) => i.dividerBefore).length;
+    return items.length * _itemRowHeight +
+        dividerCount * _dividerSlot +
+        _menuVerticalPadding;
+  }
 
-    final screenSize = MediaQuery.of(context).size;
+  double _itemOffsetY(int index) {
+    double offset = 8;
+    for (int i = 0; i < index; i++) {
+      if (widget.items[i].dividerBefore) offset += _dividerSlot;
+      offset += _itemRowHeight;
+    }
+    if (widget.items[index].dividerBefore) offset += _dividerSlot;
+    return offset;
+  }
 
-    // Get the actual position of the main menu from the build method
-    final actualMenuPosition = _actualMenuPosition;
+  void _onHoverItem(int index, bool entering) {
+    if (!mounted) return;
+    final item = widget.items[index];
 
-    // Calculate submenu dimensions properly
-    final submenuHeight = (_arrangeOptions.length * 38.0) + 16.0; // Account for padding
-    final submenuWidth = 200.0;
-    final arrangeOffset = _getArrangeItemOffset();
-
-    // Calculate initial submenu position (to the right of main menu)
-    double submenuTop = actualMenuPosition.dy + arrangeOffset;
-    double submenuLeft = actualMenuPosition.dx + 220 + 2; // Main menu width + gap
-
-    // Check if submenu goes off-screen vertically
-    if (submenuTop + submenuHeight > screenSize.height - 16) {
-      // Try positioning above the arrange item
-      submenuTop = actualMenuPosition.dy + arrangeOffset - submenuHeight;
-
-      // If still off-screen, position at bottom of screen
-      if (submenuTop < 16) {
-        submenuTop = screenSize.height - submenuHeight - 16;
+    if (entering) {
+      setState(() => _hoveredIndex = index);
+      if (item.hasSubmenu) {
+        _closeDelay?.cancel();
+        _openDelay?.cancel();
+        _openDelay = Timer(_submenuOpenDelay, () {
+          if (!mounted) return;
+          if (_hoveredIndex == index) _openSubmenu(index);
+        });
+      } else {
+        _scheduleSubmenuClose();
+      }
+    } else {
+      setState(() {
+        if (_hoveredIndex == index) _hoveredIndex = -1;
+      });
+      if (item.hasSubmenu) {
+        _openDelay?.cancel();
+        _scheduleSubmenuClose();
       }
     }
+  }
 
-    // Check if submenu goes off-screen horizontally
-    if (submenuLeft + submenuWidth > screenSize.width - 16) {
-      // Position submenu to the left of main menu
-      submenuLeft = actualMenuPosition.dx - submenuWidth - 2;
+  void _openSubmenu(int index) {
+    _closeSubmenu();
+    final item = widget.items[index];
+    if (item.submenu == null) return;
 
-      // If still off-screen on the left, clamp to screen edge
-      if (submenuLeft < 16) {
-        submenuLeft = 16;
-      }
+    final screen = MediaQuery.of(context).size;
+    final submenuHeight =
+        item.submenu!.length * _submenuItemRowHeight + _menuVerticalPadding;
+    final anchorY = _menuPosition.dy + _itemOffsetY(index);
+
+    double top = anchorY;
+    if (top + submenuHeight > screen.height - 16) {
+      top = anchorY - submenuHeight;
+      if (top < 16) top = screen.height - submenuHeight - 16;
     }
 
-    final submenuPosition = Offset(submenuLeft, submenuTop);
+    double left = _menuPosition.dx + _menuWidth + 2;
+    if (left + _submenuWidth > screen.width - 16) {
+      left = _menuPosition.dx - _submenuWidth - 2;
+      if (left < 16) left = 16;
+    }
+
+    setState(() => _submenuParentIndex = index);
 
     _submenuOverlay = OverlayEntry(
-      builder: (context) => Positioned(
-        left: submenuPosition.dx,
-        top: submenuPosition.dy,
+      builder: (_) => Positioned(
+        left: left,
+        top: top,
         child: MouseRegion(
           onEnter: (_) {
-            _closeTimer?.cancel();
-            if (mounted) {
-              setState(() {
-                _isHoveringSubmenu = true;
-                _isSubmenuOpen = true;
-              });
-            }
+            _closeDelay?.cancel();
+            if (!mounted) return;
+            setState(() => _hoveringSubmenu = true);
           },
           onExit: (_) {
-            if (mounted) {
-              setState(() {
-                _isHoveringSubmenu = false;
-              });
-              _checkAndCloseSubmenu();
-            }
+            if (!mounted) return;
+            setState(() => _hoveringSubmenu = false);
+            _scheduleSubmenuClose();
           },
-          child: _SubmenuWidget(
-            arrangeOptions: _arrangeOptions,
-            onItemTap: _handleSubmenuItemTap,
-            isOptionEnabled: _isOptionEnabled,
-            ref: widget.ref,
+          child: _SubmenuPanel(
+            items: item.submenu!,
+            onItemTap: (subItem) {
+              subItem.onTap?.call();
+              widget.onClose();
+            },
           ),
         ),
       ),
     );
-
     Overlay.of(context).insert(_submenuOverlay!);
   }
 
   void _closeSubmenu() {
     _submenuOverlay?.remove();
     _submenuOverlay = null;
+    if (mounted) setState(() => _submenuParentIndex = -1);
   }
 
-  void _closeImportSubmenu() {
-    _importSubmenuOverlay?.remove();
-    _importSubmenuOverlay = null;
-  }
-
-  void _handleMenuItemTap(RightClickMenuOption option) {
-    if (option == RightClickMenuOption.arrange) {
-      // Don't handle clicks on submenu parents - hover-only
-      return;
-    } else {
-      // Handle regular menu item
-      _handleMenuAction(option);
-      widget.onClose();
-    }
-  }
-
-  void _onArrangeHover(bool isHovering) {
-    if (mounted) {
-      setState(() {
-        _isHoveringArrange = isHovering;
-      });
-
-      if (isHovering) {
-        _hoverDelayTimer?.cancel();
-        _closeTimer?.cancel();
-
-        // Add small delay before opening submenu for better UX
-        _hoverDelayTimer = Timer(const Duration(milliseconds: 200), () {
-          if (mounted && _isHoveringArrange) {
-            setState(() {
-              _isSubmenuOpen = true;
-            });
-            _showSubmenu();
-          }
-        });
-      } else {
-        _hoverDelayTimer?.cancel();
-        _checkAndCloseSubmenu();
-      }
-    }
-  }
-
-  void _checkAndCloseSubmenu() {
-    // Cancel any existing timer
-    _closeTimer?.cancel();
-
-    // Only close if not hovering either Arrange or submenu
-    if (!_isHoveringArrange && !_isHoveringSubmenu) {
-      // Add small delay to allow moving cursor between elements
-      _closeTimer = Timer(const Duration(milliseconds: 150), () {
-        if (mounted && !_isHoveringArrange && !_isHoveringSubmenu) {
-          setState(() {
-            _isSubmenuOpen = false;
-          });
-          _closeSubmenu();
-        }
-      });
-    }
-  }
-
-  // Calculate the Y offset where the Arrange item appears in the menu
-  double _getArrangeItemOffset() {
-    double offset = 8; // Top padding of menu container
-    for (int i = 0; i < widget.options.length; i++) {
-      final option = widget.options[i];
-
-      // Add divider height if needed
-      if (_shouldAddDivider(option, i > 0 ? widget.options[i - 1] : null)) {
-        offset += 9; // Divider height + margins
-      }
-
-      if (option == RightClickMenuOption.arrange) {
-        return offset;
-      }
-
-      offset += 42; // Menu item height including margins
-    }
-    return 0;
-  }
-
-  @override
-  void dispose() {
-    _closeTimer?.cancel();
-    _hoverDelayTimer?.cancel();
-    _closeSubmenu();
-    _importCloseTimer?.cancel();
-    _importHoverDelayTimer?.cancel();
-    _closeImportSubmenu();
-    super.dispose();
-  }
-
-  void _handleSubmenuItemTap(RightClickMenuOption option) {
-    _handleMenuAction(option);
-    widget.onClose();
-  }
-
-  void _handleMenuAction(RightClickMenuOption option) async {
-    // Reuse existing logic from canvas_right_click.dart
-    await _handleMenuItemTapInternal(
-      widget.isMarkup,
-      option,
-      widget.localPosition,
-      context,
-      widget.ref,
-      widget.clickedObj,
-    );
-  }
-
-  // Copy of the _handleMenuItemTap function from canvas_right_click.dart
-  Future<void> _handleMenuItemTapInternal(
-    bool isMarkup,
-    RightClickMenuOption option,
-    Offset position,
-    BuildContext context,
-    WidgetRef ref,
-    CanvasObject? clickedObj,
-  ) async {
-    final canvasId = ref.read(currentCanvasProvider)?.id ?? '';
-    final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-    final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
-
-    switch (option) {
-      case RightClickMenuOption.addComment:
-        await CanvasInteractionService.createComment(
-          ref: ref,
-          position: position,
-          targetObject: clickedObj,
-        );
-        break;
-      case RightClickMenuOption.addArtifact:
-        try {
-          if (clickedObj != null || isMarkup) {
-            CanvasInteractionService.createPin(
-              ref: ref,
-              position: position,
-              item: null,
-              targetObject: clickedObj,
-            );
-          }
-        } catch (e) {
-          debugPrint(e.toString());
-          rethrow;
-        }
-        break;
-      case RightClickMenuOption.paste:
-        final pasted = await CanvasClipboardService.paste(
-          targetPosition: position,
-          ref: ref,
-        );
-        objectsNotifier.addObjects(ref, pasted.$1);
-        objectsNotifier.clearSelectedObjects();
-        ref.read(pinsProvider.notifier).addPins(ref, pasted.$2);
-        break;
-      case RightClickMenuOption.cut:
-        await CanvasClipboardService.copy(objects: selectedObjects);
-        objectsNotifier.deleteObjects(ref, selectedObjects);
-        break;
-      case RightClickMenuOption.copy:
-        await CanvasClipboardService.copy(objects: selectedObjects);
-        break;
-      case RightClickMenuOption.delete:
-        objectsNotifier.deleteObjects(ref, selectedObjects);
-        break;
-      case RightClickMenuOption.snapToGrid:
-        ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).update((state) => !state);
-        break;
-      case RightClickMenuOption.showMinimap:
-        ref.read(canvasSettingsProvider(Setting.showMinimap).notifier).update((state) => !state);
-        break;
-      case RightClickMenuOption.showToolbar:
-        ref.read(canvasSettingsProvider(Setting.showToolbar).notifier).update((state) => !state);
-        break;
-      case RightClickMenuOption.importImage:
-        await _handleImportImage(ref, position, canvasId);
-        break;
-      case RightClickMenuOption.getDiagramLink:
-        Clipboard.setData(ClipboardData(text: _getCurrentCanvasUrl()));
-        NarwhalToast.show(
-          text: 'Link copied to clipboard',
-          type: ToastType.success,
-        );
-        break;
-      case RightClickMenuOption.arrange:
-        // This case should not be called directly
-        break;
-      case RightClickMenuOption.sendBackward:
-        _moveObjectsBack1(ref, clickedObj);
-        break;
-      case RightClickMenuOption.sendToBack:
-        _sendObjectsToBack(ref, clickedObj);
-        break;
-      case RightClickMenuOption.bringForward:
-        _moveObjectsForward1(ref, clickedObj);
-        break;
-      case RightClickMenuOption.bringToFront:
-        _bringObjectsToFront(ref, clickedObj);
-        break;
-    }
-  }
-
-  Future<void> _handleImportImage(WidgetRef ref, Offset position, String canvasId) async {
-    try {
-      final result = await FilePicker.platform.pickFiles(
-        type: FileType.image,
-        allowMultiple: false,
-        withData: true,
-      );
-
-      if (result != null) {
-        final file = result.files.single;
-
-        // Get image data from web bytes
-        if (file.bytes == null) {
-          NarwhalToast.show(
-            text: 'Failed to read image data',
-            type: ToastType.error,
-          );
-          return;
-        }
-        final Uint8List bytes = file.bytes!;
-        final fileName = file.name;
-
-        // Get current project info
-        final projectId = ref.read(projectsProvider).selectedProject?.id;
-        final userName = ref.read(currentUserProvider).name;
-
-        // Upload using ImageService
-        final imageUrl = await ImageService.uploadImage(
-          bytes,
-          fileName,
-          userName: userName,
-          projectId: projectId,
-          canvasId: canvasId,
-        );
-
-        final imageId = DateTime.now().millisecondsSinceEpoch.toString();
-        await CanvasInteractionService.insertImage(
-          ref: ref,
-          data: ImageDragData(
-            imageId: imageId,
-            imageUrl: imageUrl,
-            imageTitle: '${file.name}-${imageId}',
-          ),
-          canvasPosition: position,
-        );
-      }
-    } catch (e) {
-      NarwhalToast.show(
-        text: 'Failed to upload image: $e',
-        type: ToastType.error,
-      );
-    }
-  }
-
-  void _moveObjectsBack1(WidgetRef ref, CanvasObject? clickedObj) {
-    final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-    final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
-
-    final objectsToMove =
-        selectedObjects.isNotEmpty ? selectedObjects : (clickedObj != null ? [clickedObj] : <CanvasObject>[]);
-
-    for (final obj in objectsToMove) {
-      objectsNotifier.moveObjectBackward(ref, obj);
-    }
-  }
-
-  void _sendObjectsToBack(WidgetRef ref, CanvasObject? clickedObj) {
-    final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-    final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
-
-    final objectsToMove =
-        selectedObjects.isNotEmpty ? selectedObjects : (clickedObj != null ? [clickedObj] : <CanvasObject>[]);
-
-    for (final obj in objectsToMove) {
-      objectsNotifier.moveObjectToBack(ref, obj);
-    }
-  }
-
-  void _moveObjectsForward1(WidgetRef ref, CanvasObject? clickedObj) {
-    final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-    final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
-
-    final objectsToMove =
-        selectedObjects.isNotEmpty ? selectedObjects : (clickedObj != null ? [clickedObj] : <CanvasObject>[]);
-
-    for (final obj in objectsToMove) {
-      objectsNotifier.moveObjectForward(ref, obj);
-    }
-  }
-
-  void _bringObjectsToFront(WidgetRef ref, CanvasObject? clickedObj) {
-    final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-    final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
-
-    final objectsToMove =
-        selectedObjects.isNotEmpty ? selectedObjects : (clickedObj != null ? [clickedObj] : <CanvasObject>[]);
-
-    for (final obj in objectsToMove) {
-      objectsNotifier.moveObjectToFront(ref, obj);
-    }
-  }
-
-  String _getCurrentCanvasUrl() {
-    return web.window.location.href;
-  }
-
-  Widget _buildMenuContent() {
-    return Material(
-      elevation: 12,
-      shadowColor: ThemeHelper.black(context).withValues(alpha: 0.15),
-      //color: ThemeHelper.white(context),
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 220,
-        decoration: BoxDecoration(
-          color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: _buildMenuItems(),
-          ),
-        ),
-      ),
-    );
-  }
-
-  List<Widget> _buildMenuItems() {
-    List<Widget> items = [];
-
-    for (int i = 0; i < widget.options.length; i++) {
-      final option = widget.options[i];
-
-      if (_shouldAddDivider(option, i > 0 ? widget.options[i - 1] : null)) {
-        items.add(Container(
-          height: 1,
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-          decoration: BoxDecoration(
-            color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
-          ),
-        ));
-      }
-
-      items.add(_buildMenuItem(option));
-    }
-
-    return items;
-  }
-
-  Widget _buildMenuItem(RightClickMenuOption option) {
-    if (option == RightClickMenuOption.arrange) {
-      // Special hover-based menu item for Arrange
-      return MouseRegion(
-        onEnter: (_) => _onArrangeHover(true),
-        onExit: (_) => _onArrangeHover(false),
-        child: Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-          decoration: BoxDecoration(
-            color: _isSubmenuOpen || _isHoveringArrange ? ThemeHelper.neutral300(context) : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.layers,
-                  size: 16,
-                  color: ThemeHelper.neutral700(context),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _getMenuItemText(option),
-                    style: NarwhalTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: ThemeHelper.neutral700(context),
-                    ),
-                  ),
-                ),
-                Icon(
-                  Icons.chevron_right,
-                  size: 18,
-                  color: ThemeHelper.neutral700(context),
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-    }
-
-    // Regular clickable menu item with hover effect
-    final itemId = option.toString();
-    return MouseRegion(
-      onEnter: (_) {
-        if (mounted) {
-          setState(() {
-            _hoveredItemId = itemId;
-          });
-        }
-      },
-      onExit: (_) {
-        if (mounted) {
-          setState(() {
-            _hoveredItemId = '';
-          });
-        }
-      },
-      child: GestureDetector(
-        onTap: () => _handleMenuItemTap(option),
-        child: Container(
-          height: 40,
-          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-          decoration: BoxDecoration(
-            color: _hoveredItemId == itemId ? ThemeHelper.neutral300(context) : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Icon(
-                  _getMenuItemIcon(option),
-                  size: 16,
-                  color: ThemeHelper.neutral700(context),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _getMenuItemText(option),
-                    style: NarwhalTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: ThemeHelper.neutral700(context),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  bool _isOptionEnabled(RightClickMenuOption option) {
-    if (widget.clickedObj == null) return false;
-
-    final objectsNotifier = widget.ref.read(canvasObjectsProvider.notifier);
-
-    switch (option) {
-      case RightClickMenuOption.sendBackward:
-      case RightClickMenuOption.sendToBack:
-        return objectsNotifier.canMoveBackward(widget.clickedObj!);
-      case RightClickMenuOption.bringForward:
-      case RightClickMenuOption.bringToFront:
-        return objectsNotifier.canMoveForward(widget.clickedObj!);
-      default:
-        return true;
-    }
-  }
-
-  bool _shouldAddDivider(RightClickMenuOption current, RightClickMenuOption? previous) {
-    const dividerBefore = {
-      RightClickMenuOption.paste,
-      RightClickMenuOption.cut,
-      RightClickMenuOption.snapToGrid,
-      RightClickMenuOption.arrange,
-    };
-
-    return dividerBefore.contains(current);
-  }
-
-  String _getMenuItemText(RightClickMenuOption option) {
-    switch (option) {
-      case RightClickMenuOption.addComment:
-        return 'Add Comment';
-      case RightClickMenuOption.addArtifact:
-        return 'Add Pin';
-      case RightClickMenuOption.paste:
-        return 'Paste';
-      case RightClickMenuOption.cut:
-        return 'Cut';
-      case RightClickMenuOption.copy:
-        return 'Copy';
-      case RightClickMenuOption.delete:
-        return 'Delete';
-      case RightClickMenuOption.snapToGrid:
-        final snapToGrid = widget.ref.watch(canvasSettingsProvider(Setting.snapToGrid));
-        return 'Turn ${snapToGrid ? 'off' : 'on'} snap to grid';
-      case RightClickMenuOption.showMinimap:
-        final showMinimap = widget.ref.watch(canvasSettingsProvider(Setting.showMinimap));
-        return '${showMinimap ? 'Hide' : 'Show'} mini-map';
-      case RightClickMenuOption.showToolbar:
-        final showToolbar = widget.ref.watch(canvasSettingsProvider(Setting.showToolbar));
-        return '${showToolbar ? 'Hide' : 'Show'} toolbar';
-      case RightClickMenuOption.importImage:
-        return 'Image';
-      case RightClickMenuOption.getDiagramLink:
-        return 'Get link to diagram';
-      case RightClickMenuOption.arrange:
-        return 'Arrange';
-      default:
-        return '';
-    }
-  }
-
-  IconData _getMenuItemIcon(RightClickMenuOption option) {
-    switch (option) {
-      case RightClickMenuOption.addComment:
-        return Icons.comment;
-      case RightClickMenuOption.addArtifact:
-        return Icons.track_changes;
-      case RightClickMenuOption.paste:
-        return Icons.content_paste;
-      case RightClickMenuOption.cut:
-        return Icons.content_cut;
-      case RightClickMenuOption.copy:
-        return Icons.content_copy;
-      case RightClickMenuOption.delete:
-        return Icons.delete_outline;
-      case RightClickMenuOption.snapToGrid:
-        return Icons.grid_on;
-      case RightClickMenuOption.showMinimap:
-        return Icons.map;
-      case RightClickMenuOption.showToolbar:
-        return Icons.build;
-      case RightClickMenuOption.importImage:
-        return Icons.image;
-      case RightClickMenuOption.getDiagramLink:
-        return Icons.link;
-      default:
-        return Icons.circle;
-    }
+  void _scheduleSubmenuClose() {
+    _closeDelay?.cancel();
+    _closeDelay = Timer(_submenuCloseDelay, () {
+      if (!mounted) return;
+      final parentStillHovered =
+          _submenuParentIndex >= 0 && _hoveredIndex == _submenuParentIndex;
+      if (!parentStillHovered && !_hoveringSubmenu) _closeSubmenu();
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Build the menu content directly since we're already in an overlay
-    final screenSize = MediaQuery.of(context).size;
-
-    // Calculate actual menu height including dividers and padding
-    int dividerCount = 0;
-    for (int i = 0; i < widget.options.length; i++) {
-      final option = widget.options[i];
-      if (_shouldAddDivider(option, i > 0 ? widget.options[i - 1] : null)) {
-        dividerCount++;
-      }
-    }
-
-    final estimatedMenuHeight = (widget.options.length * 42.0) + // Menu items (40px + 2px margin)
-        (dividerCount * 9.0) + // Dividers (1px + 4px margin each)
-        16.0; // Top/bottom padding
-
-    final safePosition = SafeMenuPosition.calculateSafePosition(
+    final screen = MediaQuery.of(context).size;
+    _menuPosition = SafeMenuPosition.calculateSafePosition(
       preferredPosition: widget.globalPosition,
-      menuSize: Size(220, estimatedMenuHeight), // Updated width and height
-      screenSize: screenSize,
-      padding: 16.0, // Increased padding for better visibility
+      menuSize: Size(_menuWidth, _menuHeight(widget.items)),
+      screenSize: screen,
+      padding: 16.0,
     );
-
-    // Store the actual menu position for submenu positioning
-    _actualMenuPosition = safePosition;
 
     return Stack(
       children: [
-        // Simple background for left click detection only
         Positioned.fill(
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () {
-              // Only handle left clicks to close menu
-              widget.onClose();
-            },
-            // NO onSecondaryTap - let right clicks pass through completely
-            child: Container(),
+            onTap: widget.onClose,
+            child: const SizedBox(),
           ),
         ),
-        // Main menu
         Positioned(
-          left: safePosition.dx,
-          top: safePosition.dy,
-          child: _buildMenuContent(),
+          left: _menuPosition.dx,
+          top: _menuPosition.dy,
+          child: _MenuPanel(
+            width: _menuWidth,
+            children: [
+              for (int i = 0; i < widget.items.length; i++) ...[
+                if (widget.items[i].dividerBefore) const _MenuDivider(),
+                _MenuRow(
+                  item: widget.items[i],
+                  highlighted: _hoveredIndex == i || _submenuParentIndex == i,
+                  showChevron: widget.items[i].hasSubmenu,
+                  itemHeight: _itemHeight,
+                  onEnter: () => _onHoverItem(i, true),
+                  onExit: () => _onHoverItem(i, false),
+                  onTap: widget.items[i].hasSubmenu
+                      ? null
+                      : () {
+                          widget.items[i].onTap?.call();
+                          widget.onClose();
+                        },
+                ),
+              ],
+            ],
+          ),
         ),
       ],
     );
   }
 }
 
-/// Separate stateful widget for submenu to handle its own hover state
-class _SubmenuWidget extends StatefulWidget {
-  final List<RightClickMenuOption> arrangeOptions;
-  final Function(RightClickMenuOption) onItemTap;
-  final bool Function(RightClickMenuOption) isOptionEnabled;
-  final WidgetRef ref;
+class _SubmenuPanel extends StatefulWidget {
+  final List<RightClickMenuItem> items;
+  final ValueChanged<RightClickMenuItem> onItemTap;
 
-  const _SubmenuWidget({
-    required this.arrangeOptions,
-    required this.onItemTap,
-    required this.isOptionEnabled,
-    required this.ref,
-  });
+  const _SubmenuPanel({required this.items, required this.onItemTap});
 
   @override
-  State<_SubmenuWidget> createState() => _SubmenuWidgetState();
+  State<_SubmenuPanel> createState() => _SubmenuPanelState();
 }
 
-class _SubmenuWidgetState extends State<_SubmenuWidget> {
-  String _hoveredSubmenuItemId = '';
+class _SubmenuPanelState extends State<_SubmenuPanel> {
+  int _hoveredIndex = -1;
+
+  @override
+  Widget build(BuildContext context) {
+    return _MenuPanel(
+      width: _submenuWidth,
+      children: [
+        for (int i = 0; i < widget.items.length; i++)
+          _MenuRow(
+            item: widget.items[i],
+            highlighted: _hoveredIndex == i && widget.items[i].enabled,
+            showChevron: false,
+            itemHeight: _submenuItemHeight,
+            onEnter: () {
+              if (widget.items[i].enabled && mounted) {
+                setState(() => _hoveredIndex = i);
+              }
+            },
+            onExit: () {
+              if (mounted) setState(() => _hoveredIndex = -1);
+            },
+            onTap: widget.items[i].enabled
+                ? () => widget.onItemTap(widget.items[i])
+                : null,
+          ),
+      ],
+    );
+  }
+}
+
+class _MenuPanel extends StatelessWidget {
+  final double width;
+  final List<Widget> children;
+
+  const _MenuPanel({required this.width, required this.children});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       elevation: 12,
       shadowColor: ThemeHelper.black(context).withValues(alpha: 0.15),
-      color: ThemeHelper.white(context),
       borderRadius: BorderRadius.circular(8),
       child: Container(
-        width: 200,
+        width: width,
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
           borderRadius: BorderRadius.circular(8),
@@ -778,201 +569,93 @@ class _SubmenuWidgetState extends State<_SubmenuWidget> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: widget.arrangeOptions.map((option) => _buildSubmenuItem(option)).toList(),
+            children: children,
           ),
         ),
       ),
     );
   }
-
-  Widget _buildSubmenuItem(RightClickMenuOption option) {
-    bool isEnabled = widget.isOptionEnabled(option);
-    final itemId = option.toString();
-
-    return MouseRegion(
-      onEnter: (_) {
-        if (mounted && isEnabled) {
-          setState(() {
-            _hoveredSubmenuItemId = itemId;
-          });
-        }
-      },
-      onExit: (_) {
-        if (mounted) {
-          setState(() {
-            _hoveredSubmenuItemId = '';
-          });
-        }
-      },
-      child: GestureDetector(
-        onTap: isEnabled ? () => widget.onItemTap(option) : null,
-        child: Container(
-          height: 36,
-          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-          decoration: BoxDecoration(
-            color: _hoveredSubmenuItemId == itemId && isEnabled ? ThemeHelper.neutral300(context) : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            child: Row(
-              children: [
-                Icon(
-                  _getSubmenuIcon(option),
-                  size: 14,
-                  color: isEnabled ? ThemeHelper.neutral700(context) : ThemeHelper.neutral500(context),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    _getSubmenuItemText(option),
-                    style: NarwhalTextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: isEnabled ? ThemeHelper.neutral700(context) : ThemeHelper.neutral500(context),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  IconData _getSubmenuIcon(RightClickMenuOption option) {
-    switch (option) {
-      case RightClickMenuOption.sendBackward:
-        return Icons.keyboard_arrow_down;
-      case RightClickMenuOption.sendToBack:
-        return Icons.keyboard_double_arrow_down;
-      case RightClickMenuOption.bringForward:
-        return Icons.keyboard_arrow_up;
-      case RightClickMenuOption.bringToFront:
-        return Icons.keyboard_double_arrow_up;
-      default:
-        return Icons.circle;
-    }
-  }
-
-  String _getSubmenuItemText(RightClickMenuOption option) {
-    switch (option) {
-      case RightClickMenuOption.sendBackward:
-        return 'Send Backward';
-      case RightClickMenuOption.sendToBack:
-        return 'Send to Back';
-      case RightClickMenuOption.bringForward:
-        return 'Bring Forward';
-      case RightClickMenuOption.bringToFront:
-        return 'Bring to Front';
-      default:
-        return '';
-    }
-  }
 }
 
-/// Submenu widget for Import options (Video, Audio, Image)
-class _ImportSubmenuWidget extends StatefulWidget {
-  final List<RightClickMenuOption> importOptions;
-  final Function(RightClickMenuOption) onItemTap;
-  final WidgetRef ref;
-
-  const _ImportSubmenuWidget({
-    required this.importOptions,
-    required this.onItemTap,
-    required this.ref,
-  });
-
-  @override
-  State<_ImportSubmenuWidget> createState() => _ImportSubmenuWidgetState();
-}
-
-class _ImportSubmenuWidgetState extends State<_ImportSubmenuWidget> {
-  String _hoveredItemId = '';
+class _MenuDivider extends StatelessWidget {
+  const _MenuDivider();
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      elevation: 12,
-      shadowColor: ThemeHelper.black(context).withValues(alpha: 0.15),
-      color: ThemeHelper.white(context),
-      borderRadius: BorderRadius.circular(8),
-      child: Container(
-        width: 140,
-        decoration: BoxDecoration(
-          color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
-            width: 1,
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: widget.importOptions.map(_buildItem).toList(),
-          ),
-        ),
+    return Container(
+      height: 1,
+      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
       ),
     );
   }
+}
 
-  Widget _buildItem(RightClickMenuOption option) {
-    final itemId = option.toString();
+class _MenuRow extends StatelessWidget {
+  final RightClickMenuItem item;
+  final bool highlighted;
+  final bool showChevron;
+  final double itemHeight;
+  final VoidCallback onEnter;
+  final VoidCallback onExit;
+  final VoidCallback? onTap;
+
+  const _MenuRow({
+    required this.item,
+    required this.highlighted,
+    required this.showChevron,
+    required this.itemHeight,
+    required this.onEnter,
+    required this.onExit,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final textColor = item.enabled
+        ? ThemeHelper.neutral700(context)
+        : ThemeHelper.neutral500(context);
+
     return MouseRegion(
-      onEnter: (_) => setState(() => _hoveredItemId = itemId),
-      onExit: (_) => setState(() => _hoveredItemId = ''),
+      onEnter: (_) => onEnter(),
+      onExit: (_) => onExit(),
       child: GestureDetector(
-        onTap: () => widget.onItemTap(option),
+        onTap: onTap,
         child: Container(
-          height: 36,
+          height: itemHeight,
           margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
-            color: _hoveredItemId == itemId ? ThemeHelper.neutral300(context) : Colors.transparent,
+            color: highlighted
+                ? ThemeHelper.neutral300(context)
+                : Colors.transparent,
             borderRadius: BorderRadius.circular(6),
           ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               children: [
-                Icon(_getIcon(option), size: 14, color: ThemeHelper.neutral700(context)),
-                const SizedBox(width: 8),
+                if (item.icon != null) ...[
+                  Icon(item.icon, size: 16, color: textColor),
+                  const SizedBox(width: 8),
+                ],
                 Expanded(
                   child: Text(
-                    _getText(option),
+                    item.label,
                     style: NarwhalTextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                      color: ThemeHelper.neutral700(context),
+                      color: textColor,
                     ),
                   ),
                 ),
+                if (showChevron)
+                  Icon(Icons.chevron_right, size: 18, color: textColor),
               ],
             ),
           ),
         ),
       ),
     );
-  }
-
-  IconData _getIcon(RightClickMenuOption option) {
-    switch (option) {
-      case RightClickMenuOption.importImage:
-        return Icons.image;
-      default:
-        return Icons.circle;
-    }
-  }
-
-  String _getText(RightClickMenuOption option) {
-    switch (option) {
-      case RightClickMenuOption.importImage:
-        return 'Image';
-      default:
-        return '';
-    }
   }
 }

@@ -2,7 +2,7 @@
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
-import '../widgets/canvas_right_click.dart';
+import '../widgets/canvas_right_click_menu.dart';
 
 /// Handles gestures when pan tool is active
 /// Responsible for viewport panning and navigation

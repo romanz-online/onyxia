@@ -4,7 +4,7 @@ import 'canvas_gesture_state.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
 import '../services/services.dart';
-import '../widgets/canvas_right_click.dart';
+import '../widgets/canvas_right_click_menu.dart';
 
 /// Handles gestures when pointer tool is active
 /// Responsible for object selection, movement, and drag selection

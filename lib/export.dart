@@ -18,7 +18,6 @@ export 'package:onyxia/data/models/artifacts/canvas/expandable_pin.dart';
 export 'package:onyxia/presentation/common_widget/hover_builder.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_card.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_drawer_layout.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_right_click_menu.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_angry.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_switch.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_overlay.dart';
