@@ -151,7 +151,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
       _animationController
           .reset(); // Instantly reset to collapsed state without animation
       ref.read(expandedPinProvider.notifier).expandPin(widget.pin);
-      ref.read(selectedArtifactProvider.notifier).set(item);
+      ref.read(selectedArtifactNameProvider.notifier).set(item.name);
     }
   }
 

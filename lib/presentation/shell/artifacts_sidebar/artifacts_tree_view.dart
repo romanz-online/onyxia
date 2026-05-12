@@ -52,7 +52,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
   void _selectItem(Artifact item) {
     treeController.setSelectedNodeId(item.id);
-    ref.read(selectedArtifactProvider.notifier).set(item);
+    ref.read(selectedArtifactNameProvider.notifier).set(item.name);
     context
         .go(item.navigationUrl(ref.read(projectsProvider).selectedProject?.id));
   }
@@ -104,7 +104,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     if (selectedItem != null &&
         !itemNodes.any((req) => req.id == selectedItem.id)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(selectedArtifactProvider.notifier).set(null);
+        ref.read(selectedArtifactNameProvider.notifier).set(null);
       });
     }
 

@@ -1,16 +1,24 @@
 import 'package:onyxia/export.dart';
 
-final selectedArtifactProvider =
-    NotifierProvider<SelectedArtifactNotifier, Artifact?>(
-  SelectedArtifactNotifier.new,
+final selectedArtifactNameProvider =
+    NotifierProvider<SelectedArtifactNameNotifier, String?>(
+  SelectedArtifactNameNotifier.new,
 );
 
-class SelectedArtifactNotifier extends Notifier<Artifact?> {
+class SelectedArtifactNameNotifier extends Notifier<String?> {
   @override
-  Artifact? build() => null;
+  String? build() => null;
 
-  void set(Artifact? value) => state = value;
+  void set(String? value) => state = value;
 }
+
+final selectedArtifactProvider = Provider<Artifact?>((ref) {
+  final name = ref.watch(selectedArtifactNameProvider);
+  if (name == null || name.isEmpty) return null;
+  return ref
+      .watch(artifactsProvider)
+      .firstWhereOrNull((a) => a.name == name);
+});
 
 enum SaveMode { auto, manual }
 

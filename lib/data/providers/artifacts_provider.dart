@@ -103,7 +103,7 @@ class ArtifactsTreeNotifier extends Notifier<List<Artifact>> {
 
     final selectedItem = ref.read(selectedArtifactProvider);
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
-      ref.read(selectedArtifactProvider.notifier).set(null);
+      ref.read(selectedArtifactNameProvider.notifier).set(null);
       context.go('/project/$_projectId/${Routes.graph}');
     }
 
