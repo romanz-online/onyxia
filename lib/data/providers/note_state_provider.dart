@@ -8,26 +8,22 @@ class NoteState {
   final NoteArtifact? note;
   final BardController? bardController;
   final FocusNode? focusNode;
-  final bool isSavedRemotely;
 
   const NoteState({
     this.note,
     this.bardController,
     this.focusNode,
-    this.isSavedRemotely = false,
   });
 
   NoteState copyWith({
     NoteArtifact? note,
     BardController? bardController,
     FocusNode? focusNode,
-    bool? isSavedRemotely,
   }) {
     return NoteState(
       note: note ?? this.note,
       bardController: bardController ?? this.bardController,
       focusNode: focusNode ?? this.focusNode,
-      isSavedRemotely: isSavedRemotely ?? this.isSavedRemotely,
     );
   }
 }
@@ -91,8 +87,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       final current = state.value;
       if (current == null || current.note == null) return;
       final updatedNote = current.note!.copyWith(content: controller.text);
-      state = AsyncData(
-          current.copyWith(note: updatedNote, isSavedRemotely: false));
+      state = AsyncData(current.copyWith(note: updatedNote));
       _debounceSave();
     }
 
@@ -113,23 +108,20 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       if (current == null) return;
       if (controller.text == incoming.content) {
         if (current.note != incoming) {
-          state = AsyncData(
-              current.copyWith(note: incoming, isSavedRemotely: true));
+          state = AsyncData(current.copyWith(note: incoming));
         }
         return;
       }
       controller.removeListener(listener);
       controller.text = incoming.content;
       controller.addListener(listener);
-      state =
-          AsyncData(current.copyWith(note: incoming, isSavedRemotely: true));
+      state = AsyncData(current.copyWith(note: incoming));
     });
 
     return NoteState(
       note: latestNote,
       bardController: controller,
       focusNode: _focusNode,
-      isSavedRemotely: true,
     );
   }
 
@@ -151,10 +143,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     final current = state.value;
     if (current == null || current.note == null) return;
     final updatedNote = current.note!.copyWith(name: title);
-    state = AsyncData(current.copyWith(
-      note: updatedNote,
-      isSavedRemotely: false,
-    ));
+    state = AsyncData(current.copyWith(note: updatedNote));
     // Propagate optimistically to artifactsProvider so selectedArtifactProvider's
     // name-based lookup resolves immediately when the URL flips to the new name.
     // updateItemState only mutates the local list — the debounced _saveDocument
@@ -175,31 +164,6 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     if (captured == null || captured.note == null) return;
     final outgoing = captured.note!;
     await ArtifactsRepository(projectId: _projectId).update(outgoing);
-
-    // After the await, state may have advanced (a keystroke landed during the
-    // round-trip). Only flip the saved flag if nothing has changed locally —
-    // otherwise leave isSavedRemotely=false so the next debounce tick saves
-    // the newer content.
-    final after = state.value;
-    if (after == null || after.note == null) return;
-    if (after.note!.content == outgoing.content &&
-        after.note!.name == outgoing.name) {
-      state = AsyncData(after.copyWith(isSavedRemotely: true));
-    }
-  }
-
-  Future<void> saveDocumentWithHistory(WidgetRef widgetRef) async {
-    final current = state.value;
-    if (current == null || current.note == null) return;
-
-    await _saveDocument();
-  }
-
-  void resetChanges() {
-    final current = state.value;
-    if (current != null) {
-      state = AsyncData(current.copyWith(isSavedRemotely: true));
-    }
   }
 }
 
