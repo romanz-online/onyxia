@@ -20,7 +20,7 @@ class CanvasInteractionService {
       final newTitle = titleController.text.trim();
       if (newTitle.isNotEmpty && newTitle != oldTitle) {
         ArtifactsRepository(
-          projectId: ref.read(projectsProvider).selectedProject?.id,
+          projectId: ref.read(selectedProjectProvider)?.id,
         ).update(currentCanvas.copyWith(name: newTitle));
       } else {
         titleController.text = oldTitle;
@@ -272,7 +272,7 @@ class CanvasInteractionService {
     required WidgetRef ref,
     required Future<void> Function() operation,
   }) async {
-    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    final projectId = ref.read(selectedProjectProvider)?.id;
     if (projectId == null) return;
     await HistoryService.pipe(
       ref: ref,
@@ -290,7 +290,7 @@ class CanvasInteractionService {
 
   static void performUndo({required WidgetRef ref}) async {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    final projectId = ref.read(selectedProjectProvider)?.id;
     if (projectId == null) return;
     // try {
     //   final params = HistoryDiffsParams(
@@ -308,7 +308,7 @@ class CanvasInteractionService {
 
   static void performRedo({required WidgetRef ref}) async {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    final projectId = ref.read(selectedProjectProvider)?.id;
     if (projectId == null) return;
     // try {
     //   final params = HistoryDiffsParams(
@@ -326,7 +326,7 @@ class CanvasInteractionService {
 
   // static Future<void> _applyCurrentDiffState({required WidgetRef ref}) async {
   //   try {
-  //     final projectId = ref.read(projectsProvider).selectedProject?.id;
+  //     final projectId = ref.read(selectedProjectProvider)?.id;
   //     if (projectId == null) return;
   //     final canvasId = ref.read(currentCanvasProvider)?.id ?? '';
 

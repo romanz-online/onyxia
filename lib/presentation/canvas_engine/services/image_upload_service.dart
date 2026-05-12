@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import '../providers/objects_provider.dart';
 import '../providers/viewport_provider.dart';
 
@@ -13,8 +13,8 @@ class CanvasImageUploadService {
         final imageUrl = await ImageService.uploadImage(
           file.bytes!,
           file.name,
-          userName: ref.read(currentUserProvider).name,
-          projectId: ref.read(projectsProvider).selectedProject?.id,
+          userName: ref.read(currentUserProvider).value?.name ?? '',
+          projectId: ref.read(selectedProjectProvider)?.id,
           canvasId: ref.read(currentCanvasProvider)?.id ?? '',
         );
 

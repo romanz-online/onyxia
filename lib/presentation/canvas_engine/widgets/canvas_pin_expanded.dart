@@ -134,7 +134,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
   void _navigateToArtifact(Artifact item) {
     context.go(item.navigationUrl(
-      ref.read(projectsProvider).selectedProject?.id,
+      ref.read(selectedProjectProvider)?.id,
     ));
   }
 

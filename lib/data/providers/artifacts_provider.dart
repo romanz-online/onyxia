@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'dart:async';
 
 final artifactsProvider =
@@ -8,7 +8,7 @@ final artifactsProvider =
 
 final artifactsLoadedProvider = Provider<bool>((ref) {
   final projectId =
-      ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+      ref.watch(selectedProjectProvider.select((p) => p?.id));
   if (projectId == null) return true;
   final dataReceived = ref.watch(artifactsReceivedProvider(projectId));
   final hasError = ref.watch(artifactsErrorProvider(projectId));
@@ -49,7 +49,7 @@ class ArtifactsTreeNotifier extends Notifier<List<Artifact>> {
   @override
   List<Artifact> build() {
     _projectId =
-        ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+        ref.watch(selectedProjectProvider.select((p) => p?.id));
     _repository = ArtifactsRepository(projectId: _projectId);
 
     if (_projectId == null) return [];

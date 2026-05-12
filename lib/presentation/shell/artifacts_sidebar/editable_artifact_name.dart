@@ -75,7 +75,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
           GoRouterState.of(context).pathParameters['selectedId'];
       if (urlSelectedId == widget.item.name) {
         final projectId =
-            ref.read(projectsProvider.select((s) => s.selectedProject?.id));
+            ref.read(selectedProjectProvider.select((p) => p?.id));
         context.go(widget.item.navigationUrl(projectId));
       }
     }

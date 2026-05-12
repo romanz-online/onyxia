@@ -15,7 +15,7 @@ class PinsNotifier extends Notifier<Pins> {
   @override
   Pins build() {
     canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-    projectId = ref.watch(projectsProvider).selectedProject?.id;
+    projectId = ref.watch(selectedProjectProvider)?.id;
     repository = PinsRepository(
       projectId: projectId,
       canvasId: canvasId,
@@ -115,7 +115,7 @@ class PinsNotifier extends Notifier<Pins> {
     if (HistoryService.pipeActive) {
       await operation.call();
     } else {
-      final projectId = ref.read(projectsProvider).selectedProject?.id;
+      final projectId = ref.read(selectedProjectProvider)?.id;
       if (projectId == null) return;
 
       await HistoryService.pipe(

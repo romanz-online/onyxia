@@ -61,8 +61,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             final urlSelectedId =
                 GoRouterState.of(context).pathParameters['selectedId'];
             if (urlSelectedId == previousTitle) {
-              final projectId = ref
-                  .read(projectsProvider.select((s) => s.selectedProject?.id));
+              final projectId = ref.read(selectedProjectProvider)?.id;
               context.go('/project/$projectId/$cleaned');
             }
           }

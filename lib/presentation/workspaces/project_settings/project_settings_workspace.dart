@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/workspaces/project_settings/settings_sidebar.dart';
 import 'package:onyxia/presentation/workspaces/project_settings/project_name_tab.dart';
 
@@ -41,7 +41,7 @@ class _ProjectSettingsWorkspaceState extends ConsumerState<ProjectSettingsWorksp
   }
 
   void _initControllers() {
-    final p = ref.read(projectsProvider).selectedProject;
+    final p = ref.read(selectedProjectProvider);
     if (p == null) return;
     activeProject = p;
     _projectNameController.text = activeProject.name;

@@ -1,4 +1,4 @@
-import 'package:onyxia/bard/bard.dart';
+﻿import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
@@ -45,7 +45,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   AsyncValue<NoteState> build() {
     final item = ref.watch(selectedArtifactProvider);
     _projectId =
-        ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+        ref.watch(selectedProjectProvider.select((p) => p?.id));
     final authState = ref.watch(authProvider);
 
     ref.onDispose(() {
@@ -90,7 +90,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
     final controller = BardController(text: latestNote.content);
 
     // If the notifier was disposed (or rebuilt) while we were awaiting the
-    // document, drop the just-created controller and bail — touching state
+    // document, drop the just-created controller and bail â€” touching state
     // here would mutate a disposed notifier.
     if (!ref.mounted) {
       controller.dispose();
@@ -173,7 +173,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   }
 }
 
-/// Type alias for note state providers — use in widget signatures.
+/// Type alias for note state providers â€” use in widget signatures.
 typedef NoteStateProvider
     = NotifierProvider<NoteNotifier, AsyncValue<NoteState>>;
 

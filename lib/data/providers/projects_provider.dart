@@ -1,88 +1,32 @@
 import 'package:onyxia/export.dart';
 
 final projectsProvider =
-    NotifierProvider.autoDispose<ProjectsNotifier, Projects>(
+    StreamNotifierProvider<ProjectsNotifier, List<Project>>(
   ProjectsNotifier.new,
 );
 
-class ProjectsNotifier extends Notifier<Projects> {
+class ProjectsNotifier extends StreamNotifier<List<Project>> {
   final ProjectsRepository _repository = ProjectsRepository();
 
   @override
-  Projects build() {
+  Stream<List<Project>> build() {
     ref.watch(authProvider);
     ref.watch(currentUserProvider);
-    _loadProjects();
-    return Projects.initial();
-  }
-
-  Future<void> _loadProjects() async {
-    final projects = await _repository.getAll();
-    state = state.copyWith(
-      projects: projects,
-      selectedProject: null,
-      isLoading: false,
-    );
-  }
-
-  void selectProject(Project project) {
-    state = state.copyWith(selectedProject: project);
-  }
-
-  Future<void> selectProjectById(String projectId) async {
-    final projectIndex = state.projects.indexWhere((p) => p.id == projectId);
-
-    if (projectIndex != -1) {
-      final project = state.projects[projectIndex];
-      state = state.copyWith(selectedProject: project);
-    } else {
-      final project = await _repository.get(projectId);
-      if (project != null) {
-        final updatedProjects = [...state.projects, project];
-        state = state.copyWith(
-          projects: updatedProjects,
-          selectedProject: project,
-        );
-      }
-    }
+    return _repository.getStream();
   }
 
   void addProject(Project project) {
-    state = state.copyWith(projects: [...state.projects, project]);
     _repository.add([project]);
   }
 
   void deleteProject(String id) {
     _repository.delete(id);
-    state = state.copyWith(
-        projects: state.projects.where((e) => e.id != id).toList());
   }
 
   void renameProject(String id, String newName) {
-    final updatedProjects = state.projects.map((project) {
-      if (project.id == id) {
-        final updatedProject = project.copyWith(name: newName);
-        _repository.update(updatedProject);
-        return updatedProject;
-      }
-      return project;
-    }).toList();
-
-    state = state.copyWith(projects: updatedProjects);
-  }
-
-  void updateSelectedProject(Project updatedProject) {
-    final updatedProjects = state.projects.map((project) {
-      if (project.id == updatedProject.id) return updatedProject;
-      return project;
-    }).toList();
-
-    state = state.copyWith(
-      projects: updatedProjects,
-      selectedProject: updatedProject,
-    );
-
-    _repository.update(updatedProject);
+    final p = state.value?.firstWhereOrNull((e) => e.id == id);
+    if (p == null) return;
+    _repository.update(p.copyWith(name: newName));
   }
 
   Future<void> removeMember({
@@ -124,9 +68,5 @@ class ProjectsNotifier extends Notifier<Projects> {
       debugPrint('Error adding member by email: $e');
       NarwhalToast.show(text: 'Error: $e', type: ToastType.error);
     }
-  }
-
-  void clearSelectedProject() {
-    state = state.copyWith(clearSelectedProject: true);
   }
 }

@@ -1,49 +1,30 @@
 import 'package:onyxia/export.dart';
-import 'dart:async';
 
 /// The current logged-in user's role in the currently selected project.
 /// Returns null if the user is not a member of the selected project
 /// or if no project is selected.
 final currentUserRoleProvider = Provider<UserRole?>((ref) {
-  final userId = ref.watch(currentUserProvider.select((u) => u.id));
+  final userId = ref.watch(currentUserProvider.select((u) => u.value?.id));
   final members = ref.watch(projectMembersProvider(null)
       .select((async) => async.asData?.value ?? []));
   return members.firstWhereOrNull((m) => m.userId == userId)?.role;
 });
 
 final currentUserProvider =
-    NotifierProvider<CurrentUserNotifier, User>(CurrentUserNotifier.new);
+    StreamNotifierProvider<CurrentUserNotifier, User>(CurrentUserNotifier.new);
 
-class CurrentUserNotifier extends Notifier<User> {
+class CurrentUserNotifier extends StreamNotifier<User> {
   late AuthRepository _repository;
 
   @override
-  User build() {
+  Stream<User> build() {
     _repository = ref.read(authRepositoryProvider);
-
-    final sub = _repository.authStateChanges.listen((authState) {
+    return _repository.authStateChanges.asyncMap((authState) async {
       final session = authState.session;
-      if (session == null) {
-        state = User.initial();
-      } else {
-        _loadUserFromTable(session.user.id);
-      }
+      if (session == null) return User.initial();
+      final user = await UsersRepository().get(session.user.id);
+      return user?.copyWith(isLogged: true) ?? User.initial();
     });
-    ref.onDispose(sub.cancel);
-
-    // On hot-reload / cold start the auth event stream may have already fired —
-    // seed state from the current session.
-    final session = _repository.currentSession;
-    if (session != null) _loadUserFromTable(session.user.id);
-
-    return User.initial();
-  }
-
-  /// Read the row from the `public.users` view (a thin projection over
-  /// `auth.users`). The view always resolves for any signed-in user.
-  Future<void> _loadUserFromTable(String userId) async {
-    final user = await UsersRepository().get(userId);
-    if (user != null) state = user.copyWith(isLogged: true);
   }
 
   Future<void> signOut() async => await _repository.signOut();

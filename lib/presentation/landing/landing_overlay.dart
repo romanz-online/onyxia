@@ -51,7 +51,6 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   }
 
   void _navigateToProject(Project project) {
-    ref.read(projectsProvider.notifier).selectProject(project);
     context.go('/project/${project.id}/graph');
   }
 
@@ -91,7 +90,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
           onActionPressed: () {
             final name = _newProjectNameController.text.trim();
             if (name.isEmpty) return;
-            final currentUserId = ref.read(currentUserProvider).id;
+            final currentUserId = ref.read(currentUserProvider).value?.id ?? '';
             final now = DateTime.now();
             final newProject = Project(
               id: const Uuid().v4(),
@@ -111,7 +110,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider);
+    final user = ref.watch(currentUserProvider).value ?? User.initial();
 
     return Positioned(
       left: _position.dx,
@@ -147,7 +146,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     if (!user.isLogged) return _buildPreAuth(context);
     if (user.pending) return Center(child: NarwhalSpinner());
 
-    final projects = ref.watch(projectsProvider).projects;
+    final projects = ref.watch(projectsProvider).value ?? const <Project>[];
 
     return Row(
       children: [

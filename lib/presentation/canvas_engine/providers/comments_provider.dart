@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'objects_provider.dart';
 import 'dart:async';
 
@@ -52,8 +52,8 @@ class CommentsNotifier extends Notifier<CommentsState> {
   @override
   CommentsState build() {
     _canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-    _projectId = ref.watch(projectsProvider).selectedProject?.id;
-    _user = ref.watch(currentUserProvider);
+    _projectId = ref.watch(selectedProjectProvider)?.id;
+    _user = ref.watch(currentUserProvider).value ?? User.initial();
     _repository = CommentsRepository(
       projectId: _projectId,
       canvasId: _canvasId,

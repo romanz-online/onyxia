@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 
 class ProjectSettingsButton extends ConsumerStatefulWidget {
   const ProjectSettingsButton({super.key});
@@ -10,7 +10,7 @@ class ProjectSettingsButton extends ConsumerStatefulWidget {
 class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
   @override
   Widget build(BuildContext context) {
-    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    final projectId = ref.read(selectedProjectProvider)?.id;
 
     if (projectId == null) return const SizedBox.shrink();
 

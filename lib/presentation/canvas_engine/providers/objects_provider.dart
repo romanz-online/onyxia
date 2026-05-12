@@ -25,7 +25,7 @@ class UrlCanvasIdNotifier extends Notifier<String?> {
 // Provides current canvas with URL-first priority
 // Auto-disposes when widget unmounts
 final currentCanvasProvider = Provider.autoDispose<CanvasArtifact?>((ref) {
-  final projectId = ref.watch(projectsProvider).selectedProject?.id;
+  final projectId = ref.watch(selectedProjectProvider)?.id;
   if (projectId == null) return null;
 
   // Priority 1: URL canvas ID (set by CanvasLoaderService)
@@ -63,7 +63,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   CanvasObjects build() {
     // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
     canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-    projectId = ref.watch(projectsProvider).selectedProject?.id;
+    projectId = ref.watch(selectedProjectProvider)?.id;
     repository = CanvasObjectsRepository(
       projectId: projectId,
       canvasId: canvasId,
@@ -412,7 +412,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     if (HistoryService.pipeActive) {
       await operation.call();
     } else {
-      final projectId = ref.read(projectsProvider).selectedProject?.id;
+      final projectId = ref.read(selectedProjectProvider)?.id;
       if (projectId == null) return;
 
       await HistoryService.pipe(

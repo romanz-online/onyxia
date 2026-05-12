@@ -40,7 +40,7 @@ class CanvasLoaderService {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!context.mounted) return;
 
-      final projectId = ref.read(projectsProvider).selectedProject?.id;
+      final projectId = ref.read(selectedProjectProvider)?.id;
       if (projectId == null) return;
 
       initCanvas(ref: ref, context: context, canvasId: canvasId);
@@ -83,7 +83,7 @@ class CanvasLoaderService {
 
     CanvasArtifact? currentCanvas = ref.read(currentCanvasProvider);
 
-    final projectId = ref.read(projectsProvider).selectedProject?.id;
+    final projectId = ref.read(selectedProjectProvider)?.id;
     if (projectId == null) return;
 
     // add initial diff if this is the first time the canvas is being loaded

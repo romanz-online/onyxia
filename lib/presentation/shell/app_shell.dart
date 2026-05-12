@@ -12,53 +12,17 @@ class AppShell extends ConsumerStatefulWidget {
 
 class _AppShellState extends ConsumerState<AppShell> {
   @override
-  void initState() {
-    super.initState();
-    _syncProject();
-  }
-
-  @override
-  void didUpdateWidget(AppShell oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.projectId != oldWidget.projectId) {
-      _syncProject();
-    }
-  }
-
-  void _syncProject() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      if (widget.projectId.isNotEmpty) {
-        ref.read(projectsProvider.notifier).selectProjectById(widget.projectId);
-      } else {
-        ref.read(projectsProvider.notifier).clearSelectedProject();
-      }
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     ref.watch(currentUserProvider);
 
     if (widget.projectId.isNotEmpty) {
-      ref.listen<Projects>(projectsProvider, (previous, next) {
-        final wasLoading = previous?.isLoading ?? true;
-        if (wasLoading &&
-            !next.isLoading &&
-            (next.selectedProject == null ||
-                next.selectedProject!.id != widget.projectId)) {
-          ref
-              .read(projectsProvider.notifier)
-              .selectProjectById(widget.projectId);
-        }
-      });
-      final currentProjects = ref.watch(projectsProvider);
-      if (currentProjects.isLoading) {
+      final projectsAsync = ref.watch(projectsProvider);
+      if (projectsAsync.isLoading) {
         return Scaffold(body: Center(child: NarwhalSpinner()));
       }
-      final projectExists =
-          currentProjects.projects.any((p) => p.id == widget.projectId);
-      if (!projectExists && !currentProjects.isLoading) {
+      final projects = projectsAsync.value ?? const <Project>[];
+      final projectExists = projects.any((p) => p.id == widget.projectId);
+      if (!projectExists) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) context.replace('/${Routes.projects}');
         });

@@ -1,11 +1,11 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 
 class ArtifactsSidebarFooter extends ConsumerWidget {
   const ArtifactsSidebarFooter({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedProject = ref.watch(projectsProvider).selectedProject;
+    final selectedProject = ref.watch(selectedProjectProvider);
     final projectName = selectedProject == null || selectedProject.name.isEmpty
         ? 'Onyxia'
         : selectedProject.name;

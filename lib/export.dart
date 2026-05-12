@@ -49,7 +49,6 @@ export 'package:onyxia/data/providers/artifacts_diff_preview_provider.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/tree_tile.dart';
 
 // Editor Views
-export 'package:onyxia/presentation/workspaces/artifact_editor/artifact_editor.dart';
 export 'package:onyxia/presentation/workspaces/artifact_editor/canvas/canvas_editor_view.dart';
 export 'package:onyxia/presentation/workspaces/artifact_editor/pending_action_bar.dart';
 
@@ -66,6 +65,7 @@ export 'package:onyxia/data/providers/project_members_provider.dart';
 export 'package:onyxia/data/providers/canvases_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_artifact_provider.dart';
+export 'package:onyxia/data/providers/selected_project_provider.dart';
 export 'package:onyxia/data/providers/note_state_provider.dart';
 
 //packages
@@ -81,7 +81,6 @@ export 'package:gap/gap.dart';
 
 //models
 export 'package:onyxia/data/models/artifacts/note/note.dart';
-export 'package:onyxia/data/models/project/projects.dart';
 export 'package:onyxia/data/models/history_diff.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas.dart';
 export 'package:onyxia/data/models/artifacts/folder/folder.dart';

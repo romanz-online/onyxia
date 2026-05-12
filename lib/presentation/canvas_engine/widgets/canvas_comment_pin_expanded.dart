@@ -529,7 +529,7 @@ class _CanvasCommentPinExpandedState
                       commentId, () => GlobalKey()),
                   icon: NarwhalIcons.moreDots,
                   size: 28,
-                  enabled: ref.read(currentUserProvider).id == createdBy,
+                  enabled: ref.read(currentUserProvider).value?.id == createdBy,
                   isPressed: _openCommentMenuId == commentId,
                   onPressed: () => setState(() => _openCommentMenuId =
                       _openCommentMenuId == commentId ? null : commentId),
