@@ -47,9 +47,7 @@ class ProjectsNotifier extends StreamNotifier<List<Project>> {
 
       if (user == null) {
         NarwhalToast.show(
-          text: 'User with email $email not found',
-          type: ToastType.error,
-        );
+            text: 'User with email $email not found', type: ToastType.error);
         return;
       }
 
