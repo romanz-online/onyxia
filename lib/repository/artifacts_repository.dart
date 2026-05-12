@@ -20,12 +20,4 @@ class ArtifactsRepository extends BaseSupabaseRepository<Artifact> {
 
   @override
   String getIdFromItem(Artifact item) => item.id;
-
-  Stream<List<CanvasArtifact>> getCanvasesStream() =>
-      _streamByType<CanvasArtifact>(ArtifactType.canvas);
-
-  Stream<List<T>> _streamByType<T extends Artifact>(ArtifactType type) {
-    // Base scopes by project_id; post-filter by Dart type.
-    return getStream().map((items) => items.whereType<T>().toList());
-  }
 }

@@ -21,8 +21,7 @@ final currentCanvasProvider = Provider.autoDispose<CanvasArtifact?>((ref) {
   final urlCanvasId = ref.watch(urlCanvasIdProvider);
 
   if (urlCanvasId != null) {
-    final canvas = ref.watch(
-        canvasByIdProvider((projectId: projectId, canvasId: urlCanvasId)));
+    final canvas = ref.watch(canvasByIdProvider(urlCanvasId));
     if (canvas != null) return canvas;
   }
 
@@ -85,9 +84,8 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
   void _init() {
     if (canvasId.isEmpty || projectId == null) return;
 
-    _subscription =
-        repository.getCanvasObjectsStream().listen((remoteObjects) async {
-      final sorted = _sortObjects(remoteObjects.objects);
+    _subscription = repository.getStream().listen((remoteObjects) async {
+      final sorted = _sortObjects(remoteObjects);
       List<CanvasObject> updatedObjects = [];
 
       for (final object in sorted) {

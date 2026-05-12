@@ -22,10 +22,4 @@ class CanvasObjectsRepository extends BaseSupabaseRepository<CanvasObject> {
 
   @override
   String getIdFromItem(CanvasObject item) => item.id;
-
-  /// Real-time stream of all canvas objects on this canvas, wrapped in a CanvasObjects container.
-  Stream<CanvasObjects> getCanvasObjectsStream() {
-    return getStream()
-        .map((objects) => CanvasObjects(objects: objects, selectedObjects: []));
-  }
 }

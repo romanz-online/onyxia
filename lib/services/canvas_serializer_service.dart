@@ -33,15 +33,11 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
 
   @override
   Future<Map<String, dynamic>> serialize() async {
-    final stream = await repository.getCanvasesStream().first;
-    final data = stream.firstWhere(
-      (canvas) => canvas.id == canvasId,
-      orElse: () => throw Exception('Canvas not found'),
-    );
+    final data = await repository.get(canvasId) as CanvasArtifact?;
+    if (data == null) throw Exception('Canvas not found');
 
-    final objectsStream =
-        await canvasObjectsRepository.getCanvasObjectsStream().first;
-    final objects = objectsStream.objects;
+    final objectsStream = await canvasObjectsRepository.getStream().first;
+    final objects = objectsStream;
 
     final commentsStream = await commentsRepository.getStream().first;
 
@@ -68,7 +64,8 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
       final canvasData = Map<String, dynamic>.from(data['canvas']);
 
       // Fetch current canvas data to get the latest state
-      final canvas = (await repository.getCanvasesStream().first).first;
+      final canvas = await repository.get(canvasId) as CanvasArtifact?;
+      if (canvas == null) throw Exception('Canvas not found');
 
       // Update canvas title if present
       if (canvasData.containsKey('title')) {
@@ -85,12 +82,12 @@ class CanvasSerializerService extends Serializer<CanvasArtifact> {
     }
 
     // Get current objects from the canvas to delete them
-    final objectsStream = canvasObjectsRepository.getCanvasObjectsStream();
-    final currentObjects = await objectsStream.first;
+    final objectsStream = await canvasObjectsRepository.getStream().first;
+    final objects = objectsStream;
 
     // Delete all existing objects if any exist
-    if (currentObjects.objects.isNotEmpty) {
-      await canvasObjectsRepository.deleteMultiple(currentObjects.objects);
+    if (objects.isNotEmpty) {
+      await canvasObjectsRepository.deleteMultiple(objects);
     }
 
     // Delete all existing comments if any exist

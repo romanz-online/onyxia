@@ -19,13 +19,4 @@ class ProjectsRepository extends BaseSupabaseRepository<Project> {
 
   @override
   String getIdFromItem(Project item) => item.id;
-
-  /// Fetch all projects visible to a user. With Supabase RLS, the auth-scoped
-  /// query already returns only the projects the user is a member of (or owns)
-  /// — no client-side join required. Admins fall through the same path because
-  /// admin-level access is enforced via RLS policies, not application logic.
-  Future<List<Project>> getProjects(String userId) async {
-    if (userId.isEmpty) return [];
-    return getAll();
-  }
 }

@@ -6,30 +6,22 @@ final projectsProvider =
   final currentUser = ref.watch(currentUserProvider);
 
   if (authState.value == null || currentUser.id.isEmpty) {
-    return ProjectsNotifier(Projects.initial(), ProjectsRepository(), '');
+    return ProjectsNotifier(Projects.initial(), ProjectsRepository());
   }
 
-  return ProjectsNotifier(
-      Projects.initial(), ProjectsRepository(), currentUser.id);
+  return ProjectsNotifier(Projects.initial(), ProjectsRepository());
 });
 
 class ProjectsNotifier extends StateNotifier<Projects> {
   final ProjectsRepository projectsRepository;
-  final String currentUserId;
 
-  ProjectsNotifier(
-    super.state,
-    this.projectsRepository,
-    this.currentUserId,
-  ) {
-    if (currentUserId.isNotEmpty) {
-      _loadProjects();
-    }
+  ProjectsNotifier(super.state, this.projectsRepository) {
+    _loadProjects();
   }
 
   Future<void> _loadProjects() async {
     try {
-      final projects = await projectsRepository.getProjects(currentUserId);
+      final projects = await projectsRepository.getAll();
 
       if (!mounted) return;
 
@@ -62,13 +54,11 @@ class ProjectsNotifier extends StateNotifier<Projects> {
         final project = await projectsRepository.get(projectId);
 
         if (project != null && mounted) {
-          if (project.createdBy == currentUserId) {
-            final updatedProjects = [...state.projects, project];
-            state = state.copyWith(
-              projects: updatedProjects,
-              selectedProject: project,
-            );
-          }
+          final updatedProjects = [...state.projects, project];
+          state = state.copyWith(
+            projects: updatedProjects,
+            selectedProject: project,
+          );
         }
       } catch (e) {
         debugPrint('Failed to load project $projectId: $e');
