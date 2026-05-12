@@ -1,4 +1,6 @@
-import 'package:onyxia/export.dart';
+ 
+import 'package:flutter/material.dart';
+import 'package:super_tree/src/models/tree_node.dart';
 
 /// A base interface for providing icons to a SuperTree instance based on its Data Class [T].
 ///
@@ -24,7 +26,7 @@ Widget Function(BuildContext, TreeNode<T>) prefixBuilderFromIconProvider<T>({
 
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[Gap(leadingSpacing), icon],
+      children: <Widget>[SizedBox(width: leadingSpacing), icon],
     );
   };
 }
