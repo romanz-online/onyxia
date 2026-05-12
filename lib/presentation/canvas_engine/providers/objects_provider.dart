@@ -1,6 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import 'pins_provider.dart';
+import 'dart:async';
 
 final canvasConfigProvider = Provider.autoDispose<CanvasConfig>((ref) {
   final type = ref.watch(currentCanvasProvider.select((c) => c?.canvasType));

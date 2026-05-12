@@ -149,7 +149,7 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
                   ),
                 ),
               ),
-              const SizedBox(height: 12),
+              const Gap(12),
               if (filteredNotes.isNotEmpty)
                 Container(
                   margin: const EdgeInsets.symmetric(horizontal: 20),

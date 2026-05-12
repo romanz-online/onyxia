@@ -68,12 +68,12 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
           content: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 10,
             children: [
               Text(
                 'Project Name',
                 style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext),
               ),
-              const SizedBox(height: 10),
               TextFormField(
                 maxLength: 50,
                 controller: _newProjectNameController,
@@ -172,6 +172,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
         padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          spacing: 24,
           children: [
             Text(
               'Onyxia',
@@ -181,7 +182,6 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
                 color: ThemeHelper.neutral700(context),
               ),
             ),
-            const SizedBox(height: 24),
             SizedBox(
               width: 320,
               child: AutofillGroup(child: const EmailAuthForm()),
@@ -268,7 +268,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
               color: ThemeHelper.neutral700(context),
             ),
           ),
-          const SizedBox(height: 16),
+          const Gap(16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 4,

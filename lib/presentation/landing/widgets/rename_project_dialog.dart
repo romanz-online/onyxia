@@ -11,13 +11,13 @@ class RenameProjectDialog extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<RenameProjectDialog> createState() => _RenameProjectDialogState();
+  ConsumerState<RenameProjectDialog> createState() =>
+      _RenameProjectDialogState();
 }
 
 class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
   final TextEditingController _projectNameController = TextEditingController();
   late final FocusNode _popupFocusNode;
-
 
   @override
   void initState() {
@@ -32,7 +32,6 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     _projectNameController.text = widget.projectName;
@@ -45,34 +44,37 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
         focusNode: _popupFocusNode,
         onKeyEvent: (node, event) {
           if (event is! KeyDownEvent) return KeyEventResult.ignored;
-          if (event.logicalKey != LogicalKeyboardKey.enter) return KeyEventResult.ignored;
+          if (event.logicalKey != LogicalKeyboardKey.enter)
+            return KeyEventResult.ignored;
 
           final String projectName = _projectNameController.text;
           ref
-            .read(projectsProvider.notifier)
-            .renameProject(widget.projectId, projectName);
+              .read(projectsProvider.notifier)
+              .renameProject(widget.projectId, projectName);
           Navigator.of(context).pop();
           return KeyEventResult.handled;
         },
         child: SizedBox(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 10,
             children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Project Name',
-                      style: NarwhalStyles.modalTextFieldTitleStyle(context)),
+                  Text(
+                    'Project Name',
+                    style: NarwhalStyles.modalTextFieldTitleStyle(context),
+                  ),
                 ],
-              ),
-              const SizedBox(
-                height: 10,
               ),
               TextFormField(
                 maxLength: 50,
                 controller: _projectNameController,
-                decoration: NarwhalModalInputDecoration.create(context,
-                    hintText: 'Rename This Project'),
+                decoration: NarwhalModalInputDecoration.create(
+                  context,
+                  hintText: 'Rename This Project',
+                ),
               ),
             ],
           ),
@@ -84,7 +86,6 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
       actionButtonText: 'Rename',
       onActionPressed: () {
         final String projectName = _projectNameController.text;
-
         ref
             .read(projectsProvider.notifier)
             .renameProject(widget.projectId, projectName);

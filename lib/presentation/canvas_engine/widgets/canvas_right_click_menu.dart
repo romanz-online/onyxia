@@ -2,6 +2,7 @@ import 'package:onyxia/export.dart';
 import 'package:onyxia/helpers/safe_right_click_menu_position.dart';
 import '../providers/providers.dart';
 import '../services/services.dart';
+import 'dart:async';
 import 'package:web/web.dart' as web;
 
 class RightClickMenuItem {
@@ -637,7 +638,7 @@ class _MenuRow extends StatelessWidget {
               children: [
                 if (item.icon != null) ...[
                   Icon(item.icon, size: 16, color: textColor),
-                  const SizedBox(width: 8),
+                  const Gap(8),
                 ],
                 Expanded(
                   child: Text(

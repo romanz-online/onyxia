@@ -144,7 +144,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
       // Handle null values as dividers
       if (tool == null) {
         if (toolButtons.isNotEmpty) {
-          toolButtons.add(const SizedBox(width: 8));
+          toolButtons.add(const Gap(8));
           toolButtons.add(_buildSeparator());
         }
         continue;
@@ -154,7 +154,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
       if (_isShapeTool(tool) && !shapesButtonAdded && _hasShapeTools(config)) {
         // Add regular spacing if not empty
         if (toolButtons.isNotEmpty) {
-          toolButtons.add(const SizedBox(width: 8));
+          toolButtons.add(const Gap(8));
         }
 
         toolButtons.add(NarwhalIconButton(
@@ -172,7 +172,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
 
       // Add regular spacing between tools
       if (toolButtons.isNotEmpty) {
-        toolButtons.add(const SizedBox(width: 8));
+        toolButtons.add(const Gap(8));
       }
 
       toolButtons.add(_buildToolButton(tool, selectedTool, iconSize));
@@ -254,7 +254,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 for (int i = 0; i < availableShapeTools.length; i++) ...[
-                  if (i > 0) const SizedBox(width: 8),
+                  if (i > 0) const Gap(8),
                   NarwhalIconButton(
                     icon: _toolIcons[availableShapeTools[i]]!,
                     size: 30,

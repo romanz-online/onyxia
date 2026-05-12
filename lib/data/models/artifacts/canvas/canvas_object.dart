@@ -1,6 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import 'package:onyxia/presentation/canvas_engine/providers/providers.dart';
+import 'dart:convert';
 
 const Size defaultArtifactObjectDimensions =
     Size(CanvasBounds.gridSpacing * 10, CanvasBounds.gridSpacing * 10);

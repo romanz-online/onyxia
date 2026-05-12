@@ -106,7 +106,7 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                           ),
                         ],
                       ),
-                      const SizedBox(height: 28),
+                      const Gap(28),
                       Container(
                         decoration: BoxDecoration(
                           border: Border(
@@ -140,7 +140,7 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                                   );
                                 },
                               ),
-                              const SizedBox(height: 12),
+                              const Gap(12),
                               Text(
                                 'Sign in with your Google account to join the project. '
                                 'You can fill in your profile details once you\'re in.',
@@ -154,7 +154,7 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const Gap(32),
                       OnyxiaButton(
                         label: 'Sign in with Google',
                         onTap: ref

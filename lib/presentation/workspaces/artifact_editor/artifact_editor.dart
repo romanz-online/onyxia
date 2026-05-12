@@ -135,12 +135,12 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 8,
             children: [
               Text(
                 'No item selected',
                 style: NarwhalTextStyle.bodyLarge(fontStyle: FontStyle.normal),
               ),
-              const SizedBox(height: 8),
               Text(
                 'Select an item from the sidebar to view',
                 style: NarwhalTextStyle.bodyLarge(fontStyle: FontStyle.normal),

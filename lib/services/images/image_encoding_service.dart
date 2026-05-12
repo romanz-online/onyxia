@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 import 'package:onyxia/export.dart';
+import 'dart:convert';
 
 /// Service dedicated to handling image encoding and decoding functionality
 class ImageEncodingService {
@@ -33,7 +34,8 @@ class ImageEncodingService {
   }
 
   /// Get MIME type from file name
-  static String getMimeTypeFromFileName(String fileName) => switch (fileName.toLowerCase().split('.').last) {
+  static String getMimeTypeFromFileName(String fileName) =>
+      switch (fileName.toLowerCase().split('.').last) {
         'jpg' || 'jpeg' => 'image/jpeg',
         'png' => 'image/png',
         'gif' => 'image/gif',
@@ -44,7 +46,8 @@ class ImageEncodingService {
 
   /// Validate if a string is a valid base64 image data URI
   static bool isValidBase64DataUri(String dataUri) =>
-      RegExp(r'^data:image/[^;]+;base64,[A-Za-z0-9+/]+={0,2}$').hasMatch(dataUri);
+      RegExp(r'^data:image/[^;]+;base64,[A-Za-z0-9+/]+={0,2}$')
+          .hasMatch(dataUri);
 
   /// Validate if a string is a valid image URL
   static bool isValidImageUrl(String url) {

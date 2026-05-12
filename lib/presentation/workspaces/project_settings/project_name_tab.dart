@@ -38,6 +38,7 @@ class ProjectNameTab extends StatelessWidget {
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 12,
               children: [
                 Text(
                   'Project Name',
@@ -47,7 +48,6 @@ class ProjectNameTab extends StatelessWidget {
                     color: ThemeHelper.neutral700(context),
                   ),
                 ),
-                const SizedBox(height: 12),
                 TextField(
                   controller: projectNameController,
                   focusNode: projectNameFocusNode,
@@ -55,7 +55,8 @@ class ProjectNameTab extends StatelessWidget {
                     hintText: activeProject.name,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
-                      borderSide: BorderSide(color: ThemeHelper.neutral400(context)),
+                      borderSide:
+                          BorderSide(color: ThemeHelper.neutral400(context)),
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -70,10 +71,13 @@ class ProjectNameTab extends StatelessWidget {
                         width: 2,
                       ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                    hintStyle: NarwhalTextStyle(color: ThemeHelper.neutral500(context)),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 12),
+                    hintStyle: NarwhalTextStyle(
+                        color: ThemeHelper.neutral500(context)),
                   ),
-                  style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+                  style:
+                      NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
                 ),
               ],
             ),

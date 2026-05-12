@@ -2,6 +2,7 @@ import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'package:onyxia/export.dart';
 import 'package:http/http.dart' as http;
+import 'dart:async';
 
 /// Global image service for handling image upload, download, and caching
 /// Singleton pattern - no WidgetRef required
@@ -60,11 +61,13 @@ class ImageService {
     } else if (canvasId != null) {
       folder = 'images';
     } else if (folderId != null) {
-      folder = 'images'; // projects/{projectId}/userExperience/markup/{folderId}/images/
+      folder =
+          'images'; // projects/{projectId}/userExperience/markup/{folderId}/images/
     } else if (category == 'thumbnails') {
       folder = 'thumbnails'; // projects/{projectId}/thumbnails/
     } else if (category == 'file-uploads') {
-      folder = 'file-uploads'; // projects/{projectId}/userExperience/markup/file-upload/{fileId}/images/
+      folder =
+          'file-uploads'; // projects/{projectId}/userExperience/markup/file-upload/{fileId}/images/
     } else {
       folder = 'images'; // projects/{projectId}/images/ (fallback)
     }
@@ -93,7 +96,8 @@ class ImageService {
 
     final maxSafeSize = ImageHelper.getMaxSafeSize();
     targetSize ??= maxSafeSize;
-    if (targetSize.width > maxSafeSize.width || targetSize.height > maxSafeSize.height) {
+    if (targetSize.width > maxSafeSize.width ||
+        targetSize.height > maxSafeSize.height) {
       targetSize = maxSafeSize;
     }
 
@@ -149,18 +153,21 @@ class ImageService {
 
     final maxSafeSize = ImageHelper.getMaxSafeSize();
     targetSize ??= maxSafeSize;
-    if (targetSize.width > maxSafeSize.width || targetSize.height > maxSafeSize.height) {
+    if (targetSize.width > maxSafeSize.width ||
+        targetSize.height > maxSafeSize.height) {
       targetSize = maxSafeSize;
     }
 
     // Check hot decoded cache first
-    final cachedDecoded = ImageCacheService.getDecodedImage(imageUrl, targetSize: targetSize);
+    final cachedDecoded =
+        ImageCacheService.getDecodedImage(imageUrl, targetSize: targetSize);
     if (cachedDecoded != null) {
       return cachedDecoded;
     }
 
     // Check if we have encoded bytes (need to decode asynchronously)
-    final encodedBytes = ImageCacheService.getEncodedBytes(imageUrl, targetSize: targetSize);
+    final encodedBytes =
+        ImageCacheService.getEncodedBytes(imageUrl, targetSize: targetSize);
     if (encodedBytes != null) {
       // Have bytes but not decoded - start async decode
       if (!ImageCacheService.isImageLoading(imageUrl, targetSize: targetSize)) {
@@ -185,36 +192,44 @@ class ImageService {
 
     final maxSafeSize = ImageHelper.getMaxSafeSize();
     targetSize ??= maxSafeSize;
-    if (targetSize.width > maxSafeSize.width || targetSize.height > maxSafeSize.height) {
+    if (targetSize.width > maxSafeSize.width ||
+        targetSize.height > maxSafeSize.height) {
       targetSize = maxSafeSize;
     }
 
     try {
       // Check decoded hot cache first
-      final cachedDecoded = ImageCacheService.getDecodedImage(imageUrl, targetSize: targetSize);
+      final cachedDecoded =
+          ImageCacheService.getDecodedImage(imageUrl, targetSize: targetSize);
       if (cachedDecoded != null) return cachedDecoded;
 
       // Check encoded bytes cache
-      Uint8List? rawBytes = ImageCacheService.getEncodedBytes(imageUrl, targetSize: targetSize);
+      Uint8List? rawBytes =
+          ImageCacheService.getEncodedBytes(imageUrl, targetSize: targetSize);
 
       // If not in cache, download
       if (rawBytes == null) {
         if (imageUrl.startsWith('data:image/')) {
           // base-64 image
           rawBytes = ImageEncodingService.decodeBase64Image(imageUrl);
-        } else if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://')) {
+        } else if (imageUrl.startsWith('http://') ||
+            imageUrl.startsWith('https://')) {
           await _waitForRequestSlot();
           try {
             http.Response? response;
             for (int attempt = 0; attempt < 4; attempt++) {
-              response = await http.get(Uri.parse(imageUrl)).timeout(const Duration(seconds: 10));
+              response = await http
+                  .get(Uri.parse(imageUrl))
+                  .timeout(const Duration(seconds: 10));
               if (response.statusCode != 429) break;
-              await Future.delayed(Duration(seconds: 1 << attempt)); // 1s, 2s, 4s, 8s
+              await Future.delayed(
+                  Duration(seconds: 1 << attempt)); // 1s, 2s, 4s, 8s
             }
             if (response!.statusCode == 200) {
               rawBytes = response.bodyBytes;
             } else {
-              throw Exception('HTTP ${response.statusCode}: Failed to download image');
+              throw Exception(
+                  'HTTP ${response.statusCode}: Failed to download image');
             }
           } finally {
             _releaseRequestSlot();
@@ -226,7 +241,8 @@ class ImageService {
         if (rawBytes == null) return null;
 
         // Cache the encoded bytes
-        ImageCacheService.cacheBytes(imageUrl, rawBytes, targetSize: targetSize);
+        ImageCacheService.cacheBytes(imageUrl, rawBytes,
+            targetSize: targetSize);
       }
 
       // Decode the bytes
@@ -236,8 +252,10 @@ class ImageService {
       final (originalWidth, originalHeight) = dimensions;
 
       ui.Image decodedImage;
-      if (targetSize.width > originalWidth && targetSize.height > originalHeight) {
-        final decoded = await ImageEncodingService.decodeImageFromBytes(rawBytes);
+      if (targetSize.width > originalWidth &&
+          targetSize.height > originalHeight) {
+        final decoded =
+            await ImageEncodingService.decodeImageFromBytes(rawBytes);
         if (decoded == null) return null;
         decodedImage = decoded;
       } else {
@@ -257,7 +275,8 @@ class ImageService {
       }
 
       // Cache the decoded image in hot cache
-      ImageCacheService.cacheDecodedImage(imageUrl, decodedImage, targetSize: targetSize);
+      ImageCacheService.cacheDecodedImage(imageUrl, decodedImage,
+          targetSize: targetSize);
 
       return decodedImage;
     } catch (e) {

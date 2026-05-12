@@ -27,8 +27,7 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
         height: double.infinity,
         child: Row(
           children: [
-            Expanded(
-                child: Container(color: ThemeHelper.neutral300(context))),
+            Expanded(child: Container(color: ThemeHelper.neutral300(context))),
             SizedBox(
               width: 1000,
               child: Row(
@@ -36,13 +35,14 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                   // Left sidebar — profile preview + tabs
                   Container(
                     width: 220,
-                    decoration: BoxDecoration(
-                        color: ThemeHelper.neutral300(context)),
+                    decoration:
+                        BoxDecoration(color: ThemeHelper.neutral300(context)),
                     child: Column(
                       children: [
                         Padding(
                           padding: const EdgeInsets.only(top: 24),
                           child: Column(
+                            spacing: 4,
                             children: [
                               Text(
                                 widget.user.name,
@@ -52,7 +52,6 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                                   color: ThemeHelper.black(context),
                                 ),
                               ),
-                              const SizedBox(height: 4),
                               Text(
                                 widget.user.email,
                                 style: NarwhalTextStyle(
@@ -84,8 +83,8 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                   // Main content area
                   Expanded(
                     child: Container(
-                      decoration: BoxDecoration(
-                          color: ThemeHelper.neutral300(context)),
+                      decoration:
+                          BoxDecoration(color: ThemeHelper.neutral300(context)),
                       child: Column(
                         children: [
                           // Header with close button
@@ -100,8 +99,7 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                               ),
                             ),
                             child: Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   'User Profile',
@@ -114,8 +112,7 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                                 NarwhalIconButton(
                                   icon: NarwhalIcons.close,
                                   size: 28,
-                                  onPressed: () =>
-                                      Navigator.of(context).pop(),
+                                  onPressed: () => Navigator.of(context).pop(),
                                 ),
                               ],
                             ),
@@ -151,8 +148,7 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
             onTap: () => setState(() => _selectedTabIndex = index),
             child: Container(
               width: double.infinity,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               margin: const EdgeInsets.only(bottom: 4),
               decoration: BoxDecoration(
                 color: (isSelected || isHovered)
@@ -164,8 +160,7 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                 label,
                 style: NarwhalTextStyle(
                   fontSize: 14,
-                  fontWeight:
-                      isSelected ? FontWeight.w600 : FontWeight.normal,
+                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                   color: isSelected
                       ? ThemeHelper.black(context)
                       : ThemeHelper.neutral600(context),
@@ -196,13 +191,13 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
       padding: const EdgeInsets.all(24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 16,
         children: [
           Text(
             'Contact Information',
             style: _sectionHeaderStyle(ThemeHelper.neutral900(context))
                 .copyWith(fontSize: 18),
           ),
-          const SizedBox(height: 16),
           _buildInfoItem(Icons.email_outlined, 'Email', widget.user.email),
         ],
       ),
@@ -231,12 +226,13 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
       padding: const EdgeInsets.only(bottom: 16),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 12,
         children: [
           Icon(icon, size: 20, color: ThemeHelper.neutral600(context)),
-          const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
               children: [
                 Text(
                   label,
@@ -246,7 +242,6 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                     color: ThemeHelper.neutral600(context),
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   value,
                   style: NarwhalTextStyle(
@@ -272,12 +267,13 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       margin: const EdgeInsets.only(bottom: 8),
       child: Row(
+        spacing: 16,
         children: [
           Icon(icon, size: 24, color: ThemeHelper.neutral600(context)),
-          const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 2,
               children: [
                 Text(
                   title,
@@ -287,7 +283,6 @@ class _UserProfileOverlayState extends ConsumerState<UserProfileOverlay> {
                     color: ThemeHelper.black(context),
                   ),
                 ),
-                const SizedBox(height: 2),
                 Text(
                   subtitle,
                   style: NarwhalTextStyle(

@@ -1,4 +1,5 @@
 ﻿import 'package:onyxia/export.dart';
+import 'dart:convert';
 
 enum CanvasType with NarwhalEnum {
   whiteboard,

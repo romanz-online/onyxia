@@ -77,6 +77,7 @@ class NarwhalIconButton extends StatelessWidget {
             ? Row(
                 mainAxisSize: MainAxisSize.min,
                 mainAxisAlignment: MainAxisAlignment.center,
+                spacing: 2,
                 children: [
                   NarwhalIcon(
                     icon,
@@ -84,7 +85,6 @@ class NarwhalIconButton extends StatelessWidget {
                     color: iconColorFinal,
                     safeMode: iconSafeMode,
                   ),
-                  const SizedBox(width: 2),
                   NarwhalIcon(
                     (isSelected || isPressed)
                         ? NarwhalIcons.dropdownArrowUp

@@ -2,10 +2,11 @@ import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 import 'interaction_service.dart';
-import '../../../helpers/clipboard_helper.dart' as web_helper;
+import 'package:onyxia/helpers/clipboard_helper.dart' as web_helper;
 import 'package:web/web.dart' as web;
 import 'dart:js_interop';
 import 'image_upload_service.dart';
+import 'dart:convert';
 
 /// Service for handling canvas object clipboard operations using system clipboard
 /// with NCON (Narwhal Canvas Object Notation) format

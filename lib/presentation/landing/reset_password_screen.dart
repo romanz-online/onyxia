@@ -65,8 +65,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color:
-                    ThemeHelper.neutral900(context).withValues(alpha: 0.12),
+                color: ThemeHelper.neutral900(context).withValues(alpha: 0.12),
                 blurRadius: 10,
                 spreadRadius: 1,
                 offset: const Offset(10, 10),
@@ -74,8 +73,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
             ],
           ),
           child: Padding(
-            padding:
-                const EdgeInsets.symmetric(horizontal: 40, vertical: 36),
+            padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 36),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -89,7 +87,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     color: ThemeHelper.neutral800(context),
                   ),
                 ),
-                const SizedBox(height: 20),
+                const Gap(20),
                 AutofillGroup(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -98,18 +96,16 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                         controller: _passwordController,
                         obscureText: true,
                         autofillHints: const [AutofillHints.newPassword],
-                        decoration: NarwhalModalInputDecoration.create(
-                            context,
+                        decoration: NarwhalModalInputDecoration.create(context,
                             hintText: 'New password'),
                         style: NarwhalTextStyle(fontSize: 13),
                       ),
-                      const SizedBox(height: 8),
+                      const Gap(8),
                       TextField(
                         controller: _confirmPasswordController,
                         obscureText: true,
                         autofillHints: const [AutofillHints.newPassword],
-                        decoration: NarwhalModalInputDecoration.create(
-                            context,
+                        decoration: NarwhalModalInputDecoration.create(context,
                             hintText: 'Confirm new password'),
                         style: NarwhalTextStyle(fontSize: 13),
                         onSubmitted: (_) => _submit(),
@@ -118,7 +114,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   ),
                 ),
                 if (_errorMessage != null) ...[
-                  const SizedBox(height: 8),
+                  const Gap(8),
                   Text(
                     _errorMessage!,
                     style: NarwhalTextStyle(
@@ -127,7 +123,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     ),
                   ),
                 ],
-                const SizedBox(height: 16),
+                const Gap(16),
                 Center(
                   child: OnyxiaButton(
                     label: _isSubmitting ? '...' : 'Update password',

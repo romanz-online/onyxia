@@ -378,7 +378,11 @@ class NarwhalDataCell {
   final GestureTapCancelCallback? onTapCancel;
 
   bool get _debugInteractive =>
-      onTap != null || onDoubleTap != null || onLongPress != null || onTapDown != null || onTapCancel != null;
+      onTap != null ||
+      onDoubleTap != null ||
+      onLongPress != null ||
+      onTapDown != null ||
+      onTapCancel != null;
 }
 
 /// A data table that follows the
@@ -496,7 +500,8 @@ class NarwhalDataTable extends StatefulWidget {
     this.enableIndividualCellHighlight = false,
   })  : assert(columns.isNotEmpty),
         assert(
-          sortColumnIndex == null || (sortColumnIndex >= 0 && sortColumnIndex < columns.length),
+          sortColumnIndex == null ||
+              (sortColumnIndex >= 0 && sortColumnIndex < columns.length),
         ),
         assert(
           !rows.any((NarwhalDataRow row) => row.cells.length != columns.length),
@@ -504,10 +509,13 @@ class NarwhalDataTable extends StatefulWidget {
         ),
         assert(dividerThickness == null || dividerThickness >= 0),
         assert(
-          dataRowMinHeight == null || dataRowMaxHeight == null || dataRowMaxHeight >= dataRowMinHeight,
+          dataRowMinHeight == null ||
+              dataRowMaxHeight == null ||
+              dataRowMaxHeight >= dataRowMinHeight,
         ),
         assert(
-          dataRowHeight == null || (dataRowMinHeight == null && dataRowMaxHeight == null),
+          dataRowHeight == null ||
+              (dataRowMinHeight == null && dataRowMaxHeight == null),
           'dataRowHeight ($dataRowHeight) must not be set if dataRowMinHeight ($dataRowMinHeight) or dataRowMaxHeight ($dataRowMaxHeight) are set.',
         ),
         dataRowMinHeight = dataRowHeight ?? dataRowMinHeight,
@@ -616,7 +624,8 @@ class NarwhalDataTable extends StatefulWidget {
     'Migrate to use dataRowMinHeight and dataRowMaxHeight instead. '
     'This feature was deprecated after v3.7.0-5.0.pre.',
   )
-  double? get dataRowHeight => dataRowMinHeight == dataRowMaxHeight ? dataRowMinHeight : null;
+  double? get dataRowHeight =>
+      dataRowMinHeight == dataRowMaxHeight ? dataRowMinHeight : null;
 
   /// {@template flutter.material.dataTable.dataRowMinHeight}
   /// The minimum height of each row (excluding the row that contains column headings).
@@ -796,7 +805,8 @@ class NarwhalDataTable extends StatefulWidget {
   }
 
   bool get _debugInteractive {
-    return columns.any((NarwhalDataColumn column) => column._debugInteractive) ||
+    return columns
+            .any((NarwhalDataColumn column) => column._debugInteractive) ||
         rows.any((NarwhalDataRow row) => row._debugInteractive);
   }
 
@@ -880,7 +890,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
   /// The default divider thickness.
   // static const double _dividerThickness = 1.0;
 
-  static const Duration _sortArrowAnimationDuration = Duration(milliseconds: 150);
+  static const Duration _sortArrowAnimationDuration =
+      Duration(milliseconds: 150);
 
   Widget _buildCheckbox({
     required BuildContext context,
@@ -895,14 +906,17 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
     bool showDisabledCheckbox = true,
   }) {
     final ThemeData themeData = Theme.of(context);
-    final double effectiveHorizontalMargin =
-        widget.horizontalMargin ?? themeData.dataTableTheme.horizontalMargin ?? _horizontalMargin;
-    final double effectiveCheckboxHorizontalMarginStart = widget.checkboxHorizontalMargin ??
-        themeData.dataTableTheme.checkboxHorizontalMargin ??
-        effectiveHorizontalMargin;
-    final double effectiveCheckboxHorizontalMarginEnd = widget.checkboxHorizontalMargin ??
-        themeData.dataTableTheme.checkboxHorizontalMargin ??
-        effectiveHorizontalMargin / 2.0;
+    final double effectiveHorizontalMargin = widget.horizontalMargin ??
+        themeData.dataTableTheme.horizontalMargin ??
+        _horizontalMargin;
+    final double effectiveCheckboxHorizontalMarginStart =
+        widget.checkboxHorizontalMargin ??
+            themeData.dataTableTheme.checkboxHorizontalMargin ??
+            effectiveHorizontalMargin;
+    final double effectiveCheckboxHorizontalMarginEnd =
+        widget.checkboxHorizontalMargin ??
+            themeData.dataTableTheme.checkboxHorizontalMargin ??
+            effectiveHorizontalMargin / 2.0;
     Widget contents = Semantics(
       container: true,
       child: Padding(
@@ -913,7 +927,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         child: Center(
             child: Visibility(
           visible: showDisabledCheckbox,
-          child: Checkbox(value: checked, onChanged: onCheckboxChanged, tristate: tristate),
+          child: Checkbox(
+              value: checked, onChanged: onCheckboxChanged, tristate: tristate),
         )),
       ),
     );
@@ -923,8 +938,12 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         resolveColor: (states) => widget.enableIndividualCellHighlight
             ? (overlayColor?.resolve(states) ?? Colors.transparent)
             : Colors.transparent,
-        onHover: rowIndex != null ? (isHovered) => _onRowHover(isHovered ? rowIndex : null) : null,
-        onPress: rowIndex != null ? (isPressed) => _onRowPress(isPressed ? rowIndex : null) : null,
+        onHover: rowIndex != null
+            ? (isHovered) => _onRowHover(isHovered ? rowIndex : null)
+            : null,
+        onPress: rowIndex != null
+            ? (isPressed) => _onRowPress(isPressed ? rowIndex : null)
+            : null,
         child: contents,
       );
     }
@@ -944,7 +963,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
       );
     }
 
-    return TableCell(verticalAlignment: TableCellVerticalAlignment.fill, child: contents);
+    return TableCell(
+        verticalAlignment: TableCellVerticalAlignment.fill, child: contents);
   }
 
   Widget _buildHeadingCell({
@@ -967,7 +987,7 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
       mainAxisAlignment: headingRowAlignment,
       children: <Widget>[
         if (headingRowAlignment == MainAxisAlignment.center && onSort != null)
-          const SizedBox(width: _SortArrowState._arrowIconSize + _sortArrowPadding),
+          const Gap(_SortArrowState._arrowIconSize + _sortArrowPadding),
         label,
         if (onSort != null) ...<Widget>[
           _SortArrow(
@@ -975,7 +995,7 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
             up: sorted ? ascending : null,
             duration: _sortArrowAnimationDuration,
           ),
-          const SizedBox(width: _sortArrowPadding),
+          const Gap(_sortArrowPadding),
         ],
       ],
     );
@@ -991,7 +1011,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
     label = Container(
       padding: padding,
       height: effectiveHeadingRowHeight,
-      alignment: numeric ? Alignment.centerRight : AlignmentDirectional.centerStart,
+      alignment:
+          numeric ? Alignment.centerRight : AlignmentDirectional.centerStart,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(
@@ -1001,7 +1022,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         ),
       ),
       child: AnimatedDefaultTextStyle(
-        style: DefaultTextStyle.of(context).style.merge(effectiveHeadingTextStyle),
+        style:
+            DefaultTextStyle.of(context).style.merge(effectiveHeadingTextStyle),
         softWrap: false,
         duration: _sortArrowAnimationDuration,
         child: label,
@@ -1013,7 +1035,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
 
     label = _RowInteractor(
       onTap: onSort,
-      resolveColor: (states) => overlayColor?.resolve(states) ?? _resolveHeaderColor(states),
+      resolveColor: (states) =>
+          overlayColor?.resolve(states) ?? _resolveHeaderColor(states),
       child: label,
     );
     return label;
@@ -1068,16 +1091,24 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         minHeight: effectiveDataRowMinHeight,
         maxHeight: effectiveDataRowMaxHeight,
       ),
-      alignment: numeric ? Alignment.centerRight : AlignmentDirectional.centerStart,
+      alignment:
+          numeric ? Alignment.centerRight : AlignmentDirectional.centerStart,
       child: DefaultTextStyle(
         style: DefaultTextStyle.of(context)
             .style
             .merge(effectiveDataTextStyle)
-            .copyWith(color: placeholder ? effectiveDataTextStyle.color!.withValues(alpha: 0.6) : null),
+            .copyWith(
+                color: placeholder
+                    ? effectiveDataTextStyle.color!.withValues(alpha: 0.6)
+                    : null),
         child: DropdownButtonHideUnderline(child: label),
       ),
     );
-    if (onTap != null || onDoubleTap != null || onLongPress != null || onTapDown != null || onTapCancel != null) {
+    if (onTap != null ||
+        onDoubleTap != null ||
+        onLongPress != null ||
+        onTapDown != null ||
+        onTapCancel != null) {
       label = _RowInteractor(
         onTap: onTap,
         onDoubleTap: onDoubleTap,
@@ -1087,8 +1118,12 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         resolveColor: (states) => widget.enableIndividualCellHighlight
             ? (overlayColor?.resolve(states) ?? Colors.transparent)
             : Colors.transparent,
-        onHover: rowIndex != null ? (isHovered) => _onRowHover(isHovered ? rowIndex : null) : null,
-        onPress: rowIndex != null ? (isPressed) => _onRowPress(isPressed ? rowIndex : null) : null,
+        onHover: rowIndex != null
+            ? (isHovered) => _onRowHover(isHovered ? rowIndex : null)
+            : null,
+        onPress: rowIndex != null
+            ? (isPressed) => _onRowPress(isPressed ? rowIndex : null)
+            : null,
         child: label,
       );
     } else if (onSelectChanged != null || onRowLongPress != null) {
@@ -1098,8 +1133,12 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         resolveColor: (states) => widget.enableIndividualCellHighlight
             ? (overlayColor?.resolve(states) ?? Colors.transparent)
             : Colors.transparent,
-        onHover: rowIndex != null ? (isHovered) => _onRowHover(isHovered ? rowIndex : null) : null,
-        onPress: rowIndex != null ? (isPressed) => _onRowPress(isPressed ? rowIndex : null) : null,
+        onHover: rowIndex != null
+            ? (isHovered) => _onRowHover(isHovered ? rowIndex : null)
+            : null,
+        onPress: rowIndex != null
+            ? (isPressed) => _onRowPress(isPressed ? rowIndex : null)
+            : null,
         child: label,
       );
     } else if (hoverable) {
@@ -1127,31 +1166,41 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
     final DataTableThemeData dataTableTheme = DataTableTheme.of(context);
 
     // Use only explicit colors, no theme fallbacks
-    final WidgetStateProperty<Color?>? effectiveHeadingRowColor = widget.headingRowColor;
-    final WidgetStateProperty<Color?>? effectiveDataRowColor = widget.dataRowColor;
-    final bool anyRowSelectable = widget.rows.any((NarwhalDataRow row) => row.onSelectChanged != null);
-    final bool displayCheckboxColumn = widget.showCheckboxColumn && anyRowSelectable;
+    final WidgetStateProperty<Color?>? effectiveHeadingRowColor =
+        widget.headingRowColor;
+    final WidgetStateProperty<Color?>? effectiveDataRowColor =
+        widget.dataRowColor;
+    final bool anyRowSelectable =
+        widget.rows.any((NarwhalDataRow row) => row.onSelectChanged != null);
+    final bool displayCheckboxColumn =
+        widget.showCheckboxColumn && anyRowSelectable;
     final Iterable<NarwhalDataRow> rowsWithCheckbox = displayCheckboxColumn
         ? widget.rows.where((NarwhalDataRow row) => row.onSelectChanged != null)
         : <NarwhalDataRow>[];
-    final Iterable<NarwhalDataRow> rowsChecked = rowsWithCheckbox.where((NarwhalDataRow row) => row.selected);
-    final bool allChecked = displayCheckboxColumn && rowsChecked.length == rowsWithCheckbox.length;
+    final Iterable<NarwhalDataRow> rowsChecked =
+        rowsWithCheckbox.where((NarwhalDataRow row) => row.selected);
+    final bool allChecked =
+        displayCheckboxColumn && rowsChecked.length == rowsWithCheckbox.length;
     final bool anyChecked = displayCheckboxColumn && rowsChecked.isNotEmpty;
     final bool someChecked = anyChecked && !allChecked;
     final double effectiveHorizontalMargin = widget.horizontalMargin ??
         dataTableTheme.horizontalMargin ??
         theme.dataTableTheme.horizontalMargin ??
         _horizontalMargin;
-    final double effectiveCheckboxHorizontalMarginStart = widget.checkboxHorizontalMargin ??
-        dataTableTheme.checkboxHorizontalMargin ??
-        theme.dataTableTheme.checkboxHorizontalMargin ??
-        effectiveHorizontalMargin;
-    final double effectiveCheckboxHorizontalMarginEnd = widget.checkboxHorizontalMargin ??
-        dataTableTheme.checkboxHorizontalMargin ??
-        theme.dataTableTheme.checkboxHorizontalMargin ??
-        effectiveHorizontalMargin / 2.0;
-    final double effectiveColumnSpacing =
-        widget.columnSpacing ?? dataTableTheme.columnSpacing ?? theme.dataTableTheme.columnSpacing ?? _columnSpacing;
+    final double effectiveCheckboxHorizontalMarginStart =
+        widget.checkboxHorizontalMargin ??
+            dataTableTheme.checkboxHorizontalMargin ??
+            theme.dataTableTheme.checkboxHorizontalMargin ??
+            effectiveHorizontalMargin;
+    final double effectiveCheckboxHorizontalMarginEnd =
+        widget.checkboxHorizontalMargin ??
+            dataTableTheme.checkboxHorizontalMargin ??
+            theme.dataTableTheme.checkboxHorizontalMargin ??
+            effectiveHorizontalMargin / 2.0;
+    final double effectiveColumnSpacing = widget.columnSpacing ??
+        dataTableTheme.columnSpacing ??
+        theme.dataTableTheme.columnSpacing ??
+        _columnSpacing;
 
     final List<TableColumnWidth> tableColumns = List<TableColumnWidth>.filled(
       widget.columns.length + (displayCheckboxColumn ? 1 : 0),
@@ -1161,7 +1210,9 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
       widget.rows.length + 1, // the +1 is for the header row
       (int index) {
         final bool isSelected = index > 0 && widget.rows[index - 1].selected;
-        final bool isDisabled = index > 0 && anyRowSelectable && widget.rows[index - 1].onSelectChanged == null;
+        final bool isDisabled = index > 0 &&
+            anyRowSelectable &&
+            widget.rows[index - 1].onSelectChanged == null;
         final bool isHovered = _hoveredRowIndex == index;
         final bool isPressed = _pressedRowIndex == index;
         final Set<WidgetState> states = <WidgetState>{
@@ -1175,9 +1226,12 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         if (index > 0) {
           // Data row: Check for row-specific color, then datatable instance color, then our default resolution
           final NarwhalDataRow row = widget.rows[index - 1];
-          rowColor = row.color?.resolve(states) ?? effectiveDataRowColor?.resolve(states) ?? _resolveRowColor(states);
+          rowColor = row.color?.resolve(states) ??
+              effectiveDataRowColor?.resolve(states) ??
+              _resolveRowColor(states);
         } else {
-          rowColor = effectiveHeadingRowColor?.resolve(states) ?? _resolveHeaderColor(states);
+          rowColor = effectiveHeadingRowColor?.resolve(states) ??
+              _resolveHeaderColor(states);
         }
 
         final BorderSide borderSide = BorderSide(
@@ -1201,7 +1255,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
             border: border,
             color: rowColor,
           ),
-          children: List<Widget>.filled(tableColumns.length, const _NullWidget()),
+          children:
+              List<Widget>.filled(tableColumns.length, const _NullWidget()),
         );
       },
     );
@@ -1211,27 +1266,35 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
     int displayColumnIndex = 0;
     if (displayCheckboxColumn) {
       tableColumns[0] = FixedColumnWidth(
-        effectiveCheckboxHorizontalMarginStart + Checkbox.width + effectiveCheckboxHorizontalMarginEnd,
+        effectiveCheckboxHorizontalMarginStart +
+            Checkbox.width +
+            effectiveCheckboxHorizontalMarginEnd,
       );
       tableRows[0].children[0] = _buildCheckbox(
         context: context,
         checked: someChecked ? null : allChecked,
         onRowTap: null,
-        onCheckboxChanged: (bool? checked) => _handleSelectAll(checked, someChecked),
+        onCheckboxChanged: (bool? checked) =>
+            _handleSelectAll(checked, someChecked),
         overlayColor: null,
         tristate: true,
         isHeader: true,
       );
       rowIndex = 1;
       for (final NarwhalDataRow row in widget.rows) {
-        final Set<WidgetState> states = <WidgetState>{if (row.selected) WidgetState.selected};
+        final Set<WidgetState> states = <WidgetState>{
+          if (row.selected) WidgetState.selected
+        };
         tableRows[rowIndex].children[0] = _buildCheckbox(
           context: context,
           checked: row.selected,
-          onRowTap: row.onSelectChanged == null ? null : () => row.onSelectChanged?.call(!row.selected),
+          onRowTap: row.onSelectChanged == null
+              ? null
+              : () => row.onSelectChanged?.call(!row.selected),
           onCheckboxChanged: row.onSelectChanged,
           overlayColor: row.color ?? effectiveDataRowColor,
-          rowMouseCursor: row.mouseCursor?.resolve(states) ?? dataTableTheme.dataRowCursor?.resolve(states),
+          rowMouseCursor: row.mouseCursor?.resolve(states) ??
+              dataTableTheme.dataRowCursor?.resolve(states),
           tristate: false,
           rowIndex: rowIndex,
           showDisabledCheckbox: row.showDisabledCheckbox,
@@ -1241,11 +1304,16 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
       displayColumnIndex += 1;
     }
 
-    for (int dataColumnIndex = 0; dataColumnIndex < widget.columns.length; dataColumnIndex += 1) {
+    for (int dataColumnIndex = 0;
+        dataColumnIndex < widget.columns.length;
+        dataColumnIndex += 1) {
       final NarwhalDataColumn column = widget.columns[dataColumnIndex];
 
       final double paddingStart = switch (dataColumnIndex) {
-        0 when displayCheckboxColumn && widget.checkboxHorizontalMargin == null => effectiveHorizontalMargin / 2.0,
+        0
+            when displayCheckboxColumn &&
+                widget.checkboxHorizontalMargin == null =>
+          effectiveHorizontalMargin / 2.0,
         0 => effectiveHorizontalMargin,
         _ => effectiveColumnSpacing / 2.0,
       };
@@ -1264,7 +1332,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
       if (column.columnWidth != null) {
         tableColumns[displayColumnIndex] = column.columnWidth!;
       } else if (dataColumnIndex == widget._onlyTextColumn) {
-        tableColumns[displayColumnIndex] = const IntrinsicColumnWidth(flex: 1.0);
+        tableColumns[displayColumnIndex] =
+            const IntrinsicColumnWidth(flex: 1.0);
       } else {
         tableColumns[displayColumnIndex] = const IntrinsicColumnWidth();
       }
@@ -1281,20 +1350,24 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
         onSort: column.onSort != null
             ? () => column.onSort!(
                   dataColumnIndex,
-                  widget.sortColumnIndex != dataColumnIndex || !widget.sortAscending,
+                  widget.sortColumnIndex != dataColumnIndex ||
+                      !widget.sortAscending,
                 )
             : null,
         sorted: dataColumnIndex == widget.sortColumnIndex,
         ascending: widget.sortAscending,
         overlayColor: effectiveHeadingRowColor,
-        mouseCursor:
-            column.mouseCursor?.resolve(headerStates) ?? dataTableTheme.headingCellCursor?.resolve(headerStates),
-        headingRowAlignment:
-            column.headingRowAlignment ?? dataTableTheme.headingRowAlignment ?? MainAxisAlignment.start,
+        mouseCursor: column.mouseCursor?.resolve(headerStates) ??
+            dataTableTheme.headingCellCursor?.resolve(headerStates),
+        headingRowAlignment: column.headingRowAlignment ??
+            dataTableTheme.headingRowAlignment ??
+            MainAxisAlignment.start,
       );
       rowIndex = 1;
       for (final NarwhalDataRow row in widget.rows) {
-        final Set<WidgetState> states = <WidgetState>{if (row.selected) WidgetState.selected};
+        final Set<WidgetState> states = <WidgetState>{
+          if (row.selected) WidgetState.selected
+        };
         final NarwhalDataCell cell = row.cells[dataColumnIndex];
         tableRows[rowIndex].children[displayColumnIndex] = _buildDataCell(
           context: context,
@@ -1308,11 +1381,16 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
           onLongPress: cell.onLongPress,
           onTapCancel: cell.onTapCancel,
           onTapDown: cell.onTapDown,
-          onSelectChanged: row.onSelectChanged == null ? null : () => row.onSelectChanged?.call(!row.selected),
-          onHoveredChanged: row.onHoveredChanged == null ? null : (isHovered) => row.onHoveredChanged?.call(isHovered),
+          onSelectChanged: row.onSelectChanged == null
+              ? null
+              : () => row.onSelectChanged?.call(!row.selected),
+          onHoveredChanged: row.onHoveredChanged == null
+              ? null
+              : (isHovered) => row.onHoveredChanged?.call(isHovered),
           overlayColor: row.color ?? effectiveDataRowColor,
           onRowLongPress: row.onLongPress,
-          mouseCursor: row.mouseCursor?.resolve(states) ?? dataTableTheme.dataRowCursor?.resolve(states),
+          mouseCursor: row.mouseCursor?.resolve(states) ??
+              dataTableTheme.dataRowCursor?.resolve(states),
           rowIndex: rowIndex,
           hoverable: row.hoverable,
         );
@@ -1322,7 +1400,9 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
     }
 
     return Container(
-      decoration: widget.decoration ?? dataTableTheme.decoration ?? theme.dataTableTheme.decoration,
+      decoration: widget.decoration ??
+          dataTableTheme.decoration ??
+          theme.dataTableTheme.decoration,
       child: Material(
         type: MaterialType.transparency,
         borderRadius: widget.border?.borderRadius,
@@ -1408,7 +1488,8 @@ class _NarwhalDataTableState extends State<NarwhalDataTable> {
 // }
 
 class _SortArrow extends StatefulWidget {
-  const _SortArrow({required this.visible, required this.up, required this.duration});
+  const _SortArrow(
+      {required this.visible, required this.up, required this.duration});
 
   final bool visible;
 
@@ -1440,11 +1521,13 @@ class _SortArrowState extends State<_SortArrow> with TickerProviderStateMixin {
     super.initState();
     _up = widget.up;
     _opacityAnimation = CurvedAnimation(
-      parent: _opacityController = AnimationController(duration: widget.duration, vsync: this),
+      parent: _opacityController =
+          AnimationController(duration: widget.duration, vsync: this),
       curve: Curves.fastOutSlowIn,
     )..addListener(_rebuild);
     _opacityController.value = widget.visible ? 1.0 : 0.0;
-    _orientationController = AnimationController(duration: widget.duration, vsync: this);
+    _orientationController =
+        AnimationController(duration: widget.duration, vsync: this);
     _orientationAnimation = _orientationController.drive(_turnTween)
       ..addListener(_rebuild)
       ..addStatusListener(_resetOrientationAnimation);
@@ -1511,10 +1594,12 @@ class _SortArrowState extends State<_SortArrow> with TickerProviderStateMixin {
     return FadeTransition(
       opacity: _opacityAnimation,
       child: Transform(
-        transform: Matrix4.rotationZ(_orientationOffset + _orientationAnimation.value)
-          ..setTranslationRaw(0.0, _arrowIconBaselineOffset, 0.0),
+        transform:
+            Matrix4.rotationZ(_orientationOffset + _orientationAnimation.value)
+              ..setTranslationRaw(0.0, _arrowIconBaselineOffset, 0.0),
         alignment: Alignment.center,
-        child: const NarwhalIcon(NarwhalIcons.tableArrowsUp, size: _arrowIconSize),
+        child:
+            const NarwhalIcon(NarwhalIcons.tableArrowsUp, size: _arrowIconSize),
       ),
     );
   }
@@ -1524,10 +1609,12 @@ class _NullTableColumnWidth extends TableColumnWidth {
   const _NullTableColumnWidth();
 
   @override
-  double maxIntrinsicWidth(Iterable<RenderBox> cells, double containerWidth) => throw UnimplementedError();
+  double maxIntrinsicWidth(Iterable<RenderBox> cells, double containerWidth) =>
+      throw UnimplementedError();
 
   @override
-  double minIntrinsicWidth(Iterable<RenderBox> cells, double containerWidth) => throw UnimplementedError();
+  double minIntrinsicWidth(Iterable<RenderBox> cells, double containerWidth) =>
+      throw UnimplementedError();
 }
 
 class _NullWidget extends Widget {

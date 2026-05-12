@@ -57,7 +57,8 @@ class DragOffBar extends ConsumerWidget {
         color: ThemeHelper.neutral300(context),
       );
 
-  Widget _buildDefaultDragFeedback(BuildContext context, DragOffBarButton button) {
+  Widget _buildDefaultDragFeedback(
+      BuildContext context, DragOffBarButton button) {
     return Material(
       elevation: 4,
       borderRadius: BorderRadius.circular(8),
@@ -91,8 +92,11 @@ class DragOffBar extends ConsumerWidget {
       onPressed: () {
         ref.read(dragOffDropPositionProvider.notifier).state = null;
 
-        final showSearchOverlay = ref.read(canvasSettingsProvider(Setting.showSearchOverlay));
-        ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).state = !showSearchOverlay;
+        final showSearchOverlay =
+            ref.read(canvasSettingsProvider(Setting.showSearchOverlay));
+        ref
+            .read(canvasSettingsProvider(Setting.showSearchOverlay).notifier)
+            .state = !showSearchOverlay;
       },
     );
 
@@ -104,7 +108,8 @@ class DragOffBar extends ConsumerWidget {
     // Wrap button with Draggable
     return Draggable<DragOffBarData>(
       data: button.dragData!,
-      feedback: button.dragFeedbackBuilder?.call() ?? _buildDefaultDragFeedback(context, button),
+      feedback: button.dragFeedbackBuilder?.call() ??
+          _buildDefaultDragFeedback(context, button),
       childWhenDragging: Opacity(
         opacity: 0.5,
         child: buttonWidget,
@@ -124,7 +129,7 @@ class DragOffBar extends ConsumerWidget {
       // Handle null values as dividers
       if (button == null) {
         if (buttonWidgets.isNotEmpty) {
-          buttonWidgets.add(const SizedBox(width: 8));
+          buttonWidgets.add(const Gap(8));
           buttonWidgets.add(_buildSeparator(context));
         }
         continue;
@@ -132,7 +137,7 @@ class DragOffBar extends ConsumerWidget {
 
       // Add spacing between buttons
       if (buttonWidgets.isNotEmpty) {
-        buttonWidgets.add(const SizedBox(width: 8));
+        buttonWidgets.add(const Gap(8));
       }
 
       buttonWidgets.add(_buildButton(ref, context, button));

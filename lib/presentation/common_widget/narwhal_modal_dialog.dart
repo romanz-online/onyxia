@@ -1,8 +1,10 @@
 import 'package:onyxia/export.dart';
 
 class NarwhalModalInputDecoration {
-  static InputDecoration create(BuildContext context,
-      {required String hintText}) {
+  static InputDecoration create(
+    BuildContext context, {
+    required String hintText,
+  }) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: NarwhalTextStyle(
@@ -76,6 +78,7 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
+          spacing: 20,
           children: [
             // Header
             Container(
@@ -100,8 +103,6 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
               ),
             ),
 
-            SizedBox(height: 20),
-
             // Content
             Expanded(
               child: Padding(
@@ -123,7 +124,7 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
                             children: widget.additionalLeftActions!,
                           ),
                         if (widget.additionalLeftActions == null)
-                          SizedBox(), // Empty spacer when no left actions
+                          const SizedBox(), // Empty spacer when no left actions
                         // Right side actions
                         Row(
                           children: [
@@ -133,7 +134,7 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
                                 onTap: widget.onCancelPressed ??
                                     Navigator.of(context).pop,
                               ),
-                              const SizedBox(width: 20),
+                              const Gap(20),
                             ],
                             OnyxiaButton(
                               label: widget.actionButtonText,

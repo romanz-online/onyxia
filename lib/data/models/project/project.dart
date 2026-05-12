@@ -41,11 +41,6 @@ class Project {
         updatedAt = TimestampService.fromMap(map['updated_at']),
         updatedBy = map['updated_by'] ?? '';
 
-  String toJson() => json.encode(toMap());
-
-  factory Project.fromJson(String source) =>
-      Project.fromMap(json.decode(source));
-
   @override
   String toString() {
     return 'Project(id: $id, '

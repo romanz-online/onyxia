@@ -108,13 +108,15 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           autofillHints: const [AutofillHints.email],
-          decoration: NarwhalModalInputDecoration.create(context,
-              hintText: 'Email'),
+          decoration: NarwhalModalInputDecoration.create(
+            context,
+            hintText: 'Email',
+          ),
           style: NarwhalTextStyle(fontSize: 13),
           onSubmitted: (_) => _submit(),
         ),
         if (_mode != _AuthMode.forgotPassword) ...[
-          const SizedBox(height: 8),
+          const Gap(8),
           TextField(
             controller: _passwordController,
             obscureText: true,
@@ -128,7 +130,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           ),
         ],
         if (_mode == _AuthMode.signUp) ...[
-          const SizedBox(height: 8),
+          const Gap(8),
           TextField(
             controller: _confirmPasswordController,
             obscureText: true,
@@ -140,7 +142,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           ),
         ],
         if (_errorMessage != null) ...[
-          const SizedBox(height: 8),
+          const Gap(8),
           Text(
             _errorMessage!,
             style: NarwhalTextStyle(
@@ -149,18 +151,18 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
             ),
           ),
         ],
-        const SizedBox(height: 12),
+        const Gap(12),
         Center(
           child: OnyxiaButton(
             label: _isSubmitting ? '...' : _primaryLabel(),
             onTap: _isSubmitting ? null : _submit,
           ),
         ),
-        const SizedBox(height: 8),
+        const Gap(8),
         _buildModeToggles(context),
-        const SizedBox(height: 12),
+        const Gap(12),
         _buildDivider(context),
-        const SizedBox(height: 12),
+        const Gap(12),
         Center(
           child: OnyxiaButton(
             label: 'Sign in with Google',
@@ -188,13 +190,13 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
   Widget _buildModeToggles(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      spacing: 8,
       children: [
         if (_mode == _AuthMode.signIn) ...[
           OnyxiaButton(
             label: 'Create an account',
             onTap: () => _setMode(_AuthMode.signUp),
           ),
-          const SizedBox(width: 8),
           OnyxiaButton(
             label: 'Forgot password?',
             onTap: () => _setMode(_AuthMode.forgotPassword),
@@ -236,6 +238,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
+      spacing: 16,
       children: [
         Text(
           message,
@@ -245,7 +248,6 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
             color: ThemeHelper.neutral700(context),
           ),
         ),
-        const SizedBox(height: 16),
         Center(
           child: OnyxiaButton(
             label: 'Back to sign in',

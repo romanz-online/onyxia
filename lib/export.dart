@@ -31,7 +31,6 @@ export 'package:onyxia/presentation/common_widget/narwhal_overlay.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_tooltip.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_toast.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_text_filter_select.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/project_settings_button.dart';
 export 'package:onyxia/presentation/common_widget/user_profile_overlay.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
@@ -137,8 +136,6 @@ export 'package:onyxia/helpers/narwhal_enum.dart';
 
 //others
 export 'core/abstracts/serializer.dart';
-export 'dart:convert';
-export 'dart:async';
 export 'package:flutter/material.dart';
 export 'package:flutter/foundation.dart' hide shortHash, describeIdentity;
 export 'package:flutter/services.dart';

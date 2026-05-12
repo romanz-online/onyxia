@@ -2,6 +2,7 @@ import 'package:onyxia/export.dart';
 import 'objects_provider.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
+import 'dart:async';
 
 class CanvasBounds {
   final Rect bounds;

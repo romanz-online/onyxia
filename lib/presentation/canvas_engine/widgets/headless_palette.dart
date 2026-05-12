@@ -310,7 +310,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
-                            SizedBox(width: 4),
+                            const Gap(4),
                             NarwhalIcon(
                               _getShapeIcon(paletteState.hoveredShapeType!),
                               size: 24,
@@ -470,7 +470,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                   size: 16,
                   color: ThemeHelper.neutral700(context),
                 ),
-                const SizedBox(width: 8),
+                const Gap(8),
                 Expanded(
                   child: Text(
                     itemTitle,

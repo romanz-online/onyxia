@@ -1,5 +1,6 @@
 ﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
+import 'dart:convert';
 
 /// Service for managing custom canvas cursors using SVG via CSS url() on web.
 class CanvasCursorService {
@@ -19,9 +20,12 @@ class CanvasCursorService {
   static const String _cursorBasicSvg = 'assets/icons/Cursor_Default.svg';
   static const String _cursorHandSvg = 'assets/icons/Hand_Default.svg';
   static const String _cursorHandGrabbingSvg = 'assets/icons/Hand_Grabbing.svg';
-  static const String _diagramCursorSvg = 'assets/icons/DiagramCursor_Default.svg';
-  static const String _diagramCursorCommentSvg = 'assets/icons/DiagramCursor_Comment.svg';
-  static const String _diagramCursorArtifactSvg = 'assets/icons/DiagramCursor_Requirement.svg';
+  static const String _diagramCursorSvg =
+      'assets/icons/DiagramCursor_Default.svg';
+  static const String _diagramCursorCommentSvg =
+      'assets/icons/DiagramCursor_Comment.svg';
+  static const String _diagramCursorArtifactSvg =
+      'assets/icons/DiagramCursor_Requirement.svg';
 
   // ========== Tool Mode Cursors ==========
   // Format: (regularPath, pressedPath, hotspotX, hotspotY)
@@ -48,7 +52,8 @@ class CanvasCursorService {
 
   // ========== System Cursor Overrides ==========
   // Note: resizeUpDown and resizeLeftRight use native system cursors (no override)
-  static final Map<MouseCursor, (String, String?, int, int)> _systemCursorOverridesWeb = {
+  static final Map<MouseCursor, (String, String?, int, int)>
+      _systemCursorOverridesWeb = {
     SystemMouseCursors.basic: (_cursorBasicSvg, null, 12, 12),
     SystemMouseCursors.grab: (_cursorHandSvg, _cursorHandGrabbingSvg, 12, 12),
     SystemMouseCursors.grabbing: (_cursorHandGrabbingSvg, null, 12, 12),
@@ -76,7 +81,9 @@ class CanvasCursorService {
 
   void updateCursors(ToolMode toolMode, bool isPressed, MouseCursor? override) {
     _currentCssCursor = _resolveCssForCursor(toolMode, isPressed, override);
-    _currentSystemCursor = (_currentCssCursor != null) ? MouseCursor.defer : (override ?? SystemMouseCursors.cell);
+    _currentSystemCursor = (_currentCssCursor != null)
+        ? MouseCursor.defer
+        : (override ?? SystemMouseCursors.cell);
   }
 
   String? _resolveCssForCursor(
@@ -92,7 +99,8 @@ class CanvasCursorService {
     }
 
     if (override == null) {
-      final toolData = _toolCursorsWeb[toolMode] ?? _toolCursorsWeb[ToolMode.pointer]!;
+      final toolData =
+          _toolCursorsWeb[toolMode] ?? _toolCursorsWeb[ToolMode.pointer]!;
       String path = isPressed ? (toolData.$2 ?? toolData.$1) : toolData.$1;
       final uri = _svgDataUriCache[path] ?? path;
       return 'url($uri) ${toolData.$3} ${toolData.$4}, auto';

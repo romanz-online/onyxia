@@ -9,11 +9,13 @@ List<ContextMenuItem> buildProjectContextMenuItems(
   final items = <ContextMenuItem>[];
 
   items.add(ContextMenuItem(
-    child: Row(children: [
-      const Icon(Icons.open_in_new, size: 14),
-      const SizedBox(width: 8),
-      Text('Open in New Tab', style: NarwhalTextStyle()),
-    ]),
+    child: Row(
+      spacing: 8,
+      children: [
+        const Icon(Icons.open_in_new, size: 14),
+        Text('Open in New Tab', style: NarwhalTextStyle()),
+      ],
+    ),
     onTap: () {
       final url = NavigationUrlBuilder.buildProjectDashboardUrl(project.id);
       NavigationContextMenu.openInNewTab(url);
@@ -21,11 +23,13 @@ List<ContextMenuItem> buildProjectContextMenuItems(
   ));
 
   items.add(ContextMenuItem(
-    child: Row(children: [
-      const Icon(Icons.link, size: 14),
-      const SizedBox(width: 8),
-      Text('Copy Link', style: NarwhalTextStyle()),
-    ]),
+    child: Row(
+      spacing: 8,
+      children: [
+        const Icon(Icons.link, size: 14),
+        Text('Copy Link', style: NarwhalTextStyle()),
+      ],
+    ),
     onTap: () {
       final url = NavigationUrlBuilder.buildProjectDashboardUrl(project.id);
       NavigationContextMenu.copyLinkToClipboard(url);
@@ -33,7 +37,11 @@ List<ContextMenuItem> buildProjectContextMenuItems(
   ));
 
   items.add(ContextMenuItem(
-    child: Divider(height: 1, thickness: 1, color: ThemeHelper.neutral400(context)),
+    child: Divider(
+      height: 1,
+      thickness: 1,
+      color: ThemeHelper.neutral400(context),
+    ),
     onTap: () {},
   ));
 
@@ -59,9 +67,11 @@ List<ContextMenuItem> buildProjectContextMenuItems(
   return items;
 }
 
-void _confirmRemove(BuildContext context, WidgetRef ref, Project project) async {
+void _confirmRemove(
+    BuildContext context, WidgetRef ref, Project project) async {
   String projectName = project.name;
-  if (projectName.length > 25) projectName = '${projectName.substring(0, 25)}... ';
+  if (projectName.length > 25)
+    projectName = '${projectName.substring(0, 25)}... ';
 
   final confirm = await showDialog<bool>(
     context: context,

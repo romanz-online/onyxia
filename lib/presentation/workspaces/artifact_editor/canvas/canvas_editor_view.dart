@@ -21,6 +21,7 @@ import 'package:onyxia/presentation/canvas_engine/widgets/painter/canvas_painter
 import 'package:onyxia/presentation/canvas_engine/widgets/toolbar.dart';
 import 'package:onyxia/presentation/canvas_engine/canvas_config.dart';
 import 'package:onyxia/presentation/canvas_engine/utils/image_drag_data.dart';
+import 'dart:async';
 
 final isDragHoveringProvider = StateProvider<bool>((ref) => false);
 

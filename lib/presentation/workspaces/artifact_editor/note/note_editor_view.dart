@@ -183,12 +183,17 @@ class _ErrorView extends StatelessWidget {
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        spacing: 16,
         children: [
-          Text('Error: $error'),
-          const SizedBox(height: 16),
+          Text(
+            'Error: $error',
+            style: NarwhalTextStyle(
+              color: ThemeHelper.errorColor(),
+            ),
+          ),
           ElevatedButton(
             onPressed: onRetry,
-            child: const Text('Retry'),
+            child: const Text('Retry', style: NarwhalTextStyle()),
           ),
         ],
       ),

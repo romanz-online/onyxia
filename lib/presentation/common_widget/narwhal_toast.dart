@@ -1,4 +1,5 @@
 import 'package:onyxia/export.dart';
+import 'dart:async';
 
 enum ToastType {
   success,
@@ -36,7 +37,8 @@ class _ToastEntry {
 /// @ponder ponder/NarwhalToast.gif
 class NarwhalToast {
   static final Map<ToastPosition, List<_ToastEntry>> _toastsByPosition = {};
-  static final Map<ToastPosition, StreamController<void>> _positionControllers = {};
+  static final Map<ToastPosition, StreamController<void>> _positionControllers =
+      {};
   static int _nextId = 0;
 
   static String show({
@@ -47,12 +49,16 @@ class NarwhalToast {
     Duration? duration,
     double margin = 16.0,
   }) {
-    assert(text != null || child != null, 'Either text or child must be provided');
-    assert(!(text != null && child != null), 'Cannot provide both text and child');
+    assert(
+        text != null || child != null, 'Either text or child must be provided');
+    assert(
+        !(text != null && child != null), 'Cannot provide both text and child');
 
     // Errors stay longer so users can read them; other types use 3 s default.
-    final effectiveDuration =
-        duration ?? (type == ToastType.error ? const Duration(seconds: 10) : const Duration(seconds: 3));
+    final effectiveDuration = duration ??
+        (type == ToastType.error
+            ? const Duration(seconds: 10)
+            : const Duration(seconds: 3));
 
     // Always log errors to the console so they can be reviewed after dismissal.
     if (type == ToastType.error && text != null) {
@@ -233,7 +239,8 @@ class _ToastStackOverlay extends StatefulWidget {
   State<_ToastStackOverlay> createState() => _ToastStackOverlayState();
 }
 
-class _ToastStackOverlayState extends State<_ToastStackOverlay> with TickerProviderStateMixin {
+class _ToastStackOverlayState extends State<_ToastStackOverlay>
+    with TickerProviderStateMixin {
   late AnimationController _entryController;
   late AnimationController _positionController;
   late Animation<double> _fadeAnimation;
@@ -244,7 +251,8 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay> with TickerProvi
   double _currentStackOffset = 0;
   double _targetStackOffset = 0;
 
-  static const double toastHeight = 64.0; // Approximate toast height with padding
+  static const double toastHeight =
+      64.0; // Approximate toast height with padding
 
   @override
   void initState() {
@@ -336,7 +344,8 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay> with TickerProvi
   double _getStackOffset() {
     // Calculate the current stack index based on existing toasts
     final toasts = NarwhalToast._toastsByPosition[widget.position] ?? [];
-    final currentIndex = toasts.indexWhere((toast) => toast.id == widget.toastId);
+    final currentIndex =
+        toasts.indexWhere((toast) => toast.id == widget.toastId);
 
     if (currentIndex == -1) return 0;
 
@@ -368,8 +377,9 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay> with TickerProvi
       animation: Listenable.merge([_entryController, _positionController]),
       builder: (context, child) {
         // Interpolate between current and target stack offsets
-        final interpolatedOffset =
-            _currentStackOffset + (_targetStackOffset - _currentStackOffset) * _positionAnimation.value;
+        final interpolatedOffset = _currentStackOffset +
+            (_targetStackOffset - _currentStackOffset) *
+                _positionAnimation.value;
 
         return Positioned.fill(
           child: IgnorePointer(
@@ -470,7 +480,7 @@ class _ToastWidget extends StatelessWidget {
               color: _getIconColor(context),
               size: 20,
             ),
-            const SizedBox(width: 12),
+            const Gap(12),
             if (child != null)
               Expanded(child: child!)
             else
@@ -564,9 +574,11 @@ class _ProgressToastContent extends StatelessWidget {
         return Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 8,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              spacing: 8,
               children: [
                 Flexible(
                   child: Text(
@@ -579,7 +591,6 @@ class _ProgressToastContent extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
-                const SizedBox(width: 8),
                 Text(
                   '$percent%',
                   style: NarwhalTextStyle(
@@ -590,7 +601,6 @@ class _ProgressToastContent extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 8),
             ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
