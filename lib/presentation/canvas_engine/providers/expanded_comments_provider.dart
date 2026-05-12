@@ -1,7 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ExpandedCommentsNotifier extends StateNotifier<Set<String>> {
-  ExpandedCommentsNotifier() : super(<String>{});
+class ExpandedCommentsNotifier extends Notifier<Set<String>> {
+  @override
+  Set<String> build() => <String>{};
 
   void expandComment(String commentId) {
     state = {...state, commentId};
@@ -15,4 +16,6 @@ class ExpandedCommentsNotifier extends StateNotifier<Set<String>> {
 }
 
 final expandedCommentsProvider =
-    StateNotifierProvider.autoDispose<ExpandedCommentsNotifier, Set<String>>((ref) => ExpandedCommentsNotifier());
+    NotifierProvider.autoDispose<ExpandedCommentsNotifier, Set<String>>(
+  ExpandedCommentsNotifier.new,
+);

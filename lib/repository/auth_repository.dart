@@ -1,5 +1,6 @@
 import 'package:onyxia/export.dart';
 
+// TODO: pretty sure i don't need a provider for this?
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
   return AuthRepository();
 });

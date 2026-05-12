@@ -104,7 +104,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(ghostObject);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-    ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
     CanvasInteractionService.openTextEditor(ref: ref);
   }
 
@@ -150,7 +150,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(ghostObject);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-    ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
 
   @override

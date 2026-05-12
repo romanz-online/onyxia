@@ -10,7 +10,17 @@ final canvasConfigProvider = Provider.autoDispose<CanvasConfig>((ref) {
 
 // Holds the canvas ID from URL route parameter
 // Set by CanvasLoaderService.setupCanvas(), cleared on cleanup
-final urlCanvasIdProvider = StateProvider.autoDispose<String?>((ref) => null);
+final urlCanvasIdProvider =
+    NotifierProvider.autoDispose<UrlCanvasIdNotifier, String?>(
+  UrlCanvasIdNotifier.new,
+);
+
+class UrlCanvasIdNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? value) => state = value;
+}
 
 // Provides current canvas with URL-first priority
 // Auto-disposes when widget unmounts
@@ -32,34 +42,14 @@ final currentCanvasProvider = Provider.autoDispose<CanvasArtifact?>((ref) {
 });
 
 final canvasObjectsProvider =
-    StateNotifierProvider.autoDispose<ObjectsNotifier, CanvasObjects>((ref) {
-  // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
-  final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-  final projectId = ref.watch(projectsProvider).selectedProject?.id;
+    NotifierProvider.autoDispose<ObjectsNotifier, CanvasObjects>(
+  ObjectsNotifier.new,
+);
 
-  final notifier = ObjectsNotifier(
-    CanvasObjects.initial(),
-    repository: CanvasObjectsRepository(
-      projectId: projectId,
-      canvasId: canvasId,
-    ),
-    canvasId: canvasId,
-    projectId: projectId,
-  );
-
-  // Ensure immediate disposal when canvas changes
-  // This provides synchronous cleanup before new provider starts
-  ref.onDispose(() {
-    notifier._cancelSubscriptions();
-  });
-
-  return notifier;
-});
-
-class ObjectsNotifier extends StateNotifier<CanvasObjects> {
-  final CanvasObjectsRepository repository;
-  final String canvasId;
-  final String? projectId;
+class ObjectsNotifier extends Notifier<CanvasObjects> {
+  late CanvasObjectsRepository repository;
+  late String canvasId;
+  String? projectId;
   StreamSubscription? _subscription;
   int _maxLayer = 0;
 
@@ -69,13 +59,21 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
     return _maxLayer;
   }
 
-  ObjectsNotifier(
-    super.state, {
-    required this.repository,
-    required this.canvasId,
-    required this.projectId,
-  }) {
+  @override
+  CanvasObjects build() {
+    // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
+    canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
+    projectId = ref.watch(projectsProvider).selectedProject?.id;
+    repository = CanvasObjectsRepository(
+      projectId: projectId,
+      canvasId: canvasId,
+    );
+
+    ref.onDispose(_cancelSubscriptions);
+
     _init();
+
+    return CanvasObjects.initial();
   }
 
   /// Sorts the list of objects by their layer
@@ -97,7 +95,7 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
         updatedObjects.add(object);
       }
 
-      if (mounted) {
+      if (ref.mounted) {
         state = state.copyWith(objects: updatedObjects);
         // Update maxLayer based on loaded objects
         _maxLayer = updatedObjects.isEmpty
@@ -111,12 +109,6 @@ class ObjectsNotifier extends StateNotifier<CanvasObjects> {
 
   void _cancelSubscriptions() {
     _subscription?.cancel();
-  }
-
-  @override
-  void dispose() {
-    _cancelSubscriptions();
-    super.dispose();
   }
 
   CanvasObject getObjectById(String id) {

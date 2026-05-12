@@ -23,7 +23,15 @@ import 'package:onyxia/presentation/canvas_engine/canvas_config.dart';
 import 'package:onyxia/presentation/canvas_engine/utils/image_drag_data.dart';
 import 'dart:async';
 
-final isDragHoveringProvider = StateProvider<bool>((ref) => false);
+final isDragHoveringProvider =
+    NotifierProvider<IsDragHoveringNotifier, bool>(IsDragHoveringNotifier.new);
+
+class IsDragHoveringNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+}
 
 class CanvasEditorView extends ConsumerStatefulWidget {
   final String canvasId;
@@ -200,11 +208,11 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
       color: ThemeHelper.neutral200(context),
       child: Listener(
         onPointerDown: (_) =>
-            ref.read(canvasMousePressedProvider.notifier).state = true,
+            ref.read(canvasMousePressedProvider.notifier).set(true),
         onPointerUp: (_) =>
-            ref.read(canvasMousePressedProvider.notifier).state = false,
+            ref.read(canvasMousePressedProvider.notifier).set(false),
         onPointerCancel: (_) =>
-            ref.read(canvasMousePressedProvider.notifier).state = false,
+            ref.read(canvasMousePressedProvider.notifier).set(false),
         child: InteractiveViewer(
           minScale: ref.read(canvasViewportProvider.notifier).minScale,
           maxScale: ref.read(canvasViewportProvider.notifier).maxScale,
@@ -409,13 +417,13 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                             // Store the drop position
                             ref
                                 .read(dragOffDropPositionProvider.notifier)
-                                .state = canvasPosition;
+                                .set(canvasPosition);
                             // Open the search overlay
                             ref
                                 .read(canvasSettingsProvider(
                                         Setting.showSearchOverlay)
                                     .notifier)
-                                .state = true;
+                                .set(true);
                           }
                         },
                         builder: (context, candidateData, rejectedData) =>
@@ -555,12 +563,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         ],
         hitTestBehavior: HitTestBehavior.translucent,
         onDropOver: (event) {
-          ref.read(isDragHoveringProvider.notifier).state = true;
+          ref.read(isDragHoveringProvider.notifier).set(true);
           return event.session.allowedOperations.firstOrNull ??
               DropOperation.none;
         },
         onDropLeave: (event) {
-          ref.read(isDragHoveringProvider.notifier).state = false;
+          ref.read(isDragHoveringProvider.notifier).set(false);
         },
         onPerformDrop: (event) => _handleFileDrop(ref, event),
         child: Consumer(
@@ -596,7 +604,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
 
   Future<void> _handleFileDrop(WidgetRef ref, PerformDropEvent event) async {
     // Reset drag hovering state
-    ref.read(isDragHoveringProvider.notifier).state = false;
+    ref.read(isDragHoveringProvider.notifier).set(false);
 
     final config = ref.watch(canvasConfigProvider);
 

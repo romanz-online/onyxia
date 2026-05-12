@@ -24,8 +24,9 @@ class ArrowPreview {
   bool get hasTargetObject => targetObject != null;
 }
 
-class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
-  ArrowPreviewNotifier() : super(null);
+class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
+  @override
+  ArrowPreview? build() => null;
 
   void setPreview({
     required BuildContext context,
@@ -357,5 +358,6 @@ class ArrowPreviewNotifier extends StateNotifier<ArrowPreview?> {
 }
 
 final arrowPreviewProvider =
-    StateNotifierProvider.autoDispose<ArrowPreviewNotifier, ArrowPreview?>(
-        (ref) => ArrowPreviewNotifier());
+    NotifierProvider.autoDispose<ArrowPreviewNotifier, ArrowPreview?>(
+  ArrowPreviewNotifier.new,
+);

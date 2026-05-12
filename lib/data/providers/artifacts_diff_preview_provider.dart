@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class ArtifactsDiffPreview {
   final NoteArtifact? note;
@@ -24,9 +24,9 @@ class ArtifactsDiffPreview {
   }
 }
 
-class ArtifactsDiffPreviewNotifier
-    extends StateNotifier<ArtifactsDiffPreview?> {
-  ArtifactsDiffPreviewNotifier() : super(null);
+class ArtifactsDiffPreviewNotifier extends Notifier<ArtifactsDiffPreview?> {
+  @override
+  ArtifactsDiffPreview? build() => null;
 
   void showHistoricalState({
     required NoteArtifact note,
@@ -56,6 +56,6 @@ class ArtifactsDiffPreviewNotifier
 }
 
 final artifactsDiffPreviewProvider =
-    StateNotifierProvider<ArtifactsDiffPreviewNotifier, ArtifactsDiffPreview?>(
-  (ref) => ArtifactsDiffPreviewNotifier(),
+    NotifierProvider<ArtifactsDiffPreviewNotifier, ArtifactsDiffPreview?>(
+  ArtifactsDiffPreviewNotifier.new,
 );

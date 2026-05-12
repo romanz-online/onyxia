@@ -61,8 +61,9 @@ class HeadlessState {
   bool get hasChildren => children != null && children!.isNotEmpty;
 }
 
-class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
-  HeadlessArrowNotifier() : super(const HeadlessState());
+class HeadlessArrowNotifier extends Notifier<HeadlessState> {
+  @override
+  HeadlessState build() => const HeadlessState();
 
   void showPalette({
     required CanvasObject headlessArrow,
@@ -280,6 +281,6 @@ class HeadlessArrowNotifier extends StateNotifier<HeadlessState> {
 }
 
 final headlessProvider =
-    StateNotifierProvider.autoDispose<HeadlessArrowNotifier, HeadlessState>(
-  (ref) => HeadlessArrowNotifier(),
+    NotifierProvider.autoDispose<HeadlessArrowNotifier, HeadlessState>(
+  HeadlessArrowNotifier.new,
 );

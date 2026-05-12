@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_gesture_state.dart';
 import 'canvas_interaction_context.dart';
@@ -90,7 +90,7 @@ class ArrowToolBehavior extends CanvasToolGestureHandler {
                 if (gestureState.interactionContext != null) {
                   ArrowInteractionService.endArrowPan(DragEndDetails(), ref,
                       gestureState.activeObject, true, canvasConfig);
-                  ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+                  ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
                 }
                 break;
               default:
@@ -115,7 +115,7 @@ class ArrowToolBehavior extends CanvasToolGestureHandler {
                   ref
                       .read(canvasGestureStateProvider.notifier)
                       .resetInteraction(ref);
-                  ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+                  ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
                 }
                 break;
             }

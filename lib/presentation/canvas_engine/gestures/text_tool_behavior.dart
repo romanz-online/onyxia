@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -35,7 +35,7 @@ class TextToolBehavior extends CanvasToolGestureHandler {
                 return;
             }
 
-            ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
           };
 
   void _createTextObject(Offset tapPosition, WidgetRef ref) {

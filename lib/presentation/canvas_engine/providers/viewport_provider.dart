@@ -4,34 +4,32 @@ import 'bounds_provider.dart';
 import 'objects_provider.dart';
 
 /// Provider for a TransformationController used on the canvas
-final canvasViewportProvider = StateNotifierProvider.autoDispose<TransformationNotifier, TransformationController>(
-  (ref) {
-    return TransformationNotifier(ref);
-  },
+final canvasViewportProvider = NotifierProvider.autoDispose<
+    TransformationNotifier, TransformationController>(
+  TransformationNotifier.new,
 );
 
-/// A StateNotifier that manages the TransformationController
-class TransformationNotifier extends StateNotifier<TransformationController> {
+/// A Notifier that manages the TransformationController
+class TransformationNotifier extends Notifier<TransformationController> {
   BuildContext? context;
-  final Ref ref;
-  bool _disposed = false;
 
-  TransformationNotifier(this.ref) : super(TransformationController());
+  @override
+  TransformationController build() {
+    final controller = TransformationController();
+    ref.onDispose(() {
+      context = null;
+      controller.dispose();
+    });
+    return controller;
+  }
 
   double get minScale => 0.01;
   double get maxScale => 10.0;
 
-  @override
-  void dispose() {
-    _disposed = true;
-    context = null;
-    super.dispose();
-  }
-
   /// Centers the viewport on the current canvas bounds.
   /// Called directly by the loader service after bounds are guaranteed to be ready.
   void centerViewport(BuildContext ctx) {
-    if (_disposed) return;
+    if (!ref.mounted) return;
     context = ctx;
     final mediaQuery = MediaQuery.maybeOf(ctx);
     if (mediaQuery == null) return;
@@ -46,18 +44,18 @@ class TransformationNotifier extends StateNotifier<TransformationController> {
   }
 
   void reset() {
-    if (_disposed || context == null) return;
+    if (!ref.mounted || context == null) return;
     centerViewport(context!);
   }
 
   /// Sets a specific transformation matrix
   void setTransformation(Matrix4 matrix) {
-    if (_disposed) return;
+    if (!ref.mounted) return;
     state = TransformationController(_clampViewport(matrix));
   }
 
   Matrix4 _clampViewport(Matrix4 matrix) {
-    if (_disposed || context == null) return matrix;
+    if (!ref.mounted || context == null) return matrix;
 
     // Check if MediaQuery is available before using it
     final mediaQuery = MediaQuery.maybeOf(context!);
@@ -72,32 +70,22 @@ class TransformationNotifier extends StateNotifier<TransformationController> {
     final double scaledCanvasWidth = canvasSize.width * scale;
     final double scaledCanvasHeight = canvasSize.height * scale;
 
-    // When zoomed in, we need to allow the canvas to move more to show all content
-    // This is the key fix: boundaries need to be adjusted based on zoom level
     double minX, maxX, minY, maxY;
 
     if (scaledCanvasWidth <= viewportSize.width) {
-      // Canvas is smaller than or equal to viewport width
-      // Center it horizontally and restrict movement
       final idealOffsetX = (viewportSize.width - scaledCanvasWidth) / 2;
       minX = idealOffsetX;
       maxX = idealOffsetX;
     } else {
-      // Canvas is larger than viewport width
-      // Allow scrolling to see all content
       minX = viewportSize.width - scaledCanvasWidth;
       maxX = 0.0;
     }
 
     if (scaledCanvasHeight <= viewportSize.height) {
-      // Canvas is smaller than or equal to viewport height
-      // Center it vertically and restrict movement
       final idealOffsetY = (viewportSize.height - scaledCanvasHeight) / 2;
       minY = idealOffsetY;
       maxY = idealOffsetY;
     } else {
-      // Canvas is larger than viewport height
-      // Allow scrolling to see all content
       minY = viewportSize.height - scaledCanvasHeight;
       maxY = 0.0;
     }
@@ -119,18 +107,17 @@ class TransformationNotifier extends StateNotifier<TransformationController> {
     final translation = state.value.getTranslation();
     final scale = state.value.getMaxScaleOnAxis();
 
-    // Adjust delta based on zoom level to maintain consistent sensitivity
     final newDelta = Offset(delta.dx * scale, delta.dy * scale);
 
     setTransformation(Matrix4.identity()
-      ..translateByDouble(translation.x + newDelta.dx, translation.y + newDelta.dy, 0.0, 1.0)
+      ..translateByDouble(
+          translation.x + newDelta.dx, translation.y + newDelta.dy, 0.0, 1.0)
       ..scaleByDouble(scale, scale, scale, 1.0));
   }
 
   void updateZoom({required double increment}) {
-    if (_disposed || context == null) return;
+    if (!ref.mounted || context == null) return;
 
-    // Check if MediaQuery is available before using it
     final mediaQuery = MediaQuery.maybeOf(context!);
     if (mediaQuery == null) return;
 
@@ -140,27 +127,25 @@ class TransformationNotifier extends StateNotifier<TransformationController> {
     final currentMatrix = state.value;
     final currentScale = currentMatrix.getMaxScaleOnAxis();
 
-    // For all canvas types, apply increment directly
-    // Since markup canvases now use 1.0 as base scale, no adjustment needed
     double adjustedIncrement = increment;
 
-    final newScale = (currentScale + adjustedIncrement).clamp(minScale, maxScale);
+    final newScale =
+        (currentScale + adjustedIncrement).clamp(minScale, maxScale);
 
-    if (currentScale == newScale) return; // No change needed
+    if (currentScale == newScale) return;
 
     final currentTranslation = currentMatrix.getTranslation();
 
-    // Calculate viewport center
     final viewportCenter = Offset(
       viewportSize.width / 2,
       viewportSize.height / 2,
     );
 
-    // Calculate the point in content space that's currently at viewport center
-    final contentCenterX = (viewportCenter.dx - currentTranslation.x) / currentScale;
-    final contentCenterY = (viewportCenter.dy - currentTranslation.y) / currentScale;
+    final contentCenterX =
+        (viewportCenter.dx - currentTranslation.x) / currentScale;
+    final contentCenterY =
+        (viewportCenter.dy - currentTranslation.y) / currentScale;
 
-    // Calculate new translation to keep the same content point at viewport center
     final newTranslationX = viewportCenter.dx - (contentCenterX * newScale);
     final newTranslationY = viewportCenter.dy - (contentCenterY * newScale);
 
@@ -174,12 +159,9 @@ class TransformationNotifier extends StateNotifier<TransformationController> {
     final currentCanvas = ref.read(currentCanvasProvider);
 
     if (currentCanvas?.canvasType == CanvasType.markup) {
-      // For markup canvases, show percentage relative to natural size (1.0)
-      // Since _baseFitScale is now 1.0, this is equivalent to the else branch
       final percentage = (currentScale * 100).round();
       return '$percentage%';
     } else {
-      // For other canvases, show percentage relative to 1.0
       return '${(currentScale * 100).round()}%';
     }
   }
@@ -187,60 +169,50 @@ class TransformationNotifier extends StateNotifier<TransformationController> {
   Matrix4 getInverse() => Matrix4.inverted(state.value);
 
   /// Returns the visible region in canvas object coordinates.
-  /// For markup canvases, (0,0) is the image top-left.
-  /// For whiteboard canvases, (0,0) is the top-left of the 5000x5000 canvas.
-  ///
-  /// [ivSize] is the InteractiveViewer's logical size (screen size minus top bar).
-  /// Pass this from the minimap's own context to avoid depending on notifier.context,
-  /// which may be null before init() is called after navigation.
   Rect getVisibleObjectRect(Size ivSize) {
     final inverseTransform = Matrix4.inverted(state.value);
 
-    // IV corners → content space
     final topLeftContent = _contentPoint(inverseTransform, Offset.zero);
-    final bottomRightContent = _contentPoint(inverseTransform, Offset(ivSize.width, ivSize.height));
+    final bottomRightContent =
+        _contentPoint(inverseTransform, Offset(ivSize.width, ivSize.height));
 
-    // Shift from content space to object space via bounds origin
     final boundsState = ref.read(canvasBoundsProvider);
-    final boundsOffset = Offset(boundsState.bounds.left, boundsState.bounds.top);
-    return Rect.fromPoints(topLeftContent + boundsOffset, bottomRightContent + boundsOffset);
+    final boundsOffset =
+        Offset(boundsState.bounds.left, boundsState.bounds.top);
+    return Rect.fromPoints(
+        topLeftContent + boundsOffset, bottomRightContent + boundsOffset);
   }
 
   Offset _contentPoint(Matrix4 inverseTransform, Offset point) {
-    final v64.Vector3 result = inverseTransform.transform3(v64.Vector3(point.dx, point.dy, 0));
+    final v64.Vector3 result =
+        inverseTransform.transform3(v64.Vector3(point.dx, point.dy, 0));
     return Offset(result.x, result.y);
   }
 
   Offset getViewportCenter() {
-    if (_disposed || context == null) return Offset.zero;
+    if (!ref.mounted || context == null) return Offset.zero;
 
-    // Check if MediaQuery is available before using it
     final mediaQuery = MediaQuery.maybeOf(context!);
     if (mediaQuery == null) return Offset.zero;
 
     final transform = state.value;
 
     final screenSize = mediaQuery.size;
-    // Calculate the viewport center in canvas coordinates
     final Offset viewportCenter = Offset(
       screenSize.width / 2,
       screenSize.height / 2,
     );
 
-    // Convert viewport center to canvas coordinates
-    // The inverse of the transformation matrix converts from screen to canvas coordinates
     final Matrix4 inverseTransform = Matrix4.inverted(transform);
     final v64.Vector3 untransformedCenter = inverseTransform.transform3(
       v64.Vector3(viewportCenter.dx, viewportCenter.dy, 0),
     );
 
-    // Create an offset from the untransformed center
     final Offset canvasPosition = Offset(
       untransformedCenter.x,
       untransformedCenter.y,
     );
 
-    // Clamp to canvas bounds
     return ref.read(canvasBoundsProvider.notifier).clamp(canvasPosition);
   }
 

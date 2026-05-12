@@ -88,34 +88,52 @@ class CanvasBounds {
       marginY.hashCode;
 }
 
-class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
+class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
   Timer? _animationTimer;
-  bool _disposed = false;
   int _loadGeneration = 0;
 
-  CanvasBoundsNotifier()
-      : super(const CanvasBounds(
-          bounds: CanvasBounds.defaultBounds,
-          isLoading: false,
-        ));
-
   @override
-  void dispose() {
-    _disposed = true;
-    _animationTimer?.cancel();
-    _animationTimer = null;
-    super.dispose();
+  CanvasBounds build() {
+    ref.onDispose(() {
+      _animationTimer?.cancel();
+      _animationTimer = null;
+    });
+
+    ref.listen(currentCanvasProvider, (previous, next) {
+      if (next != previous) {
+        // Only reinitialize bounds if properties that actually affect bounds have changed
+        bool needsReinitialize = false;
+
+        if (previous == null || next == null) {
+          needsReinitialize = true;
+        } else if (previous.canvasType != next.canvasType) {
+          needsReinitialize = true;
+        } else if (next.canvasType == CanvasType.markup &&
+            previous.imageUrl != next.imageUrl) {
+          needsReinitialize = true;
+        }
+
+        if (needsReinitialize) {
+          initializeBounds(next);
+        }
+      }
+    });
+
+    return const CanvasBounds(
+      bounds: CanvasBounds.defaultBounds,
+      isLoading: false,
+    );
   }
 
   /// Initialize bounds based on canvas type
   Future<void> initializeBounds(CanvasArtifact? canvas) async {
-    if (_disposed || !mounted) return;
+    if (!ref.mounted) return;
 
     _loadGeneration++;
     final myGeneration = _loadGeneration;
 
     if (canvas == null) {
-      if (!_disposed && _loadGeneration == myGeneration) {
+      if (ref.mounted && _loadGeneration == myGeneration) {
         state = const CanvasBounds(
             bounds: CanvasBounds.defaultBounds, isLoading: false);
       }
@@ -125,7 +143,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
     switch (canvas.canvasType) {
       case CanvasType.whiteboard:
       case CanvasType.flow:
-        if (mounted && !_disposed && _loadGeneration == myGeneration) {
+        if (ref.mounted && _loadGeneration == myGeneration) {
           state = const CanvasBounds(
               bounds: CanvasBounds.defaultBounds, isLoading: false);
         }
@@ -134,7 +152,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
       case CanvasType.markup:
         if (canvas.imageUrl != null && canvas.imageUrl!.isNotEmpty) {
           // Set loading state before starting async operation
-          if (mounted && !_disposed && _loadGeneration == myGeneration) {
+          if (ref.mounted && _loadGeneration == myGeneration) {
             state = const CanvasBounds(
               bounds: CanvasBounds.defaultBounds,
               isLoading: true,
@@ -144,7 +162,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
           }
           await _loadImageAndSetBounds(canvas.imageUrl!, myGeneration);
         } else {
-          if (mounted && !_disposed && _loadGeneration == myGeneration) {
+          if (ref.mounted && _loadGeneration == myGeneration) {
             state = const CanvasBounds(
                 bounds: CanvasBounds.defaultBounds, isLoading: false);
           }
@@ -154,7 +172,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
   }
 
   Future<void> _loadImageAndSetBounds(String imageUrl, int generation) async {
-    if (_disposed) return;
+    if (!ref.mounted) return;
 
     try {
       // Stop any existing animation
@@ -209,7 +227,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
         );
 
         // Set the final state with loaded image
-        if (mounted && !_disposed && _loadGeneration == generation) {
+        if (ref.mounted && _loadGeneration == generation) {
           state = CanvasBounds(
             bounds: imageBounds,
             backgroundImage: image,
@@ -225,7 +243,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
         }
 
         // Start animation if it's an animated GIF
-        if (!_disposed &&
+        if (ref.mounted &&
             _loadGeneration == generation &&
             isAnimated &&
             codec != null) {
@@ -233,7 +251,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
         }
       } else {
         debugPrint('Failed to load image: $imageUrl');
-        if (mounted && !_disposed && _loadGeneration == generation) {
+        if (ref.mounted && _loadGeneration == generation) {
           state = const CanvasBounds(
             bounds: CanvasBounds.defaultBounds,
             isLoading: false,
@@ -243,7 +261,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
       }
     } catch (e) {
       debugPrint('Error loading canvas image: $e');
-      if (!_disposed && _loadGeneration == generation) {
+      if (ref.mounted && _loadGeneration == generation) {
         state = const CanvasBounds(
           bounds: CanvasBounds.defaultBounds,
           isLoading: false,
@@ -254,12 +272,12 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
   }
 
   void _startAnimation(ui.Codec codec) async {
-    if (_disposed || !mounted) return;
+    if (!ref.mounted) return;
 
     int currentFrame = 0;
 
     void nextFrame() async {
-      if (_disposed || !mounted || state.hasError) return;
+      if (!ref.mounted || state.hasError) return;
 
       try {
         // Reset codec to start from beginning if we've reached the end
@@ -270,7 +288,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
         // Get the next frame
         final frameInfo = await codec.getNextFrame();
 
-        if (mounted && !_disposed && state.isAnimated) {
+        if (ref.mounted && state.isAnimated) {
           state = state.copyWith(
             backgroundImage: frameInfo.image,
             currentFrame: currentFrame,
@@ -279,7 +297,7 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
           currentFrame++;
 
           // Schedule next frame based on frame duration
-          if (!_disposed) {
+          if (ref.mounted) {
             _animationTimer = Timer(frameInfo.duration, nextFrame);
           }
         }
@@ -327,31 +345,6 @@ class CanvasBoundsNotifier extends StateNotifier<CanvasBounds> {
 }
 
 final canvasBoundsProvider =
-    StateNotifierProvider.autoDispose<CanvasBoundsNotifier, CanvasBounds>(
-        (ref) {
-  final notifier = CanvasBoundsNotifier();
-
-  // Watch for canvas changes and re-initialize bounds automatically
-  // Only reinitialize when properties that affect bounds actually change
-  ref.listen(currentCanvasProvider, (previous, next) {
-    if (next != previous) {
-      // Only reinitialize bounds if properties that actually affect bounds have changed
-      bool needsReinitialize = false;
-
-      if (previous == null || next == null) {
-        needsReinitialize = true;
-      } else if (previous.canvasType != next.canvasType) {
-        needsReinitialize = true;
-      } else if (next.canvasType == CanvasType.markup &&
-          previous.imageUrl != next.imageUrl) {
-        needsReinitialize = true;
-      }
-
-      if (needsReinitialize) {
-        notifier.initializeBounds(next);
-      }
-    }
-  });
-
-  return notifier;
-});
+    NotifierProvider.autoDispose<CanvasBoundsNotifier, CanvasBounds>(
+  CanvasBoundsNotifier.new,
+);

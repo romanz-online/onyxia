@@ -90,13 +90,11 @@ class DragOffBar extends ConsumerWidget {
       icon: button.icon,
       size: iconSize,
       onPressed: () {
-        ref.read(dragOffDropPositionProvider.notifier).state = null;
+        ref.read(dragOffDropPositionProvider.notifier).set(null);
 
-        final showSearchOverlay =
-            ref.read(canvasSettingsProvider(Setting.showSearchOverlay));
         ref
             .read(canvasSettingsProvider(Setting.showSearchOverlay).notifier)
-            .state = !showSearchOverlay;
+            .toggle();
       },
     );
 

@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_gesture_state.dart';
 import 'canvas_interaction_context.dart';
@@ -72,7 +72,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
             if (brushObject == null || !brushObject.isBrush) return;
 
             ref.read(canvasObjectsProvider.notifier).selectObject(brushObject);
-            ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
             ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
           };
 }

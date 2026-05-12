@@ -93,13 +93,26 @@ abstract class NarwhalDrawer extends ConsumerStatefulWidget {
   });
 
   /// Get the visibility provider for this drawer
-  StateProvider<bool> getVisibilityProvider();
+  NotifierProvider<VisibilityNotifier, bool> getVisibilityProvider();
 
   void onClose(WidgetRef ref);
 }
 
+/// Base class for drawer visibility notifiers.
+/// Subclasses can simply extend this and pass the constructor to a
+/// `NotifierProvider<XVisibilityNotifier, bool>`.
+class VisibilityNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+
+  void toggle() => state = !state;
+}
+
 /// State class for NarwhalDrawer
-abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState<T> {
+abstract class NarwhalDrawerState<T extends NarwhalDrawer>
+    extends ConsumerState<T> {
   /// Build the header content (buttons, etc.). Implemented by subclasses.
   Widget buildHeader(BuildContext context, WidgetRef ref);
 
@@ -126,7 +139,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
   final GlobalKey _buttonsKey = GlobalKey();
 
   // Resize handle keys for windowed mode (8 handles)
-  final List<GlobalKey> _resizeHandleKeys = List.generate(8, (index) => GlobalKey());
+  final List<GlobalKey> _resizeHandleKeys =
+      List.generate(8, (index) => GlobalKey());
   // Sidebar resize handle key (1 handle)
   final GlobalKey _sidebarResizeKey = GlobalKey();
 
@@ -138,7 +152,9 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
   late Offset _position;
   late Size _size;
 
-  NarwhalDrawerMode get _mode => _layoutProvider?.getDrawerMode?.call(widget.persistenceId) ?? widget.defaultMode;
+  NarwhalDrawerMode get _mode =>
+      _layoutProvider?.getDrawerMode?.call(widget.persistenceId) ??
+      widget.defaultMode;
 
   @override
   void initState() {
@@ -151,7 +167,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
 
       // Report initial visibility state
       final isVisible = ref.read(widget.getVisibilityProvider());
-      _layoutProvider?.onVisibilityUpdate?.call(widget.persistenceId, isVisible);
+      _layoutProvider?.onVisibilityUpdate
+          ?.call(widget.persistenceId, isVisible);
     });
 
     // Initialize with default values first
@@ -159,7 +176,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     _size = widget.defaultWindowSize;
 
     // Then try to load saved state
-    WidgetsBinding.instance.addPostFrameCallback((_) => _initializeDrawerState());
+    WidgetsBinding.instance
+        .addPostFrameCallback((_) => _initializeDrawerState());
   }
 
   void _initializeDrawerState() async {
@@ -167,7 +185,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
 
     final persistedData = await _loadDrawerState(widget.persistenceId);
     if (persistedData != null && mounted) {
-      final persistedMode = persistedData['mode'] as NarwhalDrawerMode? ?? widget.defaultMode;
+      final persistedMode =
+          persistedData['mode'] as NarwhalDrawerMode? ?? widget.defaultMode;
 
       // Set the mode in the layout provider
       _layoutProvider?.setDrawerMode?.call(widget.persistenceId, persistedMode);
@@ -177,7 +196,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
         _size = persistedData['size'] as Size;
 
         // If loading in sidebar mode, set animation state and positioning
-        if (_mode == NarwhalDrawerMode.left || _mode == NarwhalDrawerMode.right) {
+        if (_mode == NarwhalDrawerMode.left ||
+            _mode == NarwhalDrawerMode.right) {
           _animateSlideIn = true;
           if (_mode == NarwhalDrawerMode.left) {
             _position = const Offset(0, 0);
@@ -196,7 +216,7 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
       // Restore visibility state if drawer was open
       final wasOpen = persistedData['isOpen'] as bool;
       if (wasOpen) {
-        ref.read(widget.getVisibilityProvider().notifier).state = true;
+        ref.read(widget.getVisibilityProvider().notifier).set(true);
       }
 
       // Report width to layout provider if in sidebar mode
@@ -214,14 +234,16 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
 
     // fallback
     // Set the default mode in the layout provider
-    _layoutProvider?.setDrawerMode?.call(widget.persistenceId, widget.defaultMode);
+    _layoutProvider?.setDrawerMode
+        ?.call(widget.persistenceId, widget.defaultMode);
 
     setState(() {
       if (widget.defaultPosition != null) {
         _position = widget.defaultPosition!;
       } else {
         // Default to top-right corner
-        _position = Offset(screenSize.width - 50 - widget.defaultWindowSize.width, 50);
+        _position =
+            Offset(screenSize.width - 50 - widget.defaultWindowSize.width, 50);
       }
       _size = widget.defaultWindowSize;
     });
@@ -246,7 +268,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
 
       if (previous != null && previous == true && next == false) {
         // Closing
-        if ((_mode == NarwhalDrawerMode.left || _mode == NarwhalDrawerMode.right)) {
+        if ((_mode == NarwhalDrawerMode.left ||
+            _mode == NarwhalDrawerMode.right)) {
           // Sidebar mode - animate close
           setState(() {
             _isClosing = true;
@@ -274,7 +297,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
         _saveDrawerState(widget.persistenceId, false);
       } else if (previous != null && previous == false && next == true) {
         // Opening
-        if ((_mode == NarwhalDrawerMode.left || _mode == NarwhalDrawerMode.right)) {
+        if ((_mode == NarwhalDrawerMode.left ||
+            _mode == NarwhalDrawerMode.right)) {
           // Sidebar mode - start offscreen, then animate in
           setState(() {
             _animateSlideIn = false;
@@ -372,7 +396,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     // For right sidebars, use right positioning to avoid animation conflicts during resize
     if (_mode == NarwhalDrawerMode.left) {
       // Left sidebar: use left positioning
-      final double leftPosition = (_isClosing || !_animateSlideIn) ? -size.width : 0;
+      final double leftPosition =
+          (_isClosing || !_animateSlideIn) ? -size.width : 0;
 
       return AnimatedPositioned(
         duration: widget.animationDuration,
@@ -384,7 +409,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
       );
     } else if (_mode == NarwhalDrawerMode.right) {
       // Right sidebar: use right positioning to stay anchored
-      final double rightPosition = (_isClosing || !_animateSlideIn) ? -size.width : 0;
+      final double rightPosition =
+          (_isClosing || !_animateSlideIn) ? -size.width : 0;
 
       return AnimatedPositioned(
         duration: widget.animationDuration,
@@ -412,10 +438,12 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
               color: ThemeHelper.neutral200(context),
               border: _mode == NarwhalDrawerMode.left
                   ? Border(
-                      right: BorderSide(color: ThemeHelper.neutral400(context), width: 1),
+                      right: BorderSide(
+                          color: ThemeHelper.neutral400(context), width: 1),
                     )
                   : Border(
-                      left: BorderSide(color: ThemeHelper.neutral400(context), width: 1),
+                      left: BorderSide(
+                          color: ThemeHelper.neutral400(context), width: 1),
                     ),
             ),
             child: Column(
@@ -505,7 +533,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     if (!mounted) return;
 
     // Capture header bounds
-    final RenderBox? headerRenderBox = _headerKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? headerRenderBox =
+        _headerKey.currentContext?.findRenderObject() as RenderBox?;
     if (headerRenderBox != null && headerRenderBox.hasSize) {
       final offset = headerRenderBox.localToGlobal(Offset.zero);
       final bounds = offset & headerRenderBox.size;
@@ -526,9 +555,11 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     }
 
     // Capture button bounds
-    final RenderBox? buttonsRenderBox = _buttonsKey.currentContext?.findRenderObject() as RenderBox?;
+    final RenderBox? buttonsRenderBox =
+        _buttonsKey.currentContext?.findRenderObject() as RenderBox?;
     if (buttonsRenderBox != null && buttonsRenderBox.hasSize) {
-      final bounds = buttonsRenderBox.localToGlobal(Offset.zero) & buttonsRenderBox.size;
+      final bounds =
+          buttonsRenderBox.localToGlobal(Offset.zero) & buttonsRenderBox.size;
 
       if (_boundsChanged(bounds, _previousButtonsBounds)) {
         setState(() {
@@ -551,21 +582,27 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     if (_mode == NarwhalDrawerMode.windowed) {
       // Capture windowed resize handle bounds (8 handles)
       for (int i = 0; i < _resizeHandleKeys.length; i++) {
-        final RenderBox? renderBox = _resizeHandleKeys[i].currentContext?.findRenderObject() as RenderBox?;
+        final RenderBox? renderBox = _resizeHandleKeys[i]
+            .currentContext
+            ?.findRenderObject() as RenderBox?;
         if (renderBox != null && renderBox.hasSize) {
           final offset = renderBox.localToGlobal(Offset.zero);
           newResizeHandleBounds.add(offset & renderBox.size);
         }
       }
-    } else if (_mode == NarwhalDrawerMode.left || _mode == NarwhalDrawerMode.right) {
+    } else if (_mode == NarwhalDrawerMode.left ||
+        _mode == NarwhalDrawerMode.right) {
       // Capture sidebar resize handle bounds (1 handle)
-      final RenderBox? renderBox = _sidebarResizeKey.currentContext?.findRenderObject() as RenderBox?;
+      final RenderBox? renderBox =
+          _sidebarResizeKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox != null && renderBox.hasSize) {
-        newResizeHandleBounds.add(renderBox.localToGlobal(Offset.zero) & renderBox.size);
+        newResizeHandleBounds
+            .add(renderBox.localToGlobal(Offset.zero) & renderBox.size);
       }
     }
 
-    if (_boundsListChanged(newResizeHandleBounds, _previousResizeHandleBounds)) {
+    if (_boundsListChanged(
+        newResizeHandleBounds, _previousResizeHandleBounds)) {
       setState(() {
         _resizeHandleBounds = newResizeHandleBounds;
       });
@@ -574,15 +611,20 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
   }
 
   void _scheduleBoundsRecaptureAfterAnimation() {
-    Future.delayed(widget.animationDuration + const Duration(milliseconds: 50), () {
-      if (mounted && (_mode == NarwhalDrawerMode.left || _mode == NarwhalDrawerMode.right)) {
+    Future.delayed(widget.animationDuration + const Duration(milliseconds: 50),
+        () {
+      if (mounted &&
+          (_mode == NarwhalDrawerMode.left ||
+              _mode == NarwhalDrawerMode.right)) {
         _captureBounds();
       }
     });
   }
 
   void _handlePointerDown(PointerDownEvent event) {
-    if (_isResizing || _headerBounds == null || !_headerBounds!.contains(event.position)) {
+    if (_isResizing ||
+        _headerBounds == null ||
+        !_headerBounds!.contains(event.position)) {
       return;
     }
 
@@ -622,7 +664,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
       );
       _lastPointerPosition = event.position;
 
-      _layoutProvider?.onDragUpdate?.call(widget.persistenceId, _position, _size);
+      _layoutProvider?.onDragUpdate
+          ?.call(widget.persistenceId, _position, _size);
     });
   }
 
@@ -636,7 +679,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
 
     _layoutProvider?.onDragEnd?.call(widget.persistenceId, _position, _size);
 
-    _saveDrawerState(widget.persistenceId, ref.read(widget.getVisibilityProvider()));
+    _saveDrawerState(
+        widget.persistenceId, ref.read(widget.getVisibilityProvider()));
   }
 
   void _transitionToWindowed(Offset? mousePosition) {
@@ -646,19 +690,22 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     final newWindowSize = widget.defaultWindowSize;
 
     // Set the mode through the layout provider
-    _layoutProvider?.setDrawerMode?.call(widget.persistenceId, NarwhalDrawerMode.windowed);
+    _layoutProvider?.setDrawerMode
+        ?.call(widget.persistenceId, NarwhalDrawerMode.windowed);
 
     setState(() {
       if (mousePosition != null && _mode == NarwhalDrawerMode.fullscreen) {
         // From fullscreen: center window under cursor, keeping header under pointer
-        final windowX = (mousePosition.dx - newWindowSize.width / 2).clamp(0.0, screenSize.width - newWindowSize.width);
+        final windowX = (mousePosition.dx - newWindowSize.width / 2)
+            .clamp(0.0, screenSize.width - newWindowSize.width);
         final windowY = (mousePosition.dy - 22.0) // 22 = half header height
             .clamp(0.0, screenSize.height - newWindowSize.height);
         _position = Offset(windowX, windowY);
       } else if (mousePosition != null) {
         // From sidebar: calculate cursor's position relative to sidebar width
-        final cursorXInSidebar =
-            _mode == NarwhalDrawerMode.left ? mousePosition.dx : screenSize.width - mousePosition.dx;
+        final cursorXInSidebar = _mode == NarwhalDrawerMode.left
+            ? mousePosition.dx
+            : screenSize.width - mousePosition.dx;
 
         final percentageAcross = cursorXInSidebar / _size.width;
 
@@ -666,12 +713,14 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
         final offsetX = percentageAcross * newWindowSize.width;
 
         // Position window at cursor minus offset
-        final windowX = (mousePosition.dx - offsetX).clamp(0.0, screenSize.width - newWindowSize.width);
+        final windowX = (mousePosition.dx - offsetX)
+            .clamp(0.0, screenSize.width - newWindowSize.width);
 
         _position = Offset(windowX, 24.0); // 24px from top
       } else {
         // Fallback to default position
-        _position = widget.defaultPosition ?? Offset(screenSize.width - 24 - newWindowSize.width, 24);
+        _position = widget.defaultPosition ??
+            Offset(screenSize.width - 24 - newWindowSize.width, 24);
       }
 
       _size = newWindowSize;
@@ -679,15 +728,18 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
       _isClosing = false;
     });
 
-    _saveDrawerState(widget.persistenceId, ref.read(widget.getVisibilityProvider()));
+    _saveDrawerState(
+        widget.persistenceId, ref.read(widget.getVisibilityProvider()));
   }
 
   // Resize handle builders
   List<Widget> _buildWindowedResizeHandles(Size size) {
     const handleSize = 10.0;
     const edgeHandleThickness = 5.0;
-    final horizontalSize = Size(size.width - (2 * handleSize), edgeHandleThickness);
-    final verticalSize = Size(edgeHandleThickness, size.height - (2 * handleSize));
+    final horizontalSize =
+        Size(size.width - (2 * handleSize), edgeHandleThickness);
+    final verticalSize =
+        Size(edgeHandleThickness, size.height - (2 * handleSize));
 
     return [
       // Corner handles
@@ -767,7 +819,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     return [
       NarwhalDrawerResizeHandleConfig(
         position: _mode == NarwhalDrawerMode.left
-            ? Offset(size.width - edgeHandleThickness, 0) // Right edge for left sidebar
+            ? Offset(size.width - edgeHandleThickness,
+                0) // Right edge for left sidebar
             : Offset(-edgeHandleThickness, 0), // Left edge for right sidebar
         width: edgeHandleThickness * 2,
         height: size.height,
@@ -797,7 +850,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
             setState(() {
               _isResizing = false;
             });
-            _saveDrawerState(widget.persistenceId, ref.read(widget.getVisibilityProvider()));
+            _saveDrawerState(
+                widget.persistenceId, ref.read(widget.getVisibilityProvider()));
           },
           child: Container(
             key: config.key,
@@ -810,7 +864,8 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     );
   }
 
-  void _handleResize(DragUpdateDetails details, NarwhalDrawerResizeHandle handle) {
+  void _handleResize(
+      DragUpdateDetails details, NarwhalDrawerResizeHandle handle) {
     final screenSize = MediaQuery.of(context).size;
 
     final maxWidth = screenSize.width * 0.8;
@@ -824,58 +879,78 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     switch (handle) {
       // Corner handles
       case NarwhalDrawerResizeHandle.topLeft:
-        newWidth = (_size.width - details.delta.dx).clamp(widget.minWidth, maxWidth);
-        newHeight = (_size.height - details.delta.dy).clamp(widget.minHeight, maxHeight);
-        newPosition = Offset(_position.dx + (_size.width - newWidth), _position.dy + (_size.height - newHeight));
+        newWidth =
+            (_size.width - details.delta.dx).clamp(widget.minWidth, maxWidth);
+        newHeight = (_size.height - details.delta.dy)
+            .clamp(widget.minHeight, maxHeight);
+        newPosition = Offset(_position.dx + (_size.width - newWidth),
+            _position.dy + (_size.height - newHeight));
         break;
       case NarwhalDrawerResizeHandle.topRight:
-        newWidth = (_size.width + details.delta.dx).clamp(widget.minWidth, maxWidth);
-        newHeight = (_size.height - details.delta.dy).clamp(widget.minHeight, maxHeight);
-        newPosition = Offset(_position.dx, _position.dy + (_size.height - newHeight));
+        newWidth =
+            (_size.width + details.delta.dx).clamp(widget.minWidth, maxWidth);
+        newHeight = (_size.height - details.delta.dy)
+            .clamp(widget.minHeight, maxHeight);
+        newPosition =
+            Offset(_position.dx, _position.dy + (_size.height - newHeight));
         break;
       case NarwhalDrawerResizeHandle.bottomLeft:
-        newWidth = (_size.width - details.delta.dx).clamp(widget.minWidth, maxWidth);
-        newHeight = (_size.height + details.delta.dy).clamp(widget.minHeight, maxHeight);
-        newPosition = Offset(_position.dx + (_size.width - newWidth), _position.dy);
+        newWidth =
+            (_size.width - details.delta.dx).clamp(widget.minWidth, maxWidth);
+        newHeight = (_size.height + details.delta.dy)
+            .clamp(widget.minHeight, maxHeight);
+        newPosition =
+            Offset(_position.dx + (_size.width - newWidth), _position.dy);
         break;
       case NarwhalDrawerResizeHandle.bottomRight:
-        newWidth = (_size.width + details.delta.dx).clamp(widget.minWidth, maxWidth);
-        newHeight = (_size.height + details.delta.dy).clamp(widget.minHeight, maxHeight);
+        newWidth =
+            (_size.width + details.delta.dx).clamp(widget.minWidth, maxWidth);
+        newHeight = (_size.height + details.delta.dy)
+            .clamp(widget.minHeight, maxHeight);
         break;
 
       // Edge handles
       case NarwhalDrawerResizeHandle.top:
-        newHeight = (_size.height - details.delta.dy).clamp(widget.minHeight, maxHeight);
-        newPosition = Offset(_position.dx, _position.dy + (_size.height - newHeight));
+        newHeight = (_size.height - details.delta.dy)
+            .clamp(widget.minHeight, maxHeight);
+        newPosition =
+            Offset(_position.dx, _position.dy + (_size.height - newHeight));
         break;
       case NarwhalDrawerResizeHandle.bottom:
-        newHeight = (_size.height + details.delta.dy).clamp(widget.minHeight, maxHeight);
+        newHeight = (_size.height + details.delta.dy)
+            .clamp(widget.minHeight, maxHeight);
         break;
       case NarwhalDrawerResizeHandle.left:
-        newWidth = (_size.width - details.delta.dx).clamp(widget.minWidth, maxWidth);
-        newPosition = Offset(_position.dx + (_size.width - newWidth), _position.dy);
+        newWidth =
+            (_size.width - details.delta.dx).clamp(widget.minWidth, maxWidth);
+        newPosition =
+            Offset(_position.dx + (_size.width - newWidth), _position.dy);
         break;
       case NarwhalDrawerResizeHandle.right:
-        newWidth = (_size.width + details.delta.dx).clamp(widget.minWidth, maxWidth);
+        newWidth =
+            (_size.width + details.delta.dx).clamp(widget.minWidth, maxWidth);
         break;
 
       // Sidebar resize
       case NarwhalDrawerResizeHandle.sidebarRight:
         // This is the right edge handle of a left sidebar
-        newWidth = (_size.width + details.delta.dx).clamp(widget.minWidth, screenSize.width * 0.5);
+        newWidth = (_size.width + details.delta.dx)
+            .clamp(widget.minWidth, screenSize.width * 0.5);
         // Position stays at left edge (0) for left sidebar mode
         newPosition = const Offset(0, 0);
         break;
       case NarwhalDrawerResizeHandle.sidebarLeft:
         // This is the left edge handle of a right sidebar
-        newWidth = (_size.width - details.delta.dx).clamp(widget.minWidth, screenSize.width * 0.5);
+        newWidth = (_size.width - details.delta.dx)
+            .clamp(widget.minWidth, screenSize.width * 0.5);
         // Right sidebar is anchored to right edge - no position change needed
         newPosition = _position;
         break;
     }
 
     // Ensure position stays within screen bounds (except for sidebar mode)
-    if (handle != NarwhalDrawerResizeHandle.sidebarLeft && handle != NarwhalDrawerResizeHandle.sidebarRight) {
+    if (handle != NarwhalDrawerResizeHandle.sidebarLeft &&
+        handle != NarwhalDrawerResizeHandle.sidebarRight) {
       newPosition = Offset(
         newPosition.dx.clamp(0.0, screenSize.width - newWidth),
         newPosition.dy.clamp(0.0, screenSize.height - newHeight),
@@ -921,7 +996,10 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
       final modeString = prefs.getString("${id}_mode");
       final isOpen = prefs.getBool("${id}_is_open") ?? false;
 
-      if (positionX != null && positionY != null && sizeWidth != null && sizeHeight != null) {
+      if (positionX != null &&
+          positionY != null &&
+          sizeWidth != null &&
+          sizeHeight != null) {
         final mode = NarwhalDrawerMode.values.firstWhere(
           (e) => e.name == modeString,
           orElse: () => NarwhalDrawerMode.windowed,
@@ -956,6 +1034,7 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer> extends ConsumerState
     }
 
     _scheduleBoundsRecaptureAfterAnimation();
-    _saveDrawerState(widget.persistenceId, ref.read(widget.getVisibilityProvider()));
+    _saveDrawerState(
+        widget.persistenceId, ref.read(widget.getVisibilityProvider()));
   }
 }

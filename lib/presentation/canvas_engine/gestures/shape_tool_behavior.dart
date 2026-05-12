@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 import 'canvas_gesture_state.dart';
@@ -67,7 +67,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
             ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
             ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
             print(7);
-            ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
             CanvasInteractionService.openTextEditor(ref: ref);
           };
 
@@ -149,7 +149,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
               ref
                   .read(canvasObjectsProvider.notifier)
                   .selectObject(activeObject);
-              ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+              ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
               CanvasInteractionService.openTextEditor(ref: ref);
             }
 

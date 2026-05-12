@@ -40,10 +40,9 @@ class DragSelectState {
   int get hashCode => Object.hash(dragRect, anchor, isActive);
 }
 
-class DragSelectNotifier extends StateNotifier<DragSelectState> {
-  DragSelectNotifier(this.ref) : super(const DragSelectState());
-
-  final Ref ref;
+class DragSelectNotifier extends Notifier<DragSelectState> {
+  @override
+  DragSelectState build() => const DragSelectState();
 
   void startDragSelect(Offset position) {
     final anchorPosition = ref.read(canvasSettingsProvider(Setting.snapToGrid))
@@ -83,6 +82,6 @@ class DragSelectNotifier extends StateNotifier<DragSelectState> {
 
 /// Provider for drag selection functionality
 final dragSelectProvider =
-    StateNotifierProvider.autoDispose<DragSelectNotifier, DragSelectState>(
-  (ref) => DragSelectNotifier(ref),
+    NotifierProvider.autoDispose<DragSelectNotifier, DragSelectState>(
+  DragSelectNotifier.new,
 );

@@ -1,16 +1,10 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:async';
 
 final artifactsProvider =
-    StateNotifierProvider<ArtifactsTreeNotifier, List<Artifact>>((ref) {
-  final projectId =
-      ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
-  return ArtifactsTreeNotifier(
-    ArtifactsRepository(projectId: projectId),
-    projectId,
-    ref: ref,
-  );
-});
+    NotifierProvider<ArtifactsTreeNotifier, List<Artifact>>(
+  ArtifactsTreeNotifier.new,
+);
 
 final artifactsLoadedProvider = Provider<bool>((ref) {
   final projectId =
@@ -22,66 +16,75 @@ final artifactsLoadedProvider = Provider<bool>((ref) {
 });
 
 final artifactsReceivedProvider =
-    StateProvider.family<bool, String>((ref, projectId) => false);
+    NotifierProvider.family<ArtifactsReceivedNotifier, bool, String>(
+  (_) => ArtifactsReceivedNotifier(),
+);
+
+class ArtifactsReceivedNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+}
 
 final artifactsErrorProvider =
-    StateProvider.family<bool, String>((ref, projectId) => false);
+    NotifierProvider.family<ArtifactsErrorNotifier, bool, String>(
+  (_) => ArtifactsErrorNotifier(),
+);
+
+class ArtifactsErrorNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+}
 
 final wikiLinkTitlesProvider = Provider<List<String>>(
     (ref) => ref.watch(artifactsProvider).map((item) => item.name).toList());
 
-class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
-  final ArtifactsRepository repository;
-  final String? projectId;
-  StreamSubscription<List<Artifact>>? _subscription;
-  final Ref ref;
-  final StateProviderFamily<bool, String> _receivedProvider;
-  final StateProviderFamily<bool, String> _errorProvider;
+class ArtifactsTreeNotifier extends Notifier<List<Artifact>> {
+  late ArtifactsRepository _repository;
+  String? _projectId;
 
-  ArtifactsTreeNotifier(
-    this.repository,
-    this.projectId, {
-    required this.ref,
-    StateProviderFamily<bool, String>? receivedProvider,
-    StateProviderFamily<bool, String>? errorProvider,
-  })  : _receivedProvider = receivedProvider ?? artifactsReceivedProvider,
-        _errorProvider = errorProvider ?? artifactsErrorProvider,
-        super([]) {
-    _listen();
-  }
+  @override
+  List<Artifact> build() {
+    _projectId =
+        ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+    _repository = ArtifactsRepository(projectId: _projectId);
 
-  void _listen() {
-    _subscription?.cancel();
-    if (projectId == null) return;
+    if (_projectId == null) return [];
 
-    _subscription = repository.getStream().listen(
+    final sub = _repository.getStream().listen(
       (data) {
         state = data;
-        ref.read(_receivedProvider(projectId!).notifier).state = true;
-        ref.read(_errorProvider(projectId!).notifier).state = false;
+        ref
+            .read(artifactsReceivedProvider(_projectId!).notifier)
+            .set(true);
+        ref.read(artifactsErrorProvider(_projectId!).notifier).set(false);
       },
       onError: (error) {
         debugPrint('ArtifactsTreeNotifier: Error listening: $error');
-        ref.read(_receivedProvider(projectId!).notifier).state = true;
-        ref.read(_errorProvider(projectId!).notifier).state = true;
+        ref
+            .read(artifactsReceivedProvider(_projectId!).notifier)
+            .set(true);
+        ref.read(artifactsErrorProvider(_projectId!).notifier).set(true);
       },
     );
+    ref.onDispose(sub.cancel);
+
+    return [];
   }
 
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
-  }
+  String? get projectId => _projectId;
 
   Artifact? getItemById(String id) => state.firstWhereOrNull((e) => e.id == id);
 
   Future<void> addItems(List<Artifact> items) async {
     if (items.isEmpty) return;
-    await repository.add(items);
+    await _repository.add(items);
   }
 
-  Future<void> addItem(Artifact item) async => await repository.add([item]);
+  Future<void> addItem(Artifact item) async => await _repository.add([item]);
 
   Future<void> deleteItem(String itemId, BuildContext context) async {
     if (itemId.isEmpty) return;
@@ -100,13 +103,13 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
     final selectedItem = ref.read(selectedArtifactProvider);
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
-      ref.read(selectedArtifactProvider.notifier).state = null;
-      context.go('/project/$projectId/${Routes.graph}');
+      ref.read(selectedArtifactProvider.notifier).set(null);
+      context.go('/project/$_projectId/${Routes.graph}');
     }
 
     state = state.where((e) => !idsToDelete.contains(e.id)).toList();
 
-    await repository.deleteMultiple(idsToDelete);
+    await _repository.deleteMultiple(idsToDelete);
   }
 
   // --- Re-parent ---
@@ -124,7 +127,7 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
     final updated = item.copyWith(parentFolderId: newParentId);
     updateItemState(updated);
-    repository.update(updated);
+    _repository.update(updated);
     return true;
   }
 
@@ -140,13 +143,13 @@ class ArtifactsTreeNotifier extends StateNotifier<List<Artifact>> {
 
   void updateItem(Artifact item) {
     updateItemState(item);
-    repository.update(item);
+    _repository.update(item);
   }
 
   void updateItems({List<Artifact> items = const []}) {
     for (final item in items) {
       updateItemState(item);
     }
-    repository.updateMultiple(items.isEmpty ? state : items);
+    _repository.updateMultiple(items.isEmpty ? state : items);
   }
 }

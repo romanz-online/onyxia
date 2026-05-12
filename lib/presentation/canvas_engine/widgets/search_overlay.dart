@@ -49,9 +49,8 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
 
   void _closeOverlay() {
     _clearSearch();
-    ref.read(dragOffDropPositionProvider.notifier).state = null;
-    ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).state =
-        false;
+    ref.read(dragOffDropPositionProvider.notifier).set(null);
+    ref.read(canvasSettingsProvider(Setting.showSearchOverlay).notifier).set(false);
   }
 
   void _createArtifact(Artifact item) async {
@@ -63,7 +62,7 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
     );
 
     // Clear drop position after creating the item
-    ref.read(dragOffDropPositionProvider.notifier).state = null;
+    ref.read(dragOffDropPositionProvider.notifier).set(null);
   }
 
   List<Artifact> _getFilteredItems() {

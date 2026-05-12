@@ -85,7 +85,7 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(editorSaveModeProvider.notifier).state = widget.saveMode;
+      ref.read(editorSaveModeProvider.notifier).set(widget.saveMode);
     });
 
     // Always subscribe to note state for save tracking

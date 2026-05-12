@@ -53,6 +53,6 @@ class ArtifactToolBehavior extends CanvasToolGestureHandler {
                 return;
             }
 
-            ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
           };
 }

@@ -1,16 +1,25 @@
 import 'package:onyxia/export.dart';
 
 final canvasMousePressedProvider =
-    StateProvider.autoDispose<bool>((ref) => false);
+    NotifierProvider.autoDispose<CanvasMousePressedNotifier, bool>(
+  CanvasMousePressedNotifier.new,
+);
+
+class CanvasMousePressedNotifier extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void set(bool value) => state = value;
+}
 
 final cursorIconOverrideProvider =
-    StateNotifierProvider.autoDispose<CursorIconOverrideNotifier, MouseCursor?>(
-        (ref) {
-  return CursorIconOverrideNotifier();
-});
+    NotifierProvider.autoDispose<CursorIconOverrideNotifier, MouseCursor?>(
+  CursorIconOverrideNotifier.new,
+);
 
-class CursorIconOverrideNotifier extends StateNotifier<MouseCursor?> {
-  CursorIconOverrideNotifier() : super(null);
+class CursorIconOverrideNotifier extends Notifier<MouseCursor?> {
+  @override
+  MouseCursor? build() => null;
 
   void setCursor(MouseCursor? cursor) {
     if (cursor != state) {

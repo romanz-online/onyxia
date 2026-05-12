@@ -21,7 +21,7 @@ class _ArtifactEditorWorkspaceState extends ConsumerState<ArtifactEditorWorkspac
         .read(artifactsProvider)
         .firstWhereOrNull((e) => e.name == selectedTitle);
     if (item == null) return;
-    ref.read(selectedArtifactProvider.notifier).state = item;
+    ref.read(selectedArtifactProvider.notifier).set(item);
     _hasSyncedSelection = true;
   }
 

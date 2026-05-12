@@ -1,7 +1,8 @@
 import 'package:onyxia/export.dart';
 
-class DraggedObjectsNotifier extends StateNotifier<List<CanvasObject>> {
-  DraggedObjectsNotifier() : super([]);
+class DraggedObjectsNotifier extends Notifier<List<CanvasObject>> {
+  @override
+  List<CanvasObject> build() => [];
 
   /// Returns the current list of dragged objects
   List<CanvasObject> get draggedObjects => state;
@@ -26,7 +27,7 @@ class DraggedObjectsNotifier extends StateNotifier<List<CanvasObject>> {
   }
 
   /// Clears all dragged objects
-  void clearDraggedObjects() => state.clear();
+  void clearDraggedObjects() => state = [];
 
   /// Returns the number of currently dragged objects
   int get draggedCount => state.length;
@@ -35,6 +36,7 @@ class DraggedObjectsNotifier extends StateNotifier<List<CanvasObject>> {
   bool get hasDraggedObjects => state.isNotEmpty;
 }
 
-final draggedObjectsProvider = StateNotifierProvider.autoDispose<DraggedObjectsNotifier, List<CanvasObject>>(
-  (ref) => DraggedObjectsNotifier(),
+final draggedObjectsProvider = NotifierProvider.autoDispose<
+    DraggedObjectsNotifier, List<CanvasObject>>(
+  DraggedObjectsNotifier.new,
 );

@@ -12,74 +12,62 @@ final currentUserRoleProvider = Provider<UserRole?>((ref) {
 });
 
 final currentUserProvider =
-    StateNotifierProvider<CurrentUserNotifier, User>((ref) {
-  final authRepository = ref.watch(authRepositoryProvider);
-  return CurrentUserNotifier(authRepository);
-});
+    NotifierProvider<CurrentUserNotifier, User>(CurrentUserNotifier.new);
 
-class CurrentUserNotifier extends StateNotifier<User> {
-  final AuthRepository repository;
-  StreamSubscription<AuthState>? _authSub;
+class CurrentUserNotifier extends Notifier<User> {
+  late AuthRepository _repository;
 
-  CurrentUserNotifier(this.repository) : super(User.initial()) {
-    _listenToAuthChanges();
-    // On hot-reload / cold start the auth event stream may have already fired —
-    // seed state from the current session.
-    final session = repository.currentSession;
-    if (session != null) _loadUserFromTable(session.user.id);
-  }
+  @override
+  User build() {
+    _repository = ref.read(authRepositoryProvider);
 
-  void _listenToAuthChanges() {
-    _authSub = repository.authStateChanges.listen((authState) {
+    final sub = _repository.authStateChanges.listen((authState) {
       final session = authState.session;
-      if (session != null) {
-        _loadUserFromTable(session.user.id);
-      } else {
+      if (session == null) {
         state = User.initial();
+      } else {
+        _loadUserFromTable(session.user.id);
       }
     });
+    ref.onDispose(sub.cancel);
+
+    // On hot-reload / cold start the auth event stream may have already fired —
+    // seed state from the current session.
+    final session = _repository.currentSession;
+    if (session != null) _loadUserFromTable(session.user.id);
+
+    return User.initial();
   }
 
   /// Read the row from the `public.users` view (a thin projection over
   /// `auth.users`). The view always resolves for any signed-in user.
   Future<void> _loadUserFromTable(String userId) async {
-    try {
-      final user = await UsersRepository().get(userId);
-      if (!mounted) return;
-      if (user != null) state = user.copyWith(isLogged: true);
-    } catch (e) {
-      debugPrint('Error loading user from public.users view: $e');
-    }
+    final user = await UsersRepository().get(userId);
+    if (user != null) state = user.copyWith(isLogged: true);
   }
 
-  Future<void> signOut() async => await repository.signOut();
+  Future<void> signOut() async => await _repository.signOut();
 
-  Future<bool> signInWithGoogle() async => repository.signInWithGoogle();
+  Future<bool> signInWithGoogle() async => _repository.signInWithGoogle();
 
   Future<bool> signInWithFakeAccount() async =>
-      repository.signInWithFakeAccount();
+      _repository.signInWithFakeAccount();
 
   Future<void> signUpWithEmail({
     required String email,
     required String password,
   }) async =>
-      repository.signUpWithEmail(email: email, password: password);
+      _repository.signUpWithEmail(email: email, password: password);
 
   Future<void> signInWithEmail({
     required String email,
     required String password,
   }) async =>
-      repository.signInWithEmail(email: email, password: password);
+      _repository.signInWithEmail(email: email, password: password);
 
   Future<void> sendPasswordResetEmail(String email) async =>
-      repository.sendPasswordResetEmail(email);
+      _repository.sendPasswordResetEmail(email);
 
   Future<void> updatePassword(String newPassword) async =>
-      repository.updatePassword(newPassword);
-
-  @override
-  void dispose() {
-    _authSub?.cancel();
-    super.dispose();
-  }
+      _repository.updatePassword(newPassword);
 }

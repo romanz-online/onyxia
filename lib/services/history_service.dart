@@ -36,7 +36,7 @@ class HistoryService {
   }
 
   static Future<void> initHistoryFromProvider({
-    required Ref<Object?> ref,
+    required Ref ref,
     required String projectId,
     required Serializer serializer,
   }) async {

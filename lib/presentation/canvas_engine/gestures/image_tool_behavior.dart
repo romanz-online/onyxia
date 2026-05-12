@@ -1,4 +1,4 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -27,7 +27,7 @@ class ImageToolBehavior extends CanvasToolGestureHandler {
               case ArrowResizeInteraction():
               case ArrowMoveInteraction():
               case ObjectFillInteractionContext():
-                ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+                ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
                 break;
               case BackgroundInteraction():
                 break;

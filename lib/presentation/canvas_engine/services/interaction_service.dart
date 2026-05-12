@@ -94,10 +94,7 @@ class CanvasInteractionService {
       // Shift (grid-snapping)
       if (key == LogicalKeyboardKey.shiftLeft ||
           key == LogicalKeyboardKey.shiftRight) {
-        ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).state =
-            !ref
-                .read(canvasSettingsProvider(Setting.snapToGrid).notifier)
-                .state;
+        ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).toggle();
         return true;
       }
 
@@ -155,10 +152,7 @@ class CanvasInteractionService {
     } else if (event is KeyUpEvent) {
       if (event.logicalKey == LogicalKeyboardKey.shiftLeft ||
           event.logicalKey == LogicalKeyboardKey.shiftRight) {
-        ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).state =
-            !ref
-                .read(canvasSettingsProvider(Setting.snapToGrid).notifier)
-                .state;
+        ref.read(canvasSettingsProvider(Setting.snapToGrid).notifier).toggle();
       }
     }
 
@@ -483,7 +477,7 @@ class CanvasInteractionService {
       rethrow;
     }
 
-    ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
 
   static Future<void> createArtifactObject({
@@ -516,7 +510,7 @@ class CanvasInteractionService {
       rethrow;
     }
 
-    ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
 
   static Future<void> deletePin({
@@ -526,7 +520,7 @@ class CanvasInteractionService {
   }) async {
     // this is a new pin that was never saved - remove it entirely
     ref.read(expandedPinProvider.notifier).collapsePin();
-    ref.read(selectedArtifactProvider.notifier).state = null;
+    ref.read(selectedArtifactProvider.notifier).set(null);
     ref.read(pinsProvider.notifier).deletePin(ref, pin);
   }
 
@@ -580,6 +574,6 @@ class CanvasInteractionService {
           pinnedObjectId: targetObject?.id,
         );
 
-    ref.read(toolModeProvider.notifier).state = ToolMode.pointer;
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
 }

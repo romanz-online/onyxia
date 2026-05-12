@@ -2,48 +2,33 @@
 import 'objects_provider.dart';
 import 'dart:async';
 
-final pinsProvider =
-    StateNotifierProvider.autoDispose<PinsNotifier, Pins>((ref) {
-  final canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
-  final projectId = ref.watch(projectsProvider).selectedProject?.id;
-  return PinsNotifier(
-    Pins.initial(),
-    repository: PinsRepository(
-      projectId: projectId,
-      canvasId: canvasId,
-    ),
-    canvasId: canvasId,
-    projectId: projectId,
-  );
-});
+final pinsProvider = NotifierProvider.autoDispose<PinsNotifier, Pins>(
+  PinsNotifier.new,
+);
 
-class PinsNotifier extends StateNotifier<Pins> {
-  final PinsRepository repository;
-  final String canvasId;
-  final String? projectId;
+class PinsNotifier extends Notifier<Pins> {
+  late PinsRepository repository;
+  late String canvasId;
+  String? projectId;
   StreamSubscription? _subscription;
 
-  PinsNotifier(
-    super.state, {
-    required this.repository,
-    required this.canvasId,
-    required this.projectId,
-  }) {
-    _init();
-  }
-
-  void _init() {
-    if (canvasId.isEmpty || projectId == null) return;
-
-    _subscription = repository.getStream().listen((remotePins) async {
-      if (mounted) state = state.copyWith(pins: remotePins);
-    });
-  }
-
   @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
+  Pins build() {
+    canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
+    projectId = ref.watch(projectsProvider).selectedProject?.id;
+    repository = PinsRepository(
+      projectId: projectId,
+      canvasId: canvasId,
+    );
+
+    if (canvasId.isNotEmpty && projectId != null) {
+      _subscription = repository.getStream().listen((remotePins) async {
+        if (ref.mounted) state = state.copyWith(pins: remotePins);
+      });
+      ref.onDispose(() => _subscription?.cancel());
+    }
+
+    return Pins.initial();
   }
 
   void updatePinState(Pin pin) {

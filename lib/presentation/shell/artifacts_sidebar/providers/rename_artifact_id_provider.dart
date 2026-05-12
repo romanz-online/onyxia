@@ -1,3 +1,13 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
-final renameArtifactIdProvider = StateProvider<String?>((ref) => null);
+final renameArtifactIdProvider =
+    NotifierProvider<RenameArtifactIdNotifier, String?>(
+  RenameArtifactIdNotifier.new,
+);
+
+class RenameArtifactIdNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? value) => state = value;
+}

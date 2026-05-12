@@ -86,7 +86,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
     final pendingRenameId = ref.watch(renameArtifactIdProvider);
     if (pendingRenameId == widget.item.id) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(renameArtifactIdProvider.notifier).state = null;
+        ref.read(renameArtifactIdProvider.notifier).set(null);
         startEditing();
       });
     }

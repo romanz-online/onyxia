@@ -1,8 +1,9 @@
 import 'package:onyxia/export.dart';
 import 'bounds_provider.dart';
 
-class ArrowPrimedObjectsNotifier extends StateNotifier<List<CanvasObject>> {
-  ArrowPrimedObjectsNotifier() : super([]);
+class ArrowPrimedObjectsNotifier extends Notifier<List<CanvasObject>> {
+  @override
+  List<CanvasObject> build() => [];
 
   void set(List<CanvasObject> objects) => state = [...objects];
 
@@ -13,8 +14,9 @@ class ArrowPrimedObjectsNotifier extends StateNotifier<List<CanvasObject>> {
   }
 }
 
-final arrowPrimedObjectsProvider = StateNotifierProvider.autoDispose<ArrowPrimedObjectsNotifier, List<CanvasObject>>(
-  (ref) => ArrowPrimedObjectsNotifier(),
+final arrowPrimedObjectsProvider = NotifierProvider.autoDispose<
+    ArrowPrimedObjectsNotifier, List<CanvasObject>>(
+  ArrowPrimedObjectsNotifier.new,
 );
 
 /// Data for a single primed object in arrow tool mode
@@ -72,11 +74,17 @@ class ArrowToolPrimedData {
   }
 
   @override
-  int get hashCode => object.id.hashCode ^ cursorPosition.hashCode ^ closestEdge.hashCode ^ relativeOffset.hashCode;
+  int get hashCode =>
+      object.id.hashCode ^
+      cursorPosition.hashCode ^
+      closestEdge.hashCode ^
+      relativeOffset.hashCode;
 }
 
-class ArrowToolPrimedObjectsNotifier extends StateNotifier<ArrowToolPrimedData?> {
-  ArrowToolPrimedObjectsNotifier() : super(null);
+class ArrowToolPrimedObjectsNotifier
+    extends Notifier<ArrowToolPrimedData?> {
+  @override
+  ArrowToolPrimedData? build() => null;
 
   void setPrimed(CanvasObject object, Offset cursorPosition) {
     final nearestPoint = object.findNearestBoundOffset(cursorPosition);
@@ -96,7 +104,8 @@ class ArrowToolPrimedObjectsNotifier extends StateNotifier<ArrowToolPrimedData?>
       object: state!.object,
       cursorPosition: cursorPosition,
       closestEdge: nearestPoint.$1,
-      relativeOffset: nearestPoint.$2 - nearestPoint.$1.getOffset(state!.object),
+      relativeOffset:
+          nearestPoint.$2 - nearestPoint.$1.getOffset(state!.object),
     );
   }
 
@@ -107,7 +116,7 @@ class ArrowToolPrimedObjectsNotifier extends StateNotifier<ArrowToolPrimedData?>
   }
 }
 
-final arrowToolPrimedObjectsProvider =
-    StateNotifierProvider.autoDispose<ArrowToolPrimedObjectsNotifier, ArrowToolPrimedData?>(
-  (ref) => ArrowToolPrimedObjectsNotifier(),
+final arrowToolPrimedObjectsProvider = NotifierProvider.autoDispose<
+    ArrowToolPrimedObjectsNotifier, ArrowToolPrimedData?>(
+  ArrowToolPrimedObjectsNotifier.new,
 );

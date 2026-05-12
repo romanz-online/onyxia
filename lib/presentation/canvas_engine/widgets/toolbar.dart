@@ -105,7 +105,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
   void _onToolSelected(ToolMode toolMode) {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     widget.closeTextEditor();
-    ref.read(toolModeProvider.notifier).state = toolMode;
+    ref.read(toolModeProvider.notifier).set(toolMode);
     ref.read(toolbarStateProvider.notifier).hideSubmenu();
   }
 
@@ -213,14 +213,14 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
               // If artifact tool is already selected, hide tree drawer and switch to pointer
               ref
                   .read(canvasSettingsProvider(Setting.showMinimap).notifier)
-                  .state = true;
+                  .set(true);
               _onToolSelected(ToolMode.pointer);
             } else {
               // If artifact tool is not selected, select it and show tree drawer
               _onToolSelected(ToolMode.artifact);
               ref
                   .read(canvasSettingsProvider(Setting.showMinimap).notifier)
-                  .state = false;
+                  .set(false);
             }
           },
           isSelected: selectedTool == tool,

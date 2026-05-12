@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/bard/bard.dart';
+import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
@@ -33,68 +33,70 @@ class NoteState {
   }
 }
 
-class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
-  final String? projectId;
-  final NoteArtifact _note;
-  final Ref ref;
-
-  bool _mounted = true;
+class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
+  String? _projectId;
+  late NoteArtifact _note;
   BardController? _controller;
   FocusNode? _focusNode;
   Timer? _debounceTimer;
 
-  NoteNotifier(
-      {required this.projectId, required NoteArtifact note, required this.ref})
-      : _note = note,
-        super(const AsyncValue.loading()) {
-    if (projectId == null) {
-      state = const AsyncValue.data(NoteState());
-      return;
+  @override
+  AsyncValue<NoteState> build() {
+    final item = ref.watch(selectedArtifactProvider);
+    _projectId =
+        ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
+    final authState = ref.watch(authProvider);
+
+    ref.onDispose(() {
+      _debounceTimer?.cancel();
+      _controller?.dispose();
+    });
+
+    if (item is! NoteArtifact ||
+        _projectId == null ||
+        authState.value == null) {
+      _note = NoteArtifact();
+      return const AsyncValue.data(NoteState());
     }
+
+    _note = item;
     _initialize();
+    return const AsyncValue.loading();
   }
 
   // ===== SETUP =====
 
   Future<void> _initialize() async {
-    try {
-      final latestNote = await ArtifactsRepository(projectId: projectId)
-              .getDocumentStream(_note.id)
-              .first as NoteArtifact? ??
-          _note;
+    final latestNote = await ArtifactsRepository(projectId: _projectId)
+            .getDocumentStream(_note.id)
+            .first as NoteArtifact? ??
+        _note;
 
-      final controller = BardController(text: latestNote.content);
-      _controller = controller;
+    final controller = BardController(text: latestNote.content);
+    _controller = controller;
 
-      controller.addListener(() {
-        if (!_mounted) return;
-        final current = state.value;
-        if (current == null || current.note == null) return;
-        final updatedNote = current.note!.copyWith(content: controller.text);
-        state = AsyncData(
-            current.copyWith(note: updatedNote, isSavedRemotely: false));
-        if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
-          _debounceSave();
-        }
-      });
-
-      if (_mounted) {
-        state = AsyncValue.data(NoteState(
-          note: latestNote,
-          bardController: controller,
-          focusNode: _focusNode,
-          isSavedRemotely: true,
-        ));
+    controller.addListener(() {
+      final current = state.value;
+      if (current == null || current.note == null) return;
+      final updatedNote = current.note!.copyWith(content: controller.text);
+      state = AsyncData(
+          current.copyWith(note: updatedNote, isSavedRemotely: false));
+      if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
+        _debounceSave();
       }
-    } catch (e, stack) {
-      if (_mounted) state = AsyncValue.error(e, stack);
-    }
+    });
+
+    state = AsyncValue.data(NoteState(
+      note: latestNote,
+      bardController: controller,
+      focusNode: _focusNode,
+      isSavedRemotely: true,
+    ));
   }
 
   // ===== FOCUS =====
 
   void setFocusNode(FocusNode focusNode) {
-    if (!_mounted) return;
     _focusNode = focusNode;
     final current = state.value;
     if (current != null) {
@@ -122,25 +124,19 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
 
   void _debounceSave({Duration duration = _500ms}) {
     _debounceTimer?.cancel();
-    _debounceTimer = Timer(duration, () {
-      if (_mounted) _saveDocument();
-    });
+    _debounceTimer = Timer(duration, _saveDocument);
   }
 
   Future<void> _saveDocument() async {
-    if (!_mounted) return;
     final current = state.value;
     if (current == null || current.note == null) return;
 
-    await ArtifactsRepository(projectId: projectId).update(current.note!);
+    await ArtifactsRepository(projectId: _projectId).update(current.note!);
 
-    if (_mounted) {
-      state = AsyncData(current.copyWith(isSavedRemotely: true));
-    }
+    state = AsyncData(current.copyWith(isSavedRemotely: true));
   }
 
   Future<void> saveDocumentWithHistory(WidgetRef widgetRef) async {
-    if (!_mounted) return;
     final current = state.value;
     if (current == null || current.note == null) return;
 
@@ -148,40 +144,19 @@ class NoteNotifier extends StateNotifier<AsyncValue<NoteState>> {
   }
 
   void resetChanges() {
-    if (!_mounted) return;
     final current = state.value;
     if (current != null) {
       state = AsyncData(current.copyWith(isSavedRemotely: true));
     }
   }
-
-  // ===== DISPOSAL =====
-
-  @override
-  void dispose() {
-    _mounted = false;
-    _debounceTimer?.cancel();
-    _controller?.dispose();
-    super.dispose();
-  }
 }
 
 /// Type alias for note state providers — use in widget signatures.
 typedef NoteStateProvider
-    = AutoDisposeStateNotifierProvider<NoteNotifier, AsyncValue<NoteState>>;
+    = NotifierProvider<NoteNotifier, AsyncValue<NoteState>>;
 
 /// Creates a NoteNotifier for the currently selected Note item.
 final selectedNoteStateProvider =
-    StateNotifierProvider.autoDispose<NoteNotifier, AsyncValue<NoteState>>(
-        (ref) {
-  final item = ref.watch(selectedArtifactProvider);
-  final projectId =
-      ref.watch(projectsProvider.select((s) => s.selectedProject?.id));
-  final authState = ref.watch(authProvider);
-
-  if (item is! NoteArtifact || projectId == null || authState.value == null) {
-    return NoteNotifier(projectId: projectId, note: NoteArtifact(), ref: ref);
-  }
-
-  return NoteNotifier(projectId: projectId, note: item, ref: ref);
-});
+    NotifierProvider.autoDispose<NoteNotifier, AsyncValue<NoteState>>(
+  NoteNotifier.new,
+);

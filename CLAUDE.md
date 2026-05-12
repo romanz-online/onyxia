@@ -106,10 +106,15 @@ This barrel includes ALL providers, models, common widgets, and helpers. Never a
 
 ### Auth Guard Pattern (required in all auth-dependent providers)
 
+Watch `authProvider` and `currentUserProvider` inside `build()` so the notifier rebuilds when auth state changes. The notifier returns its initial state regardless — Riverpod handles re-running `build()` on dependency change, so explicit `.id.isEmpty` checks aren't needed.
+
 ```dart
-final authState = ref.watch(authProvider);
-final currentUser = ref.watch(currentUserProvider);
-if (authState.value == null || currentUser.id.isEmpty) return <Name>Notifier(<State>.initial());
+@override
+<State> build() {
+  ref.watch(authProvider);
+  ref.watch(currentUserProvider);
+  return <State>.initial();
+}
 ```
 
 See `lib/data/providers/projects_provider.dart` for the canonical example.
@@ -117,7 +122,7 @@ See `lib/data/providers/projects_provider.dart` for the canonical example.
 ### Key Providers
 
 - `authProvider` → `AsyncValue<Session?>` (StreamProvider over Supabase auth state changes; `Session` is `supabase_flutter`'s type)
-- `currentUserProvider` → `User` (StateNotifierProvider, sync)
+- `currentUserProvider` → `User` (NotifierProvider, sync)
 - Both must be watched in every auth-dependent provider
 
 ---
@@ -177,21 +182,56 @@ class <Name>Repository extends BaseSupabaseRepository<<Model>> {
 
 ### Provider + Notifier
 
+We use `flutter_riverpod` 3.x. `StateNotifier` / `StateNotifierProvider` / `StateProvider` are removed — use `Notifier` + `NotifierProvider` instead. The `state` setter is `@protected`, so external mutators expose explicit methods (e.g. `set(value)`, `toggle()`).
+
 ```dart
 // lib/data/providers/<name>_provider.dart
 import 'package:onyxia/export.dart';
 
-final <name>Provider = StateNotifierProvider.autoDispose<<Name>Notifier, <State>>((ref) {
-  final authState = ref.watch(authProvider);
-  final currentUser = ref.watch(currentUserProvider);
-  if (authState.value == null || currentUser.id.isEmpty) return <Name>Notifier(<State>.initial());
-  return <Name>Notifier(<State>.initial());
-});
+final <name>Provider =
+    NotifierProvider.autoDispose<<Name>Notifier, <State>>(<Name>Notifier.new);
 
-class <Name>Notifier extends StateNotifier<<State>> {
-  <Name>Notifier(<State> state) : super(state);
+class <Name>Notifier extends Notifier<<State>> {
+  @override
+  <State> build() {
+    ref.watch(authProvider);
+    ref.watch(currentUserProvider);
+    return <State>.initial();
+  }
 }
 ```
+
+For a family-parameterized notifier:
+
+```dart
+final <name>Provider =
+    NotifierProvider.family<<Name>Notifier, <State>, <Arg>>(<Name>Notifier.new);
+
+class <Name>Notifier extends Notifier<<State>> {
+  <Name>Notifier(this.arg);
+  final <Arg> arg;
+
+  @override
+  <State> build() => <State>.initial();
+}
+```
+
+For a simple holder that replaces an old `StateProvider<T>` (callers wrote
+`ref.read(p.notifier).state = v`):
+
+```dart
+final <name>Provider =
+    NotifierProvider<<Name>Notifier, <T>>(<Name>Notifier.new);
+
+class <Name>Notifier extends Notifier<<T>> {
+  @override
+  <T> build() => /* initial */;
+
+  void set(<T> value) => state = value;
+}
+```
+
+Callers then use `ref.read(<name>Provider.notifier).set(v)` instead of `.state = v`.
 
 ### Model
 

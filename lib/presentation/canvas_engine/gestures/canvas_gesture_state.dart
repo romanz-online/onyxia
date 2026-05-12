@@ -39,8 +39,9 @@ class CanvasGestureState {
 }
 
 /// State notifier for canvas gesture state
-class CanvasGestureStateNotifier extends StateNotifier<CanvasGestureState> {
-  CanvasGestureStateNotifier() : super(const CanvasGestureState());
+class CanvasGestureStateNotifier extends Notifier<CanvasGestureState> {
+  @override
+  CanvasGestureState build() => const CanvasGestureState();
 
   void setActiveObject(CanvasObject? object) {
     state = state.copyWith(activeObject: object);
@@ -83,6 +84,7 @@ class CanvasGestureStateNotifier extends StateNotifier<CanvasGestureState> {
   }
 }
 
-final canvasGestureStateProvider = StateNotifierProvider<CanvasGestureStateNotifier, CanvasGestureState>(
-  (ref) => CanvasGestureStateNotifier(),
+final canvasGestureStateProvider =
+    NotifierProvider<CanvasGestureStateNotifier, CanvasGestureState>(
+  CanvasGestureStateNotifier.new,
 );

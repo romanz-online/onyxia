@@ -1,9 +1,9 @@
-import 'package:onyxia/export.dart';
+﻿import 'package:onyxia/export.dart';
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/constellation/constellation_simulation.dart';
 import 'package:onyxia/constellation/constellation_renderer.dart';
 
-// ── Force presets ─────────────────────────────────────────────────────────────
+// â”€â”€ Force presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 const _defaultForces = {
   'repelStrength': 1000,
@@ -15,7 +15,7 @@ const _defaultForces = {
 ConstellationNode _nodeFromItem(BuildContext context, Artifact i) =>
     ConstellationNode(id: i.name);
 
-// ── Layout builders ───────────────────────────────────────────────────────────
+// â”€â”€ Layout builders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 typedef ConstellationLayout = ({
   List<ConstellationNode> nodes,
@@ -28,7 +28,7 @@ ConstellationLayout _buildWikiLinks(
     BuildContext context, List<Artifact> items) {
   final nodes = items.map((i) => _nodeFromItem(context, i)).toList();
 
-  // Case-insensitive lookup: lowercased title → canonical title
+  // Case-insensitive lookup: lowercased title â†’ canonical title
   final titleLookup = <String, String>{
     for (final i in items) i.name.toLowerCase(): i.name,
   };
@@ -47,7 +47,7 @@ ConstellationLayout _buildWikiLinks(
   return (nodes: nodes, edges: edges, forces: _defaultForces);
 }
 
-// ── Widget ────────────────────────────────────────────────────────────────────
+// â”€â”€ Widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class Constellation extends ConsumerStatefulWidget {
   const Constellation({super.key});
@@ -61,7 +61,7 @@ class _ConstellationState extends ConsumerState<Constellation> {
     final item =
         ref.read(artifactsProvider).firstWhereOrNull((e) => e.name == nodeId);
     if (item == null) return;
-    ref.read(selectedArtifactProvider.notifier).state = item;
+    ref.read(selectedArtifactProvider.notifier).set(item);
     final projectId = ref.read(projectsProvider).selectedProject?.id;
     context.go(item.navigationUrl(projectId ?? ''));
   }

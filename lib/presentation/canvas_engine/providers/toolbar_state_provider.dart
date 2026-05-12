@@ -14,8 +14,9 @@ class ToolbarState {
   }
 }
 
-class ToolbarStateNotifier extends StateNotifier<ToolbarState> {
-  ToolbarStateNotifier() : super(const ToolbarState());
+class ToolbarStateNotifier extends Notifier<ToolbarState> {
+  @override
+  ToolbarState build() => const ToolbarState();
 
   void hideSubmenu() {
     state = state.copyWith(showShapesSubmenu: false);
@@ -27,4 +28,6 @@ class ToolbarStateNotifier extends StateNotifier<ToolbarState> {
 }
 
 final toolbarStateProvider =
-    StateNotifierProvider.autoDispose<ToolbarStateNotifier, ToolbarState>((ref) => ToolbarStateNotifier());
+    NotifierProvider.autoDispose<ToolbarStateNotifier, ToolbarState>(
+  ToolbarStateNotifier.new,
+);

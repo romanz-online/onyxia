@@ -343,7 +343,7 @@ class MinimapState extends ConsumerState<Minimap> {
                         onPressed: () => ref
                             .read(canvasSettingsProvider(Setting.showMinimap)
                                 .notifier)
-                            .state = false,
+                            .set(false),
                       ),
                     ),
                   ],
@@ -478,7 +478,7 @@ class MinimapState extends ConsumerState<Minimap> {
                   onPressed: () => ref
                       .read(
                           canvasSettingsProvider(Setting.showMinimap).notifier)
-                      .state = true,
+                      .set(true),
                 ),
               ),
             ),

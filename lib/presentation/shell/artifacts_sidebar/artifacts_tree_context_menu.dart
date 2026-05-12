@@ -98,5 +98,5 @@ void _handleRename(
   TreeNode<Artifact> node,
   Set<String> _,
 ) {
-  ref.read(renameArtifactIdProvider.notifier).state = node.data.id;
+  ref.read(renameArtifactIdProvider.notifier).set(node.data.id);
 }

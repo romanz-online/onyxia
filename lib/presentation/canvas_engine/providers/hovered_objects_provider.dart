@@ -1,10 +1,13 @@
 import 'package:onyxia/export.dart';
 
-final hoveredObjectsProvider =
-    StateNotifierProvider.autoDispose<HoveredObjectsNotifier, List<CanvasObject>>((ref) => HoveredObjectsNotifier());
+final hoveredObjectsProvider = NotifierProvider.autoDispose<
+    HoveredObjectsNotifier, List<CanvasObject>>(
+  HoveredObjectsNotifier.new,
+);
 
-class HoveredObjectsNotifier extends StateNotifier<List<CanvasObject>> {
-  HoveredObjectsNotifier() : super([]);
+class HoveredObjectsNotifier extends Notifier<List<CanvasObject>> {
+  @override
+  List<CanvasObject> build() => [];
 
   void addObject(CanvasObject object) {
     if (!state.contains(object)) {
@@ -22,7 +25,8 @@ class HoveredObjectsNotifier extends StateNotifier<List<CanvasObject>> {
     state = [];
   }
 
-  bool containsObject(CanvasObject object) => state.any((obj) => obj.id == object.id);
+  bool containsObject(CanvasObject object) =>
+      state.any((obj) => obj.id == object.id);
 
   CanvasObject getObjectById(String id) => state.firstWhere(
         (e) => e.id == id,

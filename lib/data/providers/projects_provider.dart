@@ -1,40 +1,28 @@
 import 'package:onyxia/export.dart';
 
 final projectsProvider =
-    StateNotifierProvider.autoDispose<ProjectsNotifier, Projects>((ref) {
-  final authState = ref.watch(authProvider);
-  final currentUser = ref.watch(currentUserProvider);
+    NotifierProvider.autoDispose<ProjectsNotifier, Projects>(
+  ProjectsNotifier.new,
+);
 
-  if (authState.value == null || currentUser.id.isEmpty) {
-    return ProjectsNotifier(Projects.initial(), ProjectsRepository());
-  }
+class ProjectsNotifier extends Notifier<Projects> {
+  final ProjectsRepository _repository = ProjectsRepository();
 
-  return ProjectsNotifier(Projects.initial(), ProjectsRepository());
-});
-
-class ProjectsNotifier extends StateNotifier<Projects> {
-  final ProjectsRepository projectsRepository;
-
-  ProjectsNotifier(super.state, this.projectsRepository) {
+  @override
+  Projects build() {
+    ref.watch(authProvider);
+    ref.watch(currentUserProvider);
     _loadProjects();
+    return Projects.initial();
   }
 
   Future<void> _loadProjects() async {
-    try {
-      final projects = await projectsRepository.getAll();
-
-      if (!mounted) return;
-
-      state = state.copyWith(
-        projects: projects,
-        selectedProject: null,
-        isLoading: false,
-      );
-    } catch (e) {
-      if (!mounted) return;
-      print('_loadProjects $e');
-      state = state.copyWith(isLoading: false);
-    }
+    final projects = await _repository.getAll();
+    state = state.copyWith(
+      projects: projects,
+      selectedProject: null,
+      isLoading: false,
+    );
   }
 
   void selectProject(Project project) {
@@ -42,37 +30,30 @@ class ProjectsNotifier extends StateNotifier<Projects> {
   }
 
   Future<void> selectProjectById(String projectId) async {
-    if (!mounted) return;
-
     final projectIndex = state.projects.indexWhere((p) => p.id == projectId);
 
     if (projectIndex != -1) {
       final project = state.projects[projectIndex];
       state = state.copyWith(selectedProject: project);
     } else {
-      try {
-        final project = await projectsRepository.get(projectId);
-
-        if (project != null && mounted) {
-          final updatedProjects = [...state.projects, project];
-          state = state.copyWith(
-            projects: updatedProjects,
-            selectedProject: project,
-          );
-        }
-      } catch (e) {
-        debugPrint('Failed to load project $projectId: $e');
+      final project = await _repository.get(projectId);
+      if (project != null) {
+        final updatedProjects = [...state.projects, project];
+        state = state.copyWith(
+          projects: updatedProjects,
+          selectedProject: project,
+        );
       }
     }
   }
 
   void addProject(Project project) {
     state = state.copyWith(projects: [...state.projects, project]);
-    projectsRepository.add([project]);
+    _repository.add([project]);
   }
 
   void deleteProject(String id) {
-    projectsRepository.delete(id);
+    _repository.delete(id);
     state = state.copyWith(
         projects: state.projects.where((e) => e.id != id).toList());
   }
@@ -81,7 +62,7 @@ class ProjectsNotifier extends StateNotifier<Projects> {
     final updatedProjects = state.projects.map((project) {
       if (project.id == id) {
         final updatedProject = project.copyWith(name: newName);
-        projectsRepository.update(updatedProject);
+        _repository.update(updatedProject);
         return updatedProject;
       }
       return project;
@@ -101,7 +82,7 @@ class ProjectsNotifier extends StateNotifier<Projects> {
       selectedProject: updatedProject,
     );
 
-    projectsRepository.update(updatedProject);
+    _repository.update(updatedProject);
   }
 
   Future<void> removeMember({

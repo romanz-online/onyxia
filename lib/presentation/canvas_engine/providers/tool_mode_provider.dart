@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 enum ToolMode {
   pointer,
@@ -29,4 +29,14 @@ enum ToolMode {
   arrow,
 }
 
-final toolModeProvider = StateProvider.autoDispose<ToolMode>((ref) => ToolMode.pointer);
+final toolModeProvider =
+    NotifierProvider.autoDispose<ToolModeNotifier, ToolMode>(
+  ToolModeNotifier.new,
+);
+
+class ToolModeNotifier extends Notifier<ToolMode> {
+  @override
+  ToolMode build() => ToolMode.pointer;
+
+  void set(ToolMode value) => state = value;
+}

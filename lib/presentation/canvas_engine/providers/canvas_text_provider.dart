@@ -24,19 +24,21 @@ class CanvasTextState {
   }
 }
 
-class CanvasTextNotifier extends StateNotifier<CanvasTextState> {
-  CanvasTextNotifier()
-      : super(CanvasTextState(
-          controller: TextEditingController(),
-          editingObjId: '',
-          focusNode: FocusNode(),
-        ));
-
+class CanvasTextNotifier extends Notifier<CanvasTextState> {
   @override
-  void dispose() {
-    state.controller.dispose();
-    state.focusNode.dispose();
-    super.dispose();
+  CanvasTextState build() {
+    final initialState = CanvasTextState(
+      controller: TextEditingController(),
+      editingObjId: '',
+      focusNode: FocusNode(),
+    );
+
+    ref.onDispose(() {
+      state.controller.dispose();
+      state.focusNode.dispose();
+    });
+
+    return initialState;
   }
 
   void startEditing(String content, String objId) {
@@ -44,7 +46,7 @@ class CanvasTextNotifier extends StateNotifier<CanvasTextState> {
     state = state.copyWith(editingObjId: objId);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
+      if (ref.mounted) {
         state.focusNode.requestFocus();
       }
     });
@@ -68,5 +70,6 @@ class CanvasTextNotifier extends StateNotifier<CanvasTextState> {
 }
 
 final canvasTextProvider =
-    StateNotifierProvider.autoDispose<CanvasTextNotifier, CanvasTextState>(
-        (ref) => CanvasTextNotifier());
+    NotifierProvider.autoDispose<CanvasTextNotifier, CanvasTextState>(
+  CanvasTextNotifier.new,
+);

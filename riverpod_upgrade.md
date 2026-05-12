@@ -9,6 +9,7 @@ This plan upgrades the dependency and migrates code to the new APIs **without in
 ## Phase 1 — Bump and fix breaking changes
 
 Modify [pubspec.yaml:34](pubspec.yaml#L34):
+
 ```yaml
 flutter_riverpod: ^3.3.1
 ```
@@ -52,6 +53,7 @@ Consumers currently watch `currentUserProvider` and get `User` directly. After m
 ### [lib/data/providers/projects_provider.dart](lib/data/providers/projects_provider.dart)
 
 Convert `ProjectsNotifier` to `AsyncNotifier<Projects>`:
+
 - `build()` returns `await projectsRepository.getAll()` wrapped in the `Projects` state.
 - Free automatic retry replaces the swallowed `catch (e)` at [projects_provider.dart:33-37](lib/data/providers/projects_provider.dart#L33-L37).
 - `_mounted` checks disappear — `AsyncNotifier` mutators use `state = AsyncData(...)` which is safe after dispose.
@@ -97,6 +99,7 @@ Then delete the `ref.read(_receivedProvider...).state = true` writes at [artifac
 ### [lib/data/providers/note_state_provider.dart](lib/data/providers/note_state_provider.dart)
 
 Convert `NoteNotifier` to `AsyncNotifier<NoteState>`:
+
 - Drop `_mounted` (field at [note_state_provider.dart:41](lib/data/providers/note_state_provider.dart#L41), all 9 check sites). Replace with `ref.mounted` where genuinely needed inside async callbacks; most checks are unnecessary because `AsyncNotifier` already guards `state =` after dispose.
 - Drop the `Ref ref` constructor parameter at [note_state_provider.dart:39](lib/data/providers/note_state_provider.dart#L39) — `ref` is on `this`.
 - Drop the `AutoDisposeStateNotifierProvider` typedef at [note_state_provider.dart:170-171](lib/data/providers/note_state_provider.dart#L170-L171); use `AutoDisposeAsyncNotifierProviderImpl<NoteNotifier, NoteState>` or just drop the alias.
@@ -145,6 +148,7 @@ Replace the StateNotifierProvider template at [CLAUDE.md](CLAUDE.md) ("Provider 
 ## Verification
 
 After each phase:
+
 1. `flutter analyze` — no new errors or `StateNotifier` deprecation warnings for migrated files
 2. `flutter run` — sign in, list/select project, open the artifact tree, open a note, type to trigger auto-save, sign out
 3. Force a Supabase error (e.g. revoke RLS temporarily on `artifacts`) and confirm:
