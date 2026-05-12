@@ -32,6 +32,6 @@ class _ArtifactEditorWorkspaceState extends ConsumerState<ArtifactEditorWorkspac
     });
     // Handle the case where data was already loaded before this widget mounted.
     if (ref.read(artifactsLoadedProvider)) _syncSelectionFromRoute();
-    return ArtifactEditor(promptNotify: true);
+    return ArtifactEditor();
   }
 }

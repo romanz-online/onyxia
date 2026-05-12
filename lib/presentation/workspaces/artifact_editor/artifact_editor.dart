@@ -4,16 +4,12 @@ import 'note/note_editor_view.dart';
 
 class ArtifactEditor extends ConsumerStatefulWidget {
   final SaveMode saveMode;
-  final NoteStateProvider? noteProvider;
-  final bool createTagsPermanently;
-  final bool promptNotify;
+  final NoteStateProvider? noteProvider; 
 
   const ArtifactEditor({
     super.key,
     this.saveMode = SaveMode.auto,
     this.noteProvider,
-    this.createTagsPermanently = false,
-    this.promptNotify = false,
   });
 
   @override
