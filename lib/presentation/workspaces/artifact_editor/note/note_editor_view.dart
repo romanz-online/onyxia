@@ -4,14 +4,9 @@ import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:onyxia/export.dart';
 
 class NoteEditorView extends ConsumerStatefulWidget {
-  final SaveMode saveMode;
   final NoteStateProvider? provider;
 
-  const NoteEditorView({
-    super.key,
-    this.saveMode = SaveMode.auto,
-    this.provider,
-  });
+  const NoteEditorView({super.key, this.provider});
 
   @override
   ConsumerState<NoteEditorView> createState() => _NoteEditorState();

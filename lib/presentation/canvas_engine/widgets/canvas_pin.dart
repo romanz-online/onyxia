@@ -143,7 +143,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
     }
   }
 
-  void _onTap(Artifact item) {
+  void _onTap() {
     if (isExpanded) {
       ref.read(expandedPinProvider.notifier).collapsePin();
       _handleHoverExit();
@@ -151,7 +151,6 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
       _animationController
           .reset(); // Instantly reset to collapsed state without animation
       ref.read(expandedPinProvider.notifier).expandPin(widget.pin);
-      ref.read(selectedArtifactNameProvider.notifier).set(item.name);
     }
   }
 
@@ -221,7 +220,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                 onEnter: (_) => _handleHoverEnter(),
                 onExit: (_) => _handleHoverExit(),
                 child: GestureDetector(
-                  onTap: () => _onTap(effectiveNote),
+                  onTap: _onTap,
                   child: AnimatedBuilder(
                     animation: _animationController,
                     builder: (context, child) {

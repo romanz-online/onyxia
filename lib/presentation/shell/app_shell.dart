@@ -15,7 +15,6 @@ class _AppShellState extends ConsumerState<AppShell> {
   void initState() {
     super.initState();
     _syncProject();
-    _syncSelectedName();
   }
 
   @override
@@ -23,9 +22,6 @@ class _AppShellState extends ConsumerState<AppShell> {
     super.didUpdateWidget(oldWidget);
     if (widget.projectId != oldWidget.projectId) {
       _syncProject();
-    }
-    if (widget.selectedId != oldWidget.selectedId) {
-      _syncSelectedName();
     }
   }
 
@@ -37,13 +33,6 @@ class _AppShellState extends ConsumerState<AppShell> {
       } else {
         ref.read(projectsProvider.notifier).clearSelectedProject();
       }
-    });
-  }
-
-  void _syncSelectedName() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      ref.read(selectedArtifactNameProvider.notifier).set(widget.selectedId);
     });
   }
 

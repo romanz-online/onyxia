@@ -520,7 +520,6 @@ class CanvasInteractionService {
   }) async {
     // this is a new pin that was never saved - remove it entirely
     ref.read(expandedPinProvider.notifier).collapsePin();
-    ref.read(selectedArtifactNameProvider.notifier).set(null);
     ref.read(pinsProvider.notifier).deletePin(ref, pin);
   }
 

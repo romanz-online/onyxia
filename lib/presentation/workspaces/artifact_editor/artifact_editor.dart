@@ -3,12 +3,10 @@ import 'package:onyxia/presentation/canvas_engine/providers/providers.dart';
 import 'note/note_editor_view.dart';
 
 class ArtifactEditor extends ConsumerStatefulWidget {
-  final SaveMode saveMode;
-  final NoteStateProvider? noteProvider; 
+  final NoteStateProvider? noteProvider;
 
   const ArtifactEditor({
     super.key,
-    this.saveMode = SaveMode.auto,
     this.noteProvider,
   });
 
@@ -57,14 +55,10 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
     return switch (artifact.type) {
       ArtifactType.note => NoteEditorView(
           key: ValueKey('note-${artifact.id}'),
-          saveMode: widget.saveMode,
           provider: widget.noteProvider,
         ),
       ArtifactType.canvas => ref.read(urlCanvasIdProvider) == null
-          ? CanvasEditorView(
-              canvasId: artifact.id,
-              saveMode: widget.saveMode,
-            )
+          ? CanvasEditorView(canvasId: artifact.id)
           : const SizedBox.shrink(),
       ArtifactType.folder => const SizedBox.shrink(),
     };
@@ -84,19 +78,13 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(editorSaveModeProvider.notifier).set(widget.saveMode);
-    });
-
     // Always subscribe to note state for save tracking
     final noteAsyncState = ref.watch(_noteProvider);
 
     ref.listen(_noteProvider, (previous, next) {
       final prevSaved = previous?.value?.isSavedRemotely;
       final nextSaved = next.value?.isSavedRemotely;
-      if (widget.saveMode == SaveMode.auto &&
-          prevSaved == false &&
-          nextSaved == true) {
+      if (prevSaved == false && nextSaved == true) {
         if (_bypassNotifyBar) {
           _bypassNotifyBar = false;
         } else if (_notifySuppressedUntil == null ||
@@ -182,9 +170,7 @@ class _ArtifactEditorState extends ConsumerState<ArtifactEditor> {
           backgroundColor: ThemeHelper.neutral100(context),
           body: SizedBox.expand(child: _buildEditorContent(selectedItem)),
         ),
-        if (widget.saveMode == SaveMode.manual &&
-            !isSavedRemotely &&
-            !_showNotifyBar)
+        if (!isSavedRemotely && !_showNotifyBar)
           Align(
             alignment: Alignment.bottomCenter,
             child: SaveChangesBar(

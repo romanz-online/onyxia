@@ -35,13 +35,8 @@ class IsDragHoveringNotifier extends Notifier<bool> {
 
 class CanvasEditorView extends ConsumerStatefulWidget {
   final String canvasId;
-  final SaveMode saveMode;
 
-  const CanvasEditorView({
-    super.key,
-    required this.canvasId,
-    this.saveMode = SaveMode.auto,
-  });
+  const CanvasEditorView({super.key, required this.canvasId});
 
   @override
   ConsumerState<CanvasEditorView> createState() => _CanvasEditorView();

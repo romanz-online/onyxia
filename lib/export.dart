@@ -65,7 +65,7 @@ export 'package:onyxia/data/providers/user_lookup_provider.dart';
 export 'package:onyxia/data/providers/project_members_provider.dart';
 export 'package:onyxia/data/providers/canvases_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
-export 'package:onyxia/data/providers/selected_item_provider.dart';
+export 'package:onyxia/data/providers/selected_artifact_provider.dart';
 export 'package:onyxia/data/providers/note_state_provider.dart';
 
 //packages

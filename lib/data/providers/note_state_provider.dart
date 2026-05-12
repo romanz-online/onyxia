@@ -103,9 +103,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
       final updatedNote = current.note!.copyWith(content: controller.text);
       state = AsyncData(
           current.copyWith(note: updatedNote, isSavedRemotely: false));
-      if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
-        _debounceSave();
-      }
+      _debounceSave();
     }
 
     _controller = controller;
@@ -141,9 +139,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
       note: current.note!.copyWith(name: title),
       isSavedRemotely: false,
     ));
-    if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
-      _debounceSave(duration: _100ms);
-    }
+    _debounceSave(duration: _100ms);
   }
 
   // ===== SAVE =====
