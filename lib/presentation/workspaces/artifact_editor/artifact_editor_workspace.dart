@@ -15,41 +15,8 @@ class ArtifactWorkspace extends ConsumerStatefulWidget {
 }
 
 class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
-  bool _isSaving = false;
-  bool _showNotifyBar = false;
-  bool _bypassNotifyBar = false;
-  DateTime? _notifySuppressedUntil;
-
   NoteStateProvider get _noteProvider =>
       widget.noteProvider ?? selectedNoteStateProvider;
-
-  Future<void> _handleSave() async {
-    setState(() => _isSaving = true);
-    try {
-      final notifier = ref.read(_noteProvider.notifier);
-      await notifier.saveDocumentWithHistory(ref);
-      if (mounted) {
-        setState(() {
-          _isSaving = false;
-          if (_notifySuppressedUntil == null ||
-              DateTime.now().isAfter(_notifySuppressedUntil!)) {
-            _showNotifyBar = true;
-          }
-        });
-        NarwhalToast.show(text: 'Saved successfully', type: ToastType.success);
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _isSaving = false);
-      }
-      NarwhalToast.show(text: 'Failed to save: $e', type: ToastType.error);
-    }
-  }
-
-  void _handleReset() {
-    setState(() => _showNotifyBar = false);
-    ref.invalidate(_noteProvider);
-  }
 
   Widget _buildEditorContent(Artifact artifact) {
     return switch (artifact.type) {
@@ -80,28 +47,6 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   Widget build(BuildContext context) {
     // Always subscribe to note state for save tracking
     final noteAsyncState = ref.watch(_noteProvider);
-
-    ref.listen(_noteProvider, (previous, next) {
-      final prevSaved = previous?.value?.isSavedRemotely;
-      final nextSaved = next.value?.isSavedRemotely;
-      if (prevSaved == false && nextSaved == true) {
-        if (_bypassNotifyBar) {
-          _bypassNotifyBar = false;
-        } else if (_notifySuppressedUntil == null ||
-            DateTime.now().isAfter(_notifySuppressedUntil!)) {
-          setState(() => _showNotifyBar = true);
-        }
-      }
-    });
-
-    ref.listen(selectedArtifactProvider, (previous, next) {
-      if (previous?.name != next?.name) {
-        setState(() {
-          _showNotifyBar = false;
-          _notifySuppressedUntil = null;
-        });
-      }
-    });
 
     // When a custom note provider is given, the item comes from it.
     // For notes with the global provider, prefer the live note state over the stale selectedArtifactProvider.
@@ -156,10 +101,6 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
       }
     }
 
-    final isSavedRemotely = selectedItem.type == ArtifactType.note
-        ? (noteAsyncState.value?.isSavedRemotely ?? true)
-        : true;
-
     return Stack(
       children: [
         Scaffold(
@@ -170,15 +111,6 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
           backgroundColor: ThemeHelper.neutral100(context),
           body: SizedBox.expand(child: _buildEditorContent(selectedItem)),
         ),
-        if (!isSavedRemotely && !_showNotifyBar)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SaveChangesBar(
-              isSaving: _isSaving,
-              onSave: _handleSave,
-              onReset: _handleReset,
-            ),
-          ),
       ],
     );
   }

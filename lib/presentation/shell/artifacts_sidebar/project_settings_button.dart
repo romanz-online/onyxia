@@ -14,18 +14,9 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
 
     if (projectId == null) return const SizedBox.shrink();
 
-    final currentId = GoRouterState.of(context).pathParameters['selectedId'];
-    final isOnSettings = currentId == Routes.settings;
-
     return NarwhalIconButton(
       icon: NarwhalIcons.settingsGear,
-      onPressed: () {
-        if (isOnSettings) {
-          context.go('/project/$projectId/graph');
-        } else {
-          context.go('/project/$projectId/${Routes.settings}');
-        }
-      },
+      onPressed: () {},
     );
   }
 }

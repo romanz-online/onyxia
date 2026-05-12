@@ -2,7 +2,6 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
-const _500ms = Duration(milliseconds: 500);
 const _100ms = Duration(milliseconds: 100);
 
 class NoteState {
@@ -40,16 +39,21 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   VoidCallback? _controllerListener;
   FocusNode? _focusNode;
   Timer? _debounceTimer;
+  StreamSubscription<Artifact?>? _docSub;
 
   @override
   AsyncValue<NoteState> build() {
-    final item = ref.watch(selectedArtifactProvider);
+    final selectedNoteId = ref.watch(
+      selectedArtifactProvider.select((a) => a is NoteArtifact ? a.id : null),
+    );
     _projectId =
         ref.watch(selectedProjectProvider.select((p) => p?.id));
     final authState = ref.watch(authProvider);
 
     ref.onDispose(() {
       _debounceTimer?.cancel();
+      _docSub?.cancel();
+      _docSub = null;
       final controller = _controller;
       final listener = _controllerListener;
       _controller = null;
@@ -67,14 +71,14 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
       }
     });
 
-    if (item is! NoteArtifact ||
+    if (selectedNoteId == null ||
         _projectId == null ||
         authState.value == null) {
       _note = NoteArtifact();
       return const AsyncValue.data(NoteState());
     }
 
-    _note = item;
+    _note = ref.read(selectedArtifactProvider) as NoteArtifact;
     _initialize();
     return const AsyncValue.loading();
   }
@@ -82,10 +86,12 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   // ===== SETUP =====
 
   Future<void> _initialize() async {
-    final latestNote = await ArtifactsRepository(projectId: _projectId)
-            .getDocumentStream(_note.id)
-            .first as NoteArtifact? ??
-        _note;
+    final repo = ArtifactsRepository(projectId: _projectId);
+    final latestNote =
+        await repo.getDocumentStream(_note.id).first as NoteArtifact? ?? _note;
+    final myUserId = ref.read(currentUserProvider).value?.id;
+
+    if (!ref.mounted) return;
 
     final controller = BardController(text: latestNote.content);
 
@@ -109,6 +115,31 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
     _controller = controller;
     _controllerListener = listener;
     controller.addListener(listener);
+
+    // Live remote-edit sync: the server stamps `updated_by` with the writer's
+    // auth UID, so any emission where it matches our own UID is the echo of
+    // one of our saves and we skip it. Genuine remote edits (different user)
+    // are applied — but deferred if the local user is mid-burst so we don't
+    // yank text from under them.
+    _docSub = repo.getDocumentStream(_note.id).skip(1).listen((incoming) {
+      if (incoming is! NoteArtifact) return;
+      if (myUserId != null && incoming.updatedBy == myUserId) return;
+      if (_debounceTimer?.isActive ?? false) return;
+      final current = state.value;
+      if (current == null) return;
+      if (controller.text == incoming.content) {
+        if (current.note != incoming) {
+          state = AsyncData(
+              current.copyWith(note: incoming, isSavedRemotely: true));
+        }
+        return;
+      }
+      controller.removeListener(listener);
+      controller.text = incoming.content;
+      controller.addListener(listener);
+      state =
+          AsyncData(current.copyWith(note: incoming, isSavedRemotely: true));
+    });
 
     state = AsyncValue.data(NoteState(
       note: latestNote,
@@ -144,18 +175,27 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
 
   // ===== SAVE =====
 
-  void _debounceSave({Duration duration = _500ms}) {
+  void _debounceSave({Duration duration = _100ms}) {
     _debounceTimer?.cancel();
     _debounceTimer = Timer(duration, _saveDocument);
   }
 
   Future<void> _saveDocument() async {
-    final current = state.value;
-    if (current == null || current.note == null) return;
+    final captured = state.value;
+    if (captured == null || captured.note == null) return;
+    final outgoing = captured.note!;
+    await ArtifactsRepository(projectId: _projectId).update(outgoing);
 
-    await ArtifactsRepository(projectId: _projectId).update(current.note!);
-
-    state = AsyncData(current.copyWith(isSavedRemotely: true));
+    // After the await, state may have advanced (a keystroke landed during the
+    // round-trip). Only flip the saved flag if nothing has changed locally —
+    // otherwise leave isSavedRemotely=false so the next debounce tick saves
+    // the newer content.
+    final after = state.value;
+    if (after == null || after.note == null) return;
+    if (after.note!.content == outgoing.content &&
+        after.note!.name == outgoing.name) {
+      state = AsyncData(after.copyWith(isSavedRemotely: true));
+    }
   }
 
   Future<void> saveDocumentWithHistory(WidgetRef widgetRef) async {

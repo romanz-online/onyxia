@@ -13,7 +13,6 @@ export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar_fo
 export 'package:onyxia/presentation/shell/workspace_host.dart';
 export 'package:onyxia/presentation/workspaces/graph/graph_workspace.dart';
 export 'package:onyxia/presentation/workspaces/artifact_editor/artifact_editor_workspace.dart';
-export 'package:onyxia/presentation/workspaces/project_settings/project_settings_workspace.dart';
 export 'package:onyxia/presentation/shell/master_sidebar.dart';
 export 'package:onyxia/presentation/shell/app_shell.dart';
 export 'package:onyxia/presentation/landing/invite_screen.dart';
@@ -50,7 +49,6 @@ export 'package:onyxia/presentation/shell/artifacts_sidebar/tree_tile.dart';
 
 // Editor Views
 export 'package:onyxia/presentation/workspaces/artifact_editor/canvas/canvas_editor_view.dart';
-export 'package:onyxia/presentation/workspaces/artifact_editor/pending_action_bar.dart';
 
 export 'package:onyxia/presentation/routing/router.dart';
 export 'package:onyxia/presentation/routing/routes.dart';

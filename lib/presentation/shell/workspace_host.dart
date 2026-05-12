@@ -14,7 +14,6 @@ class WorkspaceHost extends StatelessWidget {
   Widget build(BuildContext context) {
     if (projectId.isEmpty) return const LandingBackground();
     if (selectedId == Routes.graph) return const GraphWorkspace();
-    if (selectedId == Routes.settings) return const ProjectSettingsWorkspace();
     return const ArtifactWorkspace();
   }
 }
