@@ -98,25 +98,6 @@ class CanvasInteractionService {
         return true;
       }
 
-      // Undo/Redo functionality (works for both markup and whiteboard)
-      if (isModifierPressed && key == LogicalKeyboardKey.keyZ) {
-        final shiftPressed = HardwareKeyboard.instance.logicalKeysPressed
-                .contains(LogicalKeyboardKey.shiftLeft) ||
-            HardwareKeyboard.instance.logicalKeysPressed
-                .contains(LogicalKeyboardKey.shiftRight);
-
-        // ref.read(canvasDiffPreviewProvider.notifier).clearPreview();
-
-        if (shiftPressed) {
-          // Ctrl+Shift+Z = Redo
-          performRedo(ref: ref);
-        } else {
-          // Ctrl+Z = Undo
-          performUndo(ref: ref);
-        }
-        return true;
-      }
-
       // Paste
       if (isModifierPressed && key == LogicalKeyboardKey.keyV) {
         final targetPosition =
@@ -268,98 +249,6 @@ class CanvasInteractionService {
     ref.read(commentsProvider.notifier).clearTemporaryComment();
   }
 
-  static Future<void> pipeHistory({
-    required WidgetRef ref,
-    required Future<void> Function() operation,
-  }) async {
-    final projectId = ref.read(selectedProjectProvider)?.id;
-    if (projectId == null) return;
-    await HistoryService.pipe(
-      ref: ref,
-      projectId: projectId,
-      operation: operation,
-      serializer: CanvasSerializerService(
-        canvasId: ref.read(currentCanvasProvider)?.id ?? '',
-        projectId: projectId,
-        repository: ArtifactsRepository(
-          projectId: projectId,
-        ),
-      ),
-    );
-  }
-
-  static void performUndo({required WidgetRef ref}) async {
-    ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    final projectId = ref.read(selectedProjectProvider)?.id;
-    if (projectId == null) return;
-    // try {
-    //   final params = HistoryDiffsParams(
-    //     projectId: projectId,
-    //     itemId: ref.read(currentCanvasProvider)?.id ?? '',
-    //     itemType: ArtifactType.canvas,
-    //   );
-    //   if (await ref.read(historyDiffsProvider(params).notifier).undo()) {
-    //     await _applyCurrentDiffState(ref: ref);
-    //   }
-    // } catch (e) {
-    //   debugPrint('Error in undo: $e');
-    // }
-  }
-
-  static void performRedo({required WidgetRef ref}) async {
-    ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    final projectId = ref.read(selectedProjectProvider)?.id;
-    if (projectId == null) return;
-    // try {
-    //   final params = HistoryDiffsParams(
-    //     projectId: projectId,
-    //     itemId: ref.read(currentCanvasProvider)?.id ?? '',
-    //     itemType: ArtifactType.canvas,
-    //   );
-    //   if (await ref.read(historyDiffsProvider(params).notifier).redo()) {
-    //     await _applyCurrentDiffState(ref: ref);
-    //   }
-    // } catch (e) {
-    //   debugPrint('Error in redo: $e');
-    // }
-  }
-
-  // static Future<void> _applyCurrentDiffState({required WidgetRef ref}) async {
-  //   try {
-  //     final projectId = ref.read(selectedProjectProvider)?.id;
-  //     if (projectId == null) return;
-  //     final canvasId = ref.read(currentCanvasProvider)?.id ?? '';
-
-  //     final serializer = CanvasSerializerService(
-  //       canvasId: canvasId,
-  //       projectId: projectId,
-  //       repository: ArtifactsRepository(projectId: projectId),
-  //     );
-
-  //     final params = HistoryDiffsParams(
-  //       projectId: projectId,
-  //       itemId: canvasId,
-  //       itemType: ArtifactType.canvas,
-  //     );
-  //     final diff = ref.read(historyDiffsProvider(params)).currentDiff;
-
-  //     if (diff == null) throw Exception('currentDiff is null');
-
-  //     // Reconstruct canvas state from current diff position
-  //     final reconstructedState = HistoryService.reconstructState(
-  //       ref: ref,
-  //       targetDiff: diff,
-  //       serializer: serializer,
-  //     );
-
-  //     // Apply the reconstructed state to canvas without creating new diff
-  //     await serializer.deserialize(reconstructedState);
-  //   } catch (e) {
-  //     debugPrint('Failed to apply diff state: $e');
-  //     rethrow;
-  //   }
-  // }
-
   static void closeHeadlessPalette({required WidgetRef ref}) {
     if (ref.read(headlessProvider).headlessArrow != null) {
       if (ref.read(headlessProvider).headlessArrow!.arrowProps.endPoint ==
@@ -458,24 +347,14 @@ class CanvasInteractionService {
       pinnedObjectId: targetObject?.id,
     );
 
-    // Expand pin BEFORE pipeHistory to avoid widget disposal issues
+    // Expand pin BEFORE creation to avoid widget disposal issues
     if (item == null) {
-      // expand and select the pin immediately for new pins
+      // expand the pin immediately for new pins
       // the pin will enter edit mode
-      try {
-        ref.read(expandedPinProvider.notifier).expandPin(pin);
-      } catch (e) {
-        // Continue with pin creation even if expansion fails
-        debugPrint('Error expanding pin: $e');
-      }
+      ref.read(expandedPinProvider.notifier).expandPin(pin);
     }
 
-    try {
-      ref.read(pinsProvider.notifier).addPin(ref, pin);
-    } catch (e) {
-      debugPrint('Error in pipeHistory during pin creation: $e');
-      rethrow;
-    }
+    ref.read(pinsProvider.notifier).addPin(ref, pin);
 
     ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
@@ -503,12 +382,7 @@ class CanvasInteractionService {
     );
     // TODO: null artifact should create a note?
 
-    try {
-      ref.read(canvasObjectsProvider.notifier).addObject(ref, newObj);
-    } catch (e) {
-      debugPrint('Error in pipeHistory during pin creation: $e');
-      rethrow;
-    }
+    ref.read(canvasObjectsProvider.notifier).addObject(ref, newObj);
 
     ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }

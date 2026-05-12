@@ -147,24 +147,16 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   }
 
   void updateObject(WidgetRef ref, CanvasObject object) {
-    pipe(ref, () async {
-      updateObjectState(object);
-      repository.update(object);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in updateObject: $e');
-    });
+    updateObjectState(object);
+    repository.update(object);
   }
 
   void updateObjects(WidgetRef ref, {List<CanvasObject> objects = const []}) {
-    pipe(ref, () async {
-      for (final obj in objects) {
-        updateObjectState(obj);
-      }
+    for (final obj in objects) {
+      updateObjectState(obj);
+    }
 
-      repository.updateMultiple(objects.isEmpty ? state.objects : objects);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in updateObjects: $e');
-    });
+    repository.updateMultiple(objects.isEmpty ? state.objects : objects);
   }
 
   void addObjectState(CanvasObject object) {
@@ -176,119 +168,103 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   }
 
   void addObject(WidgetRef ref, CanvasObject object) {
-    pipe(ref, () async {
-      addObjectState(object);
-      repository.add([object]);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in addObject: $e');
-    });
+    addObjectState(object);
+    repository.add([object]);
   }
 
   void addObjects(WidgetRef ref, List<CanvasObject> objects) {
-    pipe(ref, () async {
-      List<CanvasObject> currentObjects = List.from(state.objects);
+    List<CanvasObject> currentObjects = List.from(state.objects);
 
-      for (final obj in objects) {
-        if (!currentObjects.contains(obj)) {
-          currentObjects.add(obj);
-        }
+    for (final obj in objects) {
+      if (!currentObjects.contains(obj)) {
+        currentObjects.add(obj);
       }
+    }
 
-      state = state.copyWith(objects: _sortObjects(currentObjects));
-      repository.add(objects);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in addObjects: $e');
-    });
+    state = state.copyWith(objects: _sortObjects(currentObjects));
+    repository.add(objects);
   }
 
   void deleteObject(WidgetRef ref, CanvasObject object) {
-    pipe(ref, () async {
-      final connectedArrows = state.objects
-          .where((o) =>
-              o.isArrow &&
-              (o.arrowProps.startObjectId == object.id ||
-                  o.arrowProps.endObjectId == object.id))
-          .toList();
+    final connectedArrows = state.objects
+        .where((o) =>
+            o.isArrow &&
+            (o.arrowProps.startObjectId == object.id ||
+                o.arrowProps.endObjectId == object.id))
+        .toList();
 
-      final objectsToDelete = [object, ...connectedArrows];
-      final deletedIds = objectsToDelete.map((o) => o.id).toSet();
+    final objectsToDelete = [object, ...connectedArrows];
+    final deletedIds = objectsToDelete.map((o) => o.id).toSet();
 
-      // Get the layer of the deleted object to adjust other objects
-      final deletedLayers = objectsToDelete.map((o) => o.layer).toList();
+    // Get the layer of the deleted object to adjust other objects
+    final deletedLayers = objectsToDelete.map((o) => o.layer).toList();
 
-      // Create updated objects list with adjusted layer numbers
-      final updatedObjects =
-          state.objects.where((o) => !deletedIds.contains(o.id)).map((o) {
-        // If this object's layer is higher than any deleted object's layer,
-        // decrease its layer number by 1 for each deleted object with lower layer
-        int layerAdjustment =
-            deletedLayers.where((layer) => layer < o.layer).length;
-        if (layerAdjustment > 0) {
-          o.layer = o.layer - layerAdjustment;
-        }
-        return o;
-      }).toList();
-
-      // Update state with adjusted objects
-      state = state.copyWith(
-        selectedObjects: [],
-        objects: updatedObjects,
-      );
-
-      // Get the actual pins and delete them
-      final pinsNotifier = ref.read(pinsProvider.notifier);
-      final pinsToDelete = ref
-          .read(pinsProvider)
-          .pins
-          .where((e) => e.pinnedObjectId == object.id)
-          .toList();
-
-      if (pinsToDelete.isNotEmpty) {
-        pinsNotifier.deletePins(ref, pinsToDelete);
+    // Create updated objects list with adjusted layer numbers
+    final updatedObjects =
+        state.objects.where((o) => !deletedIds.contains(o.id)).map((o) {
+      // If this object's layer is higher than any deleted object's layer,
+      // decrease its layer number by 1 for each deleted object with lower layer
+      int layerAdjustment =
+          deletedLayers.where((layer) => layer < o.layer).length;
+      if (layerAdjustment > 0) {
+        o.layer = o.layer - layerAdjustment;
       }
+      return o;
+    }).toList();
 
-      repository.deleteMultiple([object, ...connectedArrows]);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in deleteObject: $e');
-    });
+    // Update state with adjusted objects
+    state = state.copyWith(
+      selectedObjects: [],
+      objects: updatedObjects,
+    );
+
+    // Get the actual pins and delete them
+    final pinsNotifier = ref.read(pinsProvider.notifier);
+    final pinsToDelete = ref
+        .read(pinsProvider)
+        .pins
+        .where((e) => e.pinnedObjectId == object.id)
+        .toList();
+
+    if (pinsToDelete.isNotEmpty) {
+      pinsNotifier.deletePins(ref, pinsToDelete);
+    }
+
+    repository.deleteMultiple([object, ...connectedArrows]);
   }
 
   void deleteObjects(WidgetRef ref, List<CanvasObject> objects) {
     if (objects.isEmpty) return;
 
-    pipe(ref, () async {
-      final connectedArrows = state.objects
-          .where((o) =>
-              o.isArrow &&
-              (objects.any((obj) =>
-                  o.arrowProps.startObjectId == obj.id ||
-                  o.arrowProps.endObjectId == obj.id)))
-          .toList();
+    final connectedArrows = state.objects
+        .where((o) =>
+            o.isArrow &&
+            (objects.any((obj) =>
+                o.arrowProps.startObjectId == obj.id ||
+                o.arrowProps.endObjectId == obj.id)))
+        .toList();
 
-      final allObjectsToDelete = [...objects, ...connectedArrows];
-      final allDeletedIds = allObjectsToDelete.map((o) => o.id).toSet();
+    final allObjectsToDelete = [...objects, ...connectedArrows];
+    final allDeletedIds = allObjectsToDelete.map((o) => o.id).toSet();
 
-      final deletedLayers = allObjectsToDelete.map((o) => o.layer).toList();
+    final deletedLayers = allObjectsToDelete.map((o) => o.layer).toList();
 
-      final updatedObjects =
-          state.objects.where((o) => !allDeletedIds.contains(o.id)).map((o) {
-        int layerAdjustment =
-            deletedLayers.where((layer) => layer < o.layer).length;
-        if (layerAdjustment > 0) {
-          o.layer = o.layer - layerAdjustment;
-        }
-        return o;
-      }).toList();
+    final updatedObjects =
+        state.objects.where((o) => !allDeletedIds.contains(o.id)).map((o) {
+      int layerAdjustment =
+          deletedLayers.where((layer) => layer < o.layer).length;
+      if (layerAdjustment > 0) {
+        o.layer = o.layer - layerAdjustment;
+      }
+      return o;
+    }).toList();
 
-      state = state.copyWith(
-        selectedObjects: [],
-        objects: updatedObjects,
-      );
+    state = state.copyWith(
+      selectedObjects: [],
+      objects: updatedObjects,
+    );
 
-      repository.deleteMultiple(allObjectsToDelete);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in deleteObjects: $e');
-    });
+    repository.deleteMultiple(allObjectsToDelete);
   }
 
   void selectObject(CanvasObject object) {
@@ -406,25 +382,5 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     if (sameTypeObjects.length <= 1) return false;
 
     return sameTypeObjects.first.id != object.id;
-  }
-
-  Future<void> pipe(WidgetRef ref, Future<void> Function() operation) async {
-    if (HistoryService.pipeActive) {
-      await operation.call();
-    } else {
-      final projectId = ref.read(selectedProjectProvider)?.id;
-      if (projectId == null) return;
-
-      await HistoryService.pipe(
-        ref: ref,
-        projectId: projectId,
-        operation: operation,
-        serializer: CanvasSerializerService(
-          canvasId: canvasId,
-          projectId: projectId,
-          repository: ArtifactsRepository(projectId: projectId),
-        ),
-      );
-    }
   }
 }

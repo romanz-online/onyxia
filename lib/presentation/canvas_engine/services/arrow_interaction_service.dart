@@ -52,17 +52,11 @@ class ArrowInteractionService {
     arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
     arrowPreview.arrow.arrowProps.endTip = ArrowTip.triangle;
 
-    CanvasInteractionService.pipeHistory(
-        ref: ref,
-        operation: () async {
-          ref.read(pinsProvider.notifier).addPins(ref, pinsToAdd);
-          objectsToAdd.add(arrowPreview.arrow);
-          ref
-              .read(canvasObjectsProvider.notifier)
-              .addObjects(ref, objectsToAdd);
-          arrowPreview.arrow.pruneKeypoints();
-          ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
-        });
+    ref.read(pinsProvider.notifier).addPins(ref, pinsToAdd);
+    objectsToAdd.add(arrowPreview.arrow);
+    ref.read(canvasObjectsProvider.notifier).addObjects(ref, objectsToAdd);
+    arrowPreview.arrow.pruneKeypoints();
+    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
 
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     if (createdObject) {

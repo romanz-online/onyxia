@@ -42,23 +42,15 @@ class PinsNotifier extends Notifier<Pins> {
   }
 
   void updatePin(WidgetRef ref, Pin pin) {
-    pipe(ref, () async {
-      updatePinState(pin);
-      repository.update(pin);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in updatePin: $e');
-    });
+    updatePinState(pin);
+    repository.update(pin);
   }
 
   void updatePins(WidgetRef ref, List<Pin> pins) {
-    pipe(ref, () async {
-      for (final pin in pins) {
-        updatePinState(pin);
-      }
-      repository.updateMultiple(pins);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in updatePins: $e');
-    });
+    for (final pin in pins) {
+      updatePinState(pin);
+    }
+    repository.updateMultiple(pins);
   }
 
   void addPinState(Pin pin) {
@@ -68,66 +60,30 @@ class PinsNotifier extends Notifier<Pins> {
   }
 
   void addPin(WidgetRef ref, Pin pin) {
-    pipe(ref, () async {
-      addPinState(pin);
-      repository.add([pin]);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in addPin: $e');
-    });
+    addPinState(pin);
+    repository.add([pin]);
   }
 
   void addPins(WidgetRef ref, List<Pin> pins) {
-    pipe(ref, () async {
-      for (final pin in pins) {
-        addPinState(pin);
-      }
-      repository.add(pins);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in addPins: $e');
-    });
+    for (final pin in pins) {
+      addPinState(pin);
+    }
+    repository.add(pins);
   }
 
   void deletePin(WidgetRef ref, Pin pin) {
-    pipe(ref, () async {
-      state = state.copyWith(
-        pins: state.pins.where((o) => o.id != pin.id).toList(),
-      );
-      repository.delete(pin);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in deletePin: $e');
-    });
+    state = state.copyWith(
+      pins: state.pins.where((o) => o.id != pin.id).toList(),
+    );
+    repository.delete(pin);
   }
 
   void deletePins(WidgetRef ref, List<Pin> pins) {
     if (pins.isEmpty) return;
 
-    pipe(ref, () async {
-      state = state.copyWith(
-        pins: state.pins.where((o) => !pins.contains(o)).toList(),
-      );
-      repository.deleteMultiple(pins);
-    }).catchError((e, stack) {
-      debugPrint('pipe error in deletePins: $e');
-    });
-  }
-
-  Future<void> pipe(WidgetRef ref, Future<void> Function() operation) async {
-    if (HistoryService.pipeActive) {
-      await operation.call();
-    } else {
-      final projectId = ref.read(selectedProjectProvider)?.id;
-      if (projectId == null) return;
-
-      await HistoryService.pipe(
-        ref: ref,
-        projectId: projectId,
-        operation: operation,
-        serializer: CanvasSerializerService(
-          canvasId: canvasId,
-          projectId: projectId,
-          repository: ArtifactsRepository(projectId: projectId),
-        ),
-      );
-    }
+    state = state.copyWith(
+      pins: state.pins.where((o) => !pins.contains(o)).toList(),
+    );
+    repository.deleteMultiple(pins);
   }
 }

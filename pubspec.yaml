@@ -45,7 +45,6 @@ dependencies:
   http: ^1.2.0
   vector_math: any
   collection: ^1.19.1
-  json_patch: ^3.0.0
   lottie: ^3.3.0
   web: ^1.0.0
   speech_balloon: ^0.0.4
