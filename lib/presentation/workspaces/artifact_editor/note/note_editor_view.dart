@@ -138,7 +138,12 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       data: (state) {
         final controller = state.bardController;
         if (controller == null) {
-          return const Center(child: Text('Document not initialized'));
+          return const Center(
+            child: Text(
+              'Document not initialized',
+              style: NarwhalTextStyle(),
+            ),
+          );
         }
 
         WidgetsBinding.instance.addPostFrameCallback((_) {

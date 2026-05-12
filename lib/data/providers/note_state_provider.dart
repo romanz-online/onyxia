@@ -37,6 +37,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   String? _projectId;
   late NoteArtifact _note;
   BardController? _controller;
+  VoidCallback? _controllerListener;
   FocusNode? _focusNode;
   Timer? _debounceTimer;
 
@@ -49,7 +50,21 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
 
     ref.onDispose(() {
       _debounceTimer?.cancel();
-      _controller?.dispose();
+      final controller = _controller;
+      final listener = _controllerListener;
+      _controller = null;
+      _controllerListener = null;
+      if (controller != null) {
+        // Detach our own listener synchronously so it can't fire on a
+        // disposed notifier between now and the deferred dispose below.
+        if (listener != null) controller.removeListener(listener);
+        // Defer dispose to the next frame so consumer widgets (BardEditor)
+        // can detach their own listeners on a still-live controller during
+        // their dispose() / didUpdateWidget().
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          controller.dispose();
+        });
+      }
     });
 
     if (item is! NoteArtifact ||
@@ -73,9 +88,16 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
         _note;
 
     final controller = BardController(text: latestNote.content);
-    _controller = controller;
 
-    controller.addListener(() {
+    // If the notifier was disposed (or rebuilt) while we were awaiting the
+    // document, drop the just-created controller and bail — touching state
+    // here would mutate a disposed notifier.
+    if (!ref.mounted) {
+      controller.dispose();
+      return;
+    }
+
+    listener() {
       final current = state.value;
       if (current == null || current.note == null) return;
       final updatedNote = current.note!.copyWith(content: controller.text);
@@ -84,7 +106,11 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
       if (ref.read(editorSaveModeProvider) == SaveMode.auto) {
         _debounceSave();
       }
-    });
+    }
+
+    _controller = controller;
+    _controllerListener = listener;
+    controller.addListener(listener);
 
     state = AsyncValue.data(NoteState(
       note: latestNote,
