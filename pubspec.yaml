@@ -39,7 +39,6 @@ dependencies:
   contextmenu: ^3.0.0
   file_picker: ^10.1.2
   super_drag_and_drop: ^0.8.24
-  video_player: ^2.8.2
   dotted_border: ^2.1.0
   url_launcher: ^6.3.1
   intl: ^0.19.0
@@ -57,6 +56,7 @@ dependencies:
     path: lib/vendor/touchable
   super_tree:
     path: lib/vendor/super_tree
+  gap: ^3.0.1
 
 dependency_overrides:
   super_tree:

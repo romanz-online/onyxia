@@ -2,7 +2,8 @@ import 'package:onyxia/export.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 /// Provider for managing app theme (light/dark mode)
-final themeProvider = StateNotifierProvider<ThemeNotifier, bool>((ref) => ThemeNotifier());
+final themeProvider =
+    StateNotifierProvider<ThemeNotifier, bool>((ref) => ThemeNotifier());
 
 /// Notifier class to handle theme state changes
 class ThemeNotifier extends StateNotifier<bool> {
@@ -29,13 +30,8 @@ class ThemeNotifier extends StateNotifier<bool> {
 
   /// Save theme preference
   Future<void> _saveThemePreference() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setBool(_themePreferenceKey, state);
-    } catch (e) {
-      debugPrint('ThemeNotifier: Error saving theme preference - $e');
-      // Handle error silently - will be restored on next app launch
-    }
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_themePreferenceKey, state);
   }
 
   /// Toggle between light and dark mode

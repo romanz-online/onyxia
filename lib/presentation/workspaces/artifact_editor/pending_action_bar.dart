@@ -23,7 +23,8 @@ class _PendingActionBar extends StatelessWidget {
                 spreadRadius: 0,
               ),
             ],
-            border: Border.all(color: ThemeHelper.neutral200(context), width: 1),
+            border:
+                Border.all(color: ThemeHelper.neutral200(context), width: 1),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,23 +51,16 @@ class NotifyChangesBar extends StatelessWidget {
   final VoidCallback onNotify;
   final VoidCallback onCancel;
 
-  const NotifyChangesBar({super.key, required this.onNotify, required this.onCancel});
+  const NotifyChangesBar(
+      {super.key, required this.onNotify, required this.onCancel});
 
   @override
   Widget build(BuildContext context) {
     return _PendingActionBar(
       label: 'Notify users of your changes?',
       actions: [
-        NarwhalButton(
-          text: 'Cancel',
-          onTap: onCancel,
-          type: NarwhalButtonType.light,
-        ),
-        NarwhalButton(
-          text: 'Notify',
-          onTap: onNotify,
-          type: NarwhalButtonType.primary,
-        ),
+        OnyxiaButton(label: 'Cancel', onTap: onCancel),
+        OnyxiaButton(label: 'Notify', onTap: onNotify),
       ],
     );
   }
@@ -89,16 +83,8 @@ class SaveChangesBar extends StatelessWidget {
     return _PendingActionBar(
       label: 'You\'ve made changes.',
       actions: [
-        NarwhalButton(
-          text: 'Reset',
-          onTap: onReset,
-          type: NarwhalButtonType.light,
-        ),
-        NarwhalButton(
-          text: 'Save',
-          onTap: onSave,
-          type: NarwhalButtonType.primary,
-        ),
+        OnyxiaButton(label: 'Reset', onTap: onReset),
+        OnyxiaButton(label: 'Save', onTap: onSave),
       ],
     );
   }

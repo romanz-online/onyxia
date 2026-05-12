@@ -412,7 +412,7 @@ class _CanvasCommentPinExpandedState
                   onPressed: _onMoreOptions,
                 ),
               ),
-              const SizedBox(width: 6),
+              const Gap(6),
               NarwhalIconButton(
                 icon: NarwhalIcons.close,
                 size: 30,
@@ -498,7 +498,7 @@ class _CanvasCommentPinExpandedState
                             color: ThemeHelper.neutral900(context),
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        const Gap(8),
                         if (timeAgo.isNotEmpty)
                           Text(
                             timeAgo,
@@ -803,9 +803,7 @@ class _CanvasCommentPinExpandedState
           .read(commentsProvider.notifier)
           .deleteSubComment(widget.comment.id, commentId);
     } else {
-      ref
-          .read(commentsProvider.notifier)
-          .deleteComment(commentId: commentId);
+      ref.read(commentsProvider.notifier).deleteComment(commentId: commentId);
       NarwhalToast.show(
         text: 'Comment removed',
         type: ToastType.info,

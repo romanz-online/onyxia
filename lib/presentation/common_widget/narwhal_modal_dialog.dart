@@ -1,7 +1,8 @@
 import 'package:onyxia/export.dart';
 
 class NarwhalModalInputDecoration {
-  static InputDecoration create(BuildContext context, {required String hintText}) {
+  static InputDecoration create(BuildContext context,
+      {required String hintText}) {
     return InputDecoration(
       hintText: hintText,
       hintStyle: NarwhalTextStyle(
@@ -11,7 +12,8 @@ class NarwhalModalInputDecoration {
       fillColor: ThemeHelper.neutral100(context),
       filled: true,
       enabledBorder: OutlineInputBorder(
-        borderSide: BorderSide(color: ThemeHelper.neutral400(context), width: 1),
+        borderSide:
+            BorderSide(color: ThemeHelper.neutral400(context), width: 1),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ThemeHelper.blue500(context), width: 1),
@@ -120,26 +122,22 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
                           Row(
                             children: widget.additionalLeftActions!,
                           ),
-                        if (widget.additionalLeftActions == null) SizedBox(), // Empty spacer when no left actions
+                        if (widget.additionalLeftActions == null)
+                          SizedBox(), // Empty spacer when no left actions
                         // Right side actions
                         Row(
                           children: [
                             if (widget.cancelButtonText != null) ...[
-                              NarwhalButton(
-                                text: widget.cancelButtonText!,
-                                type: NarwhalButtonType.secondary,
+                              OnyxiaButton(
+                                label: widget.cancelButtonText!,
                                 onTap: widget.onCancelPressed ??
-                                    () {
-                                      Navigator.of(context).pop();
-                                    },
+                                    Navigator.of(context).pop,
                               ),
                               const SizedBox(width: 20),
                             ],
-                            NarwhalButton(
-                              text: widget.actionButtonText,
-                              type: NarwhalButtonType.secondary,
+                            OnyxiaButton(
+                              label: widget.actionButtonText,
                               onTap: widget.onActionPressed,
-                              enabled: widget.onActionEnabled,
                             ),
                           ],
                         ),

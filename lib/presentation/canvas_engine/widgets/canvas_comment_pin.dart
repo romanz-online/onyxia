@@ -452,8 +452,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                               .read(userLookupProvider)
                               .getUserById(widget.comment.createdBy),
                           builder: (context, snapshot) {
-                            final user =
-                                snapshot.data ?? User.initial();
+                            final user = snapshot.data ?? User.initial();
                             final timeAgo = widget.comment.createdAt != null
                                 ? TimestampService.formatTimeAgo(
                                     widget.comment.createdAt!,
@@ -520,7 +519,6 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                       ),
                                                     ),
                                                     if (timeAgo.isNotEmpty) ...[
-                                                      // const SizedBox(width: 8),
                                                       Flexible(
                                                         child: Text(
                                                           timeAgo,
@@ -543,9 +541,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                     ],
                                                   ],
                                                 ),
-                                                // Small spacing between header and text
-                                                const SizedBox(height: 4),
-                                                // Comment text
+                                                const Gap(4),
                                                 Text(
                                                   widget.comment.text,
                                                   overflow: TextOverflow.fade,

@@ -240,7 +240,7 @@ class ArtifactObject extends ConsumerWidget {
               color: Colors.red,
               size: 24,
             ),
-            const SizedBox(height: 8),
+            const Gap(8),
             Text(
               'Note not found',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(

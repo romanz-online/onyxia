@@ -12,7 +12,8 @@ class InviteScreen extends ConsumerStatefulWidget {
   ConsumerState<InviteScreen> createState() => _InviteScreenState();
 }
 
-class _InviteScreenState extends ConsumerState<InviteScreen> with SingleTickerProviderStateMixin {
+class _InviteScreenState extends ConsumerState<InviteScreen>
+    with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
   Future<Project?>? _projectFuture;
@@ -72,7 +73,8 @@ class _InviteScreenState extends ConsumerState<InviteScreen> with SingleTickerPr
                   borderRadius: BorderRadius.circular(20.0),
                   boxShadow: [
                     BoxShadow(
-                      color: ThemeHelper.neutral900(context).withValues(alpha: 0.12),
+                      color: ThemeHelper.neutral900(context)
+                          .withValues(alpha: 0.12),
                       blurRadius: 10,
                       spreadRadius: 1,
                       offset: const Offset(10, 10),
@@ -153,13 +155,11 @@ class _InviteScreenState extends ConsumerState<InviteScreen> with SingleTickerPr
                         ),
                       ),
                       const SizedBox(height: 32),
-                      NarwhalButton(
-                        text: 'Sign in with Google',
-                        width: 220,
-                        leftIcon: NarwhalIcons.google,
-                        iconSafeMode: true,
-                        type: NarwhalButtonType.secondary,
-                        onTap: ref.read(currentUserProvider.notifier).signInWithGoogle,
+                      OnyxiaButton(
+                        label: 'Sign in with Google',
+                        onTap: ref
+                            .read(currentUserProvider.notifier)
+                            .signInWithGoogle,
                       ),
                     ],
                   ),

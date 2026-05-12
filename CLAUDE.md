@@ -87,16 +87,6 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
   Note: painters are **not** an exception — use `NarwhalPainter` which receives `BuildContext` directly.
 - **EXCEPTION — transparency**: `Colors.transparent` is always acceptable and requires no comment
 
-### Empty / Absent Widgets - CRITICAL RULE
-
-- **ALWAYS** use `nil` instead of `const SizedBox.shrink()` when a widget slot is intentionally empty or absent
-- `nil` is already a project dependency (`nil: ^1.1.1`) — import it via the project export if needed
-- **EXCEPTION — must return a renderable Widget**: Some contexts require a non-null, renderable widget.
-  In these cases `const SizedBox.shrink()` is correct:
-  - `ConsumerStatefulWidget.build()` / `StatefulWidget.build()` / `StatelessWidget.build()` return types — returning `nil` throws a type error
-  - Any parameter typed `Widget` (not `Widget?`) where `nil` would cause a null-safety or render error
-- Outside those exceptions: if a widget won't render anything, use `nil`, not `SizedBox.shrink()`
-
 ---
 
 ## Architecture Quick Reference

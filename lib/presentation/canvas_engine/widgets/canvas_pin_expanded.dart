@@ -424,7 +424,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                               iconSafeMode: true,
                               enabled: false,
                             ),
-                            const SizedBox(width: 8),
+                            const Gap(8),
                             Expanded(
                               child: _isEditing
                                   ? TextField(
@@ -491,7 +491,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                     size: 32,
                                     onPressed: () => _enterEditMode(artifact),
                                   ),
-                            const SizedBox(width: 6),
+                            const Gap(6),
                             NarwhalOverlay(
                               isOpen: _isPinActionMenuOpen,
                               onClose: () =>
@@ -509,7 +509,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                     isOpen: !_isPinActionMenuOpen),
                               ),
                             ),
-                            const SizedBox(width: 6),
+                            const Gap(6),
                             NarwhalIconButton(
                               icon: NarwhalIcons.close,
                               size: 32,
@@ -560,21 +560,19 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                         ),
                                       ),
                                     ),
-                                    const SizedBox(height: 8),
+                                    const Gap(8),
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       spacing: 8,
                                       children: [
-                                        NarwhalButton(
-                                          text: 'Cancel',
+                                        OnyxiaButton(
+                                          label: 'Cancel',
                                           onTap: () =>
                                               _exitEditMode(save: false),
-                                          type: NarwhalButtonType.light,
                                         ),
-                                        NarwhalButton(
-                                          text: 'Save',
+                                        OnyxiaButton(
+                                          label: 'Save',
                                           onTap: () => _saveChanges(artifact),
-                                          type: NarwhalButtonType.light,
                                         ),
                                       ],
                                     ),
