@@ -73,7 +73,6 @@ export 'package:flutter_riverpod/flutter_riverpod.dart' hide AsyncError;
 export 'package:uuid/uuid.dart';
 export 'package:go_router/go_router.dart';
 export 'package:supabase_flutter/supabase_flutter.dart' hide User;
-export 'package:contextmenu/contextmenu.dart';
 export 'package:flutter_svg/svg.dart';
 export 'package:super_tree/super_tree.dart';
 export 'package:file_picker/file_picker.dart';
