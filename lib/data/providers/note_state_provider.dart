@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/bard/bard.dart';
+import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
@@ -32,9 +32,8 @@ class NoteState {
   }
 }
 
-class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
+class NoteNotifier extends AsyncNotifier<NoteState> {
   String? _projectId;
-  late NoteArtifact _note;
   BardController? _controller;
   VoidCallback? _controllerListener;
   FocusNode? _focusNode;
@@ -42,12 +41,11 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   StreamSubscription<Artifact?>? _docSub;
 
   @override
-  AsyncValue<NoteState> build() {
+  Future<NoteState> build() async {
     final selectedNoteId = ref.watch(
       selectedArtifactProvider.select((a) => a is NoteArtifact ? a.id : null),
     );
-    _projectId =
-        ref.watch(selectedProjectProvider.select((p) => p?.id));
+    _projectId = ref.watch(selectedProjectProvider.select((p) => p?.id));
     final authState = ref.watch(authProvider);
 
     ref.onDispose(() {
@@ -74,34 +72,20 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
     if (selectedNoteId == null ||
         _projectId == null ||
         authState.value == null) {
-      _note = NoteArtifact();
-      return const AsyncValue.data(NoteState());
+      return const NoteState();
     }
 
-    _note = ref.read(selectedArtifactProvider) as NoteArtifact;
-    _initialize();
-    return const AsyncValue.loading();
-  }
-
-  // ===== SETUP =====
-
-  Future<void> _initialize() async {
+    final note = ref.read(selectedArtifactProvider) as NoteArtifact;
     final repo = ArtifactsRepository(projectId: _projectId);
     final latestNote =
-        await repo.getDocumentStream(_note.id).first as NoteArtifact? ?? _note;
+        await repo.getDocumentStream(note.id).first as NoteArtifact? ?? note;
     final myUserId = ref.read(currentUserProvider).value?.id;
 
-    if (!ref.mounted) return;
+    // If deps changed during the await, abort cleanly so we don't allocate a
+    // controller that escapes onDispose's reach.
+    if (!ref.mounted) return const NoteState();
 
     final controller = BardController(text: latestNote.content);
-
-    // If the notifier was disposed (or rebuilt) while we were awaiting the
-    // document, drop the just-created controller and bail â€” touching state
-    // here would mutate a disposed notifier.
-    if (!ref.mounted) {
-      controller.dispose();
-      return;
-    }
 
     listener() {
       final current = state.value;
@@ -121,7 +105,7 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
     // one of our saves and we skip it. Genuine remote edits (different user)
     // are applied — but deferred if the local user is mid-burst so we don't
     // yank text from under them.
-    _docSub = repo.getDocumentStream(_note.id).skip(1).listen((incoming) {
+    _docSub = repo.getDocumentStream(note.id).skip(1).listen((incoming) {
       if (incoming is! NoteArtifact) return;
       if (myUserId != null && incoming.updatedBy == myUserId) return;
       if (_debounceTimer?.isActive ?? false) return;
@@ -141,12 +125,12 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
           AsyncData(current.copyWith(note: incoming, isSavedRemotely: true));
     });
 
-    state = AsyncValue.data(NoteState(
+    return NoteState(
       note: latestNote,
       bardController: controller,
       focusNode: _focusNode,
       isSavedRemotely: true,
-    ));
+    );
   }
 
   // ===== FOCUS =====
@@ -166,10 +150,16 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   void updateTitle(String title) {
     final current = state.value;
     if (current == null || current.note == null) return;
+    final updatedNote = current.note!.copyWith(name: title);
     state = AsyncData(current.copyWith(
-      note: current.note!.copyWith(name: title),
+      note: updatedNote,
       isSavedRemotely: false,
     ));
+    // Propagate optimistically to artifactsProvider so selectedArtifactProvider's
+    // name-based lookup resolves immediately when the URL flips to the new name.
+    // updateItemState only mutates the local list — the debounced _saveDocument
+    // below handles repo persistence.
+    ref.read(artifactsProvider.notifier).updateItemState(updatedNote);
     _debounceSave(duration: _100ms);
   }
 
@@ -213,12 +203,11 @@ class NoteNotifier extends Notifier<AsyncValue<NoteState>> {
   }
 }
 
-/// Type alias for note state providers â€” use in widget signatures.
-typedef NoteStateProvider
-    = NotifierProvider<NoteNotifier, AsyncValue<NoteState>>;
+/// Type alias for note state providers — use in widget signatures.
+typedef NoteStateProvider = AsyncNotifierProvider<NoteNotifier, NoteState>;
 
 /// Creates a NoteNotifier for the currently selected Note item.
 final selectedNoteStateProvider =
-    NotifierProvider.autoDispose<NoteNotifier, AsyncValue<NoteState>>(
+    AsyncNotifierProvider.autoDispose<NoteNotifier, NoteState>(
   NoteNotifier.new,
 );

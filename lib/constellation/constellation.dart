@@ -58,8 +58,8 @@ class Constellation extends ConsumerStatefulWidget {
 
 class _ConstellationState extends ConsumerState<Constellation> {
   void _onNodeTap(String nodeId) {
-    final item =
-        ref.read(artifactsProvider).firstWhereOrNull((e) => e.name == nodeId);
+    final item = (ref.read(artifactsProvider).value ?? const <Artifact>[])
+        .firstWhereOrNull((e) => e.name == nodeId);
     if (item == null) return;
     final projectId = ref.read(selectedProjectProvider)?.id;
     context.go(item.navigationUrl(projectId ?? ''));
@@ -67,10 +67,9 @@ class _ConstellationState extends ConsumerState<Constellation> {
 
   @override
   Widget build(BuildContext context) {
-    final items = ref.watch(artifactsProvider);
-    // this order is correct and important to accurately update the graph
-    final isLoaded = ref.watch(artifactsLoadedProvider);
-    if (!isLoaded) return Center(child: NarwhalSpinner());
+    final async = ref.watch(artifactsProvider);
+    if (!async.hasValue) return Center(child: NarwhalSpinner());
+    final items = async.value!;
 
     final layout = _buildWikiLinks(context, items);
 

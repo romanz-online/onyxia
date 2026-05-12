@@ -15,7 +15,10 @@ class TreeTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final nodeData = ref.watch(
       artifactsProvider.select(
-        (items) => items.firstWhere((n) => n.id == node.data.id, orElse: () => node.data),
+        (async) => (async.value ?? const <Artifact>[]).firstWhere(
+          (n) => n.id == node.data.id,
+          orElse: () => node.data,
+        ),
       ),
     );
 

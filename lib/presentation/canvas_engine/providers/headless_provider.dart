@@ -270,7 +270,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
   }
 
   List<Artifact>? _findChildren(String parentArtifactId, WidgetRef ref) {
-    final notes = ref.read(artifactsProvider);
+    final notes = ref.read(artifactsProvider).value ?? const <Artifact>[];
 
     // Filter notes where parentId matches the source item
     final children =

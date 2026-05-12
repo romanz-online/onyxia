@@ -159,8 +159,9 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
     try {
       final double scale =
           widget.transformationController.value.getMaxScaleOnAxis();
-      final notes = ref.watch(artifactsProvider);
-      final notesLoaded = ref.watch(artifactsLoadedProvider);
+      final notesAsync = ref.watch(artifactsProvider);
+      final notesLoaded = notesAsync.hasValue;
+      final notes = notesAsync.value ?? const <Artifact>[];
       final note = notes.firstWhereOrNull(
         (req) => req.id == widget.pin.linkedArtifactId,
       );

@@ -12,8 +12,7 @@ class ItemTitleValidationService {
     }
     final stripped = correctTitle(value);
     if (stripped.isNotEmpty &&
-        ref
-            .read(artifactsProvider)
+        (ref.read(artifactsProvider).value ?? const <Artifact>[])
             .any((e) => e.name == stripped && e.id != excludeId)) {
       return 'An item with this title already exists';
     }

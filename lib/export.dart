@@ -92,7 +92,7 @@ export 'package:onyxia/data/models/artifacts/canvas/subobjects/arrow.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/image.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/brush.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/artifact_subobject.dart';
-export 'package:onyxia/data/models/project/project.dart';
+export 'package:onyxia/data/models/project.dart';
 export 'package:onyxia/data/models/artifacts/artifact_type.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
 

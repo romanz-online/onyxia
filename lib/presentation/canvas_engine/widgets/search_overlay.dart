@@ -66,7 +66,7 @@ class _CanvasSearchOverlayState extends ConsumerState<CanvasSearchOverlay> {
   }
 
   List<Artifact> _getFilteredItems() {
-    final items = ref.watch(artifactsProvider);
+    final items = ref.watch(artifactsProvider).value ?? const <Artifact>[];
     final searchText = _controller.text;
 
     if (searchText.isEmpty) return items;

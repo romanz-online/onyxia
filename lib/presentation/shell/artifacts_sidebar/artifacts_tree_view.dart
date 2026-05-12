@@ -93,11 +93,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
   @override
   Widget build(BuildContext context) {
-    final itemNodes = ref.watch(artifactsProvider);
-    final isDataLoaded = ref.watch(artifactsLoadedProvider);
-    final projectId =
-        ref.watch(selectedProjectProvider.select((p) => p?.id));
-    final hasError = ref.watch(artifactsErrorProvider(projectId ?? ''));
+    final async = ref.watch(artifactsProvider);
+    final itemNodes = async.value ?? const <Artifact>[];
 
     // Detect tree changes and schedule a controller sync after this frame
     final newRoots = populateTree(itemNodes);
@@ -105,7 +102,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _syncTree(newRoots));
     }
 
-    if (hasError)
+    if (async.hasError)
       return Center(
         child: Text(
           'Error loading items. Please refresh the page.',
@@ -113,7 +110,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
         ),
       );
 
-    if (!isDataLoaded) return Center(child: NarwhalSpinner());
+    if (!async.hasValue) return Center(child: NarwhalSpinner());
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 

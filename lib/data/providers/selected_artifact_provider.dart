@@ -27,5 +27,6 @@ class _SelectedArtifactNameFromUrlNotifier extends Notifier<String?> {
 final selectedArtifactProvider = Provider<Artifact?>((ref) {
   final name = ref.watch(_selectedArtifactNameFromUrlProvider);
   if (name == null || name.isEmpty) return null;
-  return ref.watch(artifactsProvider).firstWhereOrNull((a) => a.name == name);
+  return (ref.watch(artifactsProvider).value ?? const <Artifact>[])
+      .firstWhereOrNull((a) => a.name == name);
 });

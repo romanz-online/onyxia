@@ -66,9 +66,8 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       _controller.text = widget.item.name;
       return;
     }
-    ref
-        .read(artifactsProvider.notifier)
-        .updateItem(widget.item.copyWith(name: newName));
+    final renamed = widget.item.copyWith(name: newName);
+    ref.read(artifactsProvider.notifier).updateItem(renamed);
 
     if (context.mounted) {
       final urlSelectedId =
@@ -76,7 +75,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       if (urlSelectedId == widget.item.name) {
         final projectId =
             ref.read(selectedProjectProvider.select((p) => p?.id));
-        context.go(widget.item.navigationUrl(projectId));
+        context.go(renamed.navigationUrl(projectId));
       }
     }
   }

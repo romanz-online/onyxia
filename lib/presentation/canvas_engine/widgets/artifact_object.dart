@@ -10,8 +10,9 @@ class ArtifactObject extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final notes = ref.watch(artifactsProvider);
-    final notesLoaded = ref.watch(artifactsLoadedProvider);
+    final notesAsync = ref.watch(artifactsProvider);
+    final notesLoaded = notesAsync.hasValue;
+    final notes = notesAsync.value ?? const <Artifact>[];
 
     // Find the note by artifactId from the canvas object
     final String artifactId = canvasObject.artifactProps.artifactId;

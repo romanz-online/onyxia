@@ -337,7 +337,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       final double scale =
           widget.transformationController.value.getMaxScaleOnAxis();
 
-      final artifact = ref.watch(artifactsProvider).firstWhere(
+      final artifact = (ref.watch(artifactsProvider).value ?? const <Artifact>[])
+          .firstWhere(
             (req) => req.id == widget.pin.linkedArtifactId,
             orElse: () => NoteArtifact(),
           );
