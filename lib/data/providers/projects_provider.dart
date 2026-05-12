@@ -15,13 +15,9 @@ class ProjectsNotifier extends StreamNotifier<List<Project>> {
     return _repository.getStream();
   }
 
-  void addProject(Project project) {
-    _repository.add([project]);
-  }
+  void addProject(Project project) => _repository.add([project]);
 
-  void deleteProject(String id) {
-    _repository.delete(id);
-  }
+  void deleteProject(String id) => _repository.delete(id);
 
   void renameProject(String id, String newName) {
     final p = state.value?.firstWhereOrNull((e) => e.id == id);

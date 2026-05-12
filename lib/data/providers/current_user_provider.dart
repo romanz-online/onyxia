@@ -5,8 +5,8 @@ import 'package:onyxia/export.dart';
 /// or if no project is selected.
 final currentUserRoleProvider = Provider<UserRole?>((ref) {
   final userId = ref.watch(currentUserProvider.select((u) => u.value?.id));
-  final members = ref.watch(projectMembersProvider(null)
-      .select((async) => async.asData?.value ?? []));
+  final members = ref.watch(
+      projectMembersProvider.select((async) => async.asData?.value ?? []));
   return members.firstWhereOrNull((m) => m.userId == userId)?.role;
 });
 
