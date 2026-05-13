@@ -2,8 +2,15 @@
 
 class MasterSidebar extends ConsumerWidget {
   final String projectId;
+  final ValueNotifier<bool> isArtifactsSidebarCollapsed;
+  final ValueNotifier<bool> animateNextCollapseChange;
 
-  const MasterSidebar({super.key, required this.projectId});
+  const MasterSidebar({
+    super.key,
+    required this.projectId,
+    required this.isArtifactsSidebarCollapsed,
+    required this.animateNextCollapseChange,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -22,6 +29,21 @@ class MasterSidebar extends ConsumerWidget {
           spacing: 4,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            ValueListenableBuilder<bool>(
+              valueListenable: isArtifactsSidebarCollapsed,
+              builder: (context, collapsed, _) {
+                return NarwhalIconButton(
+                  icon: collapsed
+                      ? NarwhalIcons.arrowRightExpand
+                      : NarwhalIcons.arrowLeftCollapse,
+                  tooltip: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
+                  onPressed: () {
+                    animateNextCollapseChange.value = true;
+                    isArtifactsSidebarCollapsed.value = !collapsed;
+                  },
+                );
+              },
+            ),
             if (projectId.isNotEmpty) ...[
               NarwhalIconButton(
                 icon: NarwhalIcons.dashboard,

@@ -1,77 +1,114 @@
 import 'package:onyxia/export.dart';
 
-class ArtifactsSidebar extends StatefulWidget {
-  const ArtifactsSidebar({super.key});
-
-  @override
-  State<ArtifactsSidebar> createState() => _ArtifactsSidebarState();
-}
-
-class _ArtifactsSidebarState extends State<ArtifactsSidebar> {
+class ArtifactsSidebar extends StatelessWidget {
   static const double _minWidth = 200;
-  final _width = ValueNotifier<double>(260);
+  static const double _defaultWidth = 260;
 
-  @override
-  void dispose() {
-    _width.dispose();
-    super.dispose();
-  }
+  final ValueNotifier<double> width;
+  final ValueNotifier<bool> isCollapsed;
+  final ValueNotifier<bool> animateNextCollapseChange;
+
+  const ArtifactsSidebar({
+    super.key,
+    required this.width,
+    required this.isCollapsed,
+    required this.animateNextCollapseChange,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<double>(
-      valueListenable: _width,
-      builder: (context, width, _) {
-        return SizedBox(
-          width: width,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                color: ThemeHelper.neutral100(context),
-                child: Column(
-                  children: [
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(right: 7),
-                      child: const ArtifactsSidebarHeader(),
-                    ),
-                    Expanded(
-                      child: Container(
-                        width: double.infinity,
+    return AnimatedBuilder(
+      animation: Listenable.merge([
+        width,
+        isCollapsed,
+        animateNextCollapseChange,
+      ]),
+      builder: (context, _) {
+        final w = width.value;
+        final collapsed = isCollapsed.value;
+        final animate = animateNextCollapseChange.value;
+
+        return ClipRect(
+          child: AnimatedSize(
+            duration: animate
+                ? const Duration(milliseconds: 150)
+                : Duration.zero,
+            curve: Curves.easeInOut,
+            alignment: Alignment.centerLeft,
+            onEnd: () {
+              if (animateNextCollapseChange.value) {
+                animateNextCollapseChange.value = false;
+              }
+            },
+            child: SizedBox(
+              width: collapsed ? 0 : w,
+              child: OverflowBox(
+                alignment: Alignment.topLeft,
+                minWidth: w,
+                maxWidth: w,
+                child: SizedBox(
+                  width: w,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
                         color: ThemeHelper.neutral100(context),
-                        padding: const EdgeInsets.only(
-                          left: 6,
-                          top: 6,
-                          bottom: 6,
-                          right: 13,
+                        child: Column(
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.only(right: 7),
+                              child: const ArtifactsSidebarHeader(),
+                            ),
+                            Expanded(
+                              child: Container(
+                                width: double.infinity,
+                                color: ThemeHelper.neutral100(context),
+                                padding: const EdgeInsets.only(
+                                  left: 6,
+                                  top: 6,
+                                  bottom: 6,
+                                  right: 13,
+                                ),
+                                child: ArtifactsTreeView(),
+                              ),
+                            ),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.only(right: 7),
+                              child: const ArtifactsSidebarFooter(),
+                            ),
+                          ],
                         ),
-                        child: ArtifactsTreeView(),
                       ),
-                    ),
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(right: 7),
-                      child: const ArtifactsSidebarFooter(),
-                    ),
-                  ],
+                      Positioned(
+                        right: 2,
+                        top: 0,
+                        bottom: 0,
+                        width: 9,
+                        child: _ResizeDivider(
+                          onDragStart: () {
+                            animateNextCollapseChange.value = false;
+                          },
+                          onDragUpdate: (delta, globalDx) {
+                            final maxWidth =
+                                MediaQuery.of(context).size.width - 46 - 300;
+                            width.value = (width.value + delta).clamp(
+                              _minWidth,
+                              maxWidth,
+                            );
+                            if (globalDx <= 84) {
+                              width.value = _defaultWidth;
+                              isCollapsed.value = true;
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              Positioned(
-                right: 2,
-                top: 0,
-                bottom: 0,
-                width: 9,
-                child: _ResizeDivider(
-                  onDragUpdate: (delta) {
-                    final maxWidth =
-                        MediaQuery.of(context).size.width - 46 - 300;
-                    _width.value =
-                        (_width.value + delta).clamp(_minWidth, maxWidth);
-                  },
-                ),
-              ),
-            ],
+            ),
           ),
         );
       },
@@ -80,9 +117,10 @@ class _ArtifactsSidebarState extends State<ArtifactsSidebar> {
 }
 
 class _ResizeDivider extends StatefulWidget {
-  final void Function(double delta) onDragUpdate;
+  final VoidCallback onDragStart;
+  final void Function(double delta, double globalDx) onDragUpdate;
 
-  const _ResizeDivider({required this.onDragUpdate});
+  const _ResizeDivider({required this.onDragStart, required this.onDragUpdate});
 
   @override
   State<_ResizeDivider> createState() => _ResizeDividerState();
@@ -99,9 +137,14 @@ class _ResizeDividerState extends State<_ResizeDivider> {
           cursor: SystemMouseCursors.resizeLeftRight,
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onHorizontalDragStart: (_) => setState(() => _isDragging = true),
-            onHorizontalDragUpdate: (details) =>
-                widget.onDragUpdate(details.delta.dx),
+            onHorizontalDragStart: (_) {
+              widget.onDragStart();
+              setState(() => _isDragging = true);
+            },
+            onHorizontalDragUpdate: (details) => widget.onDragUpdate(
+              details.delta.dx,
+              details.globalPosition.dx,
+            ),
             onHorizontalDragEnd: (_) => setState(() => _isDragging = false),
             child: Center(
               child: AnimatedContainer(

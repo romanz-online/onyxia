@@ -60,7 +60,8 @@
       "Bash(git show d3c8e2d3268f754e3461fd005a6d77c75336ff3e^..d3c8e2d3268f754e3461fd005a6d77c75336ff3e --no-merges -- lib/presentation/screens/canvas/services/interaction_service.dart lib/presentation/screens/canvas/services/mermaid/mermaid_to_canvas_converter.dart)",
       "Bash(grep -E \"\\\\.\\(dart\\)$\")",
       "WebFetch(domain:developer.atlassian.com)",
-      "WebFetch(domain:forum.figma.com)"
+      "WebFetch(domain:forum.figma.com)",
+      "Bash(git check-ignore *)"
     ],
     "deny": []
   },

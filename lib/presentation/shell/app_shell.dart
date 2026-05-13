@@ -11,6 +11,21 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class _AppShellState extends ConsumerState<AppShell> {
+  static const double _defaultArtifactsSidebarWidth = 260;
+  final _artifactsSidebarWidth = ValueNotifier<double>(
+    _defaultArtifactsSidebarWidth,
+  );
+  final _isArtifactsSidebarCollapsed = ValueNotifier<bool>(false);
+  final _animateNextCollapseChange = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _artifactsSidebarWidth.dispose();
+    _isArtifactsSidebarCollapsed.dispose();
+    _animateNextCollapseChange.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.watch(currentUserProvider);
@@ -36,8 +51,16 @@ class _AppShellState extends ConsumerState<AppShell> {
         children: [
           Row(
             children: [
-              MasterSidebar(projectId: widget.projectId),
-              const ArtifactsSidebar(),
+              MasterSidebar(
+                projectId: widget.projectId,
+                isArtifactsSidebarCollapsed: _isArtifactsSidebarCollapsed,
+                animateNextCollapseChange: _animateNextCollapseChange,
+              ),
+              ArtifactsSidebar(
+                width: _artifactsSidebarWidth,
+                isCollapsed: _isArtifactsSidebarCollapsed,
+                animateNextCollapseChange: _animateNextCollapseChange,
+              ),
               Expanded(
                 child: ColoredBox(
                   color: ThemeHelper.neutral100(context),
