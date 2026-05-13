@@ -396,7 +396,7 @@ class _CanvasCommentPinExpandedState
                   ),
                 ),
               ),
-              NarwhalOverlay(
+              OnyxiaOverlay(
                 isOpen: _isCommentActionMenuOpen,
                 onClose: () => _toggleCommentActionMenu(isOpen: false),
                 closingDelay: const Duration(milliseconds: 100),
@@ -511,7 +511,7 @@ class _CanvasCommentPinExpandedState
                   ],
                 ),
               ),
-              NarwhalOverlay(
+              OnyxiaOverlay(
                 isOpen: _openCommentMenuId == commentId,
                 onClose: () => setState(() => _openCommentMenuId = null),
                 closingDelay: const Duration(milliseconds: 100),

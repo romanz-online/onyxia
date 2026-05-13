@@ -20,7 +20,7 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
     final projectId = ref.read(selectedProjectProvider)?.id;
     if (projectId == null) return const SizedBox.shrink();
 
-    return NarwhalOverlay(
+    return OnyxiaOverlay(
       isOpen: _isMenuOpen,
       onClose: () => _setMenuOpen(false),
       anchor: const Aligned(

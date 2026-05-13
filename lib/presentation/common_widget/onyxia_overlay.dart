@@ -1,14 +1,10 @@
 import 'package:onyxia/export.dart';
 
-/// @ponder ponder/NarwhalOverlay.gif
-///
-/// Anchors a follower widget to [child] using flutter_portal, and runs a
-/// non-consuming full-screen pointer listener so clicks outside both the
-/// trigger and the follower can close the overlay while still hitting their
-/// underlying targets (e.g. clicking another button outside the overlay both
-/// closes it AND fires that button's onPressed).
-class NarwhalOverlay extends StatefulWidget {
-  final Widget Function(BuildContext context, VoidCallback closeOverlay) builder;
+class OnyxiaOverlay extends StatefulWidget {
+  final Widget Function(
+    BuildContext context,
+    VoidCallback closeOverlay,
+  ) builder;
   final Widget child;
   final bool isOpen;
   final VoidCallback? onClose;
@@ -16,7 +12,7 @@ class NarwhalOverlay extends StatefulWidget {
   final bool autoClose;
   final Duration? closingDelay;
 
-  const NarwhalOverlay({
+  const OnyxiaOverlay({
     super.key,
     required this.builder,
     required this.child,
@@ -37,10 +33,10 @@ class NarwhalOverlay extends StatefulWidget {
   });
 
   @override
-  State<NarwhalOverlay> createState() => _NarwhalOverlayState();
+  State<OnyxiaOverlay> createState() => _OnyxiaOverlayState();
 }
 
-class _NarwhalOverlayState extends State<NarwhalOverlay> {
+class _OnyxiaOverlayState extends State<OnyxiaOverlay> {
   final GlobalKey _triggerKey = GlobalKey();
   final GlobalKey _followerKey = GlobalKey();
   OverlayEntry? _outsideListenerEntry;
@@ -57,7 +53,7 @@ class _NarwhalOverlayState extends State<NarwhalOverlay> {
   }
 
   @override
-  void didUpdateWidget(NarwhalOverlay oldWidget) {
+  void didUpdateWidget(OnyxiaOverlay oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isOpen && !oldWidget.isOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -190,101 +186,3 @@ class _OutsideClickListenerState extends State<_OutsideClickListener> {
     );
   }
 }
-
-/*
-================================================================================
-                              HOW TO USE NARWHALOVERLAY
-================================================================================
-
-NarwhalOverlay anchors a follower widget to a trigger using flutter_portal, and
-runs a non-consuming full-screen pointer listener so taps outside both close
-the overlay without swallowing the gesture.
-
-BASIC USAGE:
------------
-class MyDropdownWidget extends StatefulWidget {
-  @override
-  State<MyDropdownWidget> createState() => _MyDropdownWidgetState();
-}
-
-class _MyDropdownWidgetState extends State<MyDropdownWidget> {
-  bool _isOpen = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return NarwhalOverlay(
-      isOpen: _isOpen,
-      onClose: () => setState(() => _isOpen = false),
-      builder: (context, closeOverlay) {
-        return Material(
-          elevation: 8,
-          borderRadius: BorderRadius.circular(8),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Overlay Content'),
-                ElevatedButton(
-                  onPressed: closeOverlay,
-                  child: const Text('Close'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-      child: ElevatedButton(
-        onPressed: () => setState(() => _isOpen = !_isOpen),
-        child: const Text('Toggle Overlay'),
-      ),
-    );
-  }
-}
-
-CUSTOM ANCHORING:
------------------
-By default the follower's top-left aligns to the trigger's bottom-left with a
-+4px vertical gap, and falls back to right-aligned (top-right to bottom-right)
-when the default would overflow the viewport. To override:
-
-NarwhalOverlay(
-  anchor: const Aligned(
-    follower: Alignment.bottomLeft,
-    target: Alignment.topLeft,
-    offset: Offset(0, -4), // open upward instead
-  ),
-  // ...
-)
-
-PARAMETERS:
------------
-- builder: Function that builds the overlay content. Receives context and
-  closeOverlay callback. Return the menu content directly (no Positioned).
-- child: The trigger widget (button, icon, etc.).
-- isOpen: Whether the overlay is visible.
-- onClose: Called when the overlay closes.
-- anchor: flutter_portal Anchor (default: bottom-left with right-aligned backup).
-- autoClose: Whether to close on tap outside or focus loss (default: true).
-- closingDelay: Optional delay before closing.
-
-KEY FEATURES:
-------------
-- Non-consuming outside-tap detection (clicks outside still hit their target).
-- Declarative anchoring via flutter_portal (re-anchors on scroll/resize).
-- Auto-close on GoRouter navigation.
-- Focus management for keyboard navigation.
-
-WHEN TO USE:
------------
-- Dropdown menus and context menus
-- User profile menus, settings panels
-- Any anchored overlay that shouldn't block outside interaction
-
-WHEN NOT TO USE:
----------------
-- Modal dialogs (use NarwhalModalDialog + showDialog)
-- Tooltips (use Tooltip)
-- Notifications (use NarwhalToast)
-================================================================================
-*/

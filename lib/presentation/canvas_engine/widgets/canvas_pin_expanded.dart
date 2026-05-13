@@ -311,11 +311,11 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       final double scale =
           widget.transformationController.value.getMaxScaleOnAxis();
 
-      final artifact = (ref.watch(artifactsProvider).value ?? const <Artifact>[])
-          .firstWhere(
-            (req) => req.id == widget.pin.linkedArtifactId,
-            orElse: () => NoteArtifact(),
-          );
+      final artifact =
+          (ref.watch(artifactsProvider).value ?? const <Artifact>[]).firstWhere(
+        (req) => req.id == widget.pin.linkedArtifactId,
+        orElse: () => NoteArtifact(),
+      );
 
       // Auto-enter edit mode for new pins (but not right after saving)
       if (!_isEditing && _isNewPin && !_saving) {
@@ -467,7 +467,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                     onPressed: () => _enterEditMode(artifact),
                                   ),
                             const Gap(6),
-                            NarwhalOverlay(
+                            OnyxiaOverlay(
                               isOpen: _isPinActionMenuOpen,
                               onClose: () =>
                                   _togglePinActionMenu(isOpen: false),
