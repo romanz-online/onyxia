@@ -42,7 +42,6 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       selectedArtifactProvider.select((a) => a is NoteArtifact ? a.id : null),
     );
     _projectId = ref.watch(selectedProjectProvider.select((p) => p?.id));
-    final authState = ref.watch(authProvider);
 
     ref.onDispose(() {
       _debounceTimer?.cancel();
@@ -65,9 +64,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       }
     });
 
-    if (selectedNoteId == null ||
-        _projectId == null ||
-        authState.value == null) {
+    if (selectedNoteId == null || _projectId == null) {
       return const NoteState();
     }
 

@@ -1,7 +1,7 @@
 import 'package:onyxia/export.dart';
 
 final renameArtifactIdProvider =
-    NotifierProvider<RenameArtifactIdNotifier, String?>(
+    NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
   RenameArtifactIdNotifier.new,
 );
 

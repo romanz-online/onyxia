@@ -26,7 +26,8 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
   List<Artifact> get _items => state.value ?? const <Artifact>[];
 
-  Artifact? getItemById(String id) => _items.firstWhereOrNull((e) => e.id == id);
+  Artifact? getItemById(String id) =>
+      _items.firstWhereOrNull((e) => e.id == id);
 
   Future<void> addItems(List<Artifact> items) async {
     if (items.isEmpty) return;
@@ -56,7 +57,8 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     }
 
     state = AsyncData(
-        _items.where((e) => !idsToDelete.contains(e.id)).toList());
+      _items.where((e) => !idsToDelete.contains(e.id)).toList(),
+    );
 
     await _repository.deleteMultiple(idsToDelete);
   }
@@ -74,9 +76,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         return false;
     }
 
-    final updated = item.copyWith(parentFolderId: newParentId);
-    updateItemState(updated);
-    _repository.update(updated);
+    updateItem(item.copyWith(parentFolderId: newParentId));
     return true;
   }
 

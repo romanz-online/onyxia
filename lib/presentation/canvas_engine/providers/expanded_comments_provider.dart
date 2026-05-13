@@ -1,4 +1,4 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:onyxia/export.dart';
 
 class ExpandedCommentsNotifier extends Notifier<Set<String>> {
   @override

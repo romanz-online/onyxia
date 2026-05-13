@@ -268,21 +268,21 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
                       SystemMouseCursors.resizeLeftRight,
                     _ => SystemMouseCursors.move,
                   };
-                  cursorNotifier.setCursor(cursor);
+                  cursorNotifier.set(cursor);
                 }
                 break;
               case ObjectFillInteractionContext(:final targetObject):
                 if (selectedObjects.contains(targetObject) &&
                     !targetObject.isBrush &&
                     !targetObject.isArrow) {
-                  cursorNotifier.setCursor(SystemMouseCursors.grab);
+                  cursorNotifier.set(SystemMouseCursors.grab);
                 }
                 break;
               case ArrowWellInteraction():
-                cursorNotifier.setCursor(SystemMouseCursors.grab);
+                cursorNotifier.set(SystemMouseCursors.grab);
                 break;
               default:
-                cursorNotifier.setCursor(null);
+                cursorNotifier.set(null);
             }
           };
 

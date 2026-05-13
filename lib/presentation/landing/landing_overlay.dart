@@ -99,7 +99,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
               updatedAt: now,
               name: name,
             );
-            ref.read(projectsProvider.notifier).addProject(newProject);
+            ProjectsRepository().add([newProject]);
             Navigator.of(dialogContext).pop();
             _navigateToProject(newProject);
           },

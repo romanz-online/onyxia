@@ -95,6 +95,6 @@ void _confirmRemove(
   );
 
   if (confirm == true) {
-    ref.read(projectsProvider.notifier).deleteProject(project.id);
+    ProjectsRepository().delete(project.id);
   }
 }

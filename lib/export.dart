@@ -1,10 +1,8 @@
 ﻿export 'package:onyxia/presentation/app.dart';
 
-export 'package:onyxia/core/constants/colors.dart';
-export 'package:onyxia/core/constants/styles.dart';
-export 'package:onyxia/core/constants/admin_config.dart';
-export 'package:onyxia/core/constants/icons.dart';
-export 'package:onyxia/data/providers/theme_provider.dart';
+export 'package:onyxia/core/colors.dart';
+export 'package:onyxia/core/styles.dart';
+export 'package:onyxia/core/icons.dart';
 
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_view.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_context_menu.dart';
@@ -50,7 +48,7 @@ export 'package:onyxia/presentation/routing/router.dart';
 export 'package:onyxia/presentation/routing/routes.dart';
 
 //data providers
-export 'package:onyxia/data/providers/auth_provider.dart';
+export 'package:onyxia/presentation/routing/providers/auth_provider.dart';
 export 'package:onyxia/data/providers/projects_provider.dart';
 export 'package:onyxia/data/providers/current_user_provider.dart';
 export 'package:onyxia/data/providers/user_lookup_provider.dart';
@@ -74,9 +72,9 @@ export 'package:gap/gap.dart';
 export 'package:flutter_portal/flutter_portal.dart';
 
 //models
-export 'package:onyxia/data/models/artifacts/note/note.dart';
+export 'package:onyxia/data/models/artifacts/note.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas.dart';
-export 'package:onyxia/data/models/artifacts/folder/folder.dart';
+export 'package:onyxia/data/models/artifacts/folder.dart';
 export 'package:onyxia/data/models/user.dart';
 export 'package:onyxia/data/models/project_member.dart';
 export 'package:onyxia/data/models/artifacts/canvas/comment.dart';
@@ -88,7 +86,6 @@ export 'package:onyxia/data/models/artifacts/canvas/subobjects/image.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/brush.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/artifact_subobject.dart';
 export 'package:onyxia/data/models/project.dart';
-export 'package:onyxia/data/models/artifacts/artifact_type.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
 
 //repositories
@@ -111,7 +108,6 @@ export 'package:onyxia/services/images/image_encoding_service.dart';
 export 'package:onyxia/services/timestamp_service.dart';
 
 //helpers
-export 'package:onyxia/helpers/color_helper.dart';
 export 'package:onyxia/helpers/offset_extension.dart';
 export 'package:onyxia/helpers/theme_helper.dart';
 //canvas_utils
@@ -123,7 +119,6 @@ export 'package:onyxia/presentation/common_widget/narwhal_spinner.dart';
 export 'package:onyxia/helpers/narwhal_enum.dart';
 
 //others
-export 'core/abstracts/serializer.dart';
 export 'package:flutter/material.dart';
 export 'package:flutter/foundation.dart' hide shortHash, describeIdentity;
 export 'package:flutter/services.dart';

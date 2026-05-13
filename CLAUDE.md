@@ -104,26 +104,95 @@ This barrel includes ALL providers, models, common widgets, and helpers. Never a
 - Screens → `lib/presentation/screens/<name>/<name>_screen.dart` + `widgets/` subdirectory
 - Models → `lib/data/models/<domain>/<name>.dart`
 
-### Auth Guard Pattern (required in all auth-dependent providers)
-
-Watch `authProvider` and `currentUserProvider` inside `build()` so the notifier rebuilds when auth state changes. The notifier returns its initial state regardless — Riverpod handles re-running `build()` on dependency change, so explicit `.id.isEmpty` checks aren't needed.
-
-```dart
-@override
-<State> build() {
-  ref.watch(authProvider);
-  ref.watch(currentUserProvider);
-  return <State>.initial();
-}
-```
-
-See `lib/data/providers/projects_provider.dart` for the canonical example.
-
 ### Key Providers
 
 - `authProvider` → `AsyncValue<Session?>` (StreamProvider over Supabase auth state changes; `Session` is `supabase_flutter`'s type)
-- `currentUserProvider` → `User` (NotifierProvider, sync)
-- Both must be watched in every auth-dependent provider
+- `currentUserProvider` → `AsyncValue<User>` (StreamNotifierProvider)
+
+### Auth & Membership Centralization
+
+Auth invalidation and project-membership kickback are handled centrally in [router.dart](lib/presentation/routing/router.dart). `_RouterNotifier` `ref.listen`s `authProvider`, `currentUserProvider`, and `projectsProvider`, and GoRouter's `redirect:`:
+
+- Sends unauthenticated users to `/projects` (where `AppShell` renders the `LandingOverlay` login form).
+- Sends authenticated users who try to reach `/project/:id` for a project they aren't a member of back to `/projects`.
+
+Do **not** `ref.watch(authProvider)` or `ref.watch(currentUserProvider)` inside individual providers — the router handles redirection, and Supabase realtime streams (e.g. `projectsProvider`) refresh their RLS scope on auth change automatically.
+
+---
+
+## Riverpod Conventions
+
+All providers in this codebase follow these rules. If you're writing or reviewing a provider, every point below should be checkable.
+
+### 1. Pick the right Notifier base class
+
+| State shape                          | Base class          | `build()` returns |
+| ------------------------------------ | ------------------- | ----------------- |
+| Result of an async fetch (one-shot)  | `AsyncNotifier<T>`  | `Future<T>`       |
+| Continuous stream of values          | `StreamNotifier<T>` | `Stream<T>`       |
+| Synchronous, mutated by user actions | `Notifier<T>`       | `T`               |
+
+Loading and error states come for free from `AsyncNotifier`/`StreamNotifier` — don't reinvent them with sidecar `bool` providers.
+
+### 2. `.autoDispose` is the default for screen-scoped providers
+
+- **Use `.autoDispose`**: anything tied to a single screen / canvas / dialog (selection state, drag state, gesture state, toolbars, sidecars).
+- **Don't use `.autoDispose`**: app-wide data providers — `authProvider`, `currentUserProvider`, `projectsProvider`, `artifactsProvider`, `themeProvider`.
+
+### 3. Setter naming
+
+- **Single-field "value holder" notifier**: the mutator is `set(T value)`. Example: `toolModeProvider.notifier.set(ToolMode.brush)`.
+- **Notifier with multiple fields or computed mutations**: use domain verbs — `toggle`, `clear`, `expand`, `collapse`, `addItem`, `updateTitle`, etc.
+- **`setX(value)` is only justified** when a notifier has multiple distinct one-shot fields to set (e.g. `setFocusNode` separately from `setActiveObject`). Use sparingly.
+
+### 4. Watched-dependency storage inside a Notifier
+
+`build()` re-runs every time a watched dependency changes — the Notifier instance is preserved across rebuilds, so fields need to handle re-assignment.
+
+- **Repository takes no constructor args** → declare as a class-level `final` field (one allocation).
+  ```dart
+  final ProjectsRepository _repository = ProjectsRepository();
+  ```
+- **Repository depends on a watched value** → declare as `late T` (NOT `late final` — that throws on re-assignment) and assign inside `build()`.
+  ```dart
+  late ArtifactsRepository _repository;
+  @override Stream<List<Artifact>> build() {
+    final id = ref.watch(selectedProjectProvider.select((p) => p?.id));
+    _repository = ArtifactsRepository(projectId: id);
+    // ...
+  }
+  ```
+- **Stateless helper call** (no caching needed) → inline `ref.read(otherProvider.notifier).method()`.
+
+### 5. `AsyncValue` access
+
+- `.value` → `T?` (nullable; the contained value or `null` while loading/erroring).
+- `.hasValue` / `.hasError` / `.isLoading` → state-check booleans.
+- `.when(data:, loading:, error:)` → exhaustive rendering.
+- **`.valueOrNull` does NOT exist in Riverpod 3.x** — use `.value`.
+
+### 6. Cleanup
+
+Register cleanup in `ref.onDispose(...)` inside `build()`. **Do not override `dispose()`** — `Notifier` doesn't have one. Riverpod runs `ref.onDispose` callbacks before each rebuild AND on final disposal, so stream subscriptions in `build()` get cancelled correctly.
+
+```dart
+@override
+Stream<List<Comment>> build() {
+  final sub = repo.getStream().listen((data) { /* ... */ });
+  ref.onDispose(sub.cancel);
+  return repo.getStream();
+}
+```
+
+### 7. Cross-provider effects
+
+- **Pure-utility calls** (`snap`, `clamp`, etc.) on another notifier are fine — they're stateless helpers.
+- **Cascade writes / atomic propagation** are acceptable when the propagation has to happen _synchronously_ with the originating action (e.g. note rename writes the new name into `artifactsProvider` so URL navigation resolves immediately).
+- **Passive derivation** — when one provider's state is a derivative of another — belongs in `ref.listen` on the consumer side, or as a derived `Provider<T>` that watches the upstream.
+
+### 8. URL-driven selection
+
+For "selected X" state where the URL is the source of truth: a private `_selectedXIdFromUrlProvider` listens to `routeInformationProvider`, a public `Provider<X?>` derives the entity by looking up the id in the relevant list provider. See [selected_artifact_provider.dart](lib/data/providers/selected_artifact_provider.dart) and [selected_project_provider.dart](lib/data/providers/selected_project_provider.dart) for the canonical examples.
 
 ---
 
@@ -193,11 +262,7 @@ final <name>Provider =
 
 class <Name>Notifier extends Notifier<<State>> {
   @override
-  <State> build() {
-    ref.watch(authProvider);
-    ref.watch(currentUserProvider);
-    return <State>.initial();
-  }
+  <State> build() => <State>.initial();
 }
 ```
 
@@ -216,12 +281,11 @@ class <Name>Notifier extends Notifier<<State>> {
 }
 ```
 
-For a simple holder that replaces an old `StateProvider<T>` (callers wrote
-`ref.read(p.notifier).state = v`):
+For a single-field "value holder" provider (mutator is just `set`):
 
 ```dart
 final <name>Provider =
-    NotifierProvider<<Name>Notifier, <T>>(<Name>Notifier.new);
+    NotifierProvider.autoDispose<<Name>Notifier, <T>>(<Name>Notifier.new);
 
 class <Name>Notifier extends Notifier<<T>> {
   @override
@@ -231,7 +295,7 @@ class <Name>Notifier extends Notifier<<T>> {
 }
 ```
 
-Callers then use `ref.read(<name>Provider.notifier).set(v)` instead of `.state = v`.
+Callers: `ref.read(<name>Provider.notifier).set(v)`.
 
 ### Model
 

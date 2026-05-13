@@ -9,10 +9,16 @@ class _RouterNotifier extends ChangeNotifier {
   bool isPending = false;
   bool isAuthLoading = true;
 
+  /// null = projects haven't loaded yet (suppress membership kickback);
+  /// list = loaded set of project ids the current user can access.
+  List<String>? memberProjectIds;
+
   _RouterNotifier(Ref ref) {
     final initialAuth = ref.read(authProvider);
     isAuth = initialAuth.value != null;
     isAuthLoading = initialAuth is AsyncLoading;
+    memberProjectIds =
+        ref.read(projectsProvider).value?.map((p) => p.id).toList();
 
     ref.listen<AsyncValue<Session?>>(authProvider, (_, next) {
       isAuth = next.value != null;
@@ -21,6 +27,10 @@ class _RouterNotifier extends ChangeNotifier {
     });
     ref.listen<AsyncValue<User>>(currentUserProvider, (_, next) {
       isPending = next.value?.pending ?? false;
+      notifyListeners();
+    });
+    ref.listen<AsyncValue<List<Project>>>(projectsProvider, (_, next) {
+      memberProjectIds = next.value?.map((p) => p.id).toList();
       notifyListeners();
     });
   }
@@ -45,7 +55,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         path: Routes.invite,
         name: 'invite',
         builder: (context, state) => InviteScreen(
-          destinationPath: Uri.decodeComponent(state.uri.queryParameters['dest'] ?? '/${Routes.projects}'),
+          destinationPath: Uri.decodeComponent(
+              state.uri.queryParameters['dest'] ?? '/${Routes.projects}'),
         ),
       ),
       GoRoute(
@@ -61,7 +72,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/project/:id',
         name: 'project',
-        builder: (context, state) => AppShell(projectId: state.pathParameters['id']!),
+        builder: (context, state) =>
+            AppShell(projectId: state.pathParameters['id']!),
         routes: [
           GoRoute(
             path: ':selectedId',
@@ -83,24 +95,28 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (isOnInvite) {
         if (isAuth && !isPending) {
-          return Uri.decodeComponent(state.uri.queryParameters['dest'] ?? '/${Routes.projects}');
+          return Uri.decodeComponent(
+              state.uri.queryParameters['dest'] ?? '/${Routes.projects}');
         }
         return null;
       }
 
       if (hasInvite) {
         if (!isAuth || isPending) {
-          final params = Map<String, String>.from(state.uri.queryParameters)..remove('invite');
+          final params = Map<String, String>.from(state.uri.queryParameters)
+            ..remove('invite');
           final path = state.matchedLocation;
           final dest = params.isEmpty
               ? path
               : '$path?${params.entries.map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}').join('&')}';
           return '${Routes.invite}?dest=${Uri.encodeComponent(dest)}';
         } else {
-          final params = Map<String, String>.from(state.uri.queryParameters)..remove('invite');
+          final params = Map<String, String>.from(state.uri.queryParameters)
+            ..remove('invite');
           final path = state.matchedLocation;
-          final stripped =
-              params.isEmpty ? path : '$path?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
+          final stripped = params.isEmpty
+              ? path
+              : '$path?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
           return stripped;
         }
       }
@@ -109,6 +125,15 @@ final routerProvider = Provider<GoRouter>((ref) {
           state.matchedLocation != '/${Routes.projects}' &&
           state.matchedLocation != Routes.resetPassword) {
         return '/${Routes.projects}';
+      }
+
+      final pathProjectId = state.pathParameters['id'];
+      if (pathProjectId != null && pathProjectId.isNotEmpty) {
+        // null means projects haven't loaded yet — don't false-kick on cold boot.
+        if (notifier.memberProjectIds == null) return null;
+        if (!notifier.memberProjectIds!.contains(pathProjectId)) {
+          return '/${Routes.projects}';
+        }
       }
 
       return null;

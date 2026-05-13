@@ -102,27 +102,18 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();
-
-    final authState = ref.watch(authProvider);
+ 
     final noteState = ref.watch(_provider);
 
     final item = ref.watch(_provider.select((state) => state.value?.note));
     if (item == null) {
       return const Center(
-          child: Text('No item selected', style: NarwhalTextStyle()));
-    }
-
-    authState.whenData((user) {
-      if (user == null) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            ref.invalidate(_provider);
-            _resetEditorState();
-            _currentNoteId = null;
-          }
-        });
-      }
-    });
+        child: Text(
+          'No item selected',
+          style: NarwhalTextStyle(),
+        ),
+      );
+    } 
 
     return noteState.when(
       loading: () => Center(child: NarwhalSpinner()),
@@ -135,7 +126,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
         if (controller == null) {
           return const Center(
             child: Text(
-              'Document not initialized',
+              'Note not initialized',
               style: NarwhalTextStyle(),
             ),
           );
@@ -347,8 +338,7 @@ class _NoteEditorField extends ConsumerWidget {
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
                   onWikiLinkTapped: (title) {
-                    final projectId =
-                        ref.read(selectedProjectProvider)?.id;
+                    final projectId = ref.read(selectedProjectProvider)?.id;
                     context.go('/project/$projectId/$title');
                   },
                 ),

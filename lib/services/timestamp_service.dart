@@ -8,12 +8,6 @@ class TimestampService {
     return null;
   }
 
-  static String getFixedLengthTimestamp() {
-    final now = DateTime.now();
-    final milliseconds = now.millisecond.toString().padLeft(3, '0');
-    return '${now.year.toString().padLeft(4, '0')}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}T${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}.$milliseconds';
-  }
-
   static String formatLastUpdated(String pretext, DateTime? dateTime) =>
       dateTime != null
           ? '$pretext ${formatTimeAgo(

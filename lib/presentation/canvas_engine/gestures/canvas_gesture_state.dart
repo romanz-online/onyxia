@@ -85,6 +85,6 @@ class CanvasGestureStateNotifier extends Notifier<CanvasGestureState> {
 }
 
 final canvasGestureStateProvider =
-    NotifierProvider<CanvasGestureStateNotifier, CanvasGestureState>(
+    NotifierProvider.autoDispose<CanvasGestureStateNotifier, CanvasGestureState>(
   CanvasGestureStateNotifier.new,
 );

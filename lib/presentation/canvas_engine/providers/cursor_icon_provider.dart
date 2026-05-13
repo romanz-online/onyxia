@@ -21,7 +21,7 @@ class CursorIconOverrideNotifier extends Notifier<MouseCursor?> {
   @override
   MouseCursor? build() => null;
 
-  void setCursor(MouseCursor? cursor) {
+  void set(MouseCursor? cursor) {
     if (cursor != state) {
       state = cursor;
     }
