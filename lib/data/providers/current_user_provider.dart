@@ -14,11 +14,10 @@ final currentUserProvider =
     StreamNotifierProvider<CurrentUserNotifier, User>(CurrentUserNotifier.new);
 
 class CurrentUserNotifier extends StreamNotifier<User> {
-  late AuthRepository _repository;
+  final _repository = AuthRepository();
 
   @override
   Stream<User> build() {
-    _repository = ref.read(authRepositoryProvider);
     return _repository.authStateChanges.asyncMap((authState) async {
       final session = authState.session;
       if (session == null) return User.initial();

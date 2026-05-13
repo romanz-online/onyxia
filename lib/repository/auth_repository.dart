@@ -1,10 +1,5 @@
 import 'package:onyxia/export.dart';
 
-// TODO: pretty sure i don't need a provider for this?
-final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  return AuthRepository();
-});
-
 /// Thin wrapper over Supabase Auth. `auth.users` is the source of truth;
 /// `public.users` is a thin view over it (no mirror table, no app-side writes).
 class AuthRepository {
