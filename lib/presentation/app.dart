@@ -25,6 +25,8 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
       themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
       theme: _buildLightTheme(),
       darkTheme: _buildDarkTheme(),
+      builder: (context, child) =>
+          Portal(child: child ?? const SizedBox.shrink()),
     );
   }
 

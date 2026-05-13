@@ -55,10 +55,8 @@ class _CanvasCommentPinExpandedState
   final ScrollController _commentsScrollController = ScrollController();
 
   bool _isCommentActionMenuOpen = false;
-  final GlobalKey _moreButtonKey = GlobalKey();
 
   String? _openCommentMenuId;
-  final Map<String, GlobalKey> _commentMenuKeys = {};
 
   @override
   void initState() {
@@ -405,7 +403,6 @@ class _CanvasCommentPinExpandedState
                 builder: (context, closeOverlay) =>
                     _buildCommentActionOverlay(closeOverlay),
                 child: NarwhalIconButton(
-                  key: _moreButtonKey,
                   icon: NarwhalIcons.moreDots,
                   size: 30,
                   isPressed: _isCommentActionMenuOpen,
@@ -518,15 +515,22 @@ class _CanvasCommentPinExpandedState
                 isOpen: _openCommentMenuId == commentId,
                 onClose: () => setState(() => _openCommentMenuId = null),
                 closingDelay: const Duration(milliseconds: 100),
+                anchor: const Aligned(
+                  follower: Alignment.topRight,
+                  target: Alignment.bottomRight,
+                  offset: Offset(0, 4),
+                  backup: Aligned(
+                    follower: Alignment.topLeft,
+                    target: Alignment.bottomLeft,
+                    offset: Offset(0, 4),
+                  ),
+                ),
                 builder: (context, closeOverlay) => _buildCommentMenuOverlay(
                   commentId,
                   isSubComment,
-                  _commentMenuKeys[commentId]!,
                   closeOverlay,
                 ),
                 child: NarwhalIconButton(
-                  key: _commentMenuKeys.putIfAbsent(
-                      commentId, () => GlobalKey()),
                   icon: NarwhalIcons.moreDots,
                   size: 28,
                   enabled: ref.read(currentUserProvider).value?.id == createdBy,
@@ -636,55 +640,30 @@ class _CanvasCommentPinExpandedState
   }
 
   Widget _buildCommentActionOverlay(VoidCallback closeOverlay) {
-    final RenderBox? renderBox =
-        _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return const SizedBox.shrink();
-
-    final position = renderBox.localToGlobal(Offset.zero);
-    const minDropdownWidth = 140.0;
-
-    // Calculate left-aligned and right-aligned positions
-    final leftAlignedPosition = position.dx;
-    final rightAlignedPosition =
-        position.dx - minDropdownWidth + renderBox.size.width;
-
-    // Get viewport width to check for overflow
-    final viewportWidth = MediaQuery.of(context).size.width;
-    final wouldOverflowRight =
-        leftAlignedPosition + minDropdownWidth > viewportWidth;
-
-    // Use left-aligned by default, right-aligned if it would overflow
-    final finalLeft =
-        wouldOverflowRight ? rightAlignedPosition : leftAlignedPosition;
-
-    return Positioned(
-      left: finalLeft,
-      top: position.dy + renderBox.size.height + 4,
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: minDropdownWidth,
-          decoration: BoxDecoration(
-            color: ThemeHelper.neutral100(context),
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: ThemeHelper.neutral400(context),
-              width: 1,
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 140,
+        decoration: BoxDecoration(
+          color: ThemeHelper.neutral100(context),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: ThemeHelper.neutral400(context),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildActionMenuItem(
+              title: 'Delete',
+              onTap: () {
+                closeOverlay();
+                _deleteThread();
+              },
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildActionMenuItem(
-                title: 'Delete',
-                onTap: () {
-                  closeOverlay();
-                  _deleteThread();
-                },
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     );
@@ -725,64 +704,40 @@ class _CanvasCommentPinExpandedState
   Widget _buildCommentMenuOverlay(
     String commentId,
     bool isSubComment,
-    GlobalKey buttonKey,
     VoidCallback closeOverlay,
   ) {
-    final RenderBox? renderBox =
-        buttonKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return const SizedBox.shrink();
-
-    final position = renderBox.localToGlobal(Offset.zero);
-    const minDropdownWidth = 120.0;
-
-    // Calculate left-aligned and right-aligned positions
-    final leftAlignedPosition = position.dx;
-    final rightAlignedPosition =
-        position.dx - minDropdownWidth + renderBox.size.width;
-
-    // Check for left-side overflow to determine if we need to fall back to left-alignment
-    final wouldOverflowLeft = rightAlignedPosition < 0;
-
-    // Use right-aligned by default, left-aligned if it would overflow off the left side
-    final finalLeft =
-        wouldOverflowLeft ? leftAlignedPosition : rightAlignedPosition;
-
-    return Positioned(
-      left: finalLeft,
-      top: position.dy + renderBox.size.height + 4,
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: minDropdownWidth,
-          decoration: BoxDecoration(
-            color: ThemeHelper.neutral100(context),
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: ThemeHelper.neutral400(context),
-              width: 1,
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 120,
+        decoration: BoxDecoration(
+          color: ThemeHelper.neutral100(context),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: ThemeHelper.neutral400(context),
+            width: 1,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildActionMenuItem(
+              title: 'Edit',
+              onTap: () {
+                closeOverlay();
+                _editComment(commentId);
+              },
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildActionMenuItem(
-                title: 'Edit',
-                onTap: () {
-                  closeOverlay();
-                  _editComment(commentId);
-                },
-              ),
-              _buildMenuDivider(context),
-              _buildActionMenuItem(
-                title: 'Remove',
-                onTap: () {
-                  closeOverlay();
-                  _removeComment(commentId, isSubComment);
-                },
-              ),
-            ],
-          ),
+            _buildMenuDivider(context),
+            _buildActionMenuItem(
+              title: 'Remove',
+              onTap: () {
+                closeOverlay();
+                _removeComment(commentId, isSubComment);
+              },
+            ),
+          ],
         ),
       ),
     );

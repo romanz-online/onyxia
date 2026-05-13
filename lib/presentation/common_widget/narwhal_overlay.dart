@@ -1,14 +1,18 @@
 import 'package:onyxia/export.dart';
 
 /// @ponder ponder/NarwhalOverlay.gif
+///
+/// Anchors a follower widget to [child] using flutter_portal, and runs a
+/// non-consuming full-screen pointer listener so clicks outside both the
+/// trigger and the follower can close the overlay while still hitting their
+/// underlying targets (e.g. clicking another button outside the overlay both
+/// closes it AND fires that button's onPressed).
 class NarwhalOverlay extends StatefulWidget {
   final Widget Function(BuildContext context, VoidCallback closeOverlay) builder;
   final Widget child;
   final bool isOpen;
-  final VoidCallback? onToggle;
   final VoidCallback? onClose;
-  final Offset? customOffset;
-  final Size? customSize;
+  final Anchor anchor;
   final bool autoClose;
   final Duration? closingDelay;
 
@@ -17,10 +21,17 @@ class NarwhalOverlay extends StatefulWidget {
     required this.builder,
     required this.child,
     required this.isOpen,
-    this.onToggle,
     this.onClose,
-    this.customOffset,
-    this.customSize,
+    this.anchor = const Aligned(
+      follower: Alignment.topLeft,
+      target: Alignment.bottomLeft,
+      offset: Offset(0, 4),
+      backup: Aligned(
+        follower: Alignment.topRight,
+        target: Alignment.bottomRight,
+        offset: Offset(0, 4),
+      ),
+    ),
     this.autoClose = true,
     this.closingDelay,
   });
@@ -30,7 +41,9 @@ class NarwhalOverlay extends StatefulWidget {
 }
 
 class _NarwhalOverlayState extends State<NarwhalOverlay> {
-  OverlayEntry? _overlayEntry;
+  final GlobalKey _triggerKey = GlobalKey();
+  final GlobalKey _followerKey = GlobalKey();
+  OverlayEntry? _outsideListenerEntry;
   GoRouter? _router;
 
   @override
@@ -38,7 +51,7 @@ class _NarwhalOverlayState extends State<NarwhalOverlay> {
     super.initState();
     if (widget.isOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _showOverlay();
+        if (mounted) _installOutsideListener();
       });
     }
   }
@@ -48,153 +61,131 @@ class _NarwhalOverlayState extends State<NarwhalOverlay> {
     super.didUpdateWidget(oldWidget);
     if (widget.isOpen && !oldWidget.isOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _showOverlay();
+        if (mounted) _installOutsideListener();
       });
     } else if (!widget.isOpen && oldWidget.isOpen) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _removeOverlay();
-      });
+      _removeOutsideListener();
     }
   }
 
   @override
   void dispose() {
-    _removeOverlay();
-    _router?.routeInformationProvider.removeListener(_handleRouteChange);
+    _removeOutsideListener();
     super.dispose();
   }
 
-  void _showOverlay() {
-    if (_overlayEntry != null) return;
-
+  void _installOutsideListener() {
+    if (_outsideListenerEntry != null) return;
     final overlay = Overlay.of(context);
-    final renderBox = context.findRenderObject() as RenderBox?;
-    if (renderBox == null) return;
-
-    final size = widget.customSize ?? renderBox.size;
-    final offset = widget.customOffset ?? renderBox.localToGlobal(Offset.zero);
-
-    _overlayEntry = OverlayEntry(
-      builder: (context) => _NarwhalOverlayContent(
-        offset: offset,
-        size: size,
-        onClose: _closeOverlay,
+    _outsideListenerEntry = OverlayEntry(
+      builder: (_) => _OutsideClickListener(
+        triggerKey: _triggerKey,
+        followerKey: _followerKey,
         autoClose: widget.autoClose,
         closingDelay: widget.closingDelay,
-        child: widget.builder(context, _closeOverlay),
+        onClose: _close,
       ),
     );
-
-    overlay.insert(_overlayEntry!);
-
-    // Add route listener to auto-close on navigation
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _addRouteListener();
-    });
-  }
-
-  void _removeOverlay() {
-    _overlayEntry?.remove();
-    _overlayEntry = null;
-    _router?.routeInformationProvider.removeListener(_handleRouteChange);
-  }
-
-  void _closeOverlay() {
-    _removeOverlay();
-    widget.onClose?.call();
-  }
-
-  void _addRouteListener() {
+    overlay.insert(_outsideListenerEntry!);
     _router = GoRouter.of(context);
     _router?.routeInformationProvider.addListener(_handleRouteChange);
   }
 
-  void _handleRouteChange() {
-    _closeOverlay();
+  void _removeOutsideListener() {
+    _outsideListenerEntry?.remove();
+    _outsideListenerEntry = null;
+    _router?.routeInformationProvider.removeListener(_handleRouteChange);
+    _router = null;
   }
+
+  void _close() {
+    _removeOutsideListener();
+    widget.onClose?.call();
+  }
+
+  void _handleRouteChange() => _close();
 
   @override
   Widget build(BuildContext context) {
-    return widget.child;
+    return PortalTarget(
+      visible: widget.isOpen,
+      anchor: widget.anchor,
+      portalFollower: Focus(
+        autofocus: true,
+        onFocusChange: (hasFocus) {
+          if (!hasFocus && widget.autoClose) {
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) _close();
+            });
+          }
+        },
+        child: KeyedSubtree(
+          key: _followerKey,
+          child: widget.builder(context, _close),
+        ),
+      ),
+      child: KeyedSubtree(key: _triggerKey, child: widget.child),
+    );
   }
 }
 
-class _NarwhalOverlayContent extends StatefulWidget {
-  final Offset offset;
-  final Size size;
-  final VoidCallback onClose;
-  final Widget child;
+/// Full-screen translucent listener inserted into Flutter's native [Overlay]
+/// while the menu is open. It detects pointer-down events outside the
+/// trigger and follower and triggers a close, without consuming the gesture
+/// (so the underlying widget still receives the same tap).
+class _OutsideClickListener extends StatefulWidget {
+  final GlobalKey triggerKey;
+  final GlobalKey followerKey;
   final bool autoClose;
   final Duration? closingDelay;
+  final VoidCallback onClose;
 
-  const _NarwhalOverlayContent({
-    required this.offset,
-    required this.size,
-    required this.onClose,
-    required this.child,
+  const _OutsideClickListener({
+    required this.triggerKey,
+    required this.followerKey,
     required this.autoClose,
-    this.closingDelay,
+    required this.closingDelay,
+    required this.onClose,
   });
 
   @override
-  State<_NarwhalOverlayContent> createState() => _NarwhalOverlayContentState();
+  State<_OutsideClickListener> createState() => _OutsideClickListenerState();
 }
 
-class _NarwhalOverlayContentState extends State<_NarwhalOverlayContent> {
-  final GlobalKey _overlayKey = GlobalKey();
-
-  bool _isPointInOverlay(Offset globalPosition) {
-    final RenderBox? renderBox = _overlayKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return false;
-
-    return Rect.fromLTWH(0, 0, renderBox.size.width, renderBox.size.height)
-        .contains(renderBox.globalToLocal(globalPosition));
+class _OutsideClickListenerState extends State<_OutsideClickListener> {
+  bool _containsGlobalPoint(GlobalKey key, Offset globalPosition) {
+    final renderObject = key.currentContext?.findRenderObject();
+    if (renderObject is! RenderBox || !renderObject.attached) return false;
+    final local = renderObject.globalToLocal(globalPosition);
+    return Rect.fromLTWH(
+      0,
+      0,
+      renderObject.size.width,
+      renderObject.size.height,
+    ).contains(local);
   }
-
-  bool _isPointInTrigger(Offset globalPosition) => Rect.fromLTWH(
-        widget.offset.dx,
-        widget.offset.dy,
-        widget.size.width,
-        widget.size.height,
-      ).contains(globalPosition);
 
   void _handlePointerDown(PointerDownEvent event) {
     if (!widget.autoClose) return;
+    if (_containsGlobalPoint(widget.triggerKey, event.position)) return;
+    if (_containsGlobalPoint(widget.followerKey, event.position)) return;
 
-    final isInOverlay = _isPointInOverlay(event.position);
-    final isInTrigger = _isPointInTrigger(event.position);
-
-    if (!isInOverlay && !isInTrigger) {
-      if (widget.closingDelay != null) {
-        Future.delayed(widget.closingDelay!, () {
-          if (mounted) widget.onClose();
-        });
-      } else {
-        widget.onClose();
-      }
+    if (widget.closingDelay != null) {
+      Future.delayed(widget.closingDelay!, () {
+        if (mounted) widget.onClose();
+      });
+    } else {
+      widget.onClose();
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Focus(
-      autofocus: true,
-      onFocusChange: (hasFocus) {
-        if (!hasFocus && widget.autoClose) {
-          // Small delay to allow for focus changes within the overlay
-          Future.delayed(const Duration(milliseconds: 100), () {
-            if (mounted) widget.onClose();
-          });
-        }
-      },
+    return Positioned.fill(
       child: Listener(
         onPointerDown: _handlePointerDown,
         behavior: HitTestBehavior.translucent,
-        child: Stack(
-          children: [
-            Container(key: _overlayKey, child: widget.child),
-          ],
-        ),
+        child: const SizedBox.expand(),
       ),
     );
   }
@@ -205,9 +196,9 @@ class _NarwhalOverlayContentState extends State<_NarwhalOverlayContent> {
                               HOW TO USE NARWHALOVERLAY
 ================================================================================
 
-NarwhalOverlay is a reusable widget that provides non-consuming overlay behavior.
-Unlike Flutter's default overlays, it doesn't consume clicks outside the overlay,
-allowing users to interact with underlying UI elements immediately.
+NarwhalOverlay anchors a follower widget to a trigger using flutter_portal, and
+runs a non-consuming full-screen pointer listener so taps outside both close
+the overlay without swallowing the gesture.
 
 BASIC USAGE:
 -----------
@@ -223,147 +214,77 @@ class _MyDropdownWidgetState extends State<MyDropdownWidget> {
   Widget build(BuildContext context) {
     return NarwhalOverlay(
       isOpen: _isOpen,
-      onToggle: () => setState(() => _isOpen = !_isOpen),
+      onClose: () => setState(() => _isOpen = false),
       builder: (context, closeOverlay) {
-        return Positioned(
-          top: 50, // Position relative to trigger
-          left: 0,
-          child: Material(
-            elevation: 8,
-            borderRadius: BorderRadius.circular(8),
-            child: Container(
-              padding: EdgeInsets.all(16),
-              child: Column(
-                children: [
-                  Text('Overlay Content'),
-                  ElevatedButton(
-                    onPressed: closeOverlay,
-                    child: Text('Close'),
-                  ),
-                ],
-              ),
+        return Material(
+          elevation: 8,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Text('Overlay Content'),
+                ElevatedButton(
+                  onPressed: closeOverlay,
+                  child: const Text('Close'),
+                ),
+              ],
             ),
           ),
         );
       },
       child: ElevatedButton(
         onPressed: () => setState(() => _isOpen = !_isOpen),
-        child: Text('Toggle Overlay'),
+        child: const Text('Toggle Overlay'),
       ),
     );
   }
 }
 
-ADVANCED USAGE:
---------------
+CUSTOM ANCHORING:
+-----------------
+By default the follower's top-left aligns to the trigger's bottom-left with a
++4px vertical gap, and falls back to right-aligned (top-right to bottom-right)
+when the default would overflow the viewport. To override:
+
 NarwhalOverlay(
-  isOpen: _isDropdownOpen,
-  onToggle: _toggleDropdown,
-  onClose: _onDropdownClose,
-  autoClose: true,
-  closingDelay: Duration(milliseconds: 100),
-  customOffset: Offset(100, 50),
-  customSize: Size(200, 40),
-  builder: (context, closeOverlay) {
-    return Positioned(
-      top: 50,
-      right: 16,
-      child: Material(
-        elevation: 8,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: 160,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: Icon(Icons.settings),
-                title: Text('Settings'),
-                onTap: () {
-                  closeOverlay();
-                  _handleSettings();
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.logout),
-                title: Text('Logout'),
-                onTap: () {
-                  closeOverlay();
-                  _handleLogout();
-                },
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  },
-  child: IconButton(
-    icon: Icon(Icons.more_vert),
-    onPressed: _toggleDropdown,
+  anchor: const Aligned(
+    follower: Alignment.bottomLeft,
+    target: Alignment.topLeft,
+    offset: Offset(0, -4), // open upward instead
   ),
-);
+  // ...
+)
 
 PARAMETERS:
 -----------
-- builder: Function that builds the overlay content. Receives context and closeOverlay callback.
-- child: The widget that triggers the overlay (e.g., button, avatar).
-- isOpen: Boolean controlling whether the overlay is visible.
-- onToggle: Called when the overlay should be toggled (optional).
-- onClose: Called when the overlay is closed (optional).
-- customOffset: Custom position for the overlay trigger area (optional).
-- customSize: Custom size for the overlay trigger area (optional).
-- autoClose: Whether to automatically close when clicking outside (default: true).
-- closingDelay: Delay before closing the overlay (optional).
+- builder: Function that builds the overlay content. Receives context and
+  closeOverlay callback. Return the menu content directly (no Positioned).
+- child: The trigger widget (button, icon, etc.).
+- isOpen: Whether the overlay is visible.
+- onClose: Called when the overlay closes.
+- anchor: flutter_portal Anchor (default: bottom-left with right-aligned backup).
+- autoClose: Whether to close on tap outside or focus loss (default: true).
+- closingDelay: Optional delay before closing.
 
 KEY FEATURES:
 ------------
-- Non-consuming click detection: Clicks outside the overlay don't get consumed
-- Automatic route change detection: Closes overlay when navigating
-- Focus management: Handles keyboard navigation properly
-- Customizable positioning: Use Positioned widget in builder for precise placement
-- Auto-close behavior: Configurable automatic closing
-- Lightweight: Minimal overhead, only active when overlay is open
-
-POSITIONING OVERLAY CONTENT:
----------------------------
-Use Positioned widget in the builder to control where the overlay appears:
-
-// Dropdown below trigger:
-Positioned(
-  top: widget.offset.dy + widget.size.height + 8,
-  left: widget.offset.dx,
-  child: Material(...),
-)
-
-// Dropdown above trigger:
-Positioned(
-  bottom: MediaQuery.of(context).size.height - widget.offset.dy,
-  left: widget.offset.dx,
-  child: Material(...),
-)
-
-// Dropdown to the right:
-Positioned(
-  top: widget.offset.dy + widget.size.height + 8,
-  right: 16,
-  child: Material(...),
-)
+- Non-consuming outside-tap detection (clicks outside still hit their target).
+- Declarative anchoring via flutter_portal (re-anchors on scroll/resize).
+- Auto-close on GoRouter navigation.
+- Focus management for keyboard navigation.
 
 WHEN TO USE:
 -----------
-✅ Dropdown menus and context menus
-✅ Search suggestion overlays
-✅ User profile menus
-✅ Settings panels
-✅ Any overlay that shouldn't consume outside clicks
+- Dropdown menus and context menus
+- User profile menus, settings panels
+- Any anchored overlay that shouldn't block outside interaction
 
 WHEN NOT TO USE:
 ---------------
-❌ Modal dialogs that should block interaction
-❌ Full-screen overlays
-❌ Tooltips (use Tooltip widget instead)
-❌ Notifications (use SnackBar or similar)
-
+- Modal dialogs (use NarwhalModalDialog + showDialog)
+- Tooltips (use Tooltip)
+- Notifications (use NarwhalToast)
 ================================================================================
 */

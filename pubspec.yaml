@@ -49,6 +49,7 @@ dependencies:
   web: ^1.0.0
   speech_balloon: ^0.0.4
   supabase_flutter: ^2.12.4
+  flutter_portal: ^1.1.4
 
   touchable:
     path: lib/vendor/touchable

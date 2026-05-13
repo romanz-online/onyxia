@@ -30,7 +30,9 @@ export 'package:onyxia/presentation/common_widget/narwhal_overlay.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_tooltip.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_toast.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
+export 'package:onyxia/presentation/common_widget/onyxia_dialog.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/project_settings_button.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/widgets/project_members_dialog.dart';
 export 'package:onyxia/presentation/common_widget/user_profile_overlay.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
@@ -74,6 +76,7 @@ export 'package:super_tree/super_tree.dart';
 export 'package:file_picker/file_picker.dart';
 export 'package:collection/collection.dart' hide binarySearch, mergeSort;
 export 'package:gap/gap.dart';
+export 'package:flutter_portal/flutter_portal.dart';
 
 //models
 export 'package:onyxia/data/models/artifacts/note/note.dart';

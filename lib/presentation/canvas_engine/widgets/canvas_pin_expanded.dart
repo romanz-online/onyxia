@@ -37,7 +37,6 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   TextEditingController? _contentController;
 
   bool _isPinActionMenuOpen = false;
-  final GlobalKey _moreButtonKey = GlobalKey();
 
   /// Calculate optimal anchor position based on viewport bounds
   HorizontalAnchor _calculateOptimalAnchor(
@@ -228,63 +227,38 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   Widget _buildPinActionOverlay(VoidCallback closeOverlay, Artifact item) {
-    final RenderBox? renderBox =
-        _moreButtonKey.currentContext?.findRenderObject() as RenderBox?;
-    if (renderBox == null) return const SizedBox.shrink();
-
-    final position = renderBox.localToGlobal(Offset.zero);
-    const minDropdownWidth = 180.0;
-
-    // Calculate left-aligned and right-aligned positions
-    final leftAlignedPosition = position.dx;
-    final rightAlignedPosition =
-        position.dx - minDropdownWidth + renderBox.size.width;
-
-    // Get viewport width to check for overflow
-    final viewportWidth = MediaQuery.of(context).size.width;
-    final wouldOverflowRight =
-        leftAlignedPosition + minDropdownWidth > viewportWidth;
-
-    // Use left-aligned by default, right-aligned if it would overflow
-    final finalLeft =
-        wouldOverflowRight ? rightAlignedPosition : leftAlignedPosition;
-
-    return Positioned(
-      left: finalLeft,
-      top: position.dy + renderBox.size.height + 4,
-      child: Material(
-        elevation: 4,
-        borderRadius: BorderRadius.circular(8),
-        child: Container(
-          width: minDropdownWidth,
-          decoration: BoxDecoration(
-            color: ThemeHelper.neutral100(context),
-            borderRadius: BorderRadius.circular(4),
-            border: Border.all(
-              color: ThemeHelper.neutral400(context),
-              width: 0.5,
+    return Material(
+      elevation: 4,
+      borderRadius: BorderRadius.circular(8),
+      child: Container(
+        width: 180,
+        decoration: BoxDecoration(
+          color: ThemeHelper.neutral100(context),
+          borderRadius: BorderRadius.circular(4),
+          border: Border.all(
+            color: ThemeHelper.neutral400(context),
+            width: 0.5,
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildActionMenuItem(
+              title: 'View',
+              onTap: () {
+                closeOverlay();
+                _navigateToArtifact(item);
+              },
             ),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildActionMenuItem(
-                title: 'View',
-                onTap: () {
-                  closeOverlay();
-                  _navigateToArtifact(item);
-                },
-              ),
-              _buildMenuDivider(context),
-              _buildActionMenuItem(
-                title: 'Delete Pin',
-                onTap: () {
-                  closeOverlay();
-                  widget.onRemovePin();
-                },
-              ),
-            ],
-          ),
+            _buildMenuDivider(context),
+            _buildActionMenuItem(
+              title: 'Delete Pin',
+              onTap: () {
+                closeOverlay();
+                widget.onRemovePin();
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -502,7 +476,6 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                   _buildPinActionOverlay(
                                       closeOverlay, artifact),
                               child: NarwhalIconButton(
-                                key: _moreButtonKey,
                                 icon: NarwhalIcons.moreDots,
                                 size: 32,
                                 isPressed: _isPinActionMenuOpen,
