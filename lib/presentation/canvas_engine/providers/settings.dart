@@ -6,7 +6,6 @@ enum Setting {
   snapToGrid,
   showMinimap,
   showToolbar,
-  showSearchOverlay,
 }
 
 final canvasSettingsProvider =
@@ -26,7 +25,6 @@ class CanvasSettingNotifier extends Notifier<bool> {
         Setting.snapToGrid => true,
         Setting.showMinimap => true,
         Setting.showToolbar => true,
-        Setting.showSearchOverlay => false,
       };
 
   void set(bool value) => state = value;

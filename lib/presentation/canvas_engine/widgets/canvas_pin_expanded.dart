@@ -8,6 +8,7 @@ class CanvasPinExpanded extends ConsumerStatefulWidget {
   final Offset pinPosition;
   final TransformationController transformationController;
   final Function onRemovePin;
+  final VoidCallback onClose;
 
   const CanvasPinExpanded({
     super.key,
@@ -16,6 +17,7 @@ class CanvasPinExpanded extends ConsumerStatefulWidget {
     required this.pinPosition,
     required this.transformationController,
     required this.onRemovePin,
+    required this.onClose,
   });
 
   @override
@@ -128,7 +130,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
   void _closePin() {
     _exitEditMode();
-    ref.read(expandedPinProvider.notifier).collapsePin();
+    widget.onClose();
   }
 
   void _navigateToArtifact(Artifact item) {
@@ -154,9 +156,6 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   void _exitEditMode({bool save = false}) {
-    // Unregister focus node from expanded pin provider
-    ref.read(expandedPinProvider.notifier).removeFocusNode();
-
     setState(() {
       _isEditing = false;
       _titleController?.dispose();

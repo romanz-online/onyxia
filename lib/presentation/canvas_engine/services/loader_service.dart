@@ -18,6 +18,7 @@ class CanvasLoaderService {
     required WidgetRef ref,
     required String canvasId,
     required BuildContext context,
+    required VoidCallback onCollapsePin,
   }) {
     // Reset state for new canvas
 
@@ -27,6 +28,7 @@ class CanvasLoaderService {
         event: event,
         ref: ref,
         context: context,
+        onCollapsePin: onCollapsePin,
       );
       return false; // Return false to allow other handlers to process if needed
     };

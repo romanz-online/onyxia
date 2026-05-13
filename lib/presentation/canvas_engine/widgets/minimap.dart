@@ -287,10 +287,11 @@ class MinimapState extends ConsumerState<Minimap> {
                         topLeft: Radius.circular(10.0),
                         topRight: Radius.circular(10.0),
                       ),
-                      child: CustomPaint(
+                      child: NarwhalPaint(
                         size: currentMinimapSize,
                         painter: MinimapCanvasPainter(
                           ref: ref,
+                          context: context,
                           objects: objects.objects,
                           selectedObjects: objects.selectedObjects,
                           currentCanvas: currentCanvas,
@@ -306,7 +307,7 @@ class MinimapState extends ConsumerState<Minimap> {
                         topLeft: Radius.circular(10.0),
                         topRight: Radius.circular(10.0),
                       ),
-                      child: CustomPaint(
+                      child: NarwhalPaint(
                         size: currentMinimapSize,
                         painter: MinimapViewportPainter(
                           context: context,
@@ -546,7 +547,7 @@ class MinimapState extends ConsumerState<Minimap> {
   }
 }
 
-class MinimapCanvasPainter extends CustomPainter {
+class MinimapCanvasPainter extends NarwhalPainter {
   final WidgetRef ref;
   final List<CanvasObject> objects;
   final List<CanvasObject> selectedObjects;
@@ -556,12 +557,13 @@ class MinimapCanvasPainter extends CustomPainter {
 
   MinimapCanvasPainter({
     required this.ref,
+    required BuildContext context,
     required this.objects,
     required this.selectedObjects,
     this.currentCanvas,
     required this.canvasBounds,
     required this.scale,
-  });
+  }) : super(context);
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -570,7 +572,7 @@ class MinimapCanvasPainter extends CustomPainter {
     _drawMarkupImage(canvas);
 
     final strokePaint = Paint()
-      ..color = ThemeHelper.neutral900(ref.context)
+      ..color = ThemeHelper.neutral900(context)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 3;
 
@@ -734,16 +736,15 @@ class MinimapCanvasPainter extends CustomPainter {
   }
 }
 
-class MinimapViewportPainter extends CustomPainter {
+class MinimapViewportPainter extends NarwhalPainter {
   final Rect visibleRegion;
   final double minimapScale;
-  final BuildContext context;
 
   MinimapViewportPainter({
     required this.visibleRegion,
     required this.minimapScale,
-    required this.context,
-  });
+    required BuildContext context,
+  }) : super(context);
 
   @override
   void paint(Canvas canvas, Size size) {

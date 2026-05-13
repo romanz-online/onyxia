@@ -7,9 +7,8 @@ import 'canvas_object_painter.dart';
 import 'touchy_object_painter.dart';
 import 'arrow_point_painter.dart';
 
-class CanvasPainter extends CustomPainter {
+class CanvasPainter extends NarwhalPainter {
   final WidgetRef ref;
-  final BuildContext context;
   final CanvasGestureRouter? gestureRouter;
   final List<CanvasObject> objects;
   final List<CanvasObject> selectedObjects;
@@ -27,7 +26,7 @@ class CanvasPainter extends CustomPainter {
 
   CanvasPainter({
     required this.ref,
-    required this.context,
+    required BuildContext context,
     this.gestureRouter,
     this.objects = const <CanvasObject>[],
     this.selectedObjects = const <CanvasObject>[],
@@ -39,7 +38,7 @@ class CanvasPainter extends CustomPainter {
     this.arrowPreview,
     this.arrowToolPrimedData,
     this.isInteractive = true,
-  });
+  }) : super(context);
 
   @override
   void paint(Canvas canvas, Size size) {

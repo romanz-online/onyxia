@@ -16,6 +16,7 @@ class CanvasCommentPinExpanded extends ConsumerStatefulWidget {
   final Offset position;
   final TransformationController transformationController;
   final VoidCallback? onDeleteComment;
+  final VoidCallback onClose;
 
   const CanvasCommentPinExpanded({
     super.key,
@@ -24,6 +25,7 @@ class CanvasCommentPinExpanded extends ConsumerStatefulWidget {
     required this.position,
     required this.transformationController,
     this.onDeleteComment,
+    required this.onClose,
   });
 
   @override
@@ -84,7 +86,7 @@ class _CanvasCommentPinExpandedState
   }
 
   void _onClose() {
-    ref.read(expandedPinProvider.notifier).collapsePin();
+    widget.onClose();
   }
 
   void _onMoreOptions() {
@@ -101,7 +103,7 @@ class _CanvasCommentPinExpandedState
 
   void _deleteThread() {
     _toggleCommentActionMenu(isOpen: false);
-    ref.read(expandedPinProvider.notifier).collapsePin();
+    widget.onClose();
 
     try {
       widget.onDeleteComment?.call();

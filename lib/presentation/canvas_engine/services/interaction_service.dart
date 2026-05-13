@@ -34,6 +34,7 @@ class CanvasInteractionService {
     required KeyEvent event,
     required WidgetRef ref,
     required BuildContext context,
+    required VoidCallback onCollapsePin,
   }) async {
     // Prevent handler execution if widget is being disposed
     if (!context.mounted) return false;
@@ -86,7 +87,7 @@ class CanvasInteractionService {
 
       if (key == LogicalKeyboardKey.escape) {
         objectsNotifier.clearSelectedObjects();
-        closePin(ref: ref);
+        onCollapsePin();
         closeHeadlessPalette(ref: ref);
         clearTemporaryComment(ref: ref);
         return true;
@@ -185,11 +186,7 @@ class CanvasInteractionService {
       isTextWidget = false;
     }
 
-    return isTextWidget ||
-        (context.mounted && ref.read(canvasTextProvider.notifier).hasFocus) ||
-        (context.mounted &&
-            ref.read(selectedNoteStateProvider.notifier).hasFocus) ||
-        (context.mounted && ref.read(expandedPinProvider.notifier).hasFocus);
+    return isTextWidget;
   }
 
   /// Checks if modifier keys (Ctrl/Cmd) are currently pressed
@@ -239,10 +236,6 @@ class CanvasInteractionService {
       }
       textNotifier.stopEditing();
     }
-  }
-
-  static void closePin({required WidgetRef ref}) {
-    ref.read(expandedPinProvider.notifier).collapsePin();
   }
 
   /// Clears temporary comment state
@@ -318,6 +311,7 @@ class CanvasInteractionService {
   static Future<void> createPin({
     required WidgetRef ref,
     required Offset position,
+    ValueSetter<ExpandablePin>? onExpand,
     Artifact? item,
     CanvasObject? targetObject,
   }) async {
@@ -353,7 +347,7 @@ class CanvasInteractionService {
     if (item == null) {
       // expand the pin immediately for new pins
       // the pin will enter edit mode
-      ref.read(expandedPinProvider.notifier).expandPin(pin);
+      onExpand?.call(pin);
     }
 
     ref.read(pinsProvider.notifier).addPin(pin);
@@ -392,10 +386,11 @@ class CanvasInteractionService {
   static Future<void> deletePin({
     required WidgetRef ref,
     required Pin pin,
+    required VoidCallback onCollapse,
     CanvasObject? parentObject,
   }) async {
     // this is a new pin that was never saved - remove it entirely
-    ref.read(expandedPinProvider.notifier).collapsePin();
+    onCollapse();
     ref.read(pinsProvider.notifier).deletePin(pin);
   }
 

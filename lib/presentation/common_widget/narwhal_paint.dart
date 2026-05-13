@@ -9,12 +9,14 @@ import 'package:onyxia/export.dart';
 class NarwhalPaint extends StatelessWidget {
   final Color? backgroundColor;
   final CustomPainter? painter;
+  final Size? size;
   final Widget? child;
 
   const NarwhalPaint({
     super.key,
     this.backgroundColor,
     this.painter,
+    this.size,
     this.child,
   });
 
@@ -23,7 +25,13 @@ class NarwhalPaint extends StatelessWidget {
     return Material(
       color: backgroundColor ?? Colors.transparent,
       type: MaterialType.canvas,
-      child: painter != null ? CustomPaint(painter: painter, child: child) : child,
+      child: painter != null
+          ? CustomPaint(
+              painter: painter,
+              size: size ?? Size.zero,
+              child: child,
+            )
+          : child,
     );
   }
 }

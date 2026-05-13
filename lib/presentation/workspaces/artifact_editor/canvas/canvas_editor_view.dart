@@ -48,6 +48,11 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
   late CanvasGestureRouter _gestureRouter;
   CanvasPainter? _canvasPainter;
   Timer? _textSaveTimer;
+  ExpandablePin? _expandedPin;
+
+  void _expandPin(ExpandablePin pin) => setState(() => _expandedPin = pin);
+  void _collapsePin() => setState(() => _expandedPin = null);
+  bool _isPinExpanded(String id) => _expandedPin?.id == id;
 
   @override
   void initState() {
@@ -58,6 +63,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         ref: ref,
         canvasId: widget.canvasId,
         context: context,
+        onCollapsePin: _collapsePin,
       );
     });
   }
@@ -228,48 +234,51 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                   child: Stack(
                     children: [
                       Positioned.fill(child: Background(canvas: canvas)),
-                      CustomPaint(
-                        size: canvasBounds.size,
-                        child: CanvasTouchDetector(
-                          gesturesToOverride: [
-                            GestureType.onTapDown,
-                            GestureType.onTapUp,
-                            // onPanDown breaks things because it triggers at the same time as regular taps
-                            // GestureType.onPanDown,
-                            if (!_gestureRouter.allowsViewportPanning) ...[
-                              // if statement allows InteractiveViewer to handle viewport panning when needed
-                              GestureType.onPanStart,
-                              GestureType.onPanUpdate,
-                              GestureType.onPanEnd,
+                      NarwhalPaint(
+                        child: SizedBox.fromSize(
+                          size: canvasBounds.size,
+                          child: CanvasTouchDetector(
+                            gesturesToOverride: [
+                              GestureType.onTapDown,
+                              GestureType.onTapUp,
+                              // onPanDown breaks things because it triggers at the same time as regular taps
+                              // GestureType.onPanDown,
+                              if (!_gestureRouter.allowsViewportPanning) ...[
+                                // if statement allows InteractiveViewer to handle viewport panning when needed
+                                GestureType.onPanStart,
+                                GestureType.onPanUpdate,
+                                GestureType.onPanEnd,
+                              ],
+                              GestureType.onSecondaryTapDown,
+                              GestureType.onSecondaryTapUp,
+                              GestureType.onHover,
                             ],
-                            GestureType.onSecondaryTapDown,
-                            GestureType.onSecondaryTapUp,
-                            GestureType.onHover,
-                          ],
-                          builder: (context) {
-                            _canvasPainter = CanvasPainter(
-                              ref: ref,
-                              context: context,
-                              gestureRouter: _gestureRouter,
-                              objects: objects.objects,
-                              selectedObjects: objects.selectedObjects,
-                              draggedObjects: ref.watch(draggedObjectsProvider),
-                              dragSelect:
-                                  ref.watch(dragSelectProvider).dragRect,
-                              arrowPrimedObjects:
-                                  ref.watch(arrowPrimedObjectsProvider),
-                              arrowToolPrimedData:
-                                  ref.watch(arrowToolPrimedObjectsProvider),
-                              textEditedObjId:
-                                  ref.watch(canvasTextProvider).editingObjId,
-                              arrowPreview: arrowPreview,
-                            );
+                            builder: (context) {
+                              _canvasPainter = CanvasPainter(
+                                ref: ref,
+                                context: context,
+                                gestureRouter: _gestureRouter,
+                                objects: objects.objects,
+                                selectedObjects: objects.selectedObjects,
+                                draggedObjects:
+                                    ref.watch(draggedObjectsProvider),
+                                dragSelect:
+                                    ref.watch(dragSelectProvider).dragRect,
+                                arrowPrimedObjects:
+                                    ref.watch(arrowPrimedObjectsProvider),
+                                arrowToolPrimedData:
+                                    ref.watch(arrowToolPrimedObjectsProvider),
+                                textEditedObjId:
+                                    ref.watch(canvasTextProvider).editingObjId,
+                                arrowPreview: arrowPreview,
+                              );
 
-                            return CustomPaint(
-                              size: canvasBounds.size,
-                              painter: _canvasPainter,
-                            );
-                          },
+                              return CustomPaint(
+                                size: canvasBounds.size,
+                                painter: _canvasPainter,
+                              );
+                            },
+                          ),
                         ),
                       ),
                       ...objects.objects.where((e) => !e.isArrow).map(
@@ -320,6 +329,10 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                               canvasObject: targetObject,
                               position: pin.getOffset(parent: targetObject),
                               transformationController: viewportController,
+                              isExpanded: _isPinExpanded(pin.id),
+                              onTap: () => _isPinExpanded(pin.id)
+                                  ? _collapsePin()
+                                  : _expandPin(pin),
                             );
                           },
                         ),
@@ -351,6 +364,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                                 CanvasInteractionService.createPin(
                                   ref: ref,
                                   position: canvasPosition,
+                                  onExpand: _expandPin,
                                   item: details.data.data,
                                   targetObject: hitObjectFill
                                       ? hitInteractionContext.targetObject
@@ -390,31 +404,6 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                               data: details.data as ImageDragData,
                               canvasPosition: canvasPosition,
                             );
-                          }
-                        },
-                        builder: (context, candidateData, rejectedData) =>
-                            const SizedBox.expand(),
-                      ),
-                      DragTarget<DragOffBarData>(
-                        onWillAcceptWithDetails: (data) => true,
-                        onAcceptWithDetails: (details) {
-                          final RenderBox renderBox =
-                              context.findRenderObject() as RenderBox;
-                          final canvasPosition =
-                              renderBox.globalToLocal(details.offset);
-
-                          // Handle rectangle drag and drop
-                          if (details.data.type == ArtifactType.note) {
-                            // Store the drop position
-                            ref
-                                .read(dragOffDropPositionProvider.notifier)
-                                .set(canvasPosition);
-                            // Open the search overlay
-                            ref
-                                .read(canvasSettingsProvider(
-                                        Setting.showSearchOverlay)
-                                    .notifier)
-                                .set(true);
                           }
                         },
                         builder: (context, candidateData, rejectedData) =>
@@ -464,7 +453,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     required List<CanvasObject> objects,
     required TransformationController transformationController,
   }) {
-    final expandedItem = ref.watch(expandedPinProvider);
+    final expandedItem = _expandedPin;
     if (expandedItem == null) return const SizedBox.shrink();
 
     // Check if expanded item is a pin
@@ -483,9 +472,11 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         canvasObject: targetObject,
         pinPosition: pin.getOffset(parent: targetObject),
         transformationController: transformationController,
+        onClose: _collapsePin,
         onRemovePin: () => CanvasInteractionService.deletePin(
           ref: ref,
           pin: pin,
+          onCollapse: _collapsePin,
           parentObject: targetObject,
         ),
       );
@@ -506,6 +497,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         canvasObject: obj,
         position: comment.getOffset(parent: obj),
         transformationController: transformationController,
+        onClose: _collapsePin,
         onDeleteComment: () => CanvasInteractionService.deleteComment(
           ref: ref,
           commentId: comment.id,
@@ -534,6 +526,10 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           comment: comment,
           canvasObject: targetObject,
           position: comment.getOffset(parent: targetObject),
+          isExpanded: _isPinExpanded(comment.id),
+          onTap: () => _isPinExpanded(comment.id)
+              ? _collapsePin()
+              : _expandPin(comment),
         );
       }).toList();
 

@@ -16,6 +16,8 @@ class CanvasCommentPin extends ConsumerStatefulWidget {
   final CanvasObject? canvasObject;
   final Offset? position;
   final TransformationController transformationController;
+  final bool isExpanded;
+  final VoidCallback onTap;
 
   const CanvasCommentPin({
     super.key,
@@ -23,6 +25,8 @@ class CanvasCommentPin extends ConsumerStatefulWidget {
     this.canvasObject,
     required this.transformationController,
     this.position,
+    required this.isExpanded,
+    required this.onTap,
   });
 
   @override
@@ -132,8 +136,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
     super.dispose();
   }
 
-  bool get isExpanded =>
-      ref.read(expandedPinProvider.notifier).isExpanded(widget.comment.id);
+  bool get isExpanded => widget.isExpanded;
 
   bool get isTemporaryComment =>
       ref.read(commentsProvider).temporaryComment?.id == widget.comment.id;
@@ -213,12 +216,12 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
 
   void _onTap() {
     if (isExpanded) {
-      ref.read(expandedPinProvider.notifier).collapsePin();
+      widget.onTap();
       _handleHoverExit();
     } else {
       _animationController
           .reset(); // Instantly reset to collapsed state without animation
-      ref.read(expandedPinProvider.notifier).expandPin(widget.comment);
+      widget.onTap();
     }
   }
 

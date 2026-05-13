@@ -1,11 +1,12 @@
 ﻿import 'package:onyxia/export.dart';
-import '../providers/providers.dart';
 
 class CanvasPin extends ConsumerStatefulWidget {
   final Pin pin;
   final CanvasObject? canvasObject;
   final Offset position;
   final TransformationController transformationController;
+  final bool isExpanded;
+  final VoidCallback onTap;
 
   const CanvasPin({
     super.key,
@@ -13,6 +14,8 @@ class CanvasPin extends ConsumerStatefulWidget {
     this.canvasObject,
     required this.transformationController,
     required this.position,
+    required this.isExpanded,
+    required this.onTap,
   });
 
   @override
@@ -96,8 +99,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
     super.dispose();
   }
 
-  bool get isExpanded =>
-      ref.read(expandedPinProvider.notifier).isExpanded(widget.pin.id);
+  bool get isExpanded => widget.isExpanded;
 
   double _calculateRequiredWidth(String text, BuildContext context) {
     if (text.isEmpty) {
@@ -145,12 +147,12 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
 
   void _onTap() {
     if (isExpanded) {
-      ref.read(expandedPinProvider.notifier).collapsePin();
+      widget.onTap();
       _handleHoverExit();
     } else {
       _animationController
           .reset(); // Instantly reset to collapsed state without animation
-      ref.read(expandedPinProvider.notifier).expandPin(widget.pin);
+      widget.onTap();
     }
   }
 

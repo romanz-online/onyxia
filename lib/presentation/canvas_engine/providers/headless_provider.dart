@@ -22,39 +22,6 @@ class HeadlessState {
     this.hoveredItem,
   });
 
-  HeadlessState copyWith({
-    CanvasObject? headlessArrow,
-    CanvasObject? ghostObject,
-    CanvasObjectType? hoveredShapeType,
-    CanvasConfig? canvasConfig,
-    String? sourceArtifactId,
-    List<Artifact>? children,
-    Artifact? hoveredItem,
-    bool clearHeadlessArrow = false,
-    bool clearGhostObject = false,
-    bool clearHoveredShapeType = false,
-    bool clearCanvasConfig = false,
-    bool clearSourceArtifactId = false,
-    bool clearChildren = false,
-    bool clearHoveredItem = false,
-  }) {
-    return HeadlessState(
-      headlessArrow:
-          clearHeadlessArrow ? null : (headlessArrow ?? this.headlessArrow),
-      ghostObject: clearGhostObject ? null : (ghostObject ?? this.ghostObject),
-      hoveredShapeType: clearHoveredShapeType
-          ? null
-          : (hoveredShapeType ?? this.hoveredShapeType),
-      canvasConfig:
-          clearCanvasConfig ? null : (canvasConfig ?? this.canvasConfig),
-      sourceArtifactId: clearSourceArtifactId
-          ? null
-          : (sourceArtifactId ?? this.sourceArtifactId),
-      children: clearChildren ? null : (children ?? this.children),
-      hoveredItem: clearHoveredItem ? null : (hoveredItem ?? this.hoveredItem),
-    );
-  }
-
   bool get isVisible => headlessArrow != null;
   bool get hasGhostObject => ghostObject != null;
   bool get isFlowCanvas => canvasConfig?.canvasType == CanvasType.flow;
@@ -80,62 +47,51 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
       }
     }
 
-    state = state.copyWith(
+    state = HeadlessState(
       headlessArrow: headlessArrow,
+      ghostObject: state.ghostObject,
+      hoveredShapeType: state.hoveredShapeType,
       canvasConfig: canvasConfig,
       sourceArtifactId: sourceArtifactId,
       children: children,
+      hoveredItem: state.hoveredItem,
     );
   }
 
   void hidePalette() {
-    state = state.copyWith(
-      clearHeadlessArrow: true,
-      clearGhostObject: true,
-      clearHoveredShapeType: true,
-      clearCanvasConfig: true,
-      clearSourceArtifactId: true,
-      clearChildren: true,
-      clearHoveredItem: true,
-    );
+    state = const HeadlessState();
   }
 
   void setHoveredShape(BuildContext context, CanvasObjectType? shapeType) {
-    state = state.copyWith(
-      hoveredShapeType: shapeType,
-      clearHoveredShapeType: shapeType == null,
-    );
+    final ghostObject = (shapeType != null && state.headlessArrow != null)
+        ? _createGhostObject(context, shapeType, state.headlessArrow!)
+        : null;
 
-    // Update ghost object when hovering
-    if (shapeType != null && state.headlessArrow != null) {
-      final ghostObject = _createGhostObject(
-        context,
-        shapeType,
-        state.headlessArrow!,
-      );
-      state = state.copyWith(ghostObject: ghostObject);
-    } else {
-      state = state.copyWith(clearGhostObject: true);
-    }
+    state = HeadlessState(
+      headlessArrow: state.headlessArrow,
+      ghostObject: ghostObject,
+      hoveredShapeType: shapeType,
+      canvasConfig: state.canvasConfig,
+      sourceArtifactId: state.sourceArtifactId,
+      children: state.children,
+      hoveredItem: state.hoveredItem,
+    );
   }
 
   void setHoveredItem(BuildContext context, Artifact? item) {
-    state = state.copyWith(
-      hoveredItem: item,
-      clearHoveredItem: item == null,
-    );
+    final ghostObject = (item != null && state.headlessArrow != null)
+        ? _createArtifactGhostObject(context, item, state.headlessArrow!)
+        : null;
 
-    // Update ghost object when hovering over a note
-    if (item != null && state.headlessArrow != null) {
-      final ghostObject = _createArtifactGhostObject(
-        context,
-        item,
-        state.headlessArrow!,
-      );
-      state = state.copyWith(ghostObject: ghostObject);
-    } else {
-      state = state.copyWith(clearGhostObject: true);
-    }
+    state = HeadlessState(
+      headlessArrow: state.headlessArrow,
+      ghostObject: ghostObject,
+      hoveredShapeType: state.hoveredShapeType,
+      canvasConfig: state.canvasConfig,
+      sourceArtifactId: state.sourceArtifactId,
+      children: state.children,
+      hoveredItem: item,
+    );
   }
 
   CanvasObject _createGhostObject(

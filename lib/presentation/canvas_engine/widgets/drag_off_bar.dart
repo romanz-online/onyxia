@@ -1,5 +1,4 @@
 ﻿import 'package:onyxia/export.dart';
-import '../providers/providers.dart';
 
 /// Data class to carry information during drag operations
 class DragOffBarData {
@@ -24,7 +23,7 @@ class DragOffBarButton {
 }
 
 /// A flexible toolbar widget that supports both clickable and draggable buttons
-class DragOffBar extends ConsumerWidget {
+class DragOffBar extends StatelessWidget {
   final List<DragOffBarButton?> buttons; // null entries act as separators
   final double iconSize;
   final double height;
@@ -82,20 +81,12 @@ class DragOffBar extends ConsumerWidget {
   }
 
   Widget _buildButton(
-    WidgetRef ref,
     BuildContext context,
     DragOffBarButton button,
   ) {
     final buttonWidget = NarwhalIconButton(
       icon: button.icon,
       size: iconSize,
-      onPressed: () {
-        ref.read(dragOffDropPositionProvider.notifier).set(null);
-
-        ref
-            .read(canvasSettingsProvider(Setting.showSearchOverlay).notifier)
-            .toggle();
-      },
     );
 
     // If no drag data is provided, return just the button
@@ -118,7 +109,7 @@ class DragOffBar extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     List<Widget> buttonWidgets = [];
 
     for (int i = 0; i < buttons.length; i++) {
@@ -138,7 +129,7 @@ class DragOffBar extends ConsumerWidget {
         buttonWidgets.add(const Gap(8));
       }
 
-      buttonWidgets.add(_buildButton(ref, context, button));
+      buttonWidgets.add(_buildButton(context, button));
     }
 
     return Positioned.fill(

@@ -986,7 +986,7 @@ class CanvasObjectPainter {
       final hitDetectionRect = Rect.fromPoints(
           paintContext.object.topLeft, paintContext.object.bottomRight);
       final invisiblePaint = Paint()
-        ..color = const Color(0x00000000) // Completely transparent
+        ..color = Colors.transparent
         ..style = PaintingStyle.fill;
 
       paintContext.touchyObjectPainter
