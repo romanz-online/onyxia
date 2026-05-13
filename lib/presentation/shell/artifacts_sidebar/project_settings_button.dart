@@ -25,13 +25,13 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
       isOpen: _isMenuOpen,
       onClose: () => _setMenuOpen(false),
       anchor: const Aligned(
-        follower: Alignment.bottomRight,
-        target: Alignment.topRight,
-        offset: Offset(0, -4),
+        follower: Alignment.bottomLeft,
+        target: Alignment.bottomRight,
+        offset: Offset(4, 0),
         backup: Aligned(
-          follower: Alignment.bottomLeft,
-          target: Alignment.topLeft,
-          offset: Offset(0, -4),
+          follower: Alignment.bottomRight,
+          target: Alignment.topRight,
+          offset: Offset(0, -6),
         ),
       ),
       builder: (context, closeOverlay) => _buildMenu(closeOverlay),
@@ -47,8 +47,8 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
     return Material(
       elevation: 8,
       borderRadius: BorderRadius.circular(6.0),
-      color: Theme.of(context).popupMenuTheme.color ??
-          Theme.of(context).cardColor,
+      color:
+          Theme.of(context).popupMenuTheme.color ?? Theme.of(context).cardColor,
       clipBehavior: Clip.antiAlias,
       child: Container(
         width: 160,
