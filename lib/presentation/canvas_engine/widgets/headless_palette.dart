@@ -47,20 +47,20 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     CanvasObjectType.reverseHouse,
   ];
 
-  static const Map<CanvasObjectType, NarwhalIcons> _shapeIcons = {
-    CanvasObjectType.rectangle: NarwhalIcons.rectangle,
-    CanvasObjectType.diamond: NarwhalIcons.diamond,
-    CanvasObjectType.oblong: NarwhalIcons.roundedRectangle,
-    CanvasObjectType.circle: NarwhalIcons.circle,
-    CanvasObjectType.rhombus: NarwhalIcons.rhombus,
-    CanvasObjectType.trapezoid: NarwhalIcons.trapezoid,
-    CanvasObjectType.cylinder: NarwhalIcons.cylinder,
-    CanvasObjectType.house: NarwhalIcons.pentahome,
-    CanvasObjectType.reverseHouse: NarwhalIcons.pentahomeReversed,
+  static const Map<CanvasObjectType, IconData> _shapeIcons = {
+    CanvasObjectType.rectangle: LucideIcons.square,
+    CanvasObjectType.diamond: LucideIcons.diamond,
+    CanvasObjectType.oblong: LucideIcons.rectangleHorizontal,
+    CanvasObjectType.circle: LucideIcons.circle,
+    CanvasObjectType.rhombus: LucideIcons.diamond,
+    CanvasObjectType.trapezoid: LucideIcons.pentagon,
+    CanvasObjectType.cylinder: LucideIcons.cylinder,
+    CanvasObjectType.house: LucideIcons.house,
+    CanvasObjectType.reverseHouse: LucideIcons.house,
   };
 
-  NarwhalIcons _getShapeIcon(CanvasObjectType shapeType) =>
-      _shapeIcons[shapeType] ?? NarwhalIcons.rectangle;
+  IconData _getShapeIcon(CanvasObjectType shapeType) =>
+      _shapeIcons[shapeType] ?? LucideIcons.square;
 
   void _onShapeSelected(CanvasObjectType shapeType) {
     final paletteState = ref.read(headlessProvider);
@@ -309,7 +309,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                               ),
                             ),
                             const Gap(4),
-                            NarwhalIcon(
+                            Icon(
                               _getShapeIcon(paletteState.hoveredShapeType!),
                               size: 24,
                             ),
@@ -463,8 +463,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8.0),
             child: Row(
               children: [
-                NarwhalIcon(
-                  NarwhalIcons.note,
+                Icon(
+                  LucideIcons.fileText,
                   size: 16,
                   color: ThemeHelper.neutral700(context),
                 ),

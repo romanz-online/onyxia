@@ -542,13 +542,13 @@ class _ToastWidget extends StatelessWidget {
   IconData _getIcon() {
     switch (type) {
       case ToastType.success:
-        return Icons.check_circle;
+        return LucideIcons.circleCheck;
       case ToastType.warning:
-        return Icons.warning;
+        return LucideIcons.triangleAlert;
       case ToastType.error:
-        return Icons.error;
+        return LucideIcons.circleX;
       case ToastType.info:
-        return Icons.info;
+        return LucideIcons.info;
     }
   }
 }

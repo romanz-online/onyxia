@@ -17,10 +17,10 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 4,
+        spacing: 6,
         children: [
           NarwhalIconButton(
-            icon: NarwhalIcons.addNew,
+            icon: LucideIcons.filePlus,
             tooltip: 'New note',
             onPressed: () async {
               await ArtifactsRepository(projectId: selectedProject.id)
@@ -28,7 +28,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
             },
           ),
           NarwhalIconButton(
-            icon: NarwhalIcons.folderClosed,
+            icon: LucideIcons.folderPlus,
             tooltip: 'New folder',
             onPressed: () async {
               await ArtifactsRepository(projectId: selectedProject.id)
@@ -36,7 +36,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
             },
           ),
           NarwhalIconButton(
-            icon: NarwhalIcons.whiteboard,
+            icon: LucideIcons.layoutGrid,
             tooltip: 'New canvas',
             onPressed: () async {
               await ArtifactsRepository(projectId: selectedProject.id)

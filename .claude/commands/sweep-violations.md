@@ -10,8 +10,12 @@ grep -rn -E "Colors\.(red|blue|green|black|white|grey|gray|orange|yellow|pink|pu
 # 3. Hardcoded hex colors — should be ThemeHelper colors
 grep -rn -E "Color\(0x[Ff]{2}" lib --include="*.dart" | grep -v vendor | grep -v "// TODO"
 
-# 4. Raw Icon(Icons.) — prefer NarwhalIcon(NarwhalIcons.xxx)
-grep -rn " Icon(Icons\." lib --include="*.dart" | grep -v vendor
+# 4. Flutter Material Icons.xxx — forbidden; use UniconsLine.xxx / UniconsSolid.xxx instead
+grep -rn "\bIcons\." lib --include="*.dart" | grep -v vendor | grep -v "//"
+
+# 7. Lingering NarwhalIcon / NarwhalIcons / UniconsLine / UniconsSolid references —
+#    must be 0 after the lucide migration
+grep -rn -E "Narwhal(Icon|Icons)\b|UniconsLine\b|UniconsSolid\b" lib --include="*.dart" | grep -v vendor
 
 # 5. Raw CustomPainter — should extend NarwhalPainter
 grep -rn "extends CustomPainter" lib --include="*.dart" | grep -v vendor | grep -v narwhal_paint

@@ -392,9 +392,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             NarwhalIconButton(
-                              icon: NarwhalIcons.edit,
+                              icon: LucideIcons.pencil,
                               size: 32,
-                              iconSafeMode: true,
                               enabled: false,
                             ),
                             const Gap(8),
@@ -460,7 +459,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                             _isEditing
                                 ? const SizedBox.shrink()
                                 : NarwhalIconButton(
-                                    icon: NarwhalIcons.editDefault,
+                                    icon: LucideIcons.pencil,
                                     size: 32,
                                     onPressed: () => _enterEditMode(artifact),
                                   ),
@@ -474,7 +473,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                   _buildPinActionOverlay(
                                       closeOverlay, artifact),
                               child: NarwhalIconButton(
-                                icon: NarwhalIcons.moreDots,
+                                icon: LucideIcons.ellipsis,
                                 size: 32,
                                 isPressed: _isPinActionMenuOpen,
                                 onPressed: () => _togglePinActionMenu(
@@ -483,7 +482,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                             ),
                             const Gap(6),
                             NarwhalIconButton(
-                              icon: NarwhalIcons.close,
+                              icon: LucideIcons.x,
                               size: 32,
                               onPressed: _closePin,
                             ),

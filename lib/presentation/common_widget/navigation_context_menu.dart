@@ -14,12 +14,12 @@ class NavigationContextMenu {
     return [
       ContextMenuEntry(
         label: 'Open in New Tab',
-        icon: Icons.open_in_new,
+        icon: LucideIcons.externalLink,
         onTap: onOpenInNewTab ?? () => openInNewTab(url),
       ),
       ContextMenuEntry(
         label: 'Copy Link',
-        icon: Icons.link,
+        icon: LucideIcons.link,
         onTap: onCopyLink ?? () => copyLinkToClipboard(url),
       ),
     ];

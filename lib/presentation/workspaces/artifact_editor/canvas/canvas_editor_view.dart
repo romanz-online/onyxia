@@ -159,16 +159,11 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                 DragOffBar(
                   buttons: [
                     DragOffBarButton(
-                      icon: NarwhalIcons.note,
+                      icon: LucideIcons.fileText,
                       dragData: DragOffBarData(type: ArtifactType.note),
                       dragFeedbackBuilder: () =>
                           _buildArtifactDragFeedback(context),
                     ),
-                    // DragOffBarButton(
-                    //   icon: NarwhalIcons.imageTool,
-                    //   dragData: DragOffBarData(type: ArtifactType.canvas),
-                    //   dragFeedbackBuilder: () => _buildArtifactDragFeedback(context),
-                    // ),
                   ],
                 )
               else

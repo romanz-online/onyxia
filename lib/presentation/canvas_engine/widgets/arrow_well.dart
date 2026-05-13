@@ -85,27 +85,27 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
     final objWidth = (widget.sourceObject.topLeft.dx - widget.sourceObject.bottomRight.dx).abs();
     final objHeight = (widget.sourceObject.topLeft.dy - widget.sourceObject.bottomRight.dy).abs();
 
-    IconData arrowIcon = Icons.cancel;
+    IconData arrowIcon = LucideIcons.x;
     double width, height;
     const double thickness = 30.0;
     switch (widget.connectionPoint) {
       case ConnectionPoint.top:
-        arrowIcon = Icons.arrow_upward_rounded;
+        arrowIcon = LucideIcons.arrowUp;
         width = objWidth;
         height = thickness;
         break;
       case ConnectionPoint.left:
-        arrowIcon = Icons.arrow_back_rounded;
+        arrowIcon = LucideIcons.arrowLeft;
         width = thickness;
         height = objHeight;
         break;
       case ConnectionPoint.right:
-        arrowIcon = Icons.arrow_forward_rounded;
+        arrowIcon = LucideIcons.arrowRight;
         width = thickness;
         height = objHeight;
         break;
       case ConnectionPoint.bottom:
-        arrowIcon = Icons.arrow_downward_rounded;
+        arrowIcon = LucideIcons.arrowDown;
         width = objWidth;
         height = thickness;
         break;

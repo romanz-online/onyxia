@@ -12,7 +12,7 @@ List<ContextMenuItem> buildProjectContextMenuItems(
     child: Row(
       spacing: 8,
       children: [
-        const Icon(Icons.open_in_new, size: 14),
+        const Icon(LucideIcons.externalLink, size: 14),
         Text('Open in New Tab', style: NarwhalTextStyle()),
       ],
     ),
@@ -26,7 +26,7 @@ List<ContextMenuItem> buildProjectContextMenuItems(
     child: Row(
       spacing: 8,
       children: [
-        const Icon(Icons.link, size: 14),
+        const Icon(LucideIcons.link, size: 14),
         Text('Copy Link', style: NarwhalTextStyle()),
       ],
     ),

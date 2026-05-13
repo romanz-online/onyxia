@@ -24,9 +24,9 @@ class MasterSidebar extends ConsumerWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         child: Column(
-          spacing: 4,
+          spacing: 8,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             ValueListenableBuilder<bool>(
@@ -34,8 +34,8 @@ class MasterSidebar extends ConsumerWidget {
               builder: (context, collapsed, _) {
                 return NarwhalIconButton(
                   icon: collapsed
-                      ? NarwhalIcons.arrowRightExpand
-                      : NarwhalIcons.arrowLeftCollapse,
+                      ? LucideIcons.panelLeftOpen
+                      : LucideIcons.panelLeftClose,
                   tooltip: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
                   onPressed: () {
                     animateNextCollapseChange.value = true;
@@ -46,7 +46,7 @@ class MasterSidebar extends ConsumerWidget {
             ),
             if (projectId.isNotEmpty) ...[
               NarwhalIconButton(
-                icon: NarwhalIcons.dashboard,
+                icon: LucideIcons.share2,
                 tooltip: 'Open graph',
                 onPressed: () {
                   if (projectId.isEmpty) return;

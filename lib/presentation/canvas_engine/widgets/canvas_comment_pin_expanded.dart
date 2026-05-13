@@ -405,7 +405,7 @@ class _CanvasCommentPinExpandedState
                 builder: (context, closeOverlay) =>
                     _buildCommentActionOverlay(closeOverlay),
                 child: NarwhalIconButton(
-                  icon: NarwhalIcons.moreDots,
+                  icon: LucideIcons.ellipsis,
                   size: 30,
                   isPressed: _isCommentActionMenuOpen,
                   onPressed: _onMoreOptions,
@@ -413,7 +413,7 @@ class _CanvasCommentPinExpandedState
               ),
               const Gap(6),
               NarwhalIconButton(
-                icon: NarwhalIcons.close,
+                icon: LucideIcons.x,
                 size: 30,
                 onPressed: _onClose,
               ),
@@ -533,7 +533,7 @@ class _CanvasCommentPinExpandedState
                   closeOverlay,
                 ),
                 child: NarwhalIconButton(
-                  icon: NarwhalIcons.moreDots,
+                  icon: LucideIcons.ellipsis,
                   size: 28,
                   enabled: ref.read(currentUserProvider).value?.id == createdBy,
                   isPressed: _openCommentMenuId == commentId,
@@ -631,7 +631,7 @@ class _CanvasCommentPinExpandedState
             right: 5,
             bottom: 4,
             child: NarwhalIconButton(
-              icon: NarwhalIcons.enter,
+              icon: LucideIcons.cornerDownLeft,
               onPressed: _submitReply,
               size: 30,
             ),

@@ -339,7 +339,7 @@ class MinimapState extends ConsumerState<Minimap> {
                       top: 4,
                       right: 4,
                       child: NarwhalIconButton(
-                        icon: NarwhalIcons.close,
+                        icon: LucideIcons.x,
                         size: 20,
                         onPressed: () => ref
                             .read(canvasSettingsProvider(Setting.showMinimap)
@@ -408,7 +408,7 @@ class MinimapState extends ConsumerState<Minimap> {
         child: Row(
           children: [
             NarwhalIconButton(
-              icon: NarwhalIcons.minus,
+              icon: LucideIcons.minus,
               onPressed: zoomOut,
             ),
             Container(width: 1, color: ThemeHelper.neutral400(context)),
@@ -435,7 +435,7 @@ class MinimapState extends ConsumerState<Minimap> {
             ),
             Container(width: 1, color: ThemeHelper.neutral400(context)),
             NarwhalIconButton(
-              icon: NarwhalIcons.add,
+              icon: LucideIcons.plus,
               onPressed: zoomIn,
             ),
           ],
@@ -474,7 +474,7 @@ class MinimapState extends ConsumerState<Minimap> {
                 onEnter: (_) => setState(() => _isExpandHovered = true),
                 onExit: (_) => setState(() => _isExpandHovered = false),
                 child: NarwhalIconButton(
-                  icon: NarwhalIcons.dropdownArrowUp,
+                  icon: LucideIcons.chevronUp,
                   size: 28,
                   onPressed: () => ref
                       .read(

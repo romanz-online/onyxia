@@ -35,7 +35,7 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
       ),
       builder: (context, closeOverlay) => _buildMenu(closeOverlay),
       child: NarwhalIconButton(
-        icon: NarwhalIcons.settingsGear,
+        icon: LucideIcons.settings,
         isPressed: _isMenuOpen,
         onPressed: () => _setMenuOpen(!_isMenuOpen),
       ),

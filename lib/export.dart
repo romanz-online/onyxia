@@ -2,7 +2,6 @@
 
 export 'package:onyxia/core/colors.dart';
 export 'package:onyxia/core/styles.dart';
-export 'package:onyxia/core/icons.dart';
 
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_view.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_context_menu.dart';
@@ -35,7 +34,6 @@ export 'package:onyxia/presentation/common_widget/drag_select_painter.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_paint.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_icon_button.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_icon.dart';
 export 'package:onyxia/presentation/common_widget/initials_circle.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/services/item_title_validation_service.dart';
@@ -64,7 +62,7 @@ export 'package:flutter_riverpod/flutter_riverpod.dart' hide AsyncError;
 export 'package:uuid/uuid.dart';
 export 'package:go_router/go_router.dart';
 export 'package:supabase_flutter/supabase_flutter.dart' hide User;
-export 'package:flutter_svg/svg.dart';
+export 'package:lucide_icons_flutter/lucide_icons.dart';
 export 'package:super_tree/super_tree.dart';
 export 'package:file_picker/file_picker.dart';
 export 'package:collection/collection.dart' hide binarySearch, mergeSort;

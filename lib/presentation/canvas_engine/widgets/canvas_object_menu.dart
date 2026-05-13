@@ -238,7 +238,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       switch (opt) {
         case CanvasObjectMenuOption.mediaSource:
           buttons.add(NarwhalIconButton(
-            icon: NarwhalIcons.image,
+            icon: LucideIcons.image,
             onPressed: () async {
               final selectedObjects =
                   ref.read(canvasObjectsProvider).selectedObjects;
@@ -260,16 +260,16 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.shape:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].type) {
-            CanvasObjectType.rectangle => NarwhalIcons.rectangle,
-            CanvasObjectType.diamond => NarwhalIcons.diamond,
-            CanvasObjectType.oblong => NarwhalIcons.roundedRectangle,
-            CanvasObjectType.circle => NarwhalIcons.circle,
-            CanvasObjectType.rhombus => NarwhalIcons.rhombus,
-            CanvasObjectType.trapezoid => NarwhalIcons.trapezoid,
-            CanvasObjectType.cylinder => NarwhalIcons.cylinder,
-            CanvasObjectType.house => NarwhalIcons.pentahome,
-            CanvasObjectType.reverseHouse => NarwhalIcons.pentahomeReversed,
-            _ => NarwhalIcons.rectangle
+            CanvasObjectType.rectangle => LucideIcons.square,
+            CanvasObjectType.diamond => LucideIcons.diamond,
+            CanvasObjectType.oblong => LucideIcons.rectangleHorizontal,
+            CanvasObjectType.circle => LucideIcons.circle,
+            CanvasObjectType.rhombus => LucideIcons.diamond,
+            CanvasObjectType.trapezoid => LucideIcons.pentagon,
+            CanvasObjectType.cylinder => LucideIcons.cylinder,
+            CanvasObjectType.house => LucideIcons.house,
+            CanvasObjectType.reverseHouse => LucideIcons.house,
+            _ => LucideIcons.square
           };
 
           buttons.add(NarwhalIconButton(
@@ -306,7 +306,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                 ),
                 // Button on top
                 NarwhalIconButton(
-                  icon: NarwhalIcons.colorChip,
+                  icon: LucideIcons.palette,
                   iconColor: _selectedObjects.isEmpty
                       ? null
                       : _selectedObjects[0].color,
@@ -322,7 +322,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.stroke:
           final isSelected = _activeMenuOption == opt;
           buttons.add(NarwhalIconButton(
-            icon: NarwhalIcons.stroke,
+            icon: LucideIcons.minus,
             onPressed: () => _toggleMenuOption(opt),
             isSelected: isSelected,
             isPressed: isSelected,
@@ -332,9 +332,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.startArrowTip:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].arrowProps.startTip) {
-            ArrowTip.triangle => NarwhalIcons.tipSolidArrowLeft,
-            ArrowTip.circle => NarwhalIcons.tipCircleLeft,
-            ArrowTip.none => NarwhalIcons.noTip,
+            ArrowTip.triangle => LucideIcons.arrowLeft,
+            ArrowTip.circle => LucideIcons.circle,
+            ArrowTip.none => LucideIcons.ban,
           };
           buttons.add(NarwhalIconButton(
             icon: icon,
@@ -346,9 +346,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.endArrowTip:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].arrowProps.endTip) {
-            ArrowTip.triangle => NarwhalIcons.tipSolidArrowRight,
-            ArrowTip.circle => NarwhalIcons.tipCircleRight,
-            ArrowTip.none => NarwhalIcons.noTip,
+            ArrowTip.triangle => LucideIcons.arrowRight,
+            ArrowTip.circle => LucideIcons.circle,
+            ArrowTip.none => LucideIcons.ban,
           };
           buttons.add(NarwhalIconButton(
             icon: icon,
@@ -360,8 +360,8 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.arrowType:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].arrowProps.arrowType) {
-            ArrowType.segmented => NarwhalIcons.lineCorner,
-            ArrowType.curved => NarwhalIcons.lineCurve,
+            ArrowType.segmented => LucideIcons.cornerDownRight,
+            ArrowType.curved => LucideIcons.trendingUp,
           };
           buttons.add(NarwhalIconButton(
             icon: icon,
@@ -373,7 +373,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.textfield:
           final isSelected = ref.watch(canvasTextProvider.notifier).isEditing;
           buttons.add(NarwhalIconButton(
-            icon: NarwhalIcons.textSettings,
+            icon: LucideIcons.type,
             onPressed: () {
               if (isSelected) {
                 widget.closeTextEditor();
@@ -423,7 +423,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     return GridPalette(
       buttons: colorPalette
           .map((color) => NarwhalIconButton(
-                icon: NarwhalIcons.colorChip,
+                icon: LucideIcons.palette,
                 iconColor: color,
                 onPressed: () {
                   for (final obj in _selectedObjects) {
@@ -442,7 +442,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
   Widget _buildStrokePalette() {
     List<Widget> buttons = [
       NarwhalIconButton(
-        icon: NarwhalIcons.strokeDashed,
+        icon: LucideIcons.ellipsis,
         onPressed: () {
           for (final obj in _selectedObjects) {
             obj.stroke = StrokeType.dashed;
@@ -454,7 +454,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         isSelected: _selectedObjects[0].stroke == StrokeType.dashed,
       ),
       NarwhalIconButton(
-        icon: NarwhalIcons.strokeDefault,
+        icon: LucideIcons.minus,
         onPressed: () {
           for (final obj in _selectedObjects) {
             obj.stroke = StrokeType.solid;
@@ -466,7 +466,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         isSelected: _selectedObjects[0].stroke == StrokeType.solid,
       ),
       NarwhalIconButton(
-        icon: NarwhalIcons.strokeThick,
+        icon: LucideIcons.equal,
         onPressed: () {
           for (final obj in _selectedObjects) {
             obj.stroke = StrokeType.thick;
@@ -499,16 +499,16 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       CanvasObjectType.reverseHouse,
     ];
 
-    final Map<CanvasObjectType, NarwhalIcons> shapeIcons = {
-      CanvasObjectType.rectangle: NarwhalIcons.rectangle,
-      CanvasObjectType.diamond: NarwhalIcons.diamond,
-      CanvasObjectType.oblong: NarwhalIcons.roundedRectangle,
-      CanvasObjectType.circle: NarwhalIcons.circle,
-      CanvasObjectType.rhombus: NarwhalIcons.rhombus,
-      CanvasObjectType.trapezoid: NarwhalIcons.trapezoid,
-      CanvasObjectType.cylinder: NarwhalIcons.cylinder,
-      CanvasObjectType.house: NarwhalIcons.pentahome,
-      CanvasObjectType.reverseHouse: NarwhalIcons.pentahomeReversed,
+    final Map<CanvasObjectType, IconData> shapeIcons = {
+      CanvasObjectType.rectangle: LucideIcons.square,
+      CanvasObjectType.diamond: LucideIcons.diamond,
+      CanvasObjectType.oblong: LucideIcons.rectangleHorizontal,
+      CanvasObjectType.circle: LucideIcons.circle,
+      CanvasObjectType.rhombus: LucideIcons.diamond,
+      CanvasObjectType.trapezoid: LucideIcons.pentagon,
+      CanvasObjectType.cylinder: LucideIcons.cylinder,
+      CanvasObjectType.house: LucideIcons.house,
+      CanvasObjectType.reverseHouse: LucideIcons.house,
     };
 
     List<Widget> buttons = shapeOptions
@@ -541,9 +541,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     List<Widget> buttons = [
       // Circle tip
       NarwhalIconButton(
-        icon: tipOnRight
-            ? NarwhalIcons.tipCircleRight
-            : NarwhalIcons.tipCircleLeft,
+        icon: tipOnRight ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
@@ -561,9 +559,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
       // Triangle tip
       NarwhalIconButton(
-        icon: tipOnRight
-            ? NarwhalIcons.tipSolidArrowRight
-            : NarwhalIcons.tipSolidArrowLeft,
+        icon: tipOnRight ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
@@ -581,7 +577,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
       // No tip
       NarwhalIconButton(
-        icon: NarwhalIcons.noTip,
+        icon: LucideIcons.ban,
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
@@ -611,7 +607,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     List<Widget> buttons = [
       // Segmented type
       NarwhalIconButton(
-        icon: NarwhalIcons.lineCorner,
+        icon: LucideIcons.cornerDownRight,
         onPressed: () {
           for (final obj in _selectedObjects) {
             obj.arrowProps.arrowType = ArrowType.segmented;
@@ -625,7 +621,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
       // Curved type
       NarwhalIconButton(
-        icon: NarwhalIcons.lineCurve,
+        icon: LucideIcons.trendingUp,
         onPressed: () {
           for (final obj in _selectedObjects) {
             obj.arrowProps.arrowType = ArrowType.curved;

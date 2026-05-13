@@ -64,9 +64,10 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
 
 ### Icons - CRITICAL RULE
 
-- **ALWAYS** prefer `NarwhalIcon(NarwhalIcons.xxx, ...)` over Flutter's native `Icon(Icons.xxx, ...)`
-- Use `NarwhalIcon` whenever a `NarwhalIcons` constant exists for the desired icon
-- Only fall back to `Icon(Icons.xxx)` when there is no matching `NarwhalIcons` constant for the required icon
+- **ALWAYS** use icons from the `lucide_icons_flutter` package: `Icon(LucideIcons.xxx, ...)`
+- **NEVER** use Flutter's Material `Icons.xxx` constants (e.g. `Icon(Icons.menu)`) — they are forbidden in app code
+- `Icon()` itself is the correct widget; only the constant source matters. The `lucide_icons_flutter` package is re-exported via `lib/export.dart`, so no additional import is needed
+- If a needed glyph genuinely doesn't exist in Lucide, raise it before adding any other source — don't silently reintroduce Material Icons, unicons, or new SVG assets
 
 ### Custom Painting - CRITICAL RULE
 

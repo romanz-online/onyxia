@@ -2,14 +2,13 @@ import 'package:onyxia/export.dart';
 
 /// @ponder ponder/NarwhalIconButton.gif
 class NarwhalIconButton extends StatelessWidget {
-  final NarwhalIcons icon;
+  final IconData icon;
   final VoidCallback? onPressed;
   final bool enabled;
   final bool isSelected;
   final bool isPressed;
   final bool hasCaret;
   final double size;
-  final bool iconSafeMode;
   final Color? iconColor;
   final String? tooltip;
   final int badgeCount;
@@ -23,8 +22,7 @@ class NarwhalIconButton extends StatelessWidget {
     this.isSelected = false,
     this.isPressed = false,
     this.hasCaret = false,
-    this.size = 32,
-    this.iconSafeMode = false,
+    this.size = 28,
     this.iconColor,
     this.tooltip,
     this.badgeCount = 0,
@@ -79,28 +77,25 @@ class NarwhalIconButton extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 spacing: 2,
                 children: [
-                  NarwhalIcon(
+                  Icon(
                     icon,
-                    size: size - (hasCaret ? 4 : 0),
+                    size: size - 4,
                     color: iconColorFinal,
-                    safeMode: iconSafeMode,
                   ),
-                  NarwhalIcon(
+                  Icon(
                     (isSelected || isPressed)
-                        ? NarwhalIcons.dropdownArrowUp
-                        : NarwhalIcons.dropdownArrow,
+                        ? LucideIcons.chevronUp
+                        : LucideIcons.chevronDown,
                     size: 16,
                     color: getIconColor(theme, context),
-                    safeMode: iconSafeMode,
                   ),
                 ],
               )
             : Center(
-                child: NarwhalIcon(
+                child: Icon(
                   icon,
-                  size: size,
+                  size: size - 8,
                   color: iconColorFinal,
-                  safeMode: iconSafeMode,
                 ),
               ),
       ),

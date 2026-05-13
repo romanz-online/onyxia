@@ -261,8 +261,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                                 top: _paddingAnimation.value,
                                 bottom: _paddingAnimation.value,
                               ),
-                              child: const NarwhalIcon(NarwhalIcons.edit,
-                                  safeMode: true),
+                              child: const Icon(LucideIcons.pencil),
                             ),
                             if (_widthAnimation.value > 36)
                               Expanded(

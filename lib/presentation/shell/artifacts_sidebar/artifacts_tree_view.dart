@@ -52,8 +52,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
   void _selectItem(Artifact item) {
     treeController.setSelectedNodeId(item.id);
-    context
-        .go(item.navigationUrl(ref.read(selectedProjectProvider)?.id));
+    context.go(item.navigationUrl(ref.read(selectedProjectProvider)?.id));
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {
@@ -118,19 +117,27 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       controller: treeController,
       expansionSlotSize: 20,
       expansionBuilder: (ctx, node) => node.hasChildren
-          ? NarwhalIcon(
-              NarwhalIcons.expandArrowCollapsed,
-              color: ThemeHelper.neutral900(context),
+          ? Padding(
+              padding: EdgeInsets.fromLTRB(
+                node.isExpanded ? 0 : 5,
+                0,
+                0,
+                node.isExpanded ? 4 : 2,
+              ),
+              child: Icon(
+                LucideIcons.chevronRight,
+                color: ThemeHelper.neutral900(context),
+                size: 16,
+              ),
             )
           : const SizedBox.shrink(),
       prefixBuilder: (ctx, node) => node.data.type == ArtifactType.folder
           ? Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: NarwhalIcon(
-                node.isExpanded
-                    ? NarwhalIcons.folderOpened
-                    : NarwhalIcons.folderClosed,
+              padding: const EdgeInsets.only(left: 7),
+              child: Icon(
+                node.isExpanded ? LucideIcons.folderOpen : LucideIcons.folder,
                 color: ThemeHelper.neutral900(context),
+                size: 18,
               ),
             )
           : const SizedBox.shrink(),

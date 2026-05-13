@@ -16,29 +16,29 @@ class Toolbar extends ConsumerStatefulWidget {
 
 class ToolBarWidgetState extends ConsumerState<Toolbar> {
   // Comprehensive mapping of all tools to their icons
-  static const Map<ToolMode, NarwhalIcons> _toolIcons = {
+  static const Map<ToolMode, IconData> _toolIcons = {
     // Basic tools
-    ToolMode.pointer: NarwhalIcons.cursor,
-    ToolMode.pan: NarwhalIcons.hand,
+    ToolMode.pointer: LucideIcons.mousePointer,
+    ToolMode.pan: LucideIcons.move,
 
     // Shape tools
-    ToolMode.rectangle: NarwhalIcons.rectangle,
-    ToolMode.diamond: NarwhalIcons.diamond,
-    ToolMode.oblong: NarwhalIcons.roundedRectangle,
-    ToolMode.circle: NarwhalIcons.circle,
-    ToolMode.rhombus: NarwhalIcons.rhombus,
-    ToolMode.trapezoid: NarwhalIcons.trapezoid,
-    ToolMode.cylinder: NarwhalIcons.cylinder,
-    ToolMode.house: NarwhalIcons.pentahome,
-    ToolMode.reverseHouse: NarwhalIcons.pentahomeReversed,
+    ToolMode.rectangle: LucideIcons.square,
+    ToolMode.diamond: LucideIcons.diamond,
+    ToolMode.oblong: LucideIcons.rectangleHorizontal,
+    ToolMode.circle: LucideIcons.circle,
+    ToolMode.rhombus: LucideIcons.diamond,
+    ToolMode.trapezoid: LucideIcons.pentagon,
+    ToolMode.cylinder: LucideIcons.cylinder,
+    ToolMode.house: LucideIcons.house,
+    ToolMode.reverseHouse: LucideIcons.house,
 
     // Other tools
-    ToolMode.arrow: NarwhalIcons.line,
-    ToolMode.image: NarwhalIcons.imageTool,
-    ToolMode.text: NarwhalIcons.textTool,
-    ToolMode.brush: NarwhalIcons.drawTool,
-    ToolMode.comment: NarwhalIcons.comment,
-    ToolMode.artifact: NarwhalIcons.artifact,
+    ToolMode.arrow: LucideIcons.minus,
+    ToolMode.image: LucideIcons.image,
+    ToolMode.text: LucideIcons.type,
+    ToolMode.brush: LucideIcons.penTool,
+    ToolMode.comment: LucideIcons.messageSquare,
+    ToolMode.artifact: LucideIcons.fileText,
   };
 
   // Get all shape tools in order
@@ -158,7 +158,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
         }
 
         toolButtons.add(NarwhalIconButton(
-          icon: NarwhalIcons.shapes,
+          icon: LucideIcons.pentagon,
           size: iconSize,
           onPressed: _toggleShapesSubmenu,
           isSelected: _isShapeTool(selectedTool),

@@ -63,8 +63,8 @@ class ArtifactObject extends ConsumerWidget {
         ),
       ),
       child: const Center(
-        child: NarwhalIcon(
-          NarwhalIcons.placeholder,
+        child: Icon(
+          LucideIcons.square,
           size: 24,
         ),
       ),
@@ -236,8 +236,8 @@ class ArtifactObject extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            NarwhalIcon(
-              NarwhalIcons.delete,
+            Icon(
+              LucideIcons.trash2,
               color: Colors.red,
               size: 24,
             ),

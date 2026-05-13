@@ -92,10 +92,9 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          NarwhalIcon(
-                            NarwhalIcons.narwhalLogo,
+                          Icon(
+                            LucideIcons.waves,
                             size: 56,
-                            safeMode: true,
                           ),
                           Text(
                             ' Narwhal',

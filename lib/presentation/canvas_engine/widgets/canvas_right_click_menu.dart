@@ -77,43 +77,43 @@ List<RightClickMenuItem> _whitespaceItems(
   return [
     RightClickMenuItem(
       label: 'Add Comment',
-      icon: Icons.comment,
+      icon: LucideIcons.messageSquare,
       onTap: () => _addComment(ref, position, null),
     ),
     if (isMarkup)
       RightClickMenuItem(
         label: 'Add Pin',
-        icon: Icons.track_changes,
+        icon: LucideIcons.target,
         onTap: () => _addArtifact(ref, position, null, isMarkup),
       ),
     if (!isMarkup)
       RightClickMenuItem(
         label: 'Paste',
-        icon: Icons.content_paste,
+        icon: LucideIcons.clipboard,
         onTap: () => _paste(ref, position),
         dividerBefore: true,
       ),
     if (!isMarkup)
       RightClickMenuItem(
         label: 'Turn ${snapToGrid ? 'off' : 'on'} snap to grid',
-        icon: Icons.grid_on,
+        icon: LucideIcons.grid3x3,
         onTap: () => _toggleSetting(ref, Setting.snapToGrid),
         dividerBefore: true,
       ),
     RightClickMenuItem(
       label: '${showMinimap ? 'Hide' : 'Show'} mini-map',
-      icon: Icons.map,
+      icon: LucideIcons.map,
       onTap: () => _toggleSetting(ref, Setting.showMinimap),
     ),
     if (!isMarkup)
       RightClickMenuItem(
         label: '${showToolbar ? 'Hide' : 'Show'} toolbar',
-        icon: Icons.build,
+        icon: LucideIcons.wrench,
         onTap: () => _toggleSetting(ref, Setting.showToolbar),
       ),
     RightClickMenuItem(
       label: 'Get link to diagram',
-      icon: Icons.link,
+      icon: LucideIcons.link,
       onTap: _copyDiagramLink,
     ),
   ];
@@ -132,59 +132,59 @@ List<RightClickMenuItem> _objectItems(
   return [
     RightClickMenuItem(
       label: 'Add Comment',
-      icon: Icons.comment,
+      icon: LucideIcons.messageSquare,
       onTap: () => _addComment(ref, position, clickedObj),
     ),
     RightClickMenuItem(
       label: 'Add Pin',
-      icon: Icons.track_changes,
+      icon: LucideIcons.target,
       onTap: () => _addArtifact(ref, position, clickedObj, isMarkup),
     ),
     RightClickMenuItem(
       label: 'Cut',
-      icon: Icons.content_cut,
+      icon: LucideIcons.scissors,
       onTap: () => _cut(ref),
       dividerBefore: true,
     ),
     RightClickMenuItem(
       label: 'Copy',
-      icon: Icons.content_copy,
+      icon: LucideIcons.copy,
       onTap: () => _copy(ref),
     ),
     RightClickMenuItem(
       label: 'Delete',
-      icon: Icons.delete_outline,
+      icon: LucideIcons.trash2,
       onTap: () => _delete(ref),
     ),
     RightClickMenuItem(
       label: 'Arrange',
-      icon: Icons.layers,
+      icon: LucideIcons.layers,
       dividerBefore: true,
       submenu: [
         RightClickMenuItem(
           label: 'Bring Forward',
-          icon: Icons.keyboard_arrow_up,
+          icon: LucideIcons.chevronUp,
           onTap: canMoveForward
               ? () => _moveObjects(ref, clickedObj, _MoveDirection.forward)
               : null,
         ),
         RightClickMenuItem(
           label: 'Bring to Front',
-          icon: Icons.keyboard_double_arrow_up,
+          icon: LucideIcons.chevronsUp,
           onTap: canMoveForward
               ? () => _moveObjects(ref, clickedObj, _MoveDirection.toFront)
               : null,
         ),
         RightClickMenuItem(
           label: 'Send Backward',
-          icon: Icons.keyboard_arrow_down,
+          icon: LucideIcons.chevronDown,
           onTap: canMoveBackward
               ? () => _moveObjects(ref, clickedObj, _MoveDirection.backward)
               : null,
         ),
         RightClickMenuItem(
           label: 'Send to Back',
-          icon: Icons.keyboard_double_arrow_down,
+          icon: LucideIcons.chevronsDown,
           onTap: canMoveBackward
               ? () => _moveObjects(ref, clickedObj, _MoveDirection.toBack)
               : null,
@@ -651,7 +651,7 @@ class _MenuRow extends StatelessWidget {
                   ),
                 ),
                 if (showChevron)
-                  Icon(Icons.chevron_right, size: 18, color: textColor),
+                  Icon(LucideIcons.chevronRight, size: 18, color: textColor),
               ],
             ),
           ),

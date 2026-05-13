@@ -9,7 +9,7 @@ class DragOffBarData {
 
 /// Configuration for a button in the DragOffBar
 class DragOffBarButton {
-  final NarwhalIcons icon;
+  final IconData icon;
   final VoidCallback? onDragCompleted;
   final DragOffBarData? dragData;
   final Widget Function()? dragFeedbackBuilder;
@@ -70,7 +70,7 @@ class DragOffBar extends StatelessWidget {
           border: Border.all(color: ThemeHelper.neutral300(context), width: 2),
         ),
         child: Center(
-          child: NarwhalIcon(
+          child: Icon(
             button.icon,
             size: 24,
             color: ThemeHelper.neutral500(context),
