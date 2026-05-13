@@ -18,7 +18,6 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
   @override
   Widget build(BuildContext context) {
     final projectId = ref.read(selectedProjectProvider)?.id;
-
     if (projectId == null) return const SizedBox.shrink();
 
     return NarwhalOverlay(
