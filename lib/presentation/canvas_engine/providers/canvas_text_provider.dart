@@ -27,18 +27,19 @@ class CanvasTextState {
 class CanvasTextNotifier extends Notifier<CanvasTextState> {
   @override
   CanvasTextState build() {
-    final initialState = CanvasTextState(
-      controller: TextEditingController(),
-      editingObjId: '',
-      focusNode: FocusNode(),
-    );
+    final controller = TextEditingController();
+    final focusNode = FocusNode();
 
     ref.onDispose(() {
-      state.controller.dispose();
-      state.focusNode.dispose();
+      controller.dispose();
+      focusNode.dispose();
     });
 
-    return initialState;
+    return CanvasTextState(
+      controller: controller,
+      editingObjId: '',
+      focusNode: focusNode,
+    );
   }
 
   void startEditing(String content, String objId) {
@@ -55,11 +56,8 @@ class CanvasTextNotifier extends Notifier<CanvasTextState> {
   void stopEditing() {
     if (!isEditing) return;
     state.focusNode.unfocus();
-    state = CanvasTextState(
-      controller: TextEditingController(),
-      editingObjId: '',
-      focusNode: state.focusNode,
-    );
+    state.controller.clear();
+    state = state.copyWith(editingObjId: '');
   }
 
   bool get isEditing => state.editingObjId.isNotEmpty;

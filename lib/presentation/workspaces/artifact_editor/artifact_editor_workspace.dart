@@ -1,5 +1,4 @@
 ﻿import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/canvas_engine/providers/providers.dart';
 import 'note/note_editor_view.dart';
 
 class ArtifactWorkspace extends ConsumerStatefulWidget {
@@ -24,9 +23,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
           key: ValueKey('note-${artifact.id}'),
           provider: widget.noteProvider,
         ),
-      ArtifactType.canvas => ref.read(urlCanvasIdProvider) == null
-          ? CanvasEditorView(canvasId: artifact.id)
-          : const SizedBox.shrink(),
+      ArtifactType.canvas => CanvasEditorView(canvasId: artifact.id),
       ArtifactType.folder => const SizedBox.shrink(),
     };
   }

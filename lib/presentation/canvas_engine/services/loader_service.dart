@@ -63,7 +63,9 @@ class CanvasLoaderService {
   }) async {
     if (!context.mounted) return;
 
-    CanvasArtifact? currentCanvas = ref.read(currentCanvasProvider);
+    final selected = ref.read(selectedArtifactProvider);
+    final CanvasArtifact? currentCanvas =
+        selected is CanvasArtifact ? selected : null;
 
     final projectId = ref.read(selectedProjectProvider)?.id;
     if (projectId == null) return;

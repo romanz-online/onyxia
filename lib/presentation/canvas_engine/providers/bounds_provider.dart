@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'objects_provider.dart';
 import 'dart:ui' as ui;
 import 'dart:math' as math;
 import 'dart:async';
@@ -99,22 +98,24 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
       _animationTimer = null;
     });
 
-    ref.listen(currentCanvasProvider, (previous, next) {
-      if (next != previous) {
+    ref.listen(selectedArtifactProvider, (previous, next) {
+      final prevCanvas = previous is CanvasArtifact ? previous : null;
+      final nextCanvas = next is CanvasArtifact ? next : null;
+      if (nextCanvas != prevCanvas) {
         // Only reinitialize bounds if properties that actually affect bounds have changed
         bool needsReinitialize = false;
 
-        if (previous == null || next == null) {
+        if (prevCanvas == null || nextCanvas == null) {
           needsReinitialize = true;
-        } else if (previous.canvasType != next.canvasType) {
+        } else if (prevCanvas.canvasType != nextCanvas.canvasType) {
           needsReinitialize = true;
-        } else if (next.canvasType == CanvasType.markup &&
-            previous.imageUrl != next.imageUrl) {
+        } else if (nextCanvas.canvasType == CanvasType.markup &&
+            prevCanvas.imageUrl != nextCanvas.imageUrl) {
           needsReinitialize = true;
         }
 
         if (needsReinitialize) {
-          initializeBounds(next);
+          initializeBounds(nextCanvas);
         }
       }
     });
@@ -127,7 +128,7 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
 
   /// Initialize bounds based on canvas type
   Future<void> initializeBounds(CanvasArtifact? canvas) async {
-    if (!ref.mounted) return;
+    if (ref.mounted) return;
 
     _loadGeneration++;
     final myGeneration = _loadGeneration;

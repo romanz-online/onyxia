@@ -4,41 +4,9 @@ import 'pins_provider.dart';
 import 'dart:async';
 
 final canvasConfigProvider = Provider.autoDispose<CanvasConfig>((ref) {
-  final type = ref.watch(currentCanvasProvider.select((c) => c?.canvasType));
+  final type = ref.watch(selectedArtifactProvider
+      .select((a) => a is CanvasArtifact ? a.canvasType : null));
   return type == null ? CanvasConfig.flow() : CanvasConfig.fromType(type);
-});
-
-// Holds the canvas ID from URL route parameter
-// Set by CanvasLoaderService.setupCanvas(), cleared on cleanup
-final urlCanvasIdProvider =
-    NotifierProvider.autoDispose<UrlCanvasIdNotifier, String?>(
-  UrlCanvasIdNotifier.new,
-);
-
-class UrlCanvasIdNotifier extends Notifier<String?> {
-  @override
-  String? build() => null;
-
-  void set(String? value) => state = value;
-}
-
-// Provides current canvas with URL-first priority
-// Auto-disposes when widget unmounts
-final currentCanvasProvider = Provider.autoDispose<CanvasArtifact?>((ref) {
-  final projectId = ref.watch(selectedProjectProvider)?.id;
-  if (projectId == null) return null;
-
-  // Priority 1: URL canvas ID (set by CanvasLoaderService)
-  final urlCanvasId = ref.watch(urlCanvasIdProvider);
-
-  if (urlCanvasId != null) {
-    final canvas = ref.watch(canvasByIdProvider(urlCanvasId));
-    if (canvas != null) return canvas;
-  }
-
-  // Priority 2: Selected item (fallback)
-  final selectedItem = ref.watch(selectedArtifactProvider);
-  return selectedItem is CanvasArtifact ? selectedItem : null;
 });
 
 final canvasObjectsProvider =
@@ -62,7 +30,8 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   @override
   CanvasObjects build() {
     // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
-    canvasId = ref.watch(currentCanvasProvider.select((c) => c?.id ?? ''));
+    canvasId = ref.watch(selectedArtifactProvider
+        .select((a) => a is CanvasArtifact ? a.id : ''));
     projectId = ref.watch(selectedProjectProvider)?.id;
     repository = CanvasObjectsRepository(
       projectId: projectId,

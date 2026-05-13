@@ -14,7 +14,8 @@ class CanvasInteractionService {
     required VoidCallback onEditingComplete,
   }) {
     onEditingComplete();
-    final currentCanvas = ref.read(currentCanvasProvider);
+    final selected = ref.read(selectedArtifactProvider);
+    final currentCanvas = selected is CanvasArtifact ? selected : null;
     if (currentCanvas != null) {
       final oldTitle = currentCanvas.name;
       final newTitle = titleController.text.trim();
@@ -339,10 +340,11 @@ class CanvasInteractionService {
       }
     }
 
+    final selected = ref.read(selectedArtifactProvider);
     final pin = Pin(
       id: Uuid().v4(),
       linkedArtifactId: item?.id ?? '',
-      canvasId: ref.read(currentCanvasProvider)?.id ?? '',
+      canvasId: selected is CanvasArtifact ? selected.id : '',
       position: finalPosition,
       pinnedObjectId: targetObject?.id,
     );

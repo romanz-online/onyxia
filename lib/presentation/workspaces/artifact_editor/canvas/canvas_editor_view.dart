@@ -80,20 +80,14 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
 
   @override
   Widget build(BuildContext context) {
-    final urlCanvasId = ref.watch(urlCanvasIdProvider);
-    final currentCanvas = ref.watch(currentCanvasProvider);
+    final selected = ref.watch(selectedArtifactProvider);
+    final currentCanvas = selected is CanvasArtifact ? selected : null;
     final canvasBounds = ref.watch(canvasBoundsProvider);
 
-    // Show spinner while bounds are loading, or while waiting for urlCanvasIdProvider
-    // to be set via post-frame callback (there is a 1-frame window between the parent
-    // rendering and the callback firing where both are null)
-    if (canvasBounds.isLoading ||
-        (urlCanvasId == null && currentCanvas == null)) {
+    if (canvasBounds.isLoading) {
       return Scaffold(body: Center(child: NarwhalSpinner()));
     }
 
-    // If canvas is null here, it is definitively not found (urlCanvasId is set but
-    // the canvas doesn't exist in the project, or selectedItem is not a canvas)
     if (currentCanvas == null) {
       return Scaffold(
         body: Center(

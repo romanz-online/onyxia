@@ -1,7 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'package:vector_math/vector_math_64.dart' as v64;
 import 'bounds_provider.dart';
-import 'objects_provider.dart';
 
 /// Provider for a TransformationController used on the canvas
 final canvasViewportProvider = NotifierProvider.autoDispose<
@@ -156,7 +155,8 @@ class TransformationNotifier extends Notifier<TransformationController> {
 
   String getCurrentZoomAsString() {
     final currentScale = state.value.getMaxScaleOnAxis();
-    final currentCanvas = ref.read(currentCanvasProvider);
+    final selected = ref.read(selectedArtifactProvider);
+    final currentCanvas = selected is CanvasArtifact ? selected : null;
 
     if (currentCanvas?.canvasType == CanvasType.markup) {
       final percentage = (currentScale * 100).round();
