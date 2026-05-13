@@ -24,43 +24,4 @@ class ProjectsNotifier extends StreamNotifier<List<Project>> {
     if (p == null) return;
     _repository.update(p.copyWith(name: newName));
   }
-
-  Future<void> removeMember({
-    required String projectId,
-    required ProjectMember member,
-  }) async {
-    try {
-      await ProjectMembersRepository(projectId: projectId).delete(member);
-      NarwhalToast.show(text: 'Member removed', type: ToastType.success);
-    } catch (e) {
-      NarwhalToast.show(text: 'Error removing member', type: ToastType.error);
-    }
-  }
-
-  Future<void> addMemberByEmail({
-    required String projectId,
-    required String email,
-    required UserRole role,
-  }) async {
-    try {
-      final user = await UsersRepository().getByEmail(email);
-
-      if (user == null) {
-        NarwhalToast.show(
-            text: 'User with email $email not found', type: ToastType.error);
-        return;
-      }
-
-      await ProjectMembersRepository(projectId: projectId).add([
-        ProjectMember(projectId: projectId, userId: user.id, role: role),
-      ]);
-      NarwhalToast.show(
-        text: 'User with email $email added successfully',
-        type: ToastType.success,
-      );
-    } catch (e) {
-      debugPrint('Error adding member by email: $e');
-      NarwhalToast.show(text: 'Error: $e', type: ToastType.error);
-    }
-  }
 }
