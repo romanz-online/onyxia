@@ -31,33 +31,6 @@ class MasterSidebar extends ConsumerWidget {
                   context.go('/project/$projectId/${Routes.graph}');
                 },
               ),
-              NarwhalIconButton(
-                icon: NarwhalIcons.addNew,
-                tooltip: 'New note',
-                onPressed: () async {
-                  if (projectId.isEmpty) return;
-                  await ArtifactsRepository(projectId: projectId)
-                      .add([NoteArtifact()]);
-                },
-              ),
-              NarwhalIconButton(
-                icon: NarwhalIcons.folderClosed,
-                tooltip: 'New folder',
-                onPressed: () async {
-                  if (projectId.isEmpty) return;
-                  await ArtifactsRepository(projectId: projectId)
-                      .add([FolderArtifact()]);
-                },
-              ),
-              NarwhalIconButton(
-                icon: NarwhalIcons.whiteboard,
-                tooltip: 'New canvas',
-                onPressed: () async {
-                  if (projectId.isEmpty) return;
-                  await ArtifactsRepository(projectId: projectId)
-                      .add([CanvasArtifact()]);
-                },
-              ),
             ],
           ],
         ),

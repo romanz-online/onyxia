@@ -31,6 +31,11 @@ class _ArtifactsSidebarState extends State<ArtifactsSidebar> {
                 color: ThemeHelper.neutral100(context),
                 child: Column(
                   children: [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.only(right: 7),
+                      child: const ArtifactsSidebarHeader(),
+                    ),
                     Expanded(
                       child: Container(
                         width: double.infinity,
@@ -46,9 +51,7 @@ class _ArtifactsSidebarState extends State<ArtifactsSidebar> {
                     ),
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.only(
-                        right: 7,
-                      ),
+                      padding: const EdgeInsets.only(right: 7),
                       child: const ArtifactsSidebarFooter(),
                     ),
                   ],

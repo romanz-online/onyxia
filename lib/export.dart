@@ -8,6 +8,7 @@ export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_view.
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_context_menu.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar_footer.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar_header.dart';
 export 'package:onyxia/presentation/shell/workspace_host.dart';
 export 'package:onyxia/presentation/workspaces/graph/graph_workspace.dart';
 export 'package:onyxia/presentation/workspaces/artifact_editor/artifact_editor_workspace.dart';
