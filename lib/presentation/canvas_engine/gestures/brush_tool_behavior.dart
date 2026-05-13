@@ -32,7 +32,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
               ),
             );
 
-            ref.read(canvasObjectsProvider.notifier).addObject(ref, brush);
+            ref.read(canvasObjectsProvider.notifier).addObject(brush);
             ref
                 .read(canvasGestureStateProvider.notifier)
                 .setActiveObject(brush);
@@ -60,7 +60,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
         brushObject.topLeft = Offset(minX, minY);
         brushObject.bottomRight = Offset(maxX, maxY);
 
-        ref.read(canvasObjectsProvider.notifier).updateObject(ref, brushObject);
+        ref.read(canvasObjectsProvider.notifier).updateObject(brushObject);
       };
 
   @override

@@ -145,7 +145,7 @@ class CanvasClipboardService {
                 Offset(containerSize.width, containerSize.height);
           }
 
-          ref.read(canvasObjectsProvider.notifier).addObject(ref, newObj);
+          ref.read(canvasObjectsProvider.notifier).addObject(newObj);
           CanvasInteractionService.closeTextEditor(ref: ref);
         });
       }

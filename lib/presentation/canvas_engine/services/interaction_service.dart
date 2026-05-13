@@ -105,16 +105,16 @@ class CanvasInteractionService {
         final pasted = await CanvasClipboardService.paste(
             targetPosition: targetPosition, ref: ref);
 
-        objectsNotifier.addObjects(ref, pasted.$1);
+        objectsNotifier.addObjects(pasted.$1);
         objectsNotifier.clearSelectedObjects();
-        ref.read(pinsProvider.notifier).addPins(ref, pasted.$2);
+        ref.read(pinsProvider.notifier).addPins(pasted.$2);
         return true;
       }
 
       // Backspace/Delete
       if (key == LogicalKeyboardKey.delete ||
           key == LogicalKeyboardKey.backspace) {
-        objectsNotifier.deleteObjects(ref, selectedObjects);
+        objectsNotifier.deleteObjects(selectedObjects);
         return true;
       }
 
@@ -127,7 +127,7 @@ class CanvasInteractionService {
       // Cut
       if (isModifierPressed && key == LogicalKeyboardKey.keyX) {
         await CanvasClipboardService.copy(objects: selectedObjects);
-        objectsNotifier.deleteObjects(ref, selectedObjects);
+        objectsNotifier.deleteObjects(selectedObjects);
         return true;
       }
     } else if (event is KeyUpEvent) {
@@ -231,9 +231,9 @@ class CanvasInteractionService {
         object.content = textNotifier.text;
         if (object.isContentEmpty) {
           // automatically delete text objects with no text
-          objectsNotifier.deleteObject(ref, object);
+          objectsNotifier.deleteObject(object);
         } else {
-          objectsNotifier.updateObject(ref, object);
+          objectsNotifier.updateObject(object);
         }
       }
       textNotifier.stopEditing();
@@ -255,7 +255,7 @@ class CanvasInteractionService {
           ConnectionPoint.none) {
         ref
             .read(canvasObjectsProvider.notifier)
-            .deleteObject(ref, ref.read(headlessProvider).headlessArrow!);
+            .deleteObject(ref.read(headlessProvider).headlessArrow!);
       }
     }
     ref.read(headlessProvider.notifier).hidePalette();
@@ -297,7 +297,7 @@ class CanvasInteractionService {
         canvasPosition.dy + size.height / 2,
       );
 
-      objectsNotifier.addObject(ref, newObj);
+      objectsNotifier.addObject(newObj);
       objectsNotifier.clearSelectedObjects();
       objectsNotifier.selectObject(newObj);
 
@@ -354,7 +354,7 @@ class CanvasInteractionService {
       ref.read(expandedPinProvider.notifier).expandPin(pin);
     }
 
-    ref.read(pinsProvider.notifier).addPin(ref, pin);
+    ref.read(pinsProvider.notifier).addPin(pin);
 
     ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
@@ -382,7 +382,7 @@ class CanvasInteractionService {
     );
     // TODO: null artifact should create a note?
 
-    ref.read(canvasObjectsProvider.notifier).addObject(ref, newObj);
+    ref.read(canvasObjectsProvider.notifier).addObject(newObj);
 
     ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
   }
@@ -394,7 +394,7 @@ class CanvasInteractionService {
   }) async {
     // this is a new pin that was never saved - remove it entirely
     ref.read(expandedPinProvider.notifier).collapsePin();
-    ref.read(pinsProvider.notifier).deletePin(ref, pin);
+    ref.read(pinsProvider.notifier).deletePin(pin);
   }
 
   /// Deletes a comment and all its sub-comments

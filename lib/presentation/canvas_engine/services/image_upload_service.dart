@@ -52,7 +52,7 @@ class CanvasImageUploadService {
           viewportCenter.dy + size.height / 2,
         );
 
-        objectsNotifier.addObject(ref, newObj);
+        objectsNotifier.addObject(newObj);
         objectsNotifier.clearSelectedObjects();
         objectsNotifier.selectObject(newObj);
 

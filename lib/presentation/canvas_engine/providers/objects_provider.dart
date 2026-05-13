@@ -146,12 +146,12 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     }
   }
 
-  void updateObject(WidgetRef ref, CanvasObject object) {
+  void updateObject(CanvasObject object) {
     updateObjectState(object);
     repository.update(object);
   }
 
-  void updateObjects(WidgetRef ref, {List<CanvasObject> objects = const []}) {
+  void updateObjects({List<CanvasObject> objects = const []}) {
     for (final obj in objects) {
       updateObjectState(obj);
     }
@@ -167,12 +167,12 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     }
   }
 
-  void addObject(WidgetRef ref, CanvasObject object) {
+  void addObject(CanvasObject object) {
     addObjectState(object);
     repository.add([object]);
   }
 
-  void addObjects(WidgetRef ref, List<CanvasObject> objects) {
+  void addObjects(List<CanvasObject> objects) {
     List<CanvasObject> currentObjects = List.from(state.objects);
 
     for (final obj in objects) {
@@ -185,7 +185,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     repository.add(objects);
   }
 
-  void deleteObject(WidgetRef ref, CanvasObject object) {
+  void deleteObject(CanvasObject object) {
     final connectedArrows = state.objects
         .where((o) =>
             o.isArrow &&
@@ -227,13 +227,13 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
         .toList();
 
     if (pinsToDelete.isNotEmpty) {
-      pinsNotifier.deletePins(ref, pinsToDelete);
+      pinsNotifier.deletePins(pinsToDelete);
     }
 
     repository.deleteMultiple([object, ...connectedArrows]);
   }
 
-  void deleteObjects(WidgetRef ref, List<CanvasObject> objects) {
+  void deleteObjects(List<CanvasObject> objects) {
     if (objects.isEmpty) return;
 
     final connectedArrows = state.objects
@@ -297,7 +297,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   }
 
   // Arrange methods for layer manipulation
-  void moveObjectForward(WidgetRef ref, CanvasObject object) {
+  void moveObjectForward(CanvasObject object) {
     if (!canMoveForward(object)) return;
 
     final objects = List<CanvasObject>.from(state.objects)
@@ -313,10 +313,10 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     object.layer = nextObject.layer;
     nextObject.layer = tempLayer;
 
-    updateObjects(ref, objects: [object, nextObject]);
+    updateObjects(objects: [object, nextObject]);
   }
 
-  void moveObjectBackward(WidgetRef ref, CanvasObject object) {
+  void moveObjectBackward(CanvasObject object) {
     if (!canMoveBackward(object)) return;
 
     final objects = List<CanvasObject>.from(state.objects)
@@ -333,10 +333,10 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     object.layer = prevObject.layer;
     prevObject.layer = tempLayer;
 
-    updateObjects(ref, objects: [object, prevObject]);
+    updateObjects(objects: [object, prevObject]);
   }
 
-  void moveObjectToFront(WidgetRef ref, CanvasObject object) {
+  void moveObjectToFront(CanvasObject object) {
     if (!canMoveForward(object)) return;
 
     final objects = List<CanvasObject>.from(state.objects)
@@ -347,10 +347,10 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     if (index == -1) return;
 
     object.layer = nextLayer();
-    updateObject(ref, object);
+    updateObject(object);
   }
 
-  void moveObjectToBack(WidgetRef ref, CanvasObject object) {
+  void moveObjectToBack(CanvasObject object) {
     if (!canMoveBackward(object)) return;
 
     final objects = List<CanvasObject>.from(state.objects)
@@ -361,7 +361,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     if (index == -1) return;
 
     object.layer = objects.first.layer - 1;
-    updateObject(ref, object);
+    updateObject(object);
   }
 
   bool canMoveForward(CanvasObject object) {

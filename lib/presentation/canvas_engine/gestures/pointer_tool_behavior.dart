@@ -450,7 +450,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
     ref.read(draggedObjectsProvider.notifier).clearDraggedObjects();
     ref.invalidate(draggedObjectsProvider); // forces a state update
     _pruneArrowKeypoints(ref);
-    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
+    ref.read(canvasObjectsProvider.notifier).updateObjects();
   }
 
   void _updateObjectResizePan(
@@ -507,7 +507,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
     ref.read(draggedObjectsProvider.notifier).clearDraggedObjects();
     ref.invalidate(draggedObjectsProvider); // forces a state update
     _pruneArrowKeypoints(ref);
-    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
+    ref.read(canvasObjectsProvider.notifier).updateObjects();
   }
 
   void _startArrowResize(
@@ -589,7 +589,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
 
     arrow.pruneKeypoints();
     arrow.updateArrowBounds();
-    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
+    ref.read(canvasObjectsProvider.notifier).updateObjects();
   }
 
   void _handleArrowTextDrag(
@@ -614,7 +614,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
     if (!ref.read(canvasObjectsProvider).selectedObjects.contains(arrow))
       return;
 
-    ref.read(canvasObjectsProvider.notifier).updateObject(ref, arrow);
+    ref.read(canvasObjectsProvider.notifier).updateObject(arrow);
   }
 
   void _startObjectResize(

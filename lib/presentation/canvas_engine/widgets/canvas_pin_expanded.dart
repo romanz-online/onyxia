@@ -183,10 +183,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
     if (_isNewPin) {
       final newArtifact = NoteArtifact(name: newTitle, content: newContent);
-      ref.read(pinsProvider.notifier).updatePin(
-            ref,
-            widget.pin.copyWith(linkedArtifactId: newArtifact.id),
-          );
+      ref
+          .read(pinsProvider.notifier)
+          .updatePin(widget.pin.copyWith(linkedArtifactId: newArtifact.id));
       ref.read(artifactsProvider.notifier).addItem(newArtifact);
 
       // Set flag to prevent auto re-entry into edit mode

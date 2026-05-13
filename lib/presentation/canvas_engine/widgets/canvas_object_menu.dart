@@ -429,10 +429,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                   for (final obj in _selectedObjects) {
                     obj.color = color;
                   }
-                  objectsNotifier.updateObjects(
-                    ref,
-                    objects: _selectedObjects,
-                  );
+                  objectsNotifier.updateObjects(objects: _selectedObjects);
                 },
                 isSelected: _selectedObjects[0].color == color,
               ))
@@ -452,7 +449,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.dashed,
       ),
@@ -464,7 +461,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.solid,
       ),
@@ -476,7 +473,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.thick,
       ),
@@ -523,7 +520,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                 }
                 ref
                     .read(canvasObjectsProvider.notifier)
-                    .updateObjects(ref, objects: _selectedObjects);
+                    .updateObjects(objects: _selectedObjects);
               },
               isSelected: _selectedObjects[0].type == shapeType,
             ))
@@ -557,7 +554,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: selectedTip == ArrowTip.circle,
       ),
@@ -577,7 +574,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: selectedTip == ArrowTip.triangle,
       ),
@@ -595,7 +592,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: selectedTip == ArrowTip.none,
       ),
@@ -621,7 +618,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: selectedType == ArrowType.segmented,
       ),
@@ -635,7 +632,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           }
           ref
               .read(canvasObjectsProvider.notifier)
-              .updateObjects(ref, objects: _selectedObjects);
+              .updateObjects(objects: _selectedObjects);
         },
         isSelected: selectedType == ArrowType.curved,
       ),

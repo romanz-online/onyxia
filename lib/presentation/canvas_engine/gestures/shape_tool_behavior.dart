@@ -63,7 +63,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
               bottomRight: bottomRight,
             );
 
-            ref.read(canvasObjectsProvider.notifier).addObject(ref, newObject);
+            ref.read(canvasObjectsProvider.notifier).addObject(newObject);
             ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
             ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
             print(7);
@@ -99,7 +99,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
               bottomRight: bottomRight,
             );
 
-            ref.read(canvasObjectsProvider.notifier).addObject(ref, newObject);
+            ref.read(canvasObjectsProvider.notifier).addObject(newObject);
             ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
             ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
             ref
@@ -136,23 +136,18 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
           };
 
   @override
-  void Function(
-          DragEndDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onPanEnd => (details, ref, buildContext, interactionContext) {
-            final activeObject =
-                ref.read(canvasGestureStateProvider).activeObject;
+  void Function(DragEndDetails, WidgetRef, BuildContext,
+      CanvasInteractionContext)? get onPanEnd => (details, ref, buildContext,
+          interactionContext) {
+        final activeObject = ref.read(canvasGestureStateProvider).activeObject;
 
-            if (activeObject != null) {
-              ref
-                  .read(canvasObjectsProvider.notifier)
-                  .updateObject(ref, activeObject);
-              ref
-                  .read(canvasObjectsProvider.notifier)
-                  .selectObject(activeObject);
-              ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-              CanvasInteractionService.openTextEditor(ref: ref);
-            }
+        if (activeObject != null) {
+          ref.read(canvasObjectsProvider.notifier).updateObject(activeObject);
+          ref.read(canvasObjectsProvider.notifier).selectObject(activeObject);
+          ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+          CanvasInteractionService.openTextEditor(ref: ref);
+        }
 
-            ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-          };
+        ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+      };
 }

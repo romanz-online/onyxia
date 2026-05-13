@@ -72,7 +72,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     _textSaveTimer?.cancel();
     _textSaveTimer = Timer(const Duration(milliseconds: 500), () {
       if (!mounted) return;
-      ref.read(canvasObjectsProvider.notifier).updateObject(ref, obj);
+      ref.read(canvasObjectsProvider.notifier).updateObject(obj);
     });
   }
 

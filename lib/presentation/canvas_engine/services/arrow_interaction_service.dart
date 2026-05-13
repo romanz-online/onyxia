@@ -52,11 +52,11 @@ class ArrowInteractionService {
     arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
     arrowPreview.arrow.arrowProps.endTip = ArrowTip.triangle;
 
-    ref.read(pinsProvider.notifier).addPins(ref, pinsToAdd);
+    ref.read(pinsProvider.notifier).addPins(pinsToAdd);
     objectsToAdd.add(arrowPreview.arrow);
-    ref.read(canvasObjectsProvider.notifier).addObjects(ref, objectsToAdd);
+    ref.read(canvasObjectsProvider.notifier).addObjects(objectsToAdd);
     arrowPreview.arrow.pruneKeypoints();
-    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
+    ref.read(canvasObjectsProvider.notifier).updateObjects();
 
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     if (createdObject) {
@@ -100,7 +100,7 @@ class ArrowInteractionService {
     );
 
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-    ref.read(canvasObjectsProvider.notifier).addObject(ref, arrow);
+    ref.read(canvasObjectsProvider.notifier).addObject(arrow);
     ref.read(canvasObjectsProvider.notifier).selectObject(arrow);
 
     return arrow;
@@ -184,19 +184,17 @@ class ArrowInteractionService {
     if (arrow.arrowProps.endPoint == ConnectionPoint.none &&
         arrow.arrowProps.points.isNotEmpty &&
         isNewArrow) {
-      ref.read(headlessProvider.notifier).showPalette(
-            headlessArrow: arrow,
-            canvasConfig: canvasConfig,
-            ref: ref,
-          );
+      ref
+          .read(headlessProvider.notifier)
+          .showPalette(headlessArrow: arrow, canvasConfig: canvasConfig);
     } else {
       if (arrow.arrowProps.startPoint == ConnectionPoint.none ||
           arrow.arrowProps.endPoint == ConnectionPoint.none ||
           arrow.arrowProps.points.isEmpty) {
         // not a valid arrow, delete
-        ref.read(canvasObjectsProvider.notifier).deleteObject(ref, arrow);
+        ref.read(canvasObjectsProvider.notifier).deleteObject(arrow);
       } else {
-        ref.read(canvasObjectsProvider.notifier).updateObject(ref, arrow);
+        ref.read(canvasObjectsProvider.notifier).updateObject(arrow);
       }
       ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
     }

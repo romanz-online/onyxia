@@ -53,7 +53,7 @@ class TextToolBehavior extends CanvasToolGestureHandler {
       color: Colors.transparent,
     );
 
-    ref.read(canvasObjectsProvider.notifier).addObject(ref, textObject);
+    ref.read(canvasObjectsProvider.notifier).addObject(textObject);
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(textObject);
     CanvasInteractionService.openTextEditor(ref: ref);

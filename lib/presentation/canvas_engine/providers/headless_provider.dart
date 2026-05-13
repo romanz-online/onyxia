@@ -68,16 +68,15 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
   void showPalette({
     required CanvasObject headlessArrow,
     required CanvasConfig canvasConfig,
-    required WidgetRef ref,
   }) {
     String? sourceArtifactId;
     List<Artifact>? children;
 
     // For flow canvases, try to find the source item and its child notes
     if (canvasConfig.canvasType == CanvasType.flow) {
-      sourceArtifactId = _extractSourceArtifactId(headlessArrow, ref);
+      sourceArtifactId = _extractSourceArtifactId(headlessArrow);
       if (sourceArtifactId != null) {
-        children = _findChildren(sourceArtifactId, ref);
+        children = _findChildren(sourceArtifactId);
       }
     }
 
@@ -252,7 +251,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     );
   }
 
-  String? _extractSourceArtifactId(CanvasObject headlessArrow, WidgetRef ref) {
+  String? _extractSourceArtifactId(CanvasObject headlessArrow) {
     final startObjectId = headlessArrow.arrowProps.startObjectId;
     if (startObjectId == null) return null;
 
@@ -269,8 +268,8 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     return null;
   }
 
-  List<Artifact>? _findChildren(String parentArtifactId, WidgetRef ref) {
-    final notes = ref.read(artifactsProvider).value ?? const <Artifact>[];
+  List<Artifact>? _findChildren(String parentArtifactId) {
+    final notes = this.ref.read(artifactsProvider).value ?? const <Artifact>[];
 
     // Filter notes where parentId matches the source item
     final children =

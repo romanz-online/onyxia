@@ -230,15 +230,15 @@ Future<void> _paste(WidgetRef ref, Offset position) async {
     targetPosition: position,
     ref: ref,
   );
-  objectsNotifier.addObjects(ref, pasted.$1);
+  objectsNotifier.addObjects(pasted.$1);
   objectsNotifier.clearSelectedObjects();
-  ref.read(pinsProvider.notifier).addPins(ref, pasted.$2);
+  ref.read(pinsProvider.notifier).addPins(pasted.$2);
 }
 
 Future<void> _cut(WidgetRef ref) async {
   final selected = ref.read(canvasObjectsProvider).selectedObjects;
   await CanvasClipboardService.copy(objects: selected);
-  ref.read(canvasObjectsProvider.notifier).deleteObjects(ref, selected);
+  ref.read(canvasObjectsProvider.notifier).deleteObjects(selected);
 }
 
 Future<void> _copy(WidgetRef ref) async {
@@ -248,7 +248,7 @@ Future<void> _copy(WidgetRef ref) async {
 
 void _delete(WidgetRef ref) {
   final selected = ref.read(canvasObjectsProvider).selectedObjects;
-  ref.read(canvasObjectsProvider.notifier).deleteObjects(ref, selected);
+  ref.read(canvasObjectsProvider.notifier).deleteObjects(selected);
 }
 
 void _toggleSetting(WidgetRef ref, Setting setting) {
@@ -277,16 +277,16 @@ void _moveObjects(
   for (final obj in targets) {
     switch (direction) {
       case _MoveDirection.forward:
-        objectsNotifier.moveObjectForward(ref, obj);
+        objectsNotifier.moveObjectForward(obj);
         break;
       case _MoveDirection.backward:
-        objectsNotifier.moveObjectBackward(ref, obj);
+        objectsNotifier.moveObjectBackward(obj);
         break;
       case _MoveDirection.toFront:
-        objectsNotifier.moveObjectToFront(ref, obj);
+        objectsNotifier.moveObjectToFront(obj);
         break;
       case _MoveDirection.toBack:
-        objectsNotifier.moveObjectToBack(ref, obj);
+        objectsNotifier.moveObjectToBack(obj);
         break;
     }
   }

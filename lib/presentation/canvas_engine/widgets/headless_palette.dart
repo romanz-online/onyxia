@@ -93,14 +93,14 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
     ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
     ghostObject.color = ThemeHelper.neutral100(context);
-    ref.read(canvasObjectsProvider.notifier).addObject(ref, ghostObject);
+    ref.read(canvasObjectsProvider.notifier).addObject(ghostObject);
 
     arrow.arrowProps.endObjectId = ghostObject.id;
     arrow.arrowProps.endPoint = connectionPoint;
     arrow.drawNewKeypoints(ref);
     arrow.pruneKeypoints();
 
-    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
+    ref.read(canvasObjectsProvider.notifier).updateObjects();
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(ghostObject);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
@@ -139,14 +139,14 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
     ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
     ghostObject.color = Colors.transparent;
-    ref.read(canvasObjectsProvider.notifier).addObject(ref, ghostObject);
+    ref.read(canvasObjectsProvider.notifier).addObject(ghostObject);
 
     arrow.arrowProps.endObjectId = ghostObject.id;
     arrow.arrowProps.endPoint = connectionPoint;
     arrow.drawNewKeypoints(ref);
     arrow.pruneKeypoints();
 
-    ref.read(canvasObjectsProvider.notifier).updateObjects(ref);
+    ref.read(canvasObjectsProvider.notifier).updateObjects();
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(ghostObject);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
@@ -251,9 +251,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                 if (paletteState.headlessArrow == null) return;
 
                 final arrow = paletteState.headlessArrow!;
-                ref
-                    .read(canvasObjectsProvider.notifier)
-                    .deleteObject(ref, arrow);
+                ref.read(canvasObjectsProvider.notifier).deleteObject(arrow);
                 ref
                     .read(canvasGestureStateProvider.notifier)
                     .resetInteraction(ref);
@@ -364,7 +362,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
               if (paletteState.headlessArrow == null) return;
 
               final arrow = paletteState.headlessArrow!;
-              ref.read(canvasObjectsProvider.notifier).deleteObject(ref, arrow);
+              ref.read(canvasObjectsProvider.notifier).deleteObject(arrow);
               ref
                   .read(canvasGestureStateProvider.notifier)
                   .resetInteraction(ref);
