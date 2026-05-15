@@ -3,7 +3,7 @@ import '../gestures/gestures.dart';
 import '../providers/providers.dart';
 import 'arrow_well.dart';
 
-class ArrowWellsOverlay extends ConsumerWidget {
+class ArrowWellsOverlay extends ConsumerStatefulWidget {
   final double scale;
   final bool showArrowWells;
   final TransformationController transformationController;
@@ -16,6 +16,13 @@ class ArrowWellsOverlay extends ConsumerWidget {
     required this.transformationController,
     this.gestureRouter,
   });
+
+  @override
+  ConsumerState<ArrowWellsOverlay> createState() => _ArrowWellsOverlayState();
+}
+
+class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
+  final Set<String> _hoveredObjectIds = {};
 
   void _handleArrowPreviewChange(
     CanvasObject sourceObject,
@@ -40,13 +47,12 @@ class ArrowWellsOverlay extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    if (!showArrowWells || gestureRouter == null)
+  Widget build(BuildContext context) {
+    if (!widget.showArrowWells || widget.gestureRouter == null)
       return const SizedBox.shrink();
 
     final objects = ref.watch(canvasObjectsProvider).objects;
     final selectedObjects = ref.watch(canvasObjectsProvider).selectedObjects;
-    final hoveredObjects = ref.watch(hoveredObjectsProvider);
     final toolMode = ref.watch(toolModeProvider);
 
     final stackChildren = <Widget>[];
@@ -68,9 +74,9 @@ class ArrowWellsOverlay extends ConsumerWidget {
           stackChildren.add(
             ArrowWell(
               connectionPoint: connectionPoint,
-              scale: scale,
+              scale: widget.scale,
               sourceObject: obj,
-              gestureRouter: gestureRouter,
+              gestureRouter: widget.gestureRouter,
               onTargetChanged: (isTarget) => _handleArrowPreviewChange(
                 obj,
                 connectionPoint,
@@ -80,7 +86,7 @@ class ArrowWellsOverlay extends ConsumerWidget {
               ),
               // Pass state info so arrow well can decide its visibility
               isSourceSelected: selectedObjects.contains(obj),
-              isSourceHovered: hoveredObjects.contains(obj),
+              isSourceHovered: _hoveredObjectIds.contains(obj.id),
               isArrowToolActive: toolMode == ToolMode.arrow,
               isGesturing:
                   ref.watch(canvasGestureStateProvider).interactionContext !=
@@ -142,10 +148,9 @@ class ArrowWellsOverlay extends ConsumerWidget {
         child: MouseRegion(
           hitTestBehavior: HitTestBehavior.translucent,
           onEnter: (_) =>
-              ref.read(hoveredObjectsProvider.notifier).addObject(canvasObject),
-          onExit: (_) => ref
-              .read(hoveredObjectsProvider.notifier)
-              .removeObject(canvasObject),
+              setState(() => _hoveredObjectIds.add(canvasObject.id)),
+          onExit: (_) =>
+              setState(() => _hoveredObjectIds.remove(canvasObject.id)),
         ),
       );
     } catch (e) {

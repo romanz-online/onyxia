@@ -15,6 +15,8 @@ class Toolbar extends ConsumerStatefulWidget {
 }
 
 class ToolBarWidgetState extends ConsumerState<Toolbar> {
+  bool _showShapesSubmenu = false;
+
   // Comprehensive mapping of all tools to their icons
   static const Map<ToolMode, IconData> _toolIcons = {
     // Basic tools
@@ -106,27 +108,24 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     widget.closeTextEditor();
     ref.read(toolModeProvider.notifier).set(toolMode);
-    ref.read(toolbarStateProvider.notifier).hideSubmenu();
+    setState(() => _showShapesSubmenu = false);
   }
 
   void _toggleShapesSubmenu() {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     widget.closeTextEditor();
-    ref.read(toolbarStateProvider.notifier).toggleShapesSubmenu();
+    setState(() => _showShapesSubmenu = !_showShapesSubmenu);
   }
 
   @override
   Widget build(BuildContext context) {
     final selectedTool = ref.watch(toolModeProvider);
-    final toolbarState = ref.watch(toolbarStateProvider);
     final config = ref.watch(canvasConfigProvider);
-
-    // Cursor automatically updates via CustomCursorOverlay watching toolModeProvider
 
     return Stack(
       children: [
         _buildMainToolBar(selectedTool, config),
-        if (toolbarState.showShapesSubmenu && _hasShapeTools(config))
+        if (_showShapesSubmenu && _hasShapeTools(config))
           _buildShapesSubMenu(config),
       ],
     );

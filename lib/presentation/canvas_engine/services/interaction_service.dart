@@ -67,7 +67,7 @@ class CanvasInteractionService {
         objectsNotifier.clearSelectedObjects();
         onCollapsePin();
         closeHeadlessPalette(ref: ref);
-        clearTemporaryComment(ref: ref);
+        ref.read(commentsProvider.notifier).clearTemporaryComment();
         return true;
       }
 
@@ -216,11 +216,6 @@ class CanvasInteractionService {
     }
   }
 
-  /// Clears temporary comment state
-  static void clearTemporaryComment({required WidgetRef ref}) {
-    ref.read(commentsProvider.notifier).clearTemporaryComment();
-  }
-
   static void closeHeadlessPalette({required WidgetRef ref}) {
     if (ref.read(headlessProvider).headlessArrow != null) {
       if (ref.read(headlessProvider).headlessArrow!.arrowProps.endPoint ==
@@ -359,32 +354,6 @@ class CanvasInteractionService {
     ref.read(canvasObjectsProvider.notifier).addObject(newObj);
 
     ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-  }
-
-  static Future<void> deletePin({
-    required WidgetRef ref,
-    required Pin pin,
-    required VoidCallback onCollapse,
-    CanvasObject? parentObject,
-  }) async {
-    // this is a new pin that was never saved - remove it entirely
-    onCollapse();
-    ref.read(pinsProvider.notifier).deletePin(pin);
-  }
-
-  /// Deletes a comment and all its sub-comments
-  static Future<void> deleteComment({
-    required WidgetRef ref,
-    required String commentId,
-  }) async {
-    try {
-      await ref
-          .read(commentsProvider.notifier)
-          .deleteComment(commentId: commentId);
-    } catch (e) {
-      debugPrint('Error deleting comment: $e');
-      rethrow;
-    }
   }
 
   /// Creates a comment pin at the specified position

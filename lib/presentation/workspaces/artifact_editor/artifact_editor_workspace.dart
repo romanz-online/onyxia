@@ -4,10 +4,7 @@ import 'note/note_editor_view.dart';
 class ArtifactWorkspace extends ConsumerStatefulWidget {
   final NoteStateProvider? noteProvider;
 
-  const ArtifactWorkspace({
-    super.key,
-    this.noteProvider,
-  });
+  const ArtifactWorkspace({super.key, this.noteProvider});
 
   @override
   ConsumerState<ArtifactWorkspace> createState() => _ArtifactWorkspaceState();

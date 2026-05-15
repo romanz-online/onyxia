@@ -71,12 +71,9 @@ class CanvasLoaderService {
 
     // Loader service owns the full initialization sequence.
     // Always reinitialize bounds to guarantee correct state on every canvas entry.
-    ref.read(canvasBoundsProvider.notifier).initializeBounds(currentCanvas);
-
-    // Wait for bounds to finish loading (markup canvases load an image asynchronously)
-    while (ref.read(canvasBoundsProvider).isLoading && context.mounted) {
-      await Future.delayed(Duration(milliseconds: 100));
-    }
+    await ref
+        .read(canvasBoundsProvider.notifier)
+        .initializeBounds(currentCanvas);
 
     if (!context.mounted) return;
 

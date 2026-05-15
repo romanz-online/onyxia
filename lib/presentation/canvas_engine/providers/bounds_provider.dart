@@ -128,7 +128,7 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
 
   /// Initialize bounds based on canvas type
   Future<void> initializeBounds(CanvasArtifact? canvas) async {
-    if (ref.mounted) return;
+    if (!ref.mounted) return;
 
     _loadGeneration++;
     final myGeneration = _loadGeneration;

@@ -125,10 +125,6 @@ List<RightClickMenuItem> _objectItems(
   Offset position,
   CanvasObject clickedObj,
 ) {
-  final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-  final canMoveBackward = objectsNotifier.canMoveBackward(clickedObj);
-  final canMoveForward = objectsNotifier.canMoveForward(clickedObj);
-
   return [
     RightClickMenuItem(
       label: 'Add Comment',
@@ -155,41 +151,6 @@ List<RightClickMenuItem> _objectItems(
       label: 'Delete',
       icon: LucideIcons.trash2,
       onTap: () => _delete(ref),
-    ),
-    RightClickMenuItem(
-      label: 'Arrange',
-      icon: LucideIcons.layers,
-      dividerBefore: true,
-      submenu: [
-        RightClickMenuItem(
-          label: 'Bring Forward',
-          icon: LucideIcons.chevronUp,
-          onTap: canMoveForward
-              ? () => _moveObjects(ref, clickedObj, _MoveDirection.forward)
-              : null,
-        ),
-        RightClickMenuItem(
-          label: 'Bring to Front',
-          icon: LucideIcons.chevronsUp,
-          onTap: canMoveForward
-              ? () => _moveObjects(ref, clickedObj, _MoveDirection.toFront)
-              : null,
-        ),
-        RightClickMenuItem(
-          label: 'Send Backward',
-          icon: LucideIcons.chevronDown,
-          onTap: canMoveBackward
-              ? () => _moveObjects(ref, clickedObj, _MoveDirection.backward)
-              : null,
-        ),
-        RightClickMenuItem(
-          label: 'Send to Back',
-          icon: LucideIcons.chevronsDown,
-          onTap: canMoveBackward
-              ? () => _moveObjects(ref, clickedObj, _MoveDirection.toBack)
-              : null,
-        ),
-      ],
     ),
   ];
 }
@@ -261,35 +222,6 @@ void _copyDiagramLink() {
     text: 'Link copied to clipboard',
     type: ToastType.success,
   );
-}
-
-enum _MoveDirection { forward, backward, toFront, toBack }
-
-void _moveObjects(
-  WidgetRef ref,
-  CanvasObject clickedObj,
-  _MoveDirection direction,
-) {
-  final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-  final selected = ref.read(canvasObjectsProvider).selectedObjects;
-  final targets = selected.isNotEmpty ? selected : [clickedObj];
-
-  for (final obj in targets) {
-    switch (direction) {
-      case _MoveDirection.forward:
-        objectsNotifier.moveObjectForward(obj);
-        break;
-      case _MoveDirection.backward:
-        objectsNotifier.moveObjectBackward(obj);
-        break;
-      case _MoveDirection.toFront:
-        objectsNotifier.moveObjectToFront(obj);
-        break;
-      case _MoveDirection.toBack:
-        objectsNotifier.moveObjectToBack(obj);
-        break;
-    }
-  }
 }
 
 // ---------------------------------------------------------------------------

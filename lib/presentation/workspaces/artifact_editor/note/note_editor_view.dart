@@ -102,7 +102,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   @override
   Widget build(BuildContext context) {
     if (!mounted) return Container();
- 
+
     final noteState = ref.watch(_provider);
 
     final item = ref.watch(_provider.select((state) => state.value?.note));
@@ -113,7 +113,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
           style: NarwhalTextStyle(),
         ),
       );
-    } 
+    }
 
     return noteState.when(
       loading: () => Center(child: NarwhalSpinner()),
@@ -164,10 +164,7 @@ class _ErrorView extends StatelessWidget {
   final dynamic error;
   final VoidCallback onRetry;
 
-  const _ErrorView({
-    required this.error,
-    required this.onRetry,
-  });
+  const _ErrorView({required this.error, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {

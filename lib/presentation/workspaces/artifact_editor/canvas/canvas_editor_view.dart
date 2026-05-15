@@ -1,6 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:onyxia/presentation/canvas_engine/widgets/canvas_pin.dart';
+import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:touchable/touchable.dart';
 import 'package:onyxia/presentation/canvas_engine/gestures/gestures.dart';
@@ -23,18 +24,6 @@ import 'package:onyxia/presentation/canvas_engine/canvas_config.dart';
 import 'package:onyxia/presentation/canvas_engine/utils/image_drag_data.dart';
 import 'dart:async';
 
-final isDragHoveringProvider =
-    NotifierProvider.autoDispose<IsDragHoveringNotifier, bool>(
-  IsDragHoveringNotifier.new,
-);
-
-class IsDragHoveringNotifier extends Notifier<bool> {
-  @override
-  bool build() => false;
-
-  void set(bool value) => state = value;
-}
-
 class CanvasEditorView extends ConsumerStatefulWidget {
   final String canvasId;
 
@@ -46,9 +35,22 @@ class CanvasEditorView extends ConsumerStatefulWidget {
 
 class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
   late CanvasGestureRouter _gestureRouter;
+  CanvasConfig? _routerConfig;
   CanvasPainter? _canvasPainter;
   Timer? _textSaveTimer;
   ExpandablePin? _expandedPin;
+  final ValueNotifier<bool> _isDragHovering = ValueNotifier<bool>(false);
+
+  void _ensureRouter(CanvasConfig config) {
+    if (_routerConfig != config) {
+      _gestureRouter = CanvasGestureRouter(
+        ref: ref,
+        context: context,
+        canvasConfig: config,
+      );
+      _routerConfig = config;
+    }
+  }
 
   void _expandPin(ExpandablePin pin) => setState(() => _expandedPin = pin);
   void _collapsePin() => setState(() => _expandedPin = null);
@@ -71,6 +73,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
   @override
   void dispose() {
     _textSaveTimer?.cancel();
+    _isDragHovering.dispose();
     CanvasLoaderService.cleanupCanvas(context: context);
     super.dispose();
   }
@@ -124,12 +127,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         canvasCommentsState.temporaryComment!,
     ];
 
-    // Update gesture router with current context and config
-    _gestureRouter = CanvasGestureRouter(
-      ref: ref,
-      context: context,
-      canvasConfig: ref.read(canvasConfigProvider),
-    );
+    _ensureRouter(ref.watch(canvasConfigProvider));
 
     return Stack(
       children: [
@@ -468,12 +466,10 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         pinPosition: pin.getOffset(parent: targetObject),
         transformationController: transformationController,
         onClose: _collapsePin,
-        onRemovePin: () => CanvasInteractionService.deletePin(
-          ref: ref,
-          pin: pin,
-          onCollapse: _collapsePin,
-          parentObject: targetObject,
-        ),
+        onRemovePin: () {
+          _collapsePin();
+          ref.read(pinsProvider.notifier).deletePin(pin);
+        },
       );
     }
 
@@ -493,10 +489,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         position: comment.getOffset(parent: obj),
         transformationController: transformationController,
         onClose: _collapsePin,
-        onDeleteComment: () => CanvasInteractionService.deleteComment(
-          ref: ref,
-          commentId: comment.id,
-        ),
+        onDeleteComment: () => ref
+            .read(commentsProvider.notifier)
+            .deleteComment(commentId: comment.id),
       );
     }
 
@@ -545,18 +540,17 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         ],
         hitTestBehavior: HitTestBehavior.translucent,
         onDropOver: (event) {
-          ref.read(isDragHoveringProvider.notifier).set(true);
+          _isDragHovering.value = true;
           return event.session.allowedOperations.firstOrNull ??
               DropOperation.none;
         },
         onDropLeave: (event) {
-          ref.read(isDragHoveringProvider.notifier).set(false);
+          _isDragHovering.value = false;
         },
         onPerformDrop: (event) => _handleFileDrop(ref, event),
-        child: Consumer(
-          builder: (context, ref, child) {
-            final isDragHovering = ref.watch(isDragHoveringProvider);
-
+        child: ValueListenableBuilder<bool>(
+          valueListenable: _isDragHovering,
+          builder: (context, isDragHovering, child) {
             if (!isDragHovering) return const SizedBox.expand();
 
             return Container(
@@ -584,110 +578,60 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     );
   }
 
+  static const _imageFormats = [
+    Formats.png,
+    Formats.jpeg,
+    Formats.gif,
+    Formats.bmp,
+    Formats.webp,
+  ];
+
   Future<void> _handleFileDrop(WidgetRef ref, PerformDropEvent event) async {
-    // Reset drag hovering state
-    ref.read(isDragHoveringProvider.notifier).set(false);
+    _isDragHovering.value = false;
 
-    final config = ref.watch(canvasConfigProvider);
+    if (!ref.read(canvasConfigProvider).allowFileDrops) return;
 
-    // Check if file drops are allowed for this canvas config
-    if (!config.allowFileDrops) {
+    final validFiles = (await Future.wait(
+      event.session.items.map(_readDroppedItem),
+    ))
+        .whereType<PlatformFile>()
+        .toList();
+
+    if (validFiles.isEmpty) {
+      NarwhalToast.show(
+        text: 'No valid image files found',
+        type: ToastType.error,
+      );
       return;
     }
 
-    final imageFormats = [
-      Formats.png,
-      Formats.jpeg,
-      Formats.gif,
-      Formats.bmp,
-      Formats.webp,
-    ];
+    if (!mounted) return;
+    CanvasImageUploadService.uploadAndPlaceImages(
+      ref: ref,
+      context: context,
+      files: validFiles,
+    );
+  }
 
-    final validFiles = <PlatformFile>[];
-    int itemsProcessed = 0;
-    final totalItems = event.session.items.length;
+  Future<PlatformFile?> _readDroppedItem(DropItem item) async {
+    final reader = item.dataReader!;
+    final format = _imageFormats.firstWhereOrNull(reader.canProvide);
+    if (format == null) return null;
 
-    void checkIfAllProcessed() {
-      if (itemsProcessed == totalItems) {
-        if (validFiles.isEmpty) {
-          NarwhalToast.show(
-            text: 'No valid image files found',
-            type: ToastType.error,
-          );
-          return;
-        }
-        CanvasImageUploadService.uploadAndPlaceImages(
-          ref: ref,
-          context: context,
-          files: validFiles,
-        );
-      }
-    }
+    final completer = Completer<DataReaderFile>();
+    reader.getFile(
+      format,
+      completer.complete,
+      onError: completer.completeError,
+    );
+    final file = await completer.future;
+    final bytes = await file.readAll();
 
-    // Process each dropped item
-    for (final item in event.session.items) {
-      final reader = item.dataReader!;
-
-      // Check if any image format is available
-      FileFormat? format;
-      for (final f in imageFormats) {
-        if (reader.canProvide(f)) {
-          format = f;
-          break;
-        }
-      }
-
-      if (format != null) {
-        try {
-          reader.getFile(
-            format,
-            (file) {
-              final future = file.readAll();
-              future.then((data) {
-                // Check file size (600KB limit)
-                if (data.length < 600 * 1024) {
-                  final platformFile = PlatformFile(
-                    name: file.fileName ?? 'image.png',
-                    size: data.length,
-                    bytes: data,
-                  );
-                  validFiles.add(platformFile);
-                }
-                itemsProcessed++;
-                checkIfAllProcessed();
-              }).catchError((e) {
-                debugPrint('Error reading file data: $e');
-                NarwhalToast.show(
-                  text: 'Error reading file data: $e',
-                  type: ToastType.error,
-                );
-                itemsProcessed++;
-                checkIfAllProcessed();
-              });
-            },
-            onError: (error) {
-              debugPrint('Error reading dropped file: $error');
-              NarwhalToast.show(
-                text: 'Error reading dropped file: $error',
-                type: ToastType.error,
-              );
-              itemsProcessed++;
-              checkIfAllProcessed();
-            },
-          );
-        } catch (e) {
-          debugPrint('Error reading dropped file: $e');
-          NarwhalToast.show(
-            text: 'Error reading dropped file: $e',
-            type: ToastType.error,
-          );
-          itemsProcessed++;
-          checkIfAllProcessed();
-        }
-      } else {
-        itemsProcessed++;
-        checkIfAllProcessed();
-      }
-    }
+    if (bytes.length >= 600 * 1024) return null;
+    return PlatformFile(
+      name: file.fileName ?? 'image.png',
+      size: bytes.length,
+      bytes: bytes,
+    );
   }
 }

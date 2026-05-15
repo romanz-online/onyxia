@@ -76,7 +76,7 @@ class CanvasGestureStateNotifier extends Notifier<CanvasGestureState> {
   /// and not at the start of gesture (i.e. onPanStart)
   void resetInteraction(WidgetRef ref) {
     CanvasInteractionService.closeTextEditor(ref: ref);
-    CanvasInteractionService.clearTemporaryComment(ref: ref);
+    ref.read(commentsProvider.notifier).clearTemporaryComment();
     CanvasInteractionService.closeHeadlessPalette(ref: ref);
     ref.read(arrowPrimedObjectsProvider.notifier).clear();
     state = state.resetInteraction();
