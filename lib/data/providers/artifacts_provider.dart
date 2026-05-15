@@ -146,9 +146,8 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
     // Apply local state + URL synchronously so selectedArtifactProvider
     // never sees state==NewName while url==OldName (the flash window).
-    for (final u in batch) {
-      updateItemState(u);
-    }
+    batch.forEach((e) => updateItemState(e));
+    
     final router = ref.read(routerProvider);
     final urlSelectedId =
         router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
