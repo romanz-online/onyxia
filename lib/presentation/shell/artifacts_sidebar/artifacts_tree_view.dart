@@ -265,7 +265,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       items.add(ContextMenuItem(
         child: Text(opt.label, style: NarwhalTextStyle()),
         onTap: () {
-          opt.callback(context, ref, node, selectedIds);
+          opt.callback(ref, node, selectedIds);
           if (opt.clearSelectionAfter) treeController.deselectAll();
         },
       ));

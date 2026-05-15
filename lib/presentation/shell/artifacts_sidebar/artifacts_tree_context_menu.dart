@@ -2,7 +2,6 @@
 import 'package:onyxia/presentation/shell/artifacts_sidebar/providers/rename_artifact_id_provider.dart';
 
 typedef TreeContextMenuCallback = void Function(
-  BuildContext context,
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> selectedIds,
@@ -46,8 +45,8 @@ ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() =>
         TreeContextMenuOption(
           label: 'Remove',
           index: 2,
-          callback: (context, ref, node, selectedIds) =>
-              _handleRemove(context, ref, node, selectedIds),
+          callback: 
+              _handleRemove,
         ),
         TreeContextMenuOption(
           label: 'Rename',
@@ -58,7 +57,6 @@ ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() =>
     );
 
 void _handleOpenInNewTab(
-  BuildContext context,
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,
@@ -68,7 +66,6 @@ void _handleOpenInNewTab(
 }
 
 void _handleCopyLink(
-  BuildContext context,
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,
@@ -78,22 +75,20 @@ void _handleCopyLink(
 }
 
 void _handleRemove(
-  BuildContext context,
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> selectedIds,
 ) async {
   if (selectedIds.contains(node.data.id)) {
     for (final id in selectedIds) {
-      ref.read(artifactsProvider.notifier).deleteItem(id, context);
+      ref.read(artifactsProvider.notifier).deleteItem(id);
     }
   } else {
-    ref.read(artifactsProvider.notifier).deleteItem(node.data.id, context);
+    ref.read(artifactsProvider.notifier).deleteItem(node.data.id);
   }
 }
 
 void _handleRename(
-  BuildContext context,
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,

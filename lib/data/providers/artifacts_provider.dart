@@ -36,7 +36,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
   Future<void> addItem(Artifact item) async => await _repository.add([item]);
 
-  Future<void> deleteItem(String itemId, BuildContext context) async {
+  Future<void> deleteItem(String itemId) async {
     if (itemId.isEmpty) return;
 
     List<String> collectDescendantIds(String parentId) {
@@ -51,9 +51,10 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
     final idsToDelete = [itemId, ...collectDescendantIds(itemId)];
 
+    final router = ref.read(routerProvider);
     final selectedItem = ref.read(selectedArtifactProvider);
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
-      context.go('/project/$_projectId/${Routes.graph}');
+      router.go('/project/$_projectId/${Routes.graph}');
     }
 
     state = AsyncData(
