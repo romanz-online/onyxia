@@ -1,6 +1,5 @@
 ﻿import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
-import 'cursor_service.dart';
 import 'interaction_service.dart';
 
 import 'loader_paste_listener.dart';
@@ -10,8 +9,6 @@ import 'loader_paste_listener.dart';
 class CanvasLoaderService {
   // Internal state management for current canvas
   static bool Function(KeyEvent)? _currentKeyboardHandler;
-  static final CanvasCursorService _cursorManager =
-      CanvasCursorService.instance;
   static PasteListenerHandle? _pasteListener;
 
   static void setupCanvas({
@@ -80,10 +77,6 @@ class CanvasLoaderService {
     while (ref.read(canvasBoundsProvider).isLoading && context.mounted) {
       await Future.delayed(Duration(milliseconds: 100));
     }
-
-    if (!context.mounted) return;
-
-    await _cursorManager.loadCursors();
 
     if (!context.mounted) return;
 

@@ -7,28 +7,6 @@ import 'clipboard_service.dart';
 /// Service responsible for handling all canvas interactions
 /// Provides centralized interaction logic for both whiteboard and markup screens
 class CanvasInteractionService {
-  /// Saves changes to canvas title
-  static void saveTitleChanges({
-    required WidgetRef ref,
-    required TextEditingController titleController,
-    required VoidCallback onEditingComplete,
-  }) {
-    onEditingComplete();
-    final selected = ref.read(selectedArtifactProvider);
-    final currentCanvas = selected is CanvasArtifact ? selected : null;
-    if (currentCanvas != null) {
-      final oldTitle = currentCanvas.name;
-      final newTitle = titleController.text.trim();
-      if (newTitle.isNotEmpty && newTitle != oldTitle) {
-        ArtifactsRepository(
-          projectId: ref.read(selectedProjectProvider)?.id,
-        ).update([currentCanvas.copyWith(name: newTitle)]);
-      } else {
-        titleController.text = oldTitle;
-      }
-    }
-  }
-
   /// Handles keyboard events for canvas interactions
   static Future<bool> handleKeyEvent({
     required KeyEvent event,

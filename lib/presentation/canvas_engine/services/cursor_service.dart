@@ -10,9 +10,6 @@ class CanvasCursorService {
   MouseCursor _currentSystemCursor = MouseCursor.defer;
 
   MouseCursor get currentSystemCursor => _currentSystemCursor;
-  String? get currentCssCursor => null;
-
-  Future<void> loadCursors() async {}
 
   void updateCursors(ToolMode toolMode, bool isPressed, MouseCursor? override) {
     _currentSystemCursor = override ?? _systemCursorForTool(toolMode, isPressed);

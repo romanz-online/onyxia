@@ -5,7 +5,6 @@ export 'canvas_text_provider.dart';
 export 'comments_provider.dart';
 export 'drag_select_provider.dart';
 export 'dragged_objects_provider.dart';
-export 'expanded_comments_provider.dart';
 export 'headless_provider.dart';
 export 'hovered_objects_provider.dart';
 export 'objects_provider.dart';
