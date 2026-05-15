@@ -116,8 +116,7 @@ class CanvasClipboardService {
       }
 
       // fallback to text object
-      if (text.isNotEmpty) {
-        final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
+      if (text.isNotEmpty) { 
         final viewportCenter =
             ref.read(canvasViewportProvider.notifier).getViewportCenter();
 
@@ -127,8 +126,7 @@ class CanvasClipboardService {
           topLeft: viewportCenter,
           bottomRight: viewportCenter,
           createdAt: DateTime.now(),
-          color: Colors.transparent,
-          layer: objectsNotifier.nextLayer(),
+          color: Colors.transparent, 
           content: text,
         );
 

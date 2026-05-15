@@ -953,11 +953,8 @@ class CanvasObjectPainter {
     if (!paintContext.object.isImage) return;
 
     final url = paintContext.object.imageProps.imageUrl;
-    final targetSize = paintContext.object.getDimensions();
 
-    // Try exact size first, fallback to any cached size if miss (stretched during resize)
-    var image = ImageService.getImageSync(url, targetSize: targetSize) ??
-        ImageCacheService.getFallbackImage(url);
+    var image = ImageService.getImageSync(url);
 
     // Configure Paint for better image quality
     Paint paint = Paint()

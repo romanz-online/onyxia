@@ -17,7 +17,6 @@ import 'package:onyxia/presentation/canvas_engine/widgets/canvas_object_text_are
 import 'package:onyxia/presentation/canvas_engine/widgets/canvas_pin_expanded.dart';
 import 'package:onyxia/presentation/canvas_engine/widgets/drag_off_bar.dart';
 import 'package:onyxia/presentation/canvas_engine/widgets/headless_palette.dart';
-import 'package:onyxia/presentation/canvas_engine/widgets/minimap.dart';
 import 'package:onyxia/presentation/canvas_engine/widgets/painter/canvas_painter.dart';
 import 'package:onyxia/presentation/canvas_engine/widgets/toolbar.dart';
 import 'package:onyxia/presentation/canvas_engine/canvas_config.dart';
@@ -170,10 +169,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                       CanvasInteractionService.closeTextEditor(ref: ref),
                 ),
             if (headlessState.isVisible)
-              HeadlessPalette(
-                arrow: headlessState.headlessArrow!,
-              ),
-            Minimap(canvas: currentCanvas),
+              HeadlessPalette(arrow: headlessState.headlessArrow!),
           ],
         ),
       ],
@@ -517,9 +513,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           canvasObject: targetObject,
           position: comment.getOffset(parent: targetObject),
           isExpanded: _isPinExpanded(comment.id),
-          onTap: () => _isPinExpanded(comment.id)
-              ? _collapsePin()
-              : _expandPin(comment),
+          onTap: () =>
+              _isPinExpanded(comment.id) ? _collapsePin() : _expandPin(comment),
         );
       }).toList();
 

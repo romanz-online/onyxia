@@ -22,6 +22,8 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
         ),
       ArtifactType.canvas => CanvasEditorView(canvasId: artifact.id),
       ArtifactType.folder => const SizedBox.shrink(),
+      // TODO: implement image viewer
+      ArtifactType.image => const SizedBox.shrink(),
     };
   }
 

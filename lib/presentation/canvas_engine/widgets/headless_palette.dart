@@ -91,7 +91,6 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
           arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
     }
 
-    ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
     ghostObject.color = ThemeHelper.neutral100(context);
     ref.read(canvasObjectsProvider.notifier).addObject(ghostObject);
 
@@ -137,7 +136,6 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
           arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
     }
 
-    ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
     ghostObject.color = Colors.transparent;
     ref.read(canvasObjectsProvider.notifier).addObject(ghostObject);
 

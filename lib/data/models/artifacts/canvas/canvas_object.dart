@@ -60,7 +60,6 @@ class CanvasObject {
   final GlobalKey curveMidpointKey = GlobalKey();
 
   String id;
-  int layer;
   Color color;
   CanvasObjectType type;
   StrokeType stroke;
@@ -79,7 +78,6 @@ class CanvasObject {
 
   CanvasObject({
     required this.id,
-    this.layer = 0,
     this.color = Colors.transparent,
     this.type = CanvasObjectType.rectangle,
     this.stroke = StrokeType.solid,
@@ -153,7 +151,6 @@ class CanvasObject {
   factory CanvasObject.initial() {
     return CanvasObject(
       id: '',
-      layer: 0,
       color: Colors.transparent,
       type: CanvasObjectType.rectangle,
       stroke: StrokeType.solid,
@@ -169,7 +166,6 @@ class CanvasObject {
 
   CanvasObject copyWith({
     String? id,
-    int? layer,
     Color? color,
     CanvasObjectType? type,
     StrokeType? stroke,
@@ -184,7 +180,6 @@ class CanvasObject {
   }) {
     return CanvasObject(
       id: id ?? this.id,
-      layer: layer ?? this.layer,
       color: color ?? this.color,
       type: type ?? this.type,
       stroke: stroke ?? this.stroke,
@@ -200,7 +195,6 @@ class CanvasObject {
 
   Map<String, dynamic> toMap() {
     final payload = <String, dynamic>{
-      'layer': layer,
       'color': color.toARGB32(),
       'stroke': stroke.value,
       'top_left': topLeft.toMap(),
@@ -276,7 +270,6 @@ class CanvasObject {
 
       return CanvasObject(
         id: map['id'] ?? '',
-        layer: payload['layer'] ?? 0,
         color: color,
         type: type,
         stroke: stroke,
@@ -314,7 +307,6 @@ class CanvasObject {
   String toString() {
     return 'CanvasObject('
         'id: $id, '
-        'layer: $layer, '
         'color: $color, '
         'type: $type, '
         'stroke: $stroke, '
@@ -343,7 +335,6 @@ class CanvasObject {
   @override
   int get hashCode {
     return id.hashCode ^
-        layer.hashCode ^
         color.hashCode ^
         type.hashCode ^
         stroke.hashCode ^

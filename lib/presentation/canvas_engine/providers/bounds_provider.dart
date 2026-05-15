@@ -185,18 +185,12 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
       bool isAnimated = false;
       int frameCount = 1;
 
-      // Use ImageService to load the image with a reasonable target size for Firebase Storage compatibility
-      // Instead of using getMaxSafeSize() which returns 16K on web, use a more reasonable size
-      const targetSize = Size(
-          2048, 2048); // 2K resolution should be sufficient for most canvases
-      image =
-          await ImageService.getImageAsync(imageUrl, targetSize: targetSize);
+      image = await ImageService.getImage(imageUrl);
 
       if (image != null) {
         // For animated images, we need to get the bytes to create codec
         if (imageUrl.endsWith('.gif')) {
-          final bytes = await ImageService.getImageBytes(imageUrl,
-              targetSize: targetSize);
+          final bytes = await ImageService.getImageBytes(imageUrl);
           if (bytes != null) {
             codec = await ui.instantiateImageCodec(bytes);
             frameCount = codec.frameCount;

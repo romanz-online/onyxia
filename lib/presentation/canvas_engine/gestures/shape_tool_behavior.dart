@@ -56,7 +56,6 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
 
             final newObject = CanvasObject.initial().copyWith(
               id: const Uuid().v4(),
-              layer: ref.read(canvasObjectsProvider.notifier).nextLayer(),
               color: ThemeHelper.neutral100(buildContext),
               type: shapeType,
               topLeft: topLeft,
@@ -92,7 +91,6 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
 
             final newObject = CanvasObject.initial().copyWith(
               id: const Uuid().v4(),
-              layer: ref.read(canvasObjectsProvider.notifier).nextLayer(),
               color: ThemeHelper.neutral100(buildContext),
               type: shapeType,
               topLeft: topLeft,

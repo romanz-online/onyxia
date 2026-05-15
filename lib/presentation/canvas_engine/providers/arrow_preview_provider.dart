@@ -190,8 +190,7 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
 
     // Clone the source object with new position and styling
     return CanvasObject(
-      id: const Uuid().v4(),
-      layer: 0,
+      id: const Uuid().v4(), 
       color: sourceObject.color.withValues(alpha: 0.5), // Ghost styling
       type: sourceObject.type,
       topLeft: ghostTopLeft,
@@ -218,8 +217,7 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
     CanvasConfig canvasConfig,
   ) {
     final arrowObj = CanvasObject(
-      id: const Uuid().v4(),
-      layer: 0,
+      id: const Uuid().v4(), 
       color: ThemeHelper.neutral500(context).withValues(alpha: 0.5),
       type: CanvasObjectType.arrow,
       topLeft: Offset.zero,

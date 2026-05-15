@@ -191,6 +191,9 @@ class ArtifactObject extends ConsumerWidget {
         // This case should not be reached due to the early return above
         contentText = 'Note content';
         break;
+      case ArtifactType.image:
+        contentText = 'Image content';
+        break;
     }
 
     return Text(

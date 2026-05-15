@@ -248,8 +248,7 @@ class CanvasInteractionService {
           canvasPosition.dx + image.width,
           canvasPosition.dy + image.height,
         ),
-        type: CanvasObjectType.image,
-        layer: objectsNotifier.nextLayer(),
+        type: CanvasObjectType.image, 
         imageProperties: ImageProperties(imageUrl: data.imageUrl),
       );
 
@@ -345,8 +344,7 @@ class CanvasInteractionService {
         position.dx + defaultArtifactObjectDimensions.width / 2,
         position.dy + defaultArtifactObjectDimensions.height / 2,
       ),
-      type: CanvasObjectType.artifact,
-      layer: ref.read(canvasObjectsProvider.notifier).nextLayer(),
+      type: CanvasObjectType.artifact, 
       artifactProperties: ArtifactProperties(artifactId: artifact?.id ?? ''),
     );
     // TODO: null artifact should create a note?

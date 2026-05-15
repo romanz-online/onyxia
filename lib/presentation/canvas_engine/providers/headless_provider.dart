@@ -143,7 +143,6 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
 
     return CanvasObject(
       id: const Uuid().v4(),
-      layer: 0,
       color: NarwhalColors.neutral100.withValues(alpha: 0.5),
       type: shapeType,
       topLeft: topLeft,
@@ -197,7 +196,6 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
 
     return CanvasObject(
       id: const Uuid().v4(),
-      layer: 0,
       color: NarwhalColors.neutral100.withValues(alpha: 0.5),
       type: CanvasObjectType.artifact,
       topLeft: topLeft,

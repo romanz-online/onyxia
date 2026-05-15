@@ -3,12 +3,14 @@
 enum ArtifactType with NarwhalEnum {
   note,
   canvas,
-  folder;
+  folder,
+  image;
 
   String get label => switch (this) {
         note => 'Note',
         canvas => 'Canvas',
         folder => 'Folder',
+        image => 'Image',
       };
 }
 
@@ -57,6 +59,7 @@ abstract class Artifact {
       ArtifactType.canvas => CanvasArtifact.fromMap(map),
       ArtifactType.note => NoteArtifact.fromMap(map),
       ArtifactType.folder => FolderArtifact.fromMap(map),
+      ArtifactType.image => ImageArtifact.fromMap(map),
     };
   }
 
@@ -132,5 +135,6 @@ abstract class Artifact {
         ArtifactType.note => this as NoteArtifact,
         ArtifactType.canvas => this as CanvasArtifact,
         ArtifactType.folder => this as FolderArtifact,
+        ArtifactType.image => this as ImageArtifact,
       };
 }

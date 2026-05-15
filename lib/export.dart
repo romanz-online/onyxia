@@ -70,9 +70,10 @@ export 'package:gap/gap.dart';
 export 'package:flutter_portal/flutter_portal.dart';
 
 //models
-export 'package:onyxia/data/models/artifacts/note.dart';
-export 'package:onyxia/data/models/artifacts/canvas/canvas.dart';
-export 'package:onyxia/data/models/artifacts/folder.dart';
+export 'package:onyxia/data/models/artifacts/note_artifact.dart';
+export 'package:onyxia/data/models/artifacts/canvas/canvas_artifact.dart';
+export 'package:onyxia/data/models/artifacts/folder_artifact.dart';
+export 'package:onyxia/data/models/artifacts/image_artifact.dart';
 export 'package:onyxia/data/models/user.dart';
 export 'package:onyxia/data/models/project_member.dart';
 export 'package:onyxia/data/models/artifacts/canvas/comment.dart';
@@ -91,18 +92,14 @@ export 'package:onyxia/repository/base_supabase_repository.dart';
 export 'package:onyxia/repository/auth_repository.dart';
 export 'package:onyxia/repository/canvas_objects_repository.dart';
 export 'package:onyxia/repository/comments_repository.dart';
-export 'package:onyxia/repository/file_storage.dart' show FileStorage;
 export 'package:onyxia/repository/projects_repository.dart';
 export 'package:onyxia/repository/pins_repository.dart';
 export 'package:onyxia/repository/users_repository.dart';
 export 'package:onyxia/repository/project_members_repository.dart';
 export 'package:onyxia/repository/artifacts_repository.dart';
-export 'package:onyxia/repository/storage_files_repository.dart';
 
 //services
-export 'package:onyxia/services/images/image_service.dart';
-export 'package:onyxia/services/images/image_cache_service.dart';
-export 'package:onyxia/services/images/image_encoding_service.dart';
+export 'package:onyxia/services/image_service.dart';
 export 'package:onyxia/services/timestamp_service.dart';
 
 //helpers

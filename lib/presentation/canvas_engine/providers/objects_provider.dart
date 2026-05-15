@@ -19,13 +19,6 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   late String canvasId;
   String? projectId;
   StreamSubscription? _subscription;
-  int _maxLayer = 0;
-
-  int get maxLayer => _maxLayer;
-  int nextLayer() {
-    _maxLayer++;
-    return _maxLayer;
-  }
 
   @override
   CanvasObjects build() {
@@ -45,18 +38,13 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     return CanvasObjects.initial();
   }
 
-  /// Sorts the list of objects by their layer
-  List<CanvasObject> _sortObjects(List<CanvasObject> objects) =>
-      objects..sort((a, b) => a.layer.compareTo(b.layer));
-
   void _init() {
     if (canvasId.isEmpty || projectId == null) return;
 
     _subscription = repository.getStream().listen((remoteObjects) async {
-      final sorted = _sortObjects(remoteObjects);
       List<CanvasObject> updatedObjects = [];
 
-      for (final object in sorted) {
+      for (final object in remoteObjects) {
         if (object.isImage) {
           await ImageService.preloadImages([object.imageProps.imageUrl]);
         }
@@ -66,12 +54,6 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
 
       if (ref.mounted) {
         state = state.copyWith(objects: updatedObjects);
-        // Update maxLayer based on loaded objects
-        _maxLayer = updatedObjects.isEmpty
-            ? 0
-            : updatedObjects
-                .map((o) => o.layer)
-                .reduce((a, b) => a > b ? a : b);
       }
     });
   }
@@ -98,11 +80,8 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     final updatedObjects = List<CanvasObject>.from(state.objects);
     updatedObjects[index] = object;
 
-    // Resort to maintain proper arrow/layer ordering
-    final sortedObjects = _sortObjects(updatedObjects);
-
     state = state.copyWith(
-      objects: sortedObjects,
+      objects: updatedObjects,
       selectedObjects: state.selectedObjects.map((o) {
         return o.id == object.id ? object : o;
       }).toList(),
@@ -131,8 +110,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   void addObjectState(CanvasObject object) {
     // no objects with duplicate IDs
     if (!state.objects.contains(object)) {
-      final updatedObjects = _sortObjects([...state.objects, object]);
-      state = state.copyWith(objects: updatedObjects);
+      state = state.copyWith(objects: [...state.objects, object]);
     }
   }
 
@@ -150,7 +128,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
       }
     }
 
-    state = state.copyWith(objects: _sortObjects(currentObjects));
+    state = state.copyWith(objects: currentObjects);
     repository.add(objects);
   }
 
@@ -165,26 +143,10 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     final objectsToDelete = [object, ...connectedArrows];
     final deletedIds = objectsToDelete.map((o) => o.id).toSet();
 
-    // Get the layer of the deleted object to adjust other objects
-    final deletedLayers = objectsToDelete.map((o) => o.layer).toList();
-
-    // Create updated objects list with adjusted layer numbers
-    final updatedObjects =
-        state.objects.where((o) => !deletedIds.contains(o.id)).map((o) {
-      // If this object's layer is higher than any deleted object's layer,
-      // decrease its layer number by 1 for each deleted object with lower layer
-      int layerAdjustment =
-          deletedLayers.where((layer) => layer < o.layer).length;
-      if (layerAdjustment > 0) {
-        o.layer = o.layer - layerAdjustment;
-      }
-      return o;
-    }).toList();
-
     // Update state with adjusted objects
     state = state.copyWith(
       selectedObjects: [],
-      objects: updatedObjects,
+      objects: state.objects.where((o) => !deletedIds.contains(o.id)).toList(),
     );
 
     // Get the actual pins and delete them
@@ -216,21 +178,10 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     final allObjectsToDelete = [...objects, ...connectedArrows];
     final allDeletedIds = allObjectsToDelete.map((o) => o.id).toSet();
 
-    final deletedLayers = allObjectsToDelete.map((o) => o.layer).toList();
-
-    final updatedObjects =
-        state.objects.where((o) => !allDeletedIds.contains(o.id)).map((o) {
-      int layerAdjustment =
-          deletedLayers.where((layer) => layer < o.layer).length;
-      if (layerAdjustment > 0) {
-        o.layer = o.layer - layerAdjustment;
-      }
-      return o;
-    }).toList();
-
     state = state.copyWith(
       selectedObjects: [],
-      objects: updatedObjects,
+      objects:
+          state.objects.where((o) => !allDeletedIds.contains(o.id)).toList(),
     );
 
     repository.deleteMultiple(allObjectsToDelete);

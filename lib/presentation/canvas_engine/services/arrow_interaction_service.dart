@@ -26,8 +26,7 @@ class ArrowInteractionService {
 
     if (arrowPreview.hasGhostObject) {
       final ghostObject = arrowPreview.ghostObject!;
-
-      ghostObject.layer = ref.read(canvasObjectsProvider.notifier).nextLayer();
+ 
       ghostObject.color = sourceObject.color;
       ghostObject.topLeft =
           ref.read(canvasBoundsProvider.notifier).clamp(ghostObject.topLeft);
@@ -44,9 +43,7 @@ class ArrowInteractionService {
     }
 
     if (endObject == null) return;
-
-    arrowPreview.arrow.layer =
-        ref.read(canvasObjectsProvider.notifier).nextLayer();
+ 
     arrowPreview.arrow.color = ThemeHelper.neutral600(context);
     arrowPreview.arrow.stroke = StrokeType.solid;
     arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
@@ -81,8 +78,7 @@ class ArrowInteractionService {
     Offset? startRelativeOffset,
   }) {
     final arrow = CanvasObject(
-      id: const Uuid().v4(),
-      layer: ref.read(canvasObjectsProvider.notifier).nextLayer(),
+      id: const Uuid().v4(), 
       color: NarwhalColors.neutral600,
       type: CanvasObjectType.arrow,
       topLeft: Offset.zero,

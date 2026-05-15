@@ -10,14 +10,16 @@ class CanvasImageUploadService {
   }) async {
     for (final file in files) {
       try {
-        final selected = ref.read(selectedArtifactProvider);
-        final imageUrl = await ImageService.uploadImage(
+        final projectId = ref.read(selectedProjectProvider)?.id;
+        if (projectId == null) {
+          throw StateError('No project selected for image upload');
+        }
+        final artifact = await ImageService.uploadImage(
           file.bytes!,
           file.name,
-          userName: ref.read(currentUserProvider).value?.name ?? '',
-          projectId: ref.read(selectedProjectProvider)?.id,
-          canvasId: selected is CanvasArtifact ? selected.id : '',
+          projectId: projectId,
         );
+        final imageUrl = artifact.downloadUrl;
 
         final image = await ImageService.getImage(imageUrl);
         if (image == null) {
@@ -38,8 +40,7 @@ class CanvasImageUploadService {
             viewportCenter.dx + image.width,
             viewportCenter.dy + image.height,
           ),
-          type: CanvasObjectType.image,
-          layer: objectsNotifier.nextLayer(),
+          type: CanvasObjectType.image, 
           imageProperties: ImageProperties(imageUrl: imageUrl),
         );
 
