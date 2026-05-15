@@ -157,6 +157,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     }
 
     await _repository.update(batch);
+    
     return null;
   }
 }
