@@ -49,15 +49,16 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
     super.dispose();
   }
 
-  void _saveChanges() {
+  Future<void> _saveChanges() async {
     setState(() {
       _errorMessage = null;
       _isEditing = false;
     });
     _overlayController.hide();
-    final error = ref
+    final error = await ref
         .read(artifactsProvider.notifier)
         .renameItem(widget.item, _controller.text);
+    if (!mounted) return;
     if (error != null) {
       _controller.text = widget.item.name;
     }

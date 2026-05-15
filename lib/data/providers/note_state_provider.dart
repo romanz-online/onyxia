@@ -162,7 +162,8 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     if (captured == null || captured.note == null) return;
     final outgoing = captured.note!;
     _pendingEchoContents.add(outgoing.content);
-    await ArtifactsRepository(projectId: _projectId).update([outgoing]);
+    await ArtifactsRepository(projectId: _projectId)
+        .updateNoteContent(outgoing.id, outgoing.content);
   }
 }
 

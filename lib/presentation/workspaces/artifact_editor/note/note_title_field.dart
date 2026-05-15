@@ -34,21 +34,22 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
       final initialItem = ref.read(_provider).value?.note;
       _controller.text = initialItem?.name ?? '';
 
-      _focusNode.addListener(() {
+      _focusNode.addListener(() async {
         if (_focusNode.hasFocus) {
           _titleOnFocusGain = ref.read(_provider).value?.note?.name;
-        } else {
-          final note = ref.read(_provider).value?.note;
-          if (note == null) return;
-          final error = ref
-              .read(artifactsProvider.notifier)
-              .renameItem(note, _controller.text);
-          if (error != null) {
-            _controller.text = _titleOnFocusGain ?? note.name;
-          }
-          setState(() => _errorMessage = null);
-          _overlayController.hide();
+          return;
         }
+        final note = ref.read(_provider).value?.note;
+        if (note == null) return;
+        final error = await ref
+            .read(artifactsProvider.notifier)
+            .renameItem(note, _controller.text);
+        if (!mounted) return;
+        if (error != null) {
+          _controller.text = _titleOnFocusGain ?? note.name;
+        }
+        setState(() => _errorMessage = null);
+        _overlayController.hide();
       });
 
       _itemListener = ref.listenManual(

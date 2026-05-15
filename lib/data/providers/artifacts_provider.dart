@@ -103,11 +103,11 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     _repository.update([item]);
   }
 
-  void updateItems({List<Artifact> items = const []}) {
+  Future<void> updateItems({List<Artifact> items = const []}) async {
     for (final item in items) {
       updateItemState(item);
     }
-    _repository.update(items.isEmpty ? _items : items);
+    await _repository.update(items.isEmpty ? _items : items);
   }
 
   // --- Rename ---
@@ -118,7 +118,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   /// (including the renamed item's own content), and navigates the URL if
   /// the user is currently viewing this item. Returns `null` on success or
   /// no-op (empty / unchanged name).
-  String? renameItem(Artifact item, String newName) {
+  Future<String?> renameItem(Artifact item, String newName) async {
     final cleaned = ItemTitleValidationService.correctTitle(newName.trim());
     if (cleaned.isEmpty || cleaned == item.name) return null;
     final err = ItemTitleValidationService.errorMessage(
@@ -144,8 +144,11 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
       if (updated != a) batch.add(updated);
     }
 
-    updateItems(items: batch);
-
+    // Apply local state + URL synchronously so selectedArtifactProvider
+    // never sees state==NewName while url==OldName (the flash window).
+    for (final u in batch) {
+      updateItemState(u);
+    }
     final router = ref.read(routerProvider);
     final urlSelectedId =
         router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
@@ -153,6 +156,8 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
       final projectId = ref.read(selectedProjectProvider.select((p) => p?.id));
       router.go(renamed.navigationUrl(projectId));
     }
+
+    await _repository.update(batch);
     return null;
   }
 }

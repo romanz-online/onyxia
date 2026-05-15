@@ -20,4 +20,16 @@ class ArtifactsRepository extends BaseSupabaseRepository<Artifact> {
 
   @override
   String getIdFromItem(Artifact item) => item.id;
+
+  /// Writes only the `body` column for a note. Keeps the live editor's
+  /// debounced saves from clobbering concurrent metadata writes (rename,
+  /// reparent) that touch `name`, `parent_folder_id`, etc.
+  Future<void> updateNoteContent(String id, String content) async {
+    if (projectId == null || projectId!.isEmpty) {
+      throw ArgumentError('Invalid projectId: $projectId');
+    }
+    await Supabase.instance.client
+        .from(tableName)
+        .update({'body': {'content': content}}).eq('id', id);
+  }
 }
