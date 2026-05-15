@@ -82,21 +82,21 @@ abstract class BaseSupabaseRepository<T> {
     });
   }
 
-  Future<void> update(T item) {
-    return _execute(() async {
-      dynamic q = _table.update(_writeMap(item));
-      keyFilter(item).forEach((k, v) => q = q.eq(k, v));
-      await q;
-    });
-  }
-
-  Future<void> updateMultiple(List<T> items) {
+  Future<void> update(List<T> items) {
     if (items.length == 1) {
-      return update(items.first);
+      return _execute(() async {
+        dynamic q = _table.update(_writeMap(items.first));
+        keyFilter(items.first).forEach((k, v) => q = q.eq(k, v));
+        await q;
+      });
     }
     return _execute(() async {
       if (items.isEmpty) return;
-      await _table.upsert(items.map(_writeMap).toList());
+      await Future.wait(items.map((item) {
+        dynamic q = _table.update(_writeMap(item));
+        keyFilter(item).forEach((k, v) => q = q.eq(k, v));
+        return q;
+      }));
     });
   }
 

@@ -43,14 +43,14 @@ class PinsNotifier extends Notifier<Pins> {
 
   void updatePin(Pin pin) {
     updatePinState(pin);
-    repository.update(pin);
+    repository.update([pin]);
   }
 
   void updatePins(List<Pin> pins) {
     for (final pin in pins) {
       updatePinState(pin);
     }
-    repository.updateMultiple(pins);
+    repository.update(pins);
   }
 
   void addPinState(Pin pin) {

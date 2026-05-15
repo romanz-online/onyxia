@@ -1,6 +1,7 @@
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 import 'dart:async';
+import 'dart:collection';
 
 const _100ms = Duration(milliseconds: 100);
 
@@ -35,6 +36,11 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
   FocusNode? _focusNode;
   Timer? _debounceTimer;
   StreamSubscription<Artifact?>? _docSub;
+  // FIFO of contents we've sent to the DB. Each echo from the document
+  // stream pops the head if it matches — that's our own save. Echoes that
+  // don't match are external (remote user, or a programmatic write like
+  // rename) and get applied to the live controller.
+  final Queue<String> _pendingEchoContents = Queue<String>();
 
   @override
   Future<NoteState> build() async {
@@ -72,7 +78,6 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     final repo = ArtifactsRepository(projectId: _projectId);
     final latestNote =
         await repo.getDocumentStream(note.id).first as NoteArtifact? ?? note;
-    final myUserId = ref.read(currentUserProvider).value?.id;
 
     // If deps changed during the await, abort cleanly so we don't allocate a
     // controller that escapes onDispose's reach.
@@ -92,27 +97,38 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     _controllerListener = listener;
     controller.addListener(listener);
 
-    // Live remote-edit sync: the server stamps `updated_by` with the writer's
-    // auth UID, so any emission where it matches our own UID is the echo of
-    // one of our saves and we skip it. Genuine remote edits (different user)
-    // are applied — but deferred if the local user is mid-burst so we don't
-    // yank text from under them.
+    // Live document sync. Own-save echoes are identified by FIFO content
+    // match against _pendingEchoContents — Supabase realtime delivers events
+    // in commit order, so the order our saves go out is the order their
+    // echoes come back. Anything that doesn't match the queue head is
+    // external (remote user, or our own non-typing write like rename) and
+    // gets pushed into the live controller.
     _docSub = repo.getDocumentStream(note.id).skip(1).listen((incoming) {
       if (incoming is! NoteArtifact) return;
-      if (myUserId != null && incoming.updatedBy == myUserId) return;
-      if (_debounceTimer?.isActive ?? false) return;
       final current = state.value;
       if (current == null) return;
-      if (controller.text == incoming.content) {
+
+      if (_pendingEchoContents.isNotEmpty &&
+          _pendingEchoContents.first == incoming.content) {
+        _pendingEchoContents.removeFirst();
         if (current.note != incoming) {
           state = AsyncData(current.copyWith(note: incoming));
         }
         return;
       }
-      controller.removeListener(listener);
-      controller.text = incoming.content;
-      controller.addListener(listener);
-      state = AsyncData(current.copyWith(note: incoming));
+
+      // External update. Don't yank text mid-burst — defer to the next echo
+      // cycle after the user pauses.
+      if (_debounceTimer?.isActive ?? false) return;
+
+      if (controller.text != incoming.content) {
+        controller.removeListener(listener);
+        controller.text = incoming.content;
+        controller.addListener(listener);
+      }
+      if (current.note != incoming) {
+        state = AsyncData(current.copyWith(note: incoming));
+      }
     });
 
     return NoteState(
@@ -134,21 +150,6 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
 
   bool get hasFocus => _focusNode?.hasFocus ?? false;
 
-  // ===== TITLE UPDATE =====
-
-  void updateTitle(String title) {
-    final current = state.value;
-    if (current == null || current.note == null) return;
-    final updatedNote = current.note!.copyWith(name: title);
-    state = AsyncData(current.copyWith(note: updatedNote));
-    // Propagate optimistically to artifactsProvider so selectedArtifactProvider's
-    // name-based lookup resolves immediately when the URL flips to the new name.
-    // updateItemState only mutates the local list — the debounced _saveDocument
-    // below handles repo persistence.
-    ref.read(artifactsProvider.notifier).updateItemState(updatedNote);
-    _debounceSave(duration: _100ms);
-  }
-
   // ===== SAVE =====
 
   void _debounceSave({Duration duration = _100ms}) {
@@ -160,7 +161,8 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     final captured = state.value;
     if (captured == null || captured.note == null) return;
     final outgoing = captured.note!;
-    await ArtifactsRepository(projectId: _projectId).update(outgoing);
+    _pendingEchoContents.add(outgoing.content);
+    await ArtifactsRepository(projectId: _projectId).update([outgoing]);
   }
 }
 

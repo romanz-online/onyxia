@@ -55,28 +55,11 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       _isEditing = false;
     });
     _overlayController.hide();
-    final newName =
-        ItemTitleValidationService.correctTitle(_controller.text.trim());
-    if (newName.isEmpty || newName == widget.item.name) {
+    final error = ref
+        .read(artifactsProvider.notifier)
+        .renameItem(widget.item, _controller.text);
+    if (error != null) {
       _controller.text = widget.item.name;
-      return;
-    }
-    if (ItemTitleValidationService.errorMessage(ref, newName, widget.item.id) !=
-        null) {
-      _controller.text = widget.item.name;
-      return;
-    }
-    final renamed = widget.item.copyWith(name: newName);
-    ref.read(artifactsProvider.notifier).updateItem(renamed);
-
-    if (context.mounted) {
-      final urlSelectedId =
-          GoRouterState.of(context).pathParameters['selectedId'];
-      if (urlSelectedId == widget.item.name) {
-        final projectId =
-            ref.read(selectedProjectProvider.select((p) => p?.id));
-        context.go(renamed.navigationUrl(projectId));
-      }
     }
   }
 
@@ -159,7 +142,10 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                           onSubmitted: (_) => _saveChanges(),
                           onChanged: (value) {
                             final msg = ItemTitleValidationService.errorMessage(
-                                ref, value, widget.item.id);
+                                ref.read(artifactsProvider).value ??
+                                    const <Artifact>[],
+                                value,
+                                widget.item.id);
                             setState(() => _errorMessage = msg);
                             if (msg != null) {
                               _overlayController.show();

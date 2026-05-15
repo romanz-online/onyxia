@@ -14,6 +14,6 @@ class ProjectsNotifier extends StreamNotifier<List<Project>> {
   void renameProject(String id, String newName) {
     final p = state.value?.firstWhereOrNull((e) => e.id == id);
     if (p == null) return;
-    _repository.update(p.copyWith(name: newName));
+    _repository.update([p.copyWith(name: newName)]);
   }
 }

@@ -22,7 +22,7 @@ class CanvasInteractionService {
       if (newTitle.isNotEmpty && newTitle != oldTitle) {
         ArtifactsRepository(
           projectId: ref.read(selectedProjectProvider)?.id,
-        ).update(currentCanvas.copyWith(name: newTitle));
+        ).update([currentCanvas.copyWith(name: newTitle)]);
       } else {
         titleController.text = oldTitle;
       }

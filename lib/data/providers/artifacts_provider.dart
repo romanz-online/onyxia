@@ -1,3 +1,5 @@
+import 'package:onyxia/bard/markdown_parser.dart';
+import 'package:onyxia/bard/markdown_span.dart';
 import 'package:onyxia/export.dart';
 
 final artifactsProvider =
@@ -52,7 +54,11 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     final idsToDelete = [itemId, ...collectDescendantIds(itemId)];
 
     final router = ref.read(routerProvider);
-    final selectedItem = ref.read(selectedArtifactProvider);
+    final urlSelectedName =
+        router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
+    final selectedItem = urlSelectedName == null
+        ? null
+        : _items.firstWhereOrNull((a) => a.name == urlSelectedName);
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
       router.go('/project/$_projectId/${Routes.graph}');
     }
@@ -94,13 +100,91 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
   void updateItem(Artifact item) {
     updateItemState(item);
-    _repository.update(item);
+    _repository.update([item]);
   }
 
   void updateItems({List<Artifact> items = const []}) {
     for (final item in items) {
       updateItemState(item);
     }
-    _repository.updateMultiple(items.isEmpty ? _items : items);
+    _repository.update(items.isEmpty ? _items : items);
   }
+
+  // --- Rename ---
+
+  /// Renames [item] to [newName]. Validates first; on rejection returns the
+  /// error message and performs no writes. On success writes the renamed
+  /// item, rewrites `[[oldName]]` wiki-links in every note's content
+  /// (including the renamed item's own content), and navigates the URL if
+  /// the user is currently viewing this item. Returns `null` on success or
+  /// no-op (empty / unchanged name).
+  String? renameItem(Artifact item, String newName) {
+    final cleaned = ItemTitleValidationService.correctTitle(newName.trim());
+    if (cleaned.isEmpty || cleaned == item.name) return null;
+    final err = ItemTitleValidationService.errorMessage(
+        _items, cleaned, item.id);
+    if (err != null) return err;
+
+    final oldName = item.name;
+    final renamed = item.copyWith(name: cleaned);
+
+    final batch = <Artifact>[];
+    for (final a in _items) {
+      Artifact updated = a.id == item.id ? renamed : a;
+      if (updated is NoteArtifact) {
+        final rewritten = _rewriteWikiLinksInContent(
+          updated.content,
+          oldName: oldName,
+          newName: cleaned,
+        );
+        if (rewritten != updated.content) {
+          updated = updated.copyWith(content: rewritten);
+        }
+      }
+      if (updated != a) batch.add(updated);
+    }
+
+    updateItems(items: batch);
+
+    final router = ref.read(routerProvider);
+    final urlSelectedId =
+        router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
+    if (urlSelectedId == oldName) {
+      final projectId = ref.read(selectedProjectProvider.select((p) => p?.id));
+      router.go(renamed.navigationUrl(projectId));
+    }
+    return null;
+  }
+}
+
+// Rewrites `[[oldName]]` wiki-links to `[[newName]]` using the markdown
+// parser. The parser-based approach correctly handles unclosed `[[name`
+// links (auto-closed at newline/EOF) and avoids false-positive prefix
+// matches against other names — a literal `replaceAll('[[bar', ...)` would
+// have clobbered `[[bar two`.
+String _rewriteWikiLinksInContent(
+  String content, {
+  required String oldName,
+  required String newName,
+}) {
+  if (!content.contains('[[')) return content;
+  final spans = parseMarkdown(content)
+      .inlineSpans
+      .where((s) => s.type == MarkdownFormatType.wikiLink)
+      .toList();
+  if (spans.isEmpty) return content;
+
+  final buf = StringBuffer();
+  int cursor = 0;
+  bool changed = false;
+  for (final s in spans) {
+    if (content.substring(s.contentStart, s.contentEnd) != oldName) continue;
+    buf.write(content.substring(cursor, s.contentStart));
+    buf.write(newName);
+    cursor = s.contentEnd;
+    changed = true;
+  }
+  if (!changed) return content;
+  buf.write(content.substring(cursor));
+  return buf.toString();
 }

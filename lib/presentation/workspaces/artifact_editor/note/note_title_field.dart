@@ -38,32 +38,13 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
         if (_focusNode.hasFocus) {
           _titleOnFocusGain = ref.read(_provider).value?.note?.name;
         } else {
-          final cleaned =
-              ItemTitleValidationService.correctTitle(_controller.text);
-          if (cleaned != _controller.text) _controller.text = cleaned;
-
-          if (ItemTitleValidationService.errorMessage(
-                  ref, cleaned, ref.read(_provider).value?.note?.id ?? '') !=
-              null) {
-            _controller.text = _titleOnFocusGain ?? cleaned;
-            setState(() => _errorMessage = null);
-            _overlayController.hide();
-            return;
-          }
-
-          final previousTitle = ref.read(_provider).value?.note?.name;
-          ref.read(_provider.notifier).updateTitle(cleaned);
-
-          if (previousTitle != null &&
-              cleaned.isNotEmpty &&
-              cleaned != previousTitle &&
-              context.mounted) {
-            final urlSelectedId =
-                GoRouterState.of(context).pathParameters['selectedId'];
-            if (urlSelectedId == previousTitle) {
-              final projectId = ref.read(selectedProjectProvider)?.id;
-              context.go('/project/$projectId/$cleaned');
-            }
+          final note = ref.read(_provider).value?.note;
+          if (note == null) return;
+          final error = ref
+              .read(artifactsProvider.notifier)
+              .renameItem(note, _controller.text);
+          if (error != null) {
+            _controller.text = _titleOnFocusGain ?? note.name;
           }
           setState(() => _errorMessage = null);
           _overlayController.hide();
@@ -140,7 +121,9 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
           onSubmitted: (_) => widget.nextFocusNode?.requestFocus(),
           onChanged: (value) {
             final msg = ItemTitleValidationService.errorMessage(
-                ref, value, ref.read(_provider).value?.note?.id ?? '');
+                ref.read(artifactsProvider).value ?? const <Artifact>[],
+                value,
+                ref.read(_provider).value?.note?.id ?? '');
             setState(() => _errorMessage = msg);
             if (msg != null) {
               _overlayController.show();

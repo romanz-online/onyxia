@@ -112,7 +112,7 @@ class CommentsNotifier extends Notifier<CommentsState> {
       );
     }
 
-    await _repository.update(newComment.copyWith(canvasId: _canvasId));
+    await _repository.update([newComment.copyWith(canvasId: _canvasId)]);
 
     state = state.copyWith(
       comments: [
@@ -138,7 +138,7 @@ class CommentsNotifier extends Notifier<CommentsState> {
       subComments: [...comment.subComments, subComment],
     );
 
-    await _repository.update(updatedComment.copyWith(canvasId: _canvasId));
+    await _repository.update([updatedComment.copyWith(canvasId: _canvasId)]);
   }
 
   Future<void> updateSubComment({
@@ -159,7 +159,7 @@ class CommentsNotifier extends Notifier<CommentsState> {
       subComments: updatedSubComments,
     );
 
-    await _repository.update(updatedComment.copyWith(canvasId: _canvasId));
+    await _repository.update([updatedComment.copyWith(canvasId: _canvasId)]);
   }
 
   Future<void> deleteSubComment(String commentId, String subCommentId) async {
@@ -169,7 +169,7 @@ class CommentsNotifier extends Notifier<CommentsState> {
 
     final updatedComment = comment.copyWith(subComments: updatedSubComments);
 
-    await _repository.update(updatedComment.copyWith(canvasId: _canvasId));
+    await _repository.update([updatedComment.copyWith(canvasId: _canvasId)]);
   }
 
   void moveCommentLocally(String commentId, Offset delta) {

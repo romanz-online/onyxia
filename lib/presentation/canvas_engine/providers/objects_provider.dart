@@ -117,7 +117,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
 
   void updateObject(CanvasObject object) {
     updateObjectState(object);
-    repository.update(object);
+    repository.update([object]);
   }
 
   void updateObjects({List<CanvasObject> objects = const []}) {
@@ -125,7 +125,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
       updateObjectState(obj);
     }
 
-    repository.updateMultiple(objects.isEmpty ? state.objects : objects);
+    repository.update(objects.isEmpty ? state.objects : objects);
   }
 
   void addObjectState(CanvasObject object) {
