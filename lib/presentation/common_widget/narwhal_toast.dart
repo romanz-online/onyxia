@@ -25,12 +25,15 @@ class _ToastEntry {
   final OverlayEntry overlayEntry;
   final Timer timer;
   final ToastPosition position;
+  final GlobalKey<_ToastStackOverlayState> stateKey;
+  bool isExiting = false;
 
   _ToastEntry({
     required this.id,
     required this.overlayEntry,
     required this.timer,
     required this.position,
+    required this.stateKey,
   });
 }
 
@@ -72,8 +75,11 @@ class NarwhalToast {
       _positionControllers[position] = StreamController<void>.broadcast();
     }
 
+    final stateKey = GlobalKey<_ToastStackOverlayState>();
+
     final overlayEntry = OverlayEntry(
       builder: (context) => _ToastStackOverlay(
+        key: stateKey,
         toastId: toastId,
         text: text,
         type: type,
@@ -85,7 +91,7 @@ class NarwhalToast {
     );
 
     final timer = Timer(effectiveDuration, () {
-      _removeToast(toastId, position);
+      _startExit(toastId, position);
     });
 
     final toastEntry = _ToastEntry(
@@ -93,6 +99,7 @@ class NarwhalToast {
       overlayEntry: overlayEntry,
       timer: timer,
       position: position,
+      stateKey: stateKey,
     );
 
     // Add to position list with correct stacking order
@@ -140,12 +147,30 @@ class NarwhalToast {
     for (final position in _toastsByPosition.keys.toList()) {
       final toasts = _toastsByPosition[position];
       if (toasts == null) continue;
-      final idx = toasts.indexWhere((t) => t.id == toastId);
-      if (idx != -1) {
-        _removeToast(toastId, position);
+      if (toasts.any((t) => t.id == toastId)) {
+        _startExit(toastId, position);
         return;
       }
     }
+  }
+
+  static void _startExit(String toastId, ToastPosition position) {
+    final toasts = _toastsByPosition[position];
+    if (toasts == null) return;
+    final idx = toasts.indexWhere((t) => t.id == toastId);
+    if (idx == -1) return;
+
+    final toast = toasts[idx];
+    if (toast.isExiting) return;
+    toast.isExiting = true;
+    toast.timer.cancel();
+
+    final state = toast.stateKey.currentState;
+    if (state == null) {
+      _removeToast(toastId, position);
+      return;
+    }
+    state.playExit().whenComplete(() => _removeToast(toastId, position));
   }
 
   static void _removeToast(String toastId, ToastPosition position) {
@@ -212,6 +237,7 @@ class _ToastStackOverlay extends StatefulWidget {
   final Stream<void> positionStream;
 
   const _ToastStackOverlay({
+    super.key,
     required this.toastId,
     this.text,
     this.child,
@@ -229,9 +255,13 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
     with TickerProviderStateMixin {
   late AnimationController _entryController;
   late AnimationController _positionController;
+  late AnimationController _exitController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
   late Animation<double> _positionAnimation;
+  late Animation<double> _exitFadeAnimation;
+  late Animation<Offset> _exitSlideAnimation;
+  bool _isExiting = false;
 
   StreamSubscription<void>? _positionSubscription;
   double _currentStackOffset = 0;
@@ -253,6 +283,12 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
     // Position animation controller for smooth repositioning
     _positionController = AnimationController(
       duration: const Duration(milliseconds: 250),
+      vsync: this,
+    );
+
+    // Exit animation controller — faster than entry.
+    _exitController = AnimationController(
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
 
@@ -280,6 +316,22 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
       curve: Curves.easeInOut,
     ));
 
+    _exitFadeAnimation = Tween<double>(
+      begin: 1.0,
+      end: 0.0,
+    ).animate(CurvedAnimation(
+      parent: _exitController,
+      curve: Curves.easeIn,
+    ));
+
+    _exitSlideAnimation = Tween<Offset>(
+      begin: Offset.zero,
+      end: _getSlideOffset(),
+    ).animate(CurvedAnimation(
+      parent: _exitController,
+      curve: Curves.easeIn,
+    ));
+
     // Listen to position updates
     _positionSubscription = widget.positionStream.listen((_) {
       _updatePosition();
@@ -294,10 +346,18 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
     _positionSubscription?.cancel();
     _entryController.dispose();
     _positionController.dispose();
+    _exitController.dispose();
     super.dispose();
   }
 
+  Future<void> playExit() {
+    if (_isExiting) return _exitController.forward().orCancel.catchError((_) {});
+    _isExiting = true;
+    return _exitController.forward();
+  }
+
   void _updatePosition() {
+    if (_isExiting) return;
     final newStackOffset = _getStackOffset();
     if (newStackOffset != _targetStackOffset) {
       _currentStackOffset = _targetStackOffset;
@@ -360,7 +420,8 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([_entryController, _positionController]),
+      animation: Listenable.merge(
+          [_entryController, _positionController, _exitController]),
       builder: (context, child) {
         // Interpolate between current and target stack offsets
         final interpolatedOffset = _currentStackOffset +
@@ -380,10 +441,16 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
                     opacity: _fadeAnimation,
                     child: SlideTransition(
                       position: _slideAnimation,
-                      child: _ToastWidget(
-                        text: widget.text,
-                        type: widget.type,
-                        child: widget.child,
+                      child: FadeTransition(
+                        opacity: _exitFadeAnimation,
+                        child: SlideTransition(
+                          position: _exitSlideAnimation,
+                          child: _ToastWidget(
+                            text: widget.text,
+                            type: widget.type,
+                            child: widget.child,
+                          ),
+                        ),
                       ),
                     ),
                   ),
