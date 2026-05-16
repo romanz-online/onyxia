@@ -24,6 +24,7 @@ export 'package:onyxia/presentation/common_widget/hover_builder.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_drawer_layout.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_overlay.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_toast.dart';
+export 'package:onyxia/global_error_handler.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_dialog.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/vault_settings_button.dart';

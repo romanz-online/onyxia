@@ -49,6 +49,7 @@ class MasterSidebar extends ConsumerWidget {
                 icon: LucideIcons.share2,
                 tooltip: 'Open graph',
                 onPressed: () {
+                  NarwhalToast.show(text: 'Some test text!');
                   if (vaultId.isEmpty) return;
                   context.go('/vault/$vaultId/${Routes.graph}');
                 },

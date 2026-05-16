@@ -62,7 +62,7 @@ class NarwhalToast {
 
     // Always log errors to the console so they can be reviewed after dismissal.
     if (type == ToastType.error && text != null) {
-      debugPrint('🔴 [Toast Error] $text');
+      debugPrint('[Toast Error] $text');
     }
 
     final toastId = (_nextId++).toString();
@@ -199,20 +199,6 @@ class NarwhalToast {
       controller.close();
     }
     _positionControllers.clear();
-  }
-
-  static void hideAllAtPosition(ToastPosition position) {
-    final toasts = _toastsByPosition[position];
-    if (toasts == null) return;
-
-    for (final toast in toasts) {
-      toast.timer.cancel();
-      toast.overlayEntry.remove();
-    }
-    _toastsByPosition.remove(position);
-
-    _positionControllers[position]?.close();
-    _positionControllers.remove(position);
   }
 }
 

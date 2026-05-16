@@ -5,10 +5,14 @@ void main() async {
   if (!kIsWeb) return;
 
   WidgetsFlutterBinding.ensureInitialized();
+  GlobalErrorHandler.install();
 
   BrowserContextMenu.disableContextMenu();
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
-  runApp(const ProviderScope(child: NarwhalApp()));
+  runApp(ProviderScope(
+    observers: const [GlobalProviderObserver()],
+    child: const NarwhalApp(),
+  ));
 }

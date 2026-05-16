@@ -51,6 +51,14 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
     final idsToDelete = [itemId, ...collectDescendantIds(itemId)];
 
+    // Snapshot before the optimistic state mutation below removes these items.
+    final storagePathsToDelete = _items
+        .whereType<ImageArtifact>()
+        .where((e) => idsToDelete.contains(e.id))
+        .map((e) => e.storagePath)
+        .where((p) => p.isNotEmpty)
+        .toList();
+
     final router = ref.read(routerProvider);
     final urlSelectedName =
         router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
@@ -66,6 +74,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     );
 
     await _repository.deleteMultiple(idsToDelete);
+    await ImageService.deleteImages(storagePathsToDelete);
   }
 
   // --- Re-parent ---

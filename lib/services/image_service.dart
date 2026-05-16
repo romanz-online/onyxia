@@ -45,6 +45,11 @@ class ImageService {
     return artifact;
   }
 
+  static Future<void> deleteImages(List<String> storagePaths) async {
+    if (storagePaths.isEmpty) return;
+    await Supabase.instance.client.storage.from(_bucket).remove(storagePaths);
+  }
+
   /// Fetch + decode an image from [url]. Cached in-memory (LRU, 32 entries).
   /// Returns null if the URL is empty, the HTTP request fails, or decoding
   /// fails — callers (canvas painter, upload service) explicitly handle null.
