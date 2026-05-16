@@ -106,6 +106,3 @@ server/.env
 server/venv/
 server/__pycache__/
 server/**/__pycache__/
-
-# Supabase local credentials (created manually, never committed)
-lib/supabase_config.dart
