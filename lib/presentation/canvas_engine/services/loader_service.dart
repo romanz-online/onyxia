@@ -37,8 +37,8 @@ class CanvasLoaderService {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!context.mounted) return;
 
-      final projectId = ref.read(selectedProjectProvider)?.id;
-      if (projectId == null) return;
+      final vaultId = ref.read(selectedVaultProvider)?.id;
+      if (vaultId == null) return;
 
       initCanvas(ref: ref, context: context, canvasId: canvasId);
     });
@@ -66,8 +66,8 @@ class CanvasLoaderService {
     final CanvasArtifact? currentCanvas =
         selected is CanvasArtifact ? selected : null;
 
-    final projectId = ref.read(selectedProjectProvider)?.id;
-    if (projectId == null) return;
+    final vaultId = ref.read(selectedVaultProvider)?.id;
+    if (vaultId == null) return;
 
     // Loader service owns the full initialization sequence.
     // Always reinitialize bounds to guarantee correct state on every canvas entry.

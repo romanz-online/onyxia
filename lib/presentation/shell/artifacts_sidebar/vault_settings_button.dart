@@ -1,13 +1,13 @@
 import 'package:onyxia/export.dart';
 
-class ProjectSettingsButton extends ConsumerStatefulWidget {
-  const ProjectSettingsButton({super.key});
+class VaultSettingsButton extends ConsumerStatefulWidget {
+  const VaultSettingsButton({super.key});
 
   @override
-  ConsumerState createState() => _ProjectSettingsButtonState();
+  ConsumerState createState() => _VaultSettingsButtonState();
 }
 
-class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
+class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
   bool _isMenuOpen = false;
 
   void _setMenuOpen(bool open) {
@@ -17,8 +17,8 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
 
   @override
   Widget build(BuildContext context) {
-    final projectId = ref.read(selectedProjectProvider)?.id;
-    if (projectId == null) return const SizedBox.shrink();
+    final vaultId = ref.read(selectedVaultProvider)?.id;
+    if (vaultId == null) return const SizedBox.shrink();
 
     return OnyxiaOverlay(
       isOpen: _isMenuOpen,
@@ -67,7 +67,7 @@ class _ProjectSettingsButtonState extends ConsumerState<ProjectSettingsButton> {
                 closeOverlay();
                 showDialog(
                   context: context,
-                  builder: (_) => const ProjectMembersDialog(),
+                  builder: (_) => const VaultMembersDialog(),
                 );
               },
               child: Container(

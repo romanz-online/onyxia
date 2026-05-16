@@ -112,12 +112,12 @@ This barrel includes ALL providers, models, common widgets, and helpers. Never a
 
 ### Auth & Membership Centralization
 
-Auth invalidation and project-membership kickback are handled centrally in [router.dart](lib/presentation/routing/router.dart). `_RouterNotifier` `ref.listen`s `authProvider`, `currentUserProvider`, and `projectsProvider`, and GoRouter's `redirect:`:
+Auth invalidation and vault-membership kickback are handled centrally in [router.dart](lib/presentation/routing/router.dart). `_RouterNotifier` `ref.listen`s `authProvider`, `currentUserProvider`, and `vaultsProvider`, and GoRouter's `redirect:`:
 
-- Sends unauthenticated users to `/projects` (where `AppShell` renders the `LandingOverlay` login form).
-- Sends authenticated users who try to reach `/project/:id` for a project they aren't a member of back to `/projects`.
+- Sends unauthenticated users to `/vaults` (where `AppShell` renders the `LandingOverlay` login form).
+- Sends authenticated users who try to reach `/vault/:id` for a vault they aren't a member of back to `/vaults`.
 
-Do **not** `ref.watch(authProvider)` or `ref.watch(currentUserProvider)` inside individual providers — the router handles redirection, and Supabase realtime streams (e.g. `projectsProvider`) refresh their RLS scope on auth change automatically.
+Do **not** `ref.watch(authProvider)` or `ref.watch(currentUserProvider)` inside individual providers — the router handles redirection, and Supabase realtime streams (e.g. `vaultsProvider`) refresh their RLS scope on auth change automatically.
 
 ---
 
@@ -138,7 +138,7 @@ Loading and error states come for free from `AsyncNotifier`/`StreamNotifier` —
 ### 2. `.autoDispose` is the default for screen-scoped providers
 
 - **Use `.autoDispose`**: anything tied to a single screen / canvas / dialog (selection state, drag state, gesture state, toolbars, sidecars).
-- **Don't use `.autoDispose`**: app-wide data providers — `authProvider`, `currentUserProvider`, `projectsProvider`, `artifactsProvider`, `themeProvider`.
+- **Don't use `.autoDispose`**: app-wide data providers — `authProvider`, `currentUserProvider`, `vaultsProvider`, `artifactsProvider`, `themeProvider`.
 
 ### 3. Setter naming
 
@@ -152,14 +152,14 @@ Loading and error states come for free from `AsyncNotifier`/`StreamNotifier` —
 
 - **Repository takes no constructor args** → declare as a class-level `final` field (one allocation).
   ```dart
-  final ProjectsRepository _repository = ProjectsRepository();
+  final VaultsRepository _repository = VaultsRepository();
   ```
 - **Repository depends on a watched value** → declare as `late T` (NOT `late final` — that throws on re-assignment) and assign inside `build()`.
   ```dart
   late ArtifactsRepository _repository;
   @override Stream<List<Artifact>> build() {
-    final id = ref.watch(selectedProjectProvider.select((p) => p?.id));
-    _repository = ArtifactsRepository(projectId: id);
+    final id = ref.watch(selectedVaultProvider.select((p) => p?.id));
+    _repository = ArtifactsRepository(vaultId: id);
     // ...
   }
   ```
@@ -193,7 +193,7 @@ Stream<List<Comment>> build() {
 
 ### 8. URL-driven selection
 
-For "selected X" state where the URL is the source of truth: a private `_selectedXIdFromUrlProvider` listens to `routeInformationProvider`, a public `Provider<X?>` derives the entity by looking up the id in the relevant list provider. See [selected_artifact_provider.dart](lib/data/providers/selected_artifact_provider.dart) and [selected_project_provider.dart](lib/data/providers/selected_project_provider.dart) for the canonical examples.
+For "selected X" state where the URL is the source of truth: a private `_selectedXIdFromUrlProvider` listens to `routeInformationProvider`, a public `Provider<X?>` derives the entity by looking up the id in the relevant list provider. See [selected_artifact_provider.dart](lib/data/providers/selected_artifact_provider.dart) and [selected_vault_provider.dart](lib/data/providers/selected_vault_provider.dart) for the canonical examples.
 
 ---
 
@@ -229,7 +229,7 @@ Use these verbatim when creating new files. Replace `<Name>` / `<name>` / `<Mode
 import 'package:onyxia/export.dart';
 
 class <Name>Repository extends BaseSupabaseRepository<<Model>> {
-  <Name>Repository({super.projectId});
+  <Name>Repository({super.vaultId});
 
   @override
   String get tableName => '<table>';
@@ -244,8 +244,8 @@ class <Name>Repository extends BaseSupabaseRepository<<Model>> {
   String getIdFromItem(<Model> item) => item.id;
 
   // Optional overrides:
-  // @override bool get requireProjectId => false;        // for non-project-scoped tables (e.g. users)
-  // @override String? get scopeField => 'canvas_id';     // when scoping by a column other than project_id
+  // @override bool get requireVaultId => false;        // for non-vault-scoped tables (e.g. users)
+  // @override String? get scopeField => 'canvas_id';     // when scoping by a column other than vault_id
   // @override String? get defaultOrderBy => 'created_at';
 }
 ```

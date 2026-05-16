@@ -61,8 +61,7 @@ class _ConstellationState extends ConsumerState<Constellation> {
     final item = (ref.read(artifactsProvider).value ?? const <Artifact>[])
         .firstWhereOrNull((e) => e.name == nodeId);
     if (item == null) return;
-    final projectId = ref.read(selectedProjectProvider)?.id;
-    context.go(item.navigationUrl(projectId ?? ''));
+    context.go(item.navigationUrl(ref.read(selectedVaultProvider)?.id ?? ''));
   }
 
   @override

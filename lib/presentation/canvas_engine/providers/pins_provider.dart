@@ -8,20 +8,20 @@ final pinsProvider = NotifierProvider.autoDispose<PinsNotifier, Pins>(
 class PinsNotifier extends Notifier<Pins> {
   late PinsRepository repository;
   late String canvasId;
-  String? projectId;
+  String? vaultId;
   StreamSubscription? _subscription;
 
   @override
   Pins build() {
     canvasId = ref.watch(selectedArtifactProvider
         .select((a) => a is CanvasArtifact ? a.id : ''));
-    projectId = ref.watch(selectedProjectProvider)?.id;
+    vaultId = ref.watch(selectedVaultProvider)?.id;
     repository = PinsRepository(
-      projectId: projectId,
+      vaultId: vaultId,
       canvasId: canvasId,
     );
 
-    if (canvasId.isNotEmpty && projectId != null) {
+    if (canvasId.isNotEmpty && vaultId != null) {
       _subscription = repository.getStream().listen((remotePins) async {
         if (ref.mounted) state = state.copyWith(pins: remotePins);
       });

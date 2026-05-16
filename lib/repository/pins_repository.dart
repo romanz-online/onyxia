@@ -3,7 +3,7 @@ import 'package:onyxia/export.dart';
 class PinsRepository extends BaseSupabaseRepository<Pin> {
   final String canvasId;
 
-  PinsRepository({required super.projectId, required this.canvasId});
+  PinsRepository({required super.vaultId, required this.canvasId});
 
   @override
   String get tableName => 'pins';

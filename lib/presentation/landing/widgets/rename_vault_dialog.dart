@@ -1,22 +1,21 @@
 import 'package:onyxia/export.dart';
 
-class RenameProjectDialog extends ConsumerStatefulWidget {
-  final String projectName;
-  final String projectId;
+class RenameVaultDialog extends ConsumerStatefulWidget {
+  final String vaultName;
+  final String vaultId;
 
-  const RenameProjectDialog({
+  const RenameVaultDialog({
     super.key,
-    required this.projectName,
-    required this.projectId,
+    required this.vaultName,
+    required this.vaultId,
   });
 
   @override
-  ConsumerState<RenameProjectDialog> createState() =>
-      _RenameProjectDialogState();
+  ConsumerState<RenameVaultDialog> createState() => _RenameVaultDialogState();
 }
 
-class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
-  final TextEditingController _projectNameController = TextEditingController();
+class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
+  final TextEditingController _vaultNameController = TextEditingController();
   late final FocusNode _popupFocusNode;
 
   @override
@@ -27,19 +26,19 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
 
   @override
   void dispose() {
-    _projectNameController.dispose();
+    _vaultNameController.dispose();
     _popupFocusNode.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _projectNameController.text = widget.projectName;
+    _vaultNameController.text = widget.vaultName;
 
     return NarwhalModalDialog(
       width: 600,
       height: 260,
-      title: 'Rename Project',
+      title: 'Rename Vault',
       content: Focus(
         focusNode: _popupFocusNode,
         onKeyEvent: (node, event) {
@@ -47,10 +46,10 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
           if (event.logicalKey != LogicalKeyboardKey.enter)
             return KeyEventResult.ignored;
 
-          final String projectName = _projectNameController.text;
-          ref
-              .read(projectsProvider.notifier)
-              .renameProject(widget.projectId, projectName);
+          ref.read(vaultsProvider.notifier).renameVault(
+                widget.vaultId,
+                _vaultNameController.text,
+              );
           Navigator.of(context).pop();
           return KeyEventResult.handled;
         },
@@ -63,17 +62,17 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Project Name',
+                    'Vault Name',
                     style: NarwhalStyles.modalTextFieldTitleStyle(context),
                   ),
                 ],
               ),
               TextFormField(
                 maxLength: 50,
-                controller: _projectNameController,
+                controller: _vaultNameController,
                 decoration: NarwhalModalInputDecoration.create(
                   context,
-                  hintText: 'Rename This Project',
+                  hintText: 'Rename this Vault',
                 ),
               ),
             ],
@@ -85,10 +84,10 @@ class _RenameProjectDialogState extends ConsumerState<RenameProjectDialog> {
       },
       actionButtonText: 'Rename',
       onActionPressed: () {
-        final String projectName = _projectNameController.text;
-        ref
-            .read(projectsProvider.notifier)
-            .renameProject(widget.projectId, projectName);
+        ref.read(vaultsProvider.notifier).renameVault(
+              widget.vaultId,
+              _vaultNameController.text,
+            );
         Navigator.of(context).pop();
       },
     );

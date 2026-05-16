@@ -10,7 +10,7 @@ class UsersRepository extends BaseSupabaseRepository<User> {
   String get tableName => 'users';
 
   @override
-  bool get requireProjectId => false;
+  bool get requireVaultId => false;
 
   @override
   User fromMap(Map<String, dynamic> map) => User.fromMap(map);

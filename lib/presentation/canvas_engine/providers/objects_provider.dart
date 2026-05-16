@@ -17,7 +17,7 @@ final canvasObjectsProvider =
 class ObjectsNotifier extends Notifier<CanvasObjects> {
   late CanvasObjectsRepository repository;
   late String canvasId;
-  String? projectId;
+  String? vaultId;
   StreamSubscription? _subscription;
 
   @override
@@ -25,9 +25,9 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
     canvasId = ref.watch(selectedArtifactProvider
         .select((a) => a is CanvasArtifact ? a.id : ''));
-    projectId = ref.watch(selectedProjectProvider)?.id;
+    vaultId = ref.watch(selectedVaultProvider)?.id;
     repository = CanvasObjectsRepository(
-      projectId: projectId,
+      vaultId: vaultId,
       canvasId: canvasId,
     );
 
@@ -39,7 +39,7 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   }
 
   void _init() {
-    if (canvasId.isEmpty || projectId == null) return;
+    if (canvasId.isEmpty || vaultId == null) return;
 
     _subscription = repository.getStream().listen((remoteObjects) async {
       List<CanvasObject> updatedObjects = [];

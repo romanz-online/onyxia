@@ -45,8 +45,7 @@ ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() =>
         TreeContextMenuOption(
           label: 'Remove',
           index: 2,
-          callback: 
-              _handleRemove,
+          callback: _handleRemove,
         ),
         TreeContextMenuOption(
           label: 'Rename',
@@ -60,19 +59,19 @@ void _handleOpenInNewTab(
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,
-) {
-  final projectId = ref.read(selectedProjectProvider)?.id;
-  NavigationContextMenu.openInNewTab(node.data.navigationUrl(projectId));
-}
+) =>
+    NavigationContextMenu.openInNewTab(
+      node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
+    );
 
 void _handleCopyLink(
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,
-) {
-  final projectId = ref.read(selectedProjectProvider)?.id;
-  NavigationContextMenu.copyLinkToClipboard(node.data.navigationUrl(projectId));
-}
+) =>
+    NavigationContextMenu.copyLinkToClipboard(
+      node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
+    );
 
 void _handleRemove(
   WidgetRef ref,

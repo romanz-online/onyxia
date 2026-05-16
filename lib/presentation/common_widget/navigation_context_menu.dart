@@ -67,9 +67,10 @@ class NavigationContextMenu {
     if (kIsWeb) {
       final currentUrl = web.window.location.href;
       final uri = Uri.parse(currentUrl);
-      baseUrl = '${uri.scheme}://${uri.host}${uri.port != 80 && uri.port != 443 ? ':${uri.port}' : ''}';
+      baseUrl =
+          '${uri.scheme}://${uri.host}${uri.port != 80 && uri.port != 443 ? ':${uri.port}' : ''}';
 
-      // For hash routing URLs (like /#/project/123), just append to base URL
+      // For hash routing URLs (like /#/vault/123), just append to base URL
       if (relativePath.startsWith('/#/') || relativePath.startsWith('#/')) {
         return '$baseUrl$relativePath';
       }
@@ -82,7 +83,9 @@ class NavigationContextMenu {
       baseUrl = 'https://narwhal-flutter-staging.web.app';
 
       // Remove leading slash if present and add hash routing
-      String path = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+      String path = relativePath.startsWith('/')
+          ? relativePath.substring(1)
+          : relativePath;
       return '$baseUrl/#/$path';
     }
   }

@@ -1,9 +1,9 @@
 import 'package:onyxia/export.dart';
 
 abstract class BaseSupabaseRepository<T> {
-  final String? projectId;
+  final String? vaultId;
 
-  BaseSupabaseRepository({this.projectId});
+  BaseSupabaseRepository({this.vaultId});
 
   /// Abstract methods each repository must implement.
   String get tableName;
@@ -11,23 +11,23 @@ abstract class BaseSupabaseRepository<T> {
   Map<String, dynamic> toMap(T item);
   String getIdFromItem(T item);
 
-  /// Override to false in repositories that are not project-scoped (e.g. `users`).
-  bool get requireProjectId => true;
+  /// Override to false in repositories that are not vault-scoped (e.g. `users`).
+  bool get requireVaultId => true;
 
   /// Column used to scope reads and writes. When set, `getAll`/`getStream`
   /// auto-filter by `scopeField = scopeValue`, and `add`/`update` auto-inject
   /// the column into the row map. Leave null for non-scoped tables.
   String? get scopeField => null;
 
-  /// Value paired with `scopeField`. Defaults to `projectId`; override when
+  /// Value paired with `scopeField`. Defaults to `vaultId`; override when
   /// scoping by a different column (e.g. `canvasId`, `itemId`).
-  dynamic get scopeValue => projectId;
+  dynamic get scopeValue => vaultId;
 
   /// Default `orderBy` applied to `getStream` when the caller doesn't pass one.
   String? get defaultOrderBy => null;
 
   /// Primary-key column(s). Override for composite-key tables (e.g.
-  /// `project_members` keyed on `(project_id, user_id)`). Used by realtime
+  /// `vault_members` keyed on `(vault_id, user_id)`). Used by realtime
   /// `.stream()` setup.
   List<String> get primaryKeyFields => const ['id'];
 
@@ -50,15 +50,15 @@ abstract class BaseSupabaseRepository<T> {
   }
 
   Future<R> _execute<R>(Future<R> Function() op) async {
-    if (requireProjectId && (projectId == null || projectId!.isEmpty)) {
-      throw ArgumentError('Invalid projectId: $projectId');
+    if (requireVaultId && (vaultId == null || vaultId!.isEmpty)) {
+      throw ArgumentError('Invalid vaultId: $vaultId');
     }
 
     return await op();
   }
 
   Stream<R> _executeStream<R>(Stream<R> Function() op, R emptyValue) {
-    if (requireProjectId && (projectId == null || projectId!.isEmpty)) {
+    if (requireVaultId && (vaultId == null || vaultId!.isEmpty)) {
       return Stream.value(emptyValue);
     }
     return op();

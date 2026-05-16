@@ -23,9 +23,9 @@ class NavigationUrlBuilder {
     }
   }
 
-  /// Builds URL for project dashboard (constellation view)
-  static String buildProjectDashboardUrl(String projectId) {
-    if (projectId.isEmpty) return '${_getBaseUrl()}/projects';
-    return '${_getBaseUrl()}/project/$projectId/graph';
+  /// Builds URL for vault dashboard (constellation view)
+  static String buildGraphUrl(String vaultId) {
+    if (vaultId.isEmpty) return '${_getBaseUrl()}/vaults';
+    return '${_getBaseUrl()}/vault/$vaultId/graph';
   }
 }

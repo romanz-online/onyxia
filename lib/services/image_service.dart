@@ -5,7 +5,7 @@ import 'package:onyxia/export.dart';
 import 'package:http/http.dart' as http;
 
 class ImageService {
-  static const _bucket = 'project-files';
+  static const _bucket = 'vault-files';
   static const _maxImageBytes = 10 * 1024 * 1024;
   static const _maxCached = 32;
 
@@ -18,7 +18,7 @@ class ImageService {
   static Future<ImageArtifact> uploadImage(
     Uint8List bytes,
     String fileName, {
-    required String projectId,
+    required String vaultId,
   }) async {
     if (bytes.length > _maxImageBytes) {
       throw ArgumentError(
@@ -27,7 +27,7 @@ class ImageService {
     }
     final mime = _mimeFromFileName(fileName);
     final id = const Uuid().v4();
-    final storagePath = 'projects/$projectId/images/${id}_$fileName';
+    final storagePath = 'vaults/$vaultId/images/${id}_$fileName';
 
     await Supabase.instance.client.storage.from(_bucket).uploadBinary(
           storagePath,
@@ -41,7 +41,7 @@ class ImageService {
       storagePath: storagePath,
       mimeType: mime,
     );
-    await ArtifactsRepository(projectId: projectId).add([artifact]);
+    await ArtifactsRepository(vaultId: vaultId).add([artifact]);
     return artifact;
   }
 

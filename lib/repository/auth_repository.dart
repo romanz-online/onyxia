@@ -43,7 +43,7 @@ class AuthRepository {
     await _client.auth.signUp(
       email: email,
       password: password,
-      emailRedirectTo: '${Uri.base.origin}/${Routes.projects}',
+      emailRedirectTo: '${Uri.base.origin}/${Routes.vaults}',
     );
   }
 

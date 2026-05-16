@@ -3,7 +3,7 @@ import 'package:onyxia/export.dart';
 class CommentsRepository extends BaseSupabaseRepository<Comment> {
   final String canvasId;
 
-  CommentsRepository({required super.projectId, required this.canvasId});
+  CommentsRepository({required super.vaultId, required this.canvasId});
 
   @override
   String get tableName => 'comments';

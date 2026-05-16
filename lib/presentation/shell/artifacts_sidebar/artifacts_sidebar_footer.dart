@@ -5,10 +5,10 @@ class ArtifactsSidebarFooter extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedProject = ref.watch(selectedProjectProvider);
-    final projectName = selectedProject == null || selectedProject.name.isEmpty
+    final selectedVault = ref.watch(selectedVaultProvider);
+    final vaultName = selectedVault == null || selectedVault.name.isEmpty
         ? 'Onyxia'
-        : selectedProject.name;
+        : selectedVault.name;
 
     return Container(
       decoration: BoxDecoration(
@@ -20,11 +20,11 @@ class ArtifactsSidebarFooter extends ConsumerWidget {
       child: Row(
         children: [
           OnyxiaButton(
-            label: projectName,
-            onTap: () => context.go('/${Routes.projects}'),
+            label: vaultName,
+            onTap: () => context.go('/${Routes.vaults}'),
           ),
           const Spacer(),
-          if (selectedProject != null) const ProjectSettingsButton(),
+          if (selectedVault != null) const VaultSettingsButton(),
         ],
       ),
     );

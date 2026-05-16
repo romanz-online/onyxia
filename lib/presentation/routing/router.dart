@@ -9,16 +9,16 @@ class _RouterNotifier extends ChangeNotifier {
   bool isPending = false;
   bool isAuthLoading = true;
 
-  /// null = projects haven't loaded yet (suppress membership kickback);
-  /// list = loaded set of project ids the current user can access.
-  List<String>? memberProjectIds;
+  /// null = vaults haven't loaded yet (suppress membership kickback);
+  /// list = loaded set of vault ids the current user can access.
+  List<String>? accessibleVaultIds;
 
   _RouterNotifier(Ref ref) {
     final initialAuth = ref.read(authProvider);
     isAuth = initialAuth.value != null;
     isAuthLoading = initialAuth is AsyncLoading;
-    memberProjectIds =
-        ref.read(projectsProvider).value?.map((p) => p.id).toList();
+    accessibleVaultIds =
+        ref.read(vaultsProvider).value?.map((p) => p.id).toList();
 
     ref.listen<AsyncValue<Session?>>(authProvider, (_, next) {
       isAuth = next.value != null;
@@ -29,8 +29,8 @@ class _RouterNotifier extends ChangeNotifier {
       isPending = next.value?.pending ?? false;
       notifyListeners();
     });
-    ref.listen<AsyncValue<List<Project>>>(projectsProvider, (_, next) {
-      memberProjectIds = next.value?.map((p) => p.id).toList();
+    ref.listen<AsyncValue<List<Vault>>>(vaultsProvider, (_, next) {
+      accessibleVaultIds = next.value?.map((p) => p.id).toList();
       notifyListeners();
     });
   }
@@ -42,11 +42,11 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     debugLogDiagnostics: true,
     navigatorKey: navigatorKey,
-    initialLocation: '/${Routes.projects}',
+    initialLocation: '/${Routes.vaults}',
     refreshListenable: notifier,
     errorBuilder: (context, state) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/${Routes.projects}');
+        context.go('/${Routes.vaults}');
       });
       return Scaffold(body: Center(child: NarwhalSpinner()));
     },
@@ -56,7 +56,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'invite',
         builder: (context, state) => InviteScreen(
           destinationPath: Uri.decodeComponent(
-              state.uri.queryParameters['dest'] ?? '/${Routes.projects}'),
+              state.uri.queryParameters['dest'] ?? '/${Routes.vaults}'),
         ),
       ),
       GoRoute(
@@ -65,22 +65,22 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(
-        path: '/${Routes.projects}',
-        name: Routes.projects,
-        builder: (context, state) => const AppShell(projectId: ''),
+        path: '/${Routes.vaults}',
+        name: Routes.vaults,
+        builder: (context, state) => const AppShell(vaultId: ''),
       ),
       GoRoute(
-        path: '/project/:id',
-        name: 'project',
+        path: '/vault/:id',
+        name: 'vault',
         builder: (context, state) =>
-            AppShell(projectId: state.pathParameters['id']!),
+            AppShell(vaultId: state.pathParameters['id']!),
         routes: [
           GoRoute(
             path: ':selectedId',
-            name: 'projectItem',
+            name: 'vaultItem',
             builder: (context, state) => AppShell(
               selectedId: state.pathParameters['selectedId'],
-              projectId: state.pathParameters['id']!,
+              vaultId: state.pathParameters['id']!,
             ),
           ),
         ],
@@ -96,7 +96,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (isOnInvite) {
         if (isAuth && !isPending) {
           return Uri.decodeComponent(
-              state.uri.queryParameters['dest'] ?? '/${Routes.projects}');
+              state.uri.queryParameters['dest'] ?? '/${Routes.vaults}');
         }
         return null;
       }
@@ -122,17 +122,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (!isAuth &&
-          state.matchedLocation != '/${Routes.projects}' &&
+          state.matchedLocation != '/${Routes.vaults}' &&
           state.matchedLocation != Routes.resetPassword) {
-        return '/${Routes.projects}';
+        return '/${Routes.vaults}';
       }
 
-      final pathProjectId = state.pathParameters['id'];
-      if (pathProjectId != null && pathProjectId.isNotEmpty) {
-        // null means projects haven't loaded yet — don't false-kick on cold boot.
-        if (notifier.memberProjectIds == null) return null;
-        if (!notifier.memberProjectIds!.contains(pathProjectId)) {
-          return '/${Routes.projects}';
+      final pathvaultId = state.pathParameters['id'];
+      if (pathvaultId != null && pathvaultId.isNotEmpty) {
+        // null means vaults haven't loaded yet — don't false-kick on cold boot.
+        if (notifier.accessibleVaultIds == null) return null;
+        if (!notifier.accessibleVaultIds!.contains(pathvaultId)) {
+          return '/${Routes.vaults}';
         }
       }
 

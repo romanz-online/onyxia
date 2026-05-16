@@ -1,5 +1,7 @@
 import 'package:onyxia/export.dart';
 
+// TODO: prime candidate for cutting and just replacing with vault member lookup
+
 /// Caches user data by ID to avoid repeated Supabase lookups.
 final userLookupProvider =
     Provider<UserLookupService>((ref) => UserLookupService());

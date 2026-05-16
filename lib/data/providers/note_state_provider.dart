@@ -30,7 +30,7 @@ class NoteState {
 }
 
 class NoteNotifier extends AsyncNotifier<NoteState> {
-  String? _projectId;
+  String? _vaultId;
   BardController? _controller;
   VoidCallback? _controllerListener;
   FocusNode? _focusNode;
@@ -47,7 +47,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     final selectedNoteId = ref.watch(
       selectedArtifactProvider.select((a) => a is NoteArtifact ? a.id : null),
     );
-    _projectId = ref.watch(selectedProjectProvider.select((p) => p?.id));
+    _vaultId = ref.watch(selectedVaultProvider.select((p) => p?.id));
 
     ref.onDispose(() {
       _debounceTimer?.cancel();
@@ -70,12 +70,12 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       }
     });
 
-    if (selectedNoteId == null || _projectId == null) {
+    if (selectedNoteId == null || _vaultId == null) {
       return const NoteState();
     }
 
     final note = ref.read(selectedArtifactProvider) as NoteArtifact;
-    final repo = ArtifactsRepository(projectId: _projectId);
+    final repo = ArtifactsRepository(vaultId: _vaultId);
     final latestNote =
         await repo.getDocumentStream(note.id).first as NoteArtifact? ?? note;
 
@@ -162,7 +162,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     if (captured == null || captured.note == null) return;
     final outgoing = captured.note!;
     _pendingEchoContents.add(outgoing.content);
-    await ArtifactsRepository(projectId: _projectId)
+    await ArtifactsRepository(vaultId: _vaultId)
         .updateNoteContent(outgoing.id, outgoing.content);
   }
 }

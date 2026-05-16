@@ -68,7 +68,7 @@ abstract class Artifact {
   Map<String, dynamic> toMapSub();
 
   // Top-level Postgres columns + subclass-specific fields wrapped in `body` jsonb.
-  // The repository injects `project_id` at write time.
+  // The repository injects `vault_id` at write time.
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -127,9 +127,9 @@ abstract class Artifact {
         updatedBy.hashCode;
   }
 
-  /// Returns the navigation URL for this item within the given project.
-  String navigationUrl(String? projectId) =>
-      projectId == null ? '' : '/project/$projectId/$name';
+  /// Returns the navigation URL for this item within the given vault.
+  String navigationUrl(String? vaultId) =>
+      vaultId == null ? '' : '/vault/$vaultId/$name';
 
   dynamic castToSubtype() => switch (type) {
         ArtifactType.note => this as NoteArtifact,

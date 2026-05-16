@@ -15,8 +15,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   Offset _position = const Offset(100, 100);
   bool _positionInitialized = false;
 
-  final TextEditingController _newProjectNameController =
-      TextEditingController();
+  final TextEditingController _newVaultNameController = TextEditingController();
 
   @override
   void initState() {
@@ -36,7 +35,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   @override
   void dispose() {
-    _newProjectNameController.dispose();
+    _newVaultNameController.dispose();
     super.dispose();
   }
 
@@ -50,12 +49,12 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     });
   }
 
-  void _navigateToProject(Project project) {
-    context.go('/project/${project.id}/graph');
+  void _navigateToVault(Vault vault) {
+    context.go('/vault/${vault.id}/graph');
   }
 
-  void _showNewProjectDialog() {
-    _newProjectNameController.clear();
+  void _showNewVaultDialog() {
+    _newVaultNameController.clear();
     showDialog(
       context: context,
       barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
@@ -63,23 +62,23 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
         return NarwhalModalDialog(
           width: 600,
           height: 260,
-          title: 'New Project',
+          title: 'New Vault',
           content: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.start,
             spacing: 10,
             children: [
               Text(
-                'Project Name',
+                'Vault Name',
                 style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext),
               ),
               TextFormField(
                 maxLength: 50,
-                controller: _newProjectNameController,
+                controller: _newVaultNameController,
                 autofocus: true,
                 decoration: NarwhalModalInputDecoration.create(
                   dialogContext,
-                  hintText: 'Enter project name',
+                  hintText: 'Enter vault name',
                 ),
                 style: NarwhalTextStyle(),
               ),
@@ -88,20 +87,20 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
           onCancelPressed: () => Navigator.of(dialogContext).pop(),
           actionButtonText: 'Create',
           onActionPressed: () {
-            final name = _newProjectNameController.text.trim();
+            final name = _newVaultNameController.text.trim();
             if (name.isEmpty) return;
             final currentUserId = ref.read(currentUserProvider).value?.id ?? '';
             final now = DateTime.now();
-            final newProject = Project(
+            final newVault = Vault(
               id: const Uuid().v4(),
               createdBy: currentUserId,
               createdAt: now,
               updatedAt: now,
               name: name,
             );
-            ProjectsRepository().add([newProject]);
+            VaultsRepository().add([newVault]);
             Navigator.of(dialogContext).pop();
-            _navigateToProject(newProject);
+            _navigateToVault(newVault);
           },
         );
       },
@@ -146,21 +145,16 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     if (!user.isLogged) return _buildPreAuth(context);
     if (user.pending) return Center(child: NarwhalSpinner());
 
-    final projects = ref.watch(projectsProvider).value ?? const <Project>[];
+    final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
 
     return Row(
       children: [
         SizedBox(
           width: _leftColumnWidth,
-          child: _buildProjectList(context, projects),
+          child: _buildVaultList(context, vaults),
         ),
-        VerticalDivider(
-          width: 2,
-          color: ThemeHelper.neutral300(context),
-        ),
-        Expanded(
-          child: _buildRightColumn(context, user),
-        ),
+        VerticalDivider(width: 2, color: ThemeHelper.neutral300(context)),
+        Expanded(child: _buildRightColumn(context, user)),
       ],
     );
   }
@@ -191,30 +185,18 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     );
   }
 
-  Widget _buildProjectList(BuildContext context, List<Project> projects) {
+  Widget _buildVaultList(BuildContext context, List<Vault> vaults) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         spacing: 6,
         children: [
-          if (projects.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: Text(
-                'Your projects',
-                style: NarwhalTextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: ThemeHelper.neutral500(context),
-                ),
-              ),
-            ),
           Expanded(
-            child: projects.isEmpty
+            child: vaults.isEmpty
                 ? Center(
                     child: Text(
-                      'No projects',
+                      'No vaults',
                       style: NarwhalTextStyle(
                         fontSize: 13,
                         color: ThemeHelper.neutral500(context),
@@ -222,9 +204,9 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
                     ),
                   )
                 : ListView.builder(
-                    itemCount: projects.length,
+                    itemCount: vaults.length,
                     itemBuilder: (context, index) =>
-                        _buildProjectRow(context, projects[index]),
+                        _buildVaultRow(context, vaults[index]),
                   ),
           ),
         ],
@@ -232,9 +214,9 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     );
   }
 
-  Widget _buildProjectRow(BuildContext context, Project project) {
+  Widget _buildVaultRow(BuildContext context, Vault vault) {
     return OnyxiaButton(
-      label: project.name,
+      label: vault.name,
       onTap: () {
         final bool isCtrlOrCmd =
             HardwareKeyboard.instance.logicalKeysPressed.intersection({
@@ -245,9 +227,9 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
         }).isNotEmpty;
         if (isCtrlOrCmd) {
           NavigationContextMenu.openInNewTab(
-              NavigationUrlBuilder.buildProjectDashboardUrl(project.id));
+              NavigationUrlBuilder.buildGraphUrl(vault.id));
         } else {
-          _navigateToProject(project);
+          _navigateToVault(vault);
         }
       },
     );
@@ -296,13 +278,8 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
                 spacing: 6,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  OnyxiaButton(
-                    label: 'New Project',
-                    onTap: _showNewProjectDialog,
-                  ),
-                  OnyxiaButton(
-                    label: 'Import Project',
-                  ),
+                  OnyxiaButton(label: 'New Vault', onTap: _showNewVaultDialog),
+                  OnyxiaButton(label: 'Import Vault'), // TODO: implement
                 ],
               ),
             ],

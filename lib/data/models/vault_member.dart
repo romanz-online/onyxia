@@ -12,8 +12,8 @@ enum UserRole with NarwhalEnum {
       };
 }
 
-class ProjectMember {
-  final String projectId;
+class VaultMember {
+  final String vaultId;
   final String userId;
   final UserRole role;
   //
@@ -22,8 +22,8 @@ class ProjectMember {
   final DateTime? updatedAt;
   final String? updatedBy;
 
-  ProjectMember({
-    required this.projectId,
+  VaultMember({
+    required this.vaultId,
     required this.userId,
     required this.role,
     //
@@ -33,25 +33,25 @@ class ProjectMember {
     this.updatedBy,
   });
 
-  ProjectMember copyWith({
-    String? projectId,
+  VaultMember copyWith({
+    String? vaultId,
     String? userId,
     UserRole? role,
   }) =>
-      ProjectMember(
-        projectId: projectId ?? this.projectId,
+      VaultMember(
+        vaultId: vaultId ?? this.vaultId,
         userId: userId ?? this.userId,
         role: role ?? this.role,
       );
 
   Map<String, dynamic> toMap() => {
-        'project_id': projectId,
+        'vault_id': vaultId,
         'user_id': userId,
         'role': role.value,
       };
 
-  ProjectMember.fromMap(Map<String, dynamic> map)
-      : projectId = map['project_id'] ?? '',
+  VaultMember.fromMap(Map<String, dynamic> map)
+      : vaultId = map['vault_id'] ?? '',
         userId = map['user_id'] ?? '',
         role = UserRole.values.fromString(map['role'] ?? ''),
         //
@@ -64,8 +64,8 @@ class ProjectMember {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is ProjectMember &&
-        other.projectId == projectId &&
+    return other is VaultMember &&
+        other.vaultId == vaultId &&
         other.userId == userId &&
         //
         other.createdAt == createdAt &&
@@ -76,7 +76,7 @@ class ProjectMember {
 
   @override
   int get hashCode {
-    return projectId.hashCode ^
+    return vaultId.hashCode ^
         userId.hashCode ^
         role.hashCode ^
         //
@@ -87,7 +87,8 @@ class ProjectMember {
   }
 
   @override
-  String toString() => 'ProjectMember(projectId: $projectId, '
+  String toString() => 'VaultMember('
+      'vaultId: $vaultId, '
       'userId: $userId, '
       'role: ${role.value}, '
       ')';

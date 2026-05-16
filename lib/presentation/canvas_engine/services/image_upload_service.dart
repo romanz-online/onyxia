@@ -10,14 +10,14 @@ class CanvasImageUploadService {
   }) async {
     for (final file in files) {
       try {
-        final projectId = ref.read(selectedProjectProvider)?.id;
-        if (projectId == null) {
-          throw StateError('No project selected for image upload');
+        final vaultId = ref.read(selectedVaultProvider)?.id;
+        if (vaultId == null) {
+          throw StateError('No vault selected for image upload');
         }
         final artifact = await ImageService.uploadImage(
           file.bytes!,
           file.name,
-          projectId: projectId,
+          vaultId: vaultId,
         );
         final imageUrl = artifact.downloadUrl;
 
@@ -40,7 +40,7 @@ class CanvasImageUploadService {
             viewportCenter.dx + image.width,
             viewportCenter.dy + image.height,
           ),
-          type: CanvasObjectType.image, 
+          type: CanvasObjectType.image,
           imageProperties: ImageProperties(imageUrl: imageUrl),
         );
 

@@ -52,7 +52,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
   void _selectItem(Artifact item) {
     treeController.setSelectedNodeId(item.id);
-    context.go(item.navigationUrl(ref.read(selectedProjectProvider)?.id));
+    context.go(item.navigationUrl(ref.read(selectedVaultProvider)?.id));
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {

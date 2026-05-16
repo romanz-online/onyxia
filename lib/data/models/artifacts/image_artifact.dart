@@ -19,7 +19,7 @@ class ImageArtifact extends Artifact {
   });
 
   String get downloadUrl => Supabase.instance.client.storage
-      .from('project-files')
+      .from('vault-files')
       .getPublicUrl(storagePath);
 
   @override

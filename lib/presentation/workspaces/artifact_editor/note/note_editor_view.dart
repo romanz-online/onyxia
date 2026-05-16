@@ -68,6 +68,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
     });
   }
 
+  // TODO: implement
   Future<void> _handleImageDrop(PerformDropEvent event) async {
     // final item = event.session.items.first;
     // final reader = item.dataReader!;
@@ -335,8 +336,8 @@ class _NoteEditorField extends ConsumerWidget {
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
                   onWikiLinkTapped: (title) {
-                    final projectId = ref.read(selectedProjectProvider)?.id;
-                    context.go('/project/$projectId/$title');
+                    final vaultId = ref.read(selectedVaultProvider)?.id;
+                    context.go('/vault/$vaultId/$title');
                   },
                 ),
               ),

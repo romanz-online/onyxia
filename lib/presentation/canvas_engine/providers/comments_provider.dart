@@ -45,21 +45,21 @@ final commentsProvider =
 class CommentsNotifier extends Notifier<CommentsState> {
   late CommentsRepository _repository;
   late String _canvasId;
-  String? _projectId;
+  String? _vaultId;
   late User _user;
 
   @override
   CommentsState build() {
     _canvasId = ref.watch(selectedArtifactProvider
         .select((a) => a is CanvasArtifact ? a.id : ''));
-    _projectId = ref.watch(selectedProjectProvider)?.id;
+    _vaultId = ref.watch(selectedVaultProvider)?.id;
     _user = ref.watch(currentUserProvider).value ?? User.initial();
     _repository = CommentsRepository(
-      projectId: _projectId,
+      vaultId: _vaultId,
       canvasId: _canvasId,
     );
 
-    if (_canvasId.isNotEmpty && _projectId != null) {
+    if (_canvasId.isNotEmpty && _vaultId != null) {
       final sub = _repository.getStream().listen((comments) {
         final sortedComments = List<Comment>.from(comments);
         sortedComments.sort((a, b) => (a.createdAt ??

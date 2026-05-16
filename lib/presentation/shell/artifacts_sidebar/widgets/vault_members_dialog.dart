@@ -1,14 +1,14 @@
 import 'package:onyxia/export.dart';
 
-class ProjectMembersDialog extends ConsumerStatefulWidget {
-  const ProjectMembersDialog({super.key});
+class VaultMembersDialog extends ConsumerStatefulWidget {
+  const VaultMembersDialog({super.key});
 
   @override
-  ConsumerState<ProjectMembersDialog> createState() =>
-      _ProjectMembersDialogState();
+  ConsumerState<VaultMembersDialog> createState() =>
+      _VaultMembersDialogState();
 }
 
-class _ProjectMembersDialogState extends ConsumerState<ProjectMembersDialog> {
+class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
   final TextEditingController _emailController = TextEditingController();
   final Map<String, User> _resolvedUsers = {};
   String _email = '';
@@ -29,7 +29,7 @@ class _ProjectMembersDialogState extends ConsumerState<ProjectMembersDialog> {
     super.dispose();
   }
 
-  Future<void> _resolveMissing(List<ProjectMember> members) async {
+  Future<void> _resolveMissing(List<VaultMember> members) async {
     final missing = members
         .map((m) => m.userId)
         .where((id) => !_resolvedUsers.containsKey(id))
@@ -61,10 +61,10 @@ class _ProjectMembersDialogState extends ConsumerState<ProjectMembersDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final membersAsync = ref.watch(projectMembersProvider);
+    final membersAsync = ref.watch(vaultMembersProvider);
 
     return OnyxiaDialog(
-      title: 'Project Members',
+      title: 'Members',
       width: 480,
       height: 480,
       content: membersAsync.when(
@@ -78,7 +78,7 @@ class _ProjectMembersDialogState extends ConsumerState<ProjectMembersDialog> {
     );
   }
 
-  Widget _buildContent(List<ProjectMember> members) {
+  Widget _buildContent(List<VaultMember> members) {
     final memberIds = members.map((m) => m.userId).toList();
     if (!_listEquals(memberIds, _resolvedForMemberIds)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -154,7 +154,7 @@ class _ProjectMembersDialogState extends ConsumerState<ProjectMembersDialog> {
 }
 
 class _MemberRow extends StatelessWidget {
-  final ProjectMember member;
+  final VaultMember member;
   final User? user;
 
   const _MemberRow({required this.member, required this.user});

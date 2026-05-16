@@ -1,13 +1,13 @@
 ﻿import 'package:onyxia/export.dart';
 
 class MasterSidebar extends ConsumerWidget {
-  final String projectId;
+  final String vaultId;
   final ValueNotifier<bool> isArtifactsSidebarCollapsed;
   final ValueNotifier<bool> animateNextCollapseChange;
 
   const MasterSidebar({
     super.key,
-    required this.projectId,
+    required this.vaultId,
     required this.isArtifactsSidebarCollapsed,
     required this.animateNextCollapseChange,
   });
@@ -44,13 +44,13 @@ class MasterSidebar extends ConsumerWidget {
                 );
               },
             ),
-            if (projectId.isNotEmpty) ...[
+            if (vaultId.isNotEmpty) ...[
               NarwhalIconButton(
                 icon: LucideIcons.share2,
                 tooltip: 'Open graph',
                 onPressed: () {
-                  if (projectId.isEmpty) return;
-                  context.go('/project/$projectId/${Routes.graph}');
+                  if (vaultId.isEmpty) return;
+                  context.go('/vault/$vaultId/${Routes.graph}');
                 },
               ),
             ],

@@ -5,8 +5,8 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedProject = ref.watch(selectedProjectProvider);
-    if (selectedProject == null) return const SizedBox.shrink();
+    final selectedVault = ref.watch(selectedVaultProvider);
+    if (selectedVault == null) return const SizedBox.shrink();
 
     return Container(
       decoration: BoxDecoration(
@@ -23,7 +23,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
             icon: LucideIcons.filePlus,
             tooltip: 'New note',
             onPressed: () async {
-              await ArtifactsRepository(projectId: selectedProject.id)
+              await ArtifactsRepository(vaultId: selectedVault.id)
                   .add([NoteArtifact()]);
             },
           ),
@@ -31,7 +31,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
             icon: LucideIcons.folderPlus,
             tooltip: 'New folder',
             onPressed: () async {
-              await ArtifactsRepository(projectId: selectedProject.id)
+              await ArtifactsRepository(vaultId: selectedVault.id)
                   .add([FolderArtifact()]);
             },
           ),
@@ -39,8 +39,28 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
             icon: LucideIcons.layoutGrid,
             tooltip: 'New canvas',
             onPressed: () async {
-              await ArtifactsRepository(projectId: selectedProject.id)
+              await ArtifactsRepository(vaultId: selectedVault.id)
                   .add([CanvasArtifact()]);
+            },
+          ),
+          NarwhalIconButton(
+            icon: LucideIcons.imagePlus,
+            tooltip: 'Upload image',
+            onPressed: () async {
+              final result = await FilePicker.platform.pickFiles(
+                type: FileType.image,
+                allowMultiple: true,
+                withData: true,
+              );
+              if (result == null) return;
+              for (final file in result.files) {
+                if (file.bytes == null) continue;
+                await ImageService.uploadImage(
+                  file.bytes!,
+                  file.name,
+                  vaultId: selectedVault.id,
+                );
+              }
             },
           ),
         ],

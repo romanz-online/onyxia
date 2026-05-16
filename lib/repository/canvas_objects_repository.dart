@@ -3,7 +3,7 @@ import 'package:onyxia/export.dart';
 class CanvasObjectsRepository extends BaseSupabaseRepository<CanvasObject> {
   final String canvasId;
 
-  CanvasObjectsRepository({required super.projectId, required this.canvasId});
+  CanvasObjectsRepository({required super.vaultId, required this.canvasId});
 
   @override
   String get tableName => 'canvas_objects';

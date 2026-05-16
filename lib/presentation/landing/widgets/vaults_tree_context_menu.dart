@@ -1,10 +1,10 @@
 import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/landing/widgets/rename_project_dialog.dart';
+import 'package:onyxia/presentation/landing/widgets/rename_vault_dialog.dart';
 
-List<ContextMenuItem> buildProjectContextMenuItems(
+List<ContextMenuItem> buildVaultContextMenuItems(
   BuildContext context,
   WidgetRef ref,
-  Project project,
+  Vault vault,
 ) {
   final items = <ContextMenuItem>[];
 
@@ -17,7 +17,7 @@ List<ContextMenuItem> buildProjectContextMenuItems(
       ],
     ),
     onTap: () {
-      final url = NavigationUrlBuilder.buildProjectDashboardUrl(project.id);
+      final url = NavigationUrlBuilder.buildGraphUrl(vault.id);
       NavigationContextMenu.openInNewTab(url);
     },
   ));
@@ -31,7 +31,7 @@ List<ContextMenuItem> buildProjectContextMenuItems(
       ],
     ),
     onTap: () {
-      final url = NavigationUrlBuilder.buildProjectDashboardUrl(project.id);
+      final url = NavigationUrlBuilder.buildGraphUrl(vault.id);
       NavigationContextMenu.copyLinkToClipboard(url);
     },
   ));
@@ -46,32 +46,30 @@ List<ContextMenuItem> buildProjectContextMenuItems(
   ));
 
   items.add(ContextMenuItem(
-    child: Text('Rename Project', style: NarwhalTextStyle()),
+    child: Text('Rename Vault', style: NarwhalTextStyle()),
     onTap: () {
       showDialog(
         context: context,
         barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
-        builder: (_) => RenameProjectDialog(
-          projectName: project.name,
-          projectId: project.id,
+        builder: (_) => RenameVaultDialog(
+          vaultName: vault.name,
+          vaultId: vault.id,
         ),
       );
     },
   ));
 
   items.add(ContextMenuItem(
-    child: Text('Remove Project', style: NarwhalTextStyle()),
-    onTap: () => _confirmRemove(context, ref, project),
+    child: Text('Delete Vault', style: NarwhalTextStyle()),
+    onTap: () => _confirmRemove(context, ref, vault),
   ));
 
   return items;
 }
 
-void _confirmRemove(
-    BuildContext context, WidgetRef ref, Project project) async {
-  String projectName = project.name;
-  if (projectName.length > 25)
-    projectName = '${projectName.substring(0, 25)}... ';
+void _confirmRemove(BuildContext context, WidgetRef ref, Vault vault) async {
+  String vaultName = vault.name;
+  if (vaultName.length > 25) vaultName = '${vaultName.substring(0, 25)}... ';
 
   final confirm = await showDialog<bool>(
     context: context,
@@ -79,7 +77,7 @@ void _confirmRemove(
     builder: (_) => NarwhalModalDialog(
       width: 600,
       height: 200,
-      title: 'Remove $projectName?',
+      title: 'Delete $vaultName?',
       hasLargeTitle: true,
       content: Text(
         'This is permanent.',
@@ -89,12 +87,12 @@ void _confirmRemove(
         ),
       ),
       onCancelPressed: () => Navigator.of(context).pop(false),
-      actionButtonText: 'Remove Project',
+      actionButtonText: 'Delete Vault',
       onActionPressed: () => Navigator.of(context).pop(true),
     ),
   );
 
   if (confirm == true) {
-    ProjectsRepository().delete(project.id);
+    VaultsRepository().delete(vault.id);
   }
 }

@@ -26,8 +26,8 @@ export 'package:onyxia/presentation/common_widget/onyxia_overlay.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_toast.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_dialog.dart';
-export 'package:onyxia/presentation/shell/artifacts_sidebar/project_settings_button.dart';
-export 'package:onyxia/presentation/shell/artifacts_sidebar/widgets/project_members_dialog.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/vault_settings_button.dart';
+export 'package:onyxia/presentation/shell/artifacts_sidebar/widgets/vault_members_dialog.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
 export 'package:onyxia/presentation/common_widget/drag_select_painter.dart';
@@ -48,13 +48,13 @@ export 'package:onyxia/presentation/routing/routes.dart';
 
 //data providers
 export 'package:onyxia/presentation/routing/providers/auth_provider.dart';
-export 'package:onyxia/data/providers/projects_provider.dart';
+export 'package:onyxia/data/providers/vaults_provider.dart';
 export 'package:onyxia/data/providers/current_user_provider.dart';
 export 'package:onyxia/data/providers/user_lookup_provider.dart';
-export 'package:onyxia/data/providers/project_members_provider.dart';
+export 'package:onyxia/data/providers/vault_members_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_artifact_provider.dart';
-export 'package:onyxia/data/providers/selected_project_provider.dart';
+export 'package:onyxia/data/providers/selected_vault_provider.dart';
 export 'package:onyxia/data/providers/note_state_provider.dart';
 
 //packages
@@ -75,7 +75,7 @@ export 'package:onyxia/data/models/artifacts/canvas/canvas_artifact.dart';
 export 'package:onyxia/data/models/artifacts/folder_artifact.dart';
 export 'package:onyxia/data/models/artifacts/image_artifact.dart';
 export 'package:onyxia/data/models/user.dart';
-export 'package:onyxia/data/models/project_member.dart';
+export 'package:onyxia/data/models/vault_member.dart';
 export 'package:onyxia/data/models/artifacts/canvas/comment.dart';
 export 'package:onyxia/data/models/artifacts/canvas/canvas_object.dart';
 export 'package:onyxia/data/models/artifacts/canvas/sub_comment.dart';
@@ -84,7 +84,7 @@ export 'package:onyxia/data/models/artifacts/canvas/subobjects/arrow.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/image.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/brush.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/artifact_subobject.dart';
-export 'package:onyxia/data/models/project.dart';
+export 'package:onyxia/data/models/vault.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
 
 //repositories
@@ -92,10 +92,10 @@ export 'package:onyxia/repository/base_supabase_repository.dart';
 export 'package:onyxia/repository/auth_repository.dart';
 export 'package:onyxia/repository/canvas_objects_repository.dart';
 export 'package:onyxia/repository/comments_repository.dart';
-export 'package:onyxia/repository/projects_repository.dart';
+export 'package:onyxia/repository/vaults_repository.dart';
 export 'package:onyxia/repository/pins_repository.dart';
 export 'package:onyxia/repository/users_repository.dart';
-export 'package:onyxia/repository/project_members_repository.dart';
+export 'package:onyxia/repository/vault_members_repository.dart';
 export 'package:onyxia/repository/artifacts_repository.dart';
 
 //services

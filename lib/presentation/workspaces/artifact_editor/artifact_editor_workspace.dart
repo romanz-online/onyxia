@@ -1,5 +1,6 @@
 ﻿import 'package:onyxia/export.dart';
 import 'note/note_editor_view.dart';
+import 'image/image_editor_view.dart';
 
 class ArtifactWorkspace extends ConsumerStatefulWidget {
   final NoteStateProvider? noteProvider;
@@ -22,8 +23,8 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
         ),
       ArtifactType.canvas => CanvasEditorView(canvasId: artifact.id),
       ArtifactType.folder => const SizedBox.shrink(),
-      // TODO: implement image viewer
-      ArtifactType.image => const SizedBox.shrink(),
+      ArtifactType.image =>
+        ImageEditorView(artifact: artifact as ImageArtifact),
     };
   }
 

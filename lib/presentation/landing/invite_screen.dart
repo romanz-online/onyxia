@@ -16,12 +16,12 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _fadeController;
   late Animation<double> _fadeAnimation;
-  Future<Project?>? _projectFuture;
+  Future<Vault?>? _vaultFuture;
 
-  String? _extractProjectId(String path) {
+  String? _extractVaultId(String path) {
     final uri = Uri.parse(path);
     final segments = uri.pathSegments;
-    if (segments.length >= 2 && segments[0] == 'project') {
+    if (segments.length >= 2 && segments[0] == 'vault') {
       return segments[1];
     }
     return null;
@@ -41,9 +41,9 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
     Future.delayed(const Duration(milliseconds: 400), () {
       if (mounted) _fadeController.forward();
     });
-    final projectId = _extractProjectId(widget.destinationPath);
-    if (projectId != null) {
-      _projectFuture = ProjectsRepository().get(projectId);
+    final vaultId = _extractVaultId(widget.destinationPath);
+    if (vaultId != null) {
+      _vaultFuture = VaultsRepository().get(vaultId);
     }
   }
 
@@ -121,13 +121,13 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                           padding: const EdgeInsets.symmetric(vertical: 28),
                           child: Column(
                             children: [
-                              FutureBuilder<Project?>(
-                                future: _projectFuture,
+                              FutureBuilder<Vault?>(
+                                future: _vaultFuture,
                                 builder: (context, snapshot) {
-                                  final projectName = snapshot.data?.name;
-                                  final titleText = projectName != null
-                                      ? "You've been invited to $projectName"
-                                      : "You've been invited to a project on Narwhal";
+                                  final vaultNme = snapshot.data?.name;
+                                  final titleText = vaultNme != null
+                                      ? "You've been invited to $vaultNme"
+                                      : "You've been invited to a vault.";
                                   return Text(
                                     titleText,
                                     style: NarwhalTextStyle(
@@ -141,8 +141,7 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                               ),
                               const Gap(12),
                               Text(
-                                'Sign in with your Google account to join the project. '
-                                'You can fill in your profile details once you\'re in.',
+                                'Sign in with your Google account to join the vault. ',
                                 style: NarwhalTextStyle(
                                   fontSize: 14,
                                   color: ThemeHelper.neutral600(context),
@@ -153,6 +152,8 @@ class _InviteScreenState extends ConsumerState<InviteScreen>
                           ),
                         ),
                       ),
+                      // TODO: generally redo this screen to fit with the rest of the app as it is now
+                      // TODO: also edit the email that gets sent out to invite people
                       const Gap(32),
                       OnyxiaButton(
                         label: 'Sign in with Google',

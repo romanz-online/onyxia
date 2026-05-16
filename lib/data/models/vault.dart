@@ -1,6 +1,6 @@
 import 'package:onyxia/export.dart';
 
-class Project {
+class Vault {
   final String id;
   final String name;
   //
@@ -9,7 +9,7 @@ class Project {
   final DateTime? updatedAt;
   final String? updatedBy;
 
-  Project({
+  Vault({
     required this.id,
     required this.name,
     //
@@ -19,20 +19,20 @@ class Project {
     this.updatedBy,
   });
 
-  Project copyWith({
+  Vault copyWith({
     String? id,
     String? name,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) {
-    return Project(id: id ?? this.id, name: name ?? this.name);
+    return Vault(id: id ?? this.id, name: name ?? this.name);
   }
 
   Map<String, dynamic> toMap() {
     return {'id': id, 'name': name};
   }
 
-  Project.fromMap(Map<String, dynamic> map)
+  Vault.fromMap(Map<String, dynamic> map)
       : id = map['id'] ?? '',
         name = map['name'] ?? '',
         //
@@ -43,7 +43,7 @@ class Project {
 
   @override
   String toString() {
-    return 'Project(id: $id, '
+    return 'Vault(id: $id, '
         'createdBy: $createdBy, '
         'createdAt: $createdAt, '
         'updatedAt: $updatedAt, '
@@ -55,7 +55,7 @@ class Project {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
 
-    return other is Project &&
+    return other is Vault &&
         other.id == id &&
         other.createdBy == createdBy &&
         other.createdAt == createdAt &&

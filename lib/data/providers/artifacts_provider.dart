@@ -13,18 +13,16 @@ final wikiLinkTitlesProvider = Provider<List<String>>((ref) =>
         .toList());
 
 class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
-  String? _projectId;
+  String? _vaultId;
   late ArtifactsRepository _repository;
 
   @override
   Stream<List<Artifact>> build() {
-    _projectId = ref.watch(selectedProjectProvider.select((p) => p?.id));
-    _repository = ArtifactsRepository(projectId: _projectId);
-    if (_projectId == null) return Stream.value(const <Artifact>[]);
+    _vaultId = ref.watch(selectedVaultProvider.select((p) => p?.id));
+    _repository = ArtifactsRepository(vaultId: _vaultId);
+    if (_vaultId == null) return Stream.value(const <Artifact>[]);
     return _repository.getStream();
   }
-
-  String? get projectId => _projectId;
 
   List<Artifact> get _items => state.value ?? const <Artifact>[];
 
@@ -60,7 +58,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         ? null
         : _items.firstWhereOrNull((a) => a.name == urlSelectedName);
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
-      router.go('/project/$_projectId/${Routes.graph}');
+      router.go('/vault/$_vaultId/${Routes.graph}');
     }
 
     state = AsyncData(
@@ -121,8 +119,8 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   Future<String?> renameItem(Artifact item, String newName) async {
     final cleaned = ItemTitleValidationService.correctTitle(newName.trim());
     if (cleaned.isEmpty || cleaned == item.name) return null;
-    final err = ItemTitleValidationService.errorMessage(
-        _items, cleaned, item.id);
+    final err =
+        ItemTitleValidationService.errorMessage(_items, cleaned, item.id);
     if (err != null) return err;
 
     final oldName = item.name;
@@ -147,17 +145,17 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     // Apply local state + URL synchronously so selectedArtifactProvider
     // never sees state==NewName while url==OldName (the flash window).
     batch.forEach((e) => updateItemState(e));
-    
+
     final router = ref.read(routerProvider);
     final urlSelectedId =
         router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
     if (urlSelectedId == oldName) {
-      final projectId = ref.read(selectedProjectProvider.select((p) => p?.id));
-      router.go(renamed.navigationUrl(projectId));
+      final vaultId = ref.read(selectedVaultProvider.select((p) => p?.id));
+      router.go(renamed.navigationUrl(vaultId));
     }
 
     await _repository.update(batch);
-    
+
     return null;
   }
 }

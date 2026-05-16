@@ -2,9 +2,9 @@ import 'package:onyxia/export.dart';
 
 class AppShell extends ConsumerStatefulWidget {
   final String? selectedId;
-  final String projectId;
+  final String vaultId;
 
-  const AppShell({super.key, this.selectedId, required this.projectId});
+  const AppShell({super.key, this.selectedId, required this.vaultId});
 
   @override
   ConsumerState createState() => _AppShellState();
@@ -30,16 +30,16 @@ class _AppShellState extends ConsumerState<AppShell> {
   Widget build(BuildContext context) {
     ref.watch(currentUserProvider);
 
-    if (widget.projectId.isNotEmpty) {
-      final projectsAsync = ref.watch(projectsProvider);
-      if (projectsAsync.isLoading) {
+    if (widget.vaultId.isNotEmpty) {
+      final vaultsAsync = ref.watch(vaultsProvider);
+      if (vaultsAsync.isLoading) {
         return Scaffold(body: Center(child: NarwhalSpinner()));
       }
-      final projects = projectsAsync.value ?? const <Project>[];
-      final projectExists = projects.any((p) => p.id == widget.projectId);
-      if (!projectExists) {
+      final vaults = vaultsAsync.value ?? const <Vault>[];
+      final vaultExists = vaults.any((p) => p.id == widget.vaultId);
+      if (!vaultExists) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.replace('/${Routes.projects}');
+          if (mounted) context.replace('/${Routes.vaults}');
         });
         return Scaffold(body: Center(child: NarwhalSpinner()));
       }
@@ -52,7 +52,7 @@ class _AppShellState extends ConsumerState<AppShell> {
           Row(
             children: [
               MasterSidebar(
-                projectId: widget.projectId,
+                vaultId: widget.vaultId,
                 isArtifactsSidebarCollapsed: _isArtifactsSidebarCollapsed,
                 animateNextCollapseChange: _animateNextCollapseChange,
               ),
@@ -65,14 +65,14 @@ class _AppShellState extends ConsumerState<AppShell> {
                 child: ColoredBox(
                   color: ThemeHelper.neutral100(context),
                   child: WorkspaceHost(
-                    projectId: widget.projectId,
+                    vaultId: widget.vaultId,
                     selectedId: widget.selectedId,
                   ),
                 ),
               ),
             ],
           ),
-          if (widget.projectId.isEmpty) const LandingOverlay(),
+          if (widget.vaultId.isEmpty) const LandingOverlay(),
         ],
       ),
     );
