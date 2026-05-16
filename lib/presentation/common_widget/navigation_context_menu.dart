@@ -52,8 +52,7 @@ class NavigationContextMenu {
   static void copyLinkToClipboard(String url) {
     final fullUrl = _buildFullUrl(url);
     Clipboard.setData(ClipboardData(text: fullUrl)).then((_) {
-      // You could show a toast notification here if needed
-      // NarwhalToast.show(text: 'Link copied to clipboard', type: ToastType.info);
+      OnyxiaToast.show(text: 'Link copied to clipboard', type: ToastType.info);
     });
   }
 

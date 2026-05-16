@@ -248,7 +248,7 @@ class CanvasInteractionService {
           canvasPosition.dx + image.width,
           canvasPosition.dy + image.height,
         ),
-        type: CanvasObjectType.image, 
+        type: CanvasObjectType.image,
         imageProperties: ImageProperties(imageUrl: data.imageUrl),
       );
 
@@ -267,13 +267,13 @@ class CanvasInteractionService {
       objectsNotifier.clearSelectedObjects();
       objectsNotifier.selectObject(newObj);
 
-      NarwhalToast.show(
+      OnyxiaToast.show(
         text: 'Image added to canvas',
         type: ToastType.success,
       );
     } catch (e) {
       debugPrint('Error processing dragged image: $e');
-      NarwhalToast.show(
+      OnyxiaToast.show(
         text: 'Failed to add image: $e',
         type: ToastType.error,
       );
@@ -344,7 +344,7 @@ class CanvasInteractionService {
         position.dx + defaultArtifactObjectDimensions.width / 2,
         position.dy + defaultArtifactObjectDimensions.height / 2,
       ),
-      type: CanvasObjectType.artifact, 
+      type: CanvasObjectType.artifact,
       artifactProperties: ArtifactProperties(artifactId: artifact?.id ?? ''),
     );
     // TODO: null artifact should create a note?

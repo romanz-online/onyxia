@@ -4,8 +4,7 @@ class VaultMembersDialog extends ConsumerStatefulWidget {
   const VaultMembersDialog({super.key});
 
   @override
-  ConsumerState<VaultMembersDialog> createState() =>
-      _VaultMembersDialogState();
+  ConsumerState<VaultMembersDialog> createState() => _VaultMembersDialogState();
 }
 
 class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
@@ -52,7 +51,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
 
   void _onSendInvite() {
     final trimmed = _email.trim();
-    NarwhalToast.show(
+    OnyxiaToast.show(
       text: 'Invite sent to $trimmed',
       type: ToastType.success,
     );

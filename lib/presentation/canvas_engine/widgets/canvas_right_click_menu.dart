@@ -218,7 +218,7 @@ void _toggleSetting(WidgetRef ref, Setting setting) {
 
 void _copyDiagramLink() {
   Clipboard.setData(ClipboardData(text: web.window.location.href));
-  NarwhalToast.show(
+  OnyxiaToast.show(
     text: 'Link copied to clipboard',
     type: ToastType.success,
   );

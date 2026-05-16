@@ -37,8 +37,7 @@ class _ToastEntry {
   });
 }
 
-/// @ponder ponder/NarwhalToast.gif
-class NarwhalToast {
+class OnyxiaToast {
   static final Map<ToastPosition, List<_ToastEntry>> _toastsByPosition = {};
   static final Map<ToastPosition, StreamController<void>> _positionControllers =
       {};
@@ -351,7 +350,8 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
   }
 
   Future<void> playExit() {
-    if (_isExiting) return _exitController.forward().orCancel.catchError((_) {});
+    if (_isExiting)
+      return _exitController.forward().orCancel.catchError((_) {});
     _isExiting = true;
     return _exitController.forward();
   }
@@ -389,7 +389,7 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
 
   double _getStackOffset() {
     // Calculate the current stack index based on existing toasts
-    final toasts = NarwhalToast._toastsByPosition[widget.position] ?? [];
+    final toasts = OnyxiaToast._toastsByPosition[widget.position] ?? [];
     final currentIndex =
         toasts.indexWhere((toast) => toast.id == widget.toastId);
 

@@ -369,7 +369,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                                 break;
                             }
                           } else {
-                            NarwhalToast.show(
+                            OnyxiaToast.show(
                               text:
                                   'Cannot drop item pins on whiteboard canvas.',
                               type: ToastType.info,
@@ -593,7 +593,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
         .toList();
 
     if (validFiles.isEmpty) {
-      NarwhalToast.show(
+      OnyxiaToast.show(
         text: 'No valid image files found',
         type: ToastType.error,
       );
