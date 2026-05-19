@@ -142,6 +142,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
         return SizedBox.expand(
           child: _NoteEditorContent(
             controller: controller,
+            collab: state.collabConfig,
             state: state,
             focusNode: _focusNode,
             scrollController: _scrollController,
@@ -192,6 +193,7 @@ class _ErrorView extends StatelessWidget {
 
 class _NoteEditorContent extends StatefulWidget {
   final BardController controller;
+  final BardCollabConfig? collab;
   final NoteState state;
   final FocusNode focusNode;
   final ScrollController scrollController;
@@ -205,6 +207,7 @@ class _NoteEditorContent extends StatefulWidget {
 
   const _NoteEditorContent({
     required this.controller,
+    required this.collab,
     required this.state,
     required this.focusNode,
     required this.scrollController,
@@ -274,6 +277,7 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
                   children: [
                     _NoteEditorField(
                       controller: widget.controller,
+                      collab: widget.collab,
                       focusNode: widget.focusNode,
                       scrollController: widget.scrollController,
                       provider: widget.provider,
@@ -293,6 +297,7 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
 
 class _NoteEditorField extends ConsumerWidget {
   final BardController controller;
+  final BardCollabConfig? collab;
   final FocusNode focusNode;
   final ScrollController scrollController;
   final NoteStateProvider provider;
@@ -300,6 +305,7 @@ class _NoteEditorField extends ConsumerWidget {
 
   const _NoteEditorField({
     required this.controller,
+    required this.collab,
     required this.focusNode,
     required this.scrollController,
     required this.provider,
@@ -331,6 +337,7 @@ class _NoteEditorField extends ConsumerWidget {
                 padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
                 child: BardEditor(
                   controller: controller,
+                  collab: collab,
                   style: NarwhalTextStyle(),
                   autofocus: true,
                   focusNode: focusNode,

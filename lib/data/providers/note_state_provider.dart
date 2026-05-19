@@ -1,30 +1,32 @@
+import 'dart:async';
+
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
-import 'dart:async';
-import 'dart:collection';
-
-const _100ms = Duration(milliseconds: 100);
 
 class NoteState {
   final NoteArtifact? note;
   final BardController? bardController;
   final FocusNode? focusNode;
+  final BardCollabConfig? collabConfig;
 
   const NoteState({
     this.note,
     this.bardController,
     this.focusNode,
+    this.collabConfig,
   });
 
   NoteState copyWith({
     NoteArtifact? note,
     BardController? bardController,
     FocusNode? focusNode,
+    BardCollabConfig? collabConfig,
   }) {
     return NoteState(
       note: note ?? this.note,
       bardController: bardController ?? this.bardController,
       focusNode: focusNode ?? this.focusNode,
+      collabConfig: collabConfig ?? this.collabConfig,
     );
   }
 }
@@ -32,15 +34,8 @@ class NoteState {
 class NoteNotifier extends AsyncNotifier<NoteState> {
   String? _vaultId;
   BardController? _controller;
-  VoidCallback? _controllerListener;
   FocusNode? _focusNode;
-  Timer? _debounceTimer;
-  StreamSubscription<Artifact?>? _docSub;
-  // FIFO of contents we've sent to the DB. Each echo from the document
-  // stream pops the head if it matches — that's our own save. Echoes that
-  // don't match are external (remote user, or a programmatic write like
-  // rename) and get applied to the live controller.
-  final Queue<String> _pendingEchoContents = Queue<String>();
+  StreamController<Uint8List>? _remoteOpsController;
 
   @override
   Future<NoteState> build() async {
@@ -50,20 +45,11 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     _vaultId = ref.watch(selectedVaultProvider.select((p) => p?.id));
 
     ref.onDispose(() {
-      _debounceTimer?.cancel();
-      _docSub?.cancel();
-      _docSub = null;
       final controller = _controller;
-      final listener = _controllerListener;
       _controller = null;
-      _controllerListener = null;
+      _remoteOpsController?.close();
+      _remoteOpsController = null;
       if (controller != null) {
-        // Detach our own listener synchronously so it can't fire on a
-        // disposed notifier between now and the deferred dispose below.
-        if (listener != null) controller.removeListener(listener);
-        // Defer dispose to the next frame so consumer widgets (BardEditor)
-        // can detach their own listeners on a still-live controller during
-        // their dispose() / didUpdateWidget().
         WidgetsBinding.instance.addPostFrameCallback((_) {
           controller.dispose();
         });
@@ -74,67 +60,49 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       return const NoteState();
     }
 
-    final note = ref.read(selectedArtifactProvider) as NoteArtifact;
-    final repo = ArtifactsRepository(vaultId: _vaultId);
-    final latestNote =
-        await repo.getDocumentStream(note.id).first as NoteArtifact? ?? note;
+    final userId = Supabase.instance.client.auth.currentUser?.id;
+    if (userId == null) return const NoteState();
 
-    // If deps changed during the await, abort cleanly so we don't allocate a
-    // controller that escapes onDispose's reach.
+    final note = ref.read(selectedArtifactProvider) as NoteArtifact;
+    final opsRepo = ArtifactOpsRepository(vaultId: _vaultId);
+    final snapsRepo = ArtifactSnapshotsRepository(vaultId: _vaultId);
+
+    final snap = await snapsRepo.latestFor(note.id);
     if (!ref.mounted) return const NoteState();
 
-    final controller = BardController(text: latestNote.content);
+    final initialOps = await opsRepo.opBytesFor(
+      note.id,
+      sinceSeq: snap?.maxOpSeq,
+    );
+    if (!ref.mounted) return const NoteState();
 
-    listener() {
-      final current = state.value;
-      if (current == null || current.note == null) return;
-      final updatedNote = current.note!.copyWith(content: controller.text);
-      state = AsyncData(current.copyWith(note: updatedNote));
-      _debounceSave();
-    }
+    // Fanout: we have to multiplex the realtime stream into something the
+    // engine can subscribe to. We also use this same controller to forward
+    // realtime ops the moment they arrive, with no echo filtering (CRDT
+    // applyChange is idempotent on duplicate ids — own echoes are no-ops).
+    final remoteOps = StreamController<Uint8List>.broadcast();
+    _remoteOpsController = remoteOps;
+    final supabaseSub = opsRepo.opByteStreamFor(note.id).listen(remoteOps.add);
+    ref.onDispose(supabaseSub.cancel);
 
+    final collab = BardCollabConfig(
+      initialSnapshot: snap?.snapshotBytes,
+      initialOps: initialOps,
+      remoteOps: remoteOps.stream,
+      onLocalOp: (bytes) {
+        // Fire-and-forget; failures should surface via global error handling.
+        opsRepo.append(note.id, bytes);
+      },
+    );
+
+    final controller = BardController(text: '');
     _controller = controller;
-    _controllerListener = listener;
-    controller.addListener(listener);
-
-    // Live document sync. Own-save echoes are identified by FIFO content
-    // match against _pendingEchoContents — Supabase realtime delivers events
-    // in commit order, so the order our saves go out is the order their
-    // echoes come back. Anything that doesn't match the queue head is
-    // external (remote user, or our own non-typing write like rename) and
-    // gets pushed into the live controller.
-    _docSub = repo.getDocumentStream(note.id).skip(1).listen((incoming) {
-      if (incoming is! NoteArtifact) return;
-      final current = state.value;
-      if (current == null) return;
-
-      if (_pendingEchoContents.isNotEmpty &&
-          _pendingEchoContents.first == incoming.content) {
-        _pendingEchoContents.removeFirst();
-        if (current.note != incoming) {
-          state = AsyncData(current.copyWith(note: incoming));
-        }
-        return;
-      }
-
-      // External update. Don't yank text mid-burst — defer to the next echo
-      // cycle after the user pauses.
-      if (_debounceTimer?.isActive ?? false) return;
-
-      if (controller.text != incoming.content) {
-        controller.removeListener(listener);
-        controller.text = incoming.content;
-        controller.addListener(listener);
-      }
-      if (current.note != incoming) {
-        state = AsyncData(current.copyWith(note: incoming));
-      }
-    });
 
     return NoteState(
-      note: latestNote,
+      note: note,
       bardController: controller,
       focusNode: _focusNode,
+      collabConfig: collab,
     );
   }
 
@@ -149,22 +117,6 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
   }
 
   bool get hasFocus => _focusNode?.hasFocus ?? false;
-
-  // ===== SAVE =====
-
-  void _debounceSave({Duration duration = _100ms}) {
-    _debounceTimer?.cancel();
-    _debounceTimer = Timer(duration, _saveDocument);
-  }
-
-  Future<void> _saveDocument() async {
-    final captured = state.value;
-    if (captured == null || captured.note == null) return;
-    final outgoing = captured.note!;
-    _pendingEchoContents.add(outgoing.content);
-    await ArtifactsRepository(vaultId: _vaultId)
-        .updateNoteContent(outgoing.id, outgoing.content);
-  }
 }
 
 /// Type alias for note state providers — use in widget signatures.

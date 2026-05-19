@@ -56,6 +56,7 @@ dependencies:
     path: lib/vendor/super_tree
   gap: ^3.0.1
   lucide_icons_flutter: ^3.1.13
+  crdt_lf: ^2.5.0
 
 dependency_overrides:
   super_tree:

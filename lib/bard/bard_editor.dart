@@ -1,8 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'markdown_span.dart';
+import '_bard_crdt_engine.dart';
+import '_cursor_rebase.dart';
+import 'bard_collab_config.dart';
 import 'bard_controller.dart';
+import 'markdown_span.dart';
 import 'wiki_link_overlay.dart';
 
 const Offset _kOverlayOffset = Offset(0, 56);
@@ -51,6 +56,7 @@ class BardEditor extends StatefulWidget {
     this.onSubmitted,
     this.expands = false,
     this.startCursorAtStart = true,
+    this.collab,
   });
 
   final BardController? controller;
@@ -67,6 +73,12 @@ class BardEditor extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final bool expands;
   final bool startCursorAtStart;
+
+  /// Optional collaboration plumbing. When non-null, the editor instantiates
+  /// an internal CRDT engine that mirrors the local controller against
+  /// inbound remote ops, and emits outbound ops via [BardCollabConfig.onLocalOp].
+  /// When null, the editor behaves identically to its pre-CRDT form.
+  final BardCollabConfig? collab;
 
   @override
   State<BardEditor> createState() => _BardEditorState();
@@ -87,6 +99,9 @@ class _BardEditorState extends State<BardEditor> {
   bool _focusFromTap = false;
 
   TextEditingValue? _prevControllerValue;
+
+  BardCrdtEngine? _engine;
+  StreamSubscription<void>? _engineUpdatesSub;
 
   @override
   void initState() {
@@ -109,11 +124,70 @@ class _BardEditorState extends State<BardEditor> {
     _controller.addListener(_onControllerChanged);
     _focusNode.addListener(_onFocusChanged);
     _focusNode.onKeyEvent = _onKeyEvent;
+
+    if (widget.collab != null) _attachCollab(widget.collab!);
+  }
+
+  void _attachCollab(BardCollabConfig config) {
+    final engine = BardCrdtEngine(config);
+    _engine = engine;
+    _engineUpdatesSub = engine.updates.listen((_) => _applyEngineToController());
+    // Sync initial state (snapshot + catch-up ops) into the controller without
+    // waiting for the first updates event. addPostFrameCallback so widget
+    // build is complete and selection logic in BardController's listener won't
+    // misfire on an empty pre-frame value.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      _applyEngineToController();
+    });
+  }
+
+  void _detachCollab() {
+    _engineUpdatesSub?.cancel();
+    _engineUpdatesSub = null;
+    _engine?.dispose();
+    _engine = null;
+  }
+
+  /// Pulls engine.currentText into _controller with a rebased cursor. Skips
+  /// when texts already match (the equality check is the natural guard against
+  /// outbound-emission loops) and when an IME composing region is active.
+  void _applyEngineToController() {
+    final engine = _engine;
+    if (engine == null) return;
+    final engineText = engine.currentText;
+    if (engineText == _controller.text) return;
+    if (_controller.value.composing.isValid) return;
+
+    final newSelection = rebaseSelection(
+      oldText: _controller.text,
+      newText: engineText,
+      oldSelection: _controller.selection,
+    );
+    _controller.value = TextEditingValue(
+      text: engineText,
+      selection: newSelection,
+    );
+  }
+
+  /// Pushes any divergence between _controller.text and engine.currentText
+  /// into the CRDT via Myers diff. Called after every controller listener
+  /// firing on the local-typing path.
+  void _syncControllerToEngine() {
+    final engine = _engine;
+    if (engine == null) return;
+    if (engine.currentText == _controller.text) return;
+    engine.applyFallbackChange(_controller.text);
   }
 
   @override
   void didUpdateWidget(BardEditor old) {
     super.didUpdateWidget(old);
+
+    if (widget.collab != old.collab) {
+      _detachCollab();
+      if (widget.collab != null) _attachCollab(widget.collab!);
+    }
 
     if (widget.controller != old.controller) {
       _controller.removeListener(_onControllerChanged);
@@ -145,6 +219,7 @@ class _BardEditorState extends State<BardEditor> {
 
   @override
   void dispose() {
+    _detachCollab();
     _controller.removeListener(_onControllerChanged);
     _focusNode.removeListener(_onFocusChanged);
     if (_ownsController) _controller.dispose();
@@ -162,6 +237,7 @@ class _BardEditorState extends State<BardEditor> {
       if (!mounted) return;
       _dispatchCharEvent(prev);
       _updateWikiOverlay();
+      _syncControllerToEngine();
     });
   }
 

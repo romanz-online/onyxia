@@ -87,6 +87,8 @@ export 'package:onyxia/data/models/artifacts/canvas/subobjects/brush.dart';
 export 'package:onyxia/data/models/artifacts/canvas/subobjects/artifact_subobject.dart';
 export 'package:onyxia/data/models/vault.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
+export 'package:onyxia/data/models/artifact_op.dart';
+export 'package:onyxia/data/models/artifact_snapshot.dart';
 
 //repositories
 export 'package:onyxia/repository/base_supabase_repository.dart';
@@ -98,6 +100,8 @@ export 'package:onyxia/repository/pins_repository.dart';
 export 'package:onyxia/repository/users_repository.dart';
 export 'package:onyxia/repository/vault_members_repository.dart';
 export 'package:onyxia/repository/artifacts_repository.dart';
+export 'package:onyxia/repository/artifact_ops_repository.dart';
+export 'package:onyxia/repository/artifact_snapshots_repository.dart';
 
 //services
 export 'package:onyxia/services/image_service.dart';
