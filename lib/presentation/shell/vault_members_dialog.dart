@@ -50,6 +50,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
   bool get _isValidEmail => _email.trim().isNotEmpty && _email.contains('@');
 
   void _onSendInvite() {
+    // TODO: implement
     final trimmed = _email.trim();
     OnyxiaToast.show(
       text: 'Invite sent to $trimmed',

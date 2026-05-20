@@ -28,7 +28,7 @@ export 'package:onyxia/global_error_handler.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_modal_dialog.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_dialog.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/vault_settings_button.dart';
-export 'package:onyxia/presentation/shell/artifacts_sidebar/widgets/vault_members_dialog.dart';
+export 'package:onyxia/presentation/shell/vault_members_dialog.dart';
 export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
 export 'package:onyxia/presentation/common_widget/drag_select_painter.dart';
