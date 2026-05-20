@@ -34,7 +34,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
         ),
       ),
       builder: (context, closeOverlay) => _buildMenu(closeOverlay),
-      child: NarwhalIconButton(
+      child: OnyxiaIconButton(
         icon: LucideIcons.settings,
         isPressed: _isMenuOpen,
         onPressed: () => _setMenuOpen(!_isMenuOpen),

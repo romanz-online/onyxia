@@ -518,7 +518,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
             .setHoveredShape(context, shapeType),
         onExit: (_) =>
             ref.read(headlessProvider.notifier).setHoveredShape(context, null),
-        child: NarwhalIconButton(
+        child: OnyxiaIconButton(
           icon: _getShapeIcon(shapeType),
           onPressed: () => _onShapeSelected(shapeType),
           size: iconSize.width,

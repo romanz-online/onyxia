@@ -237,7 +237,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     for (final opt in options) {
       switch (opt) {
         case CanvasObjectMenuOption.mediaSource:
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: LucideIcons.image,
             onPressed: () async {
               final selectedObjects =
@@ -272,7 +272,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
             _ => LucideIcons.square
           };
 
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: icon,
             onPressed: () => _toggleMenuOption(opt),
             isSelected: isSelected,
@@ -305,7 +305,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                   ),
                 ),
                 // Button on top
-                NarwhalIconButton(
+                OnyxiaIconButton(
                   icon: LucideIcons.palette,
                   iconColor: _selectedObjects.isEmpty
                       ? null
@@ -321,7 +321,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           break;
         case CanvasObjectMenuOption.stroke:
           final isSelected = _activeMenuOption == opt;
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: LucideIcons.minus,
             onPressed: () => _toggleMenuOption(opt),
             isSelected: isSelected,
@@ -336,7 +336,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
             ArrowTip.circle => LucideIcons.circle,
             ArrowTip.none => LucideIcons.ban,
           };
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: icon,
             onPressed: () => _toggleMenuOption(opt),
             isSelected: isSelected,
@@ -350,7 +350,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
             ArrowTip.circle => LucideIcons.circle,
             ArrowTip.none => LucideIcons.ban,
           };
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: icon,
             onPressed: () => _toggleMenuOption(opt),
             isSelected: isSelected,
@@ -363,7 +363,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
             ArrowType.segmented => LucideIcons.cornerDownRight,
             ArrowType.curved => LucideIcons.trendingUp,
           };
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: icon,
             onPressed: () => _toggleMenuOption(opt),
             isSelected: isSelected,
@@ -372,7 +372,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           break;
         case CanvasObjectMenuOption.textfield:
           final isSelected = ref.watch(canvasTextProvider.notifier).isEditing;
-          buttons.add(NarwhalIconButton(
+          buttons.add(OnyxiaIconButton(
             icon: LucideIcons.type,
             onPressed: () {
               if (isSelected) {
@@ -422,7 +422,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
     return GridPalette(
       buttons: colorPalette
-          .map((color) => NarwhalIconButton(
+          .map((color) => OnyxiaIconButton(
                 icon: LucideIcons.palette,
                 iconColor: color,
                 onPressed: () {
@@ -441,7 +441,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   Widget _buildStrokePalette() {
     List<Widget> buttons = [
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: LucideIcons.ellipsis,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -453,7 +453,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.dashed,
       ),
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: LucideIcons.minus,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -465,7 +465,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         },
         isSelected: _selectedObjects[0].stroke == StrokeType.solid,
       ),
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: LucideIcons.equal,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -512,7 +512,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     };
 
     List<Widget> buttons = shapeOptions
-        .map((shapeType) => NarwhalIconButton(
+        .map((shapeType) => OnyxiaIconButton(
               icon: shapeIcons[shapeType]!,
               onPressed: () {
                 for (final obj in _selectedObjects) {
@@ -540,7 +540,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
     List<Widget> buttons = [
       // Circle tip
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: tipOnRight ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -558,7 +558,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       ),
 
       // Triangle tip
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: tipOnRight ? LucideIcons.arrowRight : LucideIcons.arrowLeft,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -576,7 +576,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       ),
 
       // No tip
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: LucideIcons.ban,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -606,7 +606,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
     List<Widget> buttons = [
       // Segmented type
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: LucideIcons.cornerDownRight,
         onPressed: () {
           for (final obj in _selectedObjects) {
@@ -620,7 +620,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       ),
 
       // Curved type
-      NarwhalIconButton(
+      OnyxiaIconButton(
         icon: LucideIcons.trendingUp,
         onPressed: () {
           for (final obj in _selectedObjects) {

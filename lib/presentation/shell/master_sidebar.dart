@@ -32,7 +32,7 @@ class MasterSidebar extends ConsumerWidget {
             ValueListenableBuilder<bool>(
               valueListenable: isArtifactsSidebarCollapsed,
               builder: (context, collapsed, _) {
-                return NarwhalIconButton(
+                return OnyxiaIconButton(
                   icon: collapsed
                       ? LucideIcons.panelLeftOpen
                       : LucideIcons.panelLeftClose,
@@ -45,7 +45,7 @@ class MasterSidebar extends ConsumerWidget {
               },
             ),
             if (vaultId.isNotEmpty) ...[
-              NarwhalIconButton(
+              OnyxiaIconButton(
                 icon: LucideIcons.share2,
                 tooltip: 'Open graph',
                 onPressed: () {

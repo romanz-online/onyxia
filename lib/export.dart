@@ -34,7 +34,7 @@ export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
 export 'package:onyxia/presentation/common_widget/drag_select_painter.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_paint.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_icon_button.dart';
+export 'package:onyxia/presentation/common_widget/onyxia_icon_button.dart';
 export 'package:onyxia/presentation/common_widget/initials_circle.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/services/item_title_validation_service.dart';

@@ -364,7 +364,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                   Positioned(
                     right: 5,
                     bottom: 5,
-                    child: NarwhalIconButton(
+                    child: OnyxiaIconButton(
                       icon: LucideIcons.cornerDownLeft,
                       onPressed: _saveComment,
                       size: 30,

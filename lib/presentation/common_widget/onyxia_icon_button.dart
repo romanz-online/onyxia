@@ -1,7 +1,6 @@
 import 'package:onyxia/export.dart';
 
-/// @ponder ponder/NarwhalIconButton.gif
-class NarwhalIconButton extends StatelessWidget {
+class OnyxiaIconButton extends StatelessWidget {
   final IconData icon;
   final VoidCallback? onPressed;
   final bool enabled;
@@ -14,7 +13,7 @@ class NarwhalIconButton extends StatelessWidget {
   final int badgeCount;
   final Color? badgeColor;
 
-  const NarwhalIconButton({
+  const OnyxiaIconButton({
     super.key,
     required this.icon,
     this.onPressed,

@@ -156,7 +156,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
           toolButtons.add(const Gap(8));
         }
 
-        toolButtons.add(NarwhalIconButton(
+        toolButtons.add(OnyxiaIconButton(
           icon: LucideIcons.pentagon,
           size: iconSize,
           onPressed: _toggleShapesSubmenu,
@@ -204,7 +204,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
     // Handle special cases
     switch (tool) {
       case ToolMode.artifact:
-        return NarwhalIconButton(
+        return OnyxiaIconButton(
           icon: icon,
           size: iconSize,
           onPressed: () {
@@ -225,7 +225,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
           isSelected: selectedTool == tool,
         );
       default:
-        return NarwhalIconButton(
+        return OnyxiaIconButton(
           icon: icon,
           size: iconSize,
           onPressed: () => _onToolSelected(tool),
@@ -254,7 +254,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
               children: [
                 for (int i = 0; i < availableShapeTools.length; i++) ...[
                   if (i > 0) const Gap(8),
-                  NarwhalIconButton(
+                  OnyxiaIconButton(
                     icon: _toolIcons[availableShapeTools[i]]!,
                     size: 30,
                     onPressed: () => _onToolSelected(availableShapeTools[i]),

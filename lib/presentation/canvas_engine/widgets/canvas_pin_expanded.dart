@@ -391,7 +391,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            NarwhalIconButton(
+                            OnyxiaIconButton(
                               icon: LucideIcons.pencil,
                               size: 32,
                               enabled: false,
@@ -458,7 +458,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                             ),
                             _isEditing
                                 ? const SizedBox.shrink()
-                                : NarwhalIconButton(
+                                : OnyxiaIconButton(
                                     icon: LucideIcons.pencil,
                                     size: 32,
                                     onPressed: () => _enterEditMode(artifact),
@@ -472,7 +472,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                               builder: (context, closeOverlay) =>
                                   _buildPinActionOverlay(
                                       closeOverlay, artifact),
-                              child: NarwhalIconButton(
+                              child: OnyxiaIconButton(
                                 icon: LucideIcons.ellipsis,
                                 size: 32,
                                 isPressed: _isPinActionMenuOpen,
@@ -481,7 +481,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                               ),
                             ),
                             const Gap(6),
-                            NarwhalIconButton(
+                            OnyxiaIconButton(
                               icon: LucideIcons.x,
                               size: 32,
                               onPressed: _closePin,

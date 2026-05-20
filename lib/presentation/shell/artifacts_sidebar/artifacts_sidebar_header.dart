@@ -19,7 +19,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 6,
         children: [
-          NarwhalIconButton(
+          OnyxiaIconButton(
             icon: LucideIcons.filePlus,
             tooltip: 'New note',
             onPressed: () async {
@@ -27,7 +27,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
                   .add([NoteArtifact()]);
             },
           ),
-          NarwhalIconButton(
+          OnyxiaIconButton(
             icon: LucideIcons.folderPlus,
             tooltip: 'New folder',
             onPressed: () async {
@@ -35,7 +35,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
                   .add([FolderArtifact()]);
             },
           ),
-          NarwhalIconButton(
+          OnyxiaIconButton(
             icon: LucideIcons.layoutGrid,
             tooltip: 'New canvas',
             onPressed: () async {
@@ -43,7 +43,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
                   .add([CanvasArtifact()]);
             },
           ),
-          NarwhalIconButton(
+          OnyxiaIconButton(
             icon: LucideIcons.imagePlus,
             tooltip: 'Upload image',
             onPressed: () async {

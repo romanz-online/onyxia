@@ -84,7 +84,7 @@ class DragOffBar extends StatelessWidget {
     BuildContext context,
     DragOffBarButton button,
   ) {
-    final buttonWidget = NarwhalIconButton(
+    final buttonWidget = OnyxiaIconButton(
       icon: button.icon,
       size: iconSize,
     );
