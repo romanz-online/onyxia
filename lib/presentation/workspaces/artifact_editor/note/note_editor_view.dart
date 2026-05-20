@@ -3,6 +3,13 @@ import 'package:onyxia/presentation/workspaces/artifact_editor/note/note_title_f
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:onyxia/export.dart';
 
+const String _kGhostLorem =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
+    'sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. '
+    'Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris '
+    'nisi ut aliquip ex ea commodo consequat. ';
+const Duration _kGhostTypeDelay = Duration(milliseconds: 80);
+
 class NoteEditorView extends ConsumerStatefulWidget {
   final NoteStateProvider? provider;
 
@@ -228,11 +235,41 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
   final GlobalKey _editorKey = GlobalKey();
   double? _editorHeight;
   double? _editorWidth;
+  bool _isGhostTyping = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _updateEditorHeight());
+  }
+
+  @override
+  void dispose() {
+    _isGhostTyping = false;
+    super.dispose();
+  }
+
+  void _toggleGhostType() {
+    if (_isGhostTyping) {
+      setState(() => _isGhostTyping = false);
+    } else {
+      setState(() => _isGhostTyping = true);
+      _runGhostType();
+    }
+  }
+
+  Future<void> _runGhostType() async {
+    for (int i = 0; i < _kGhostLorem.length; i++) {
+      await Future.delayed(_kGhostTypeDelay);
+      if (!mounted || !_isGhostTyping) break;
+      final controller = widget.controller;
+      controller.text = controller.text + _kGhostLorem[i];
+      controller.selection =
+          TextSelection.collapsed(offset: controller.text.length);
+    }
+    if (mounted && _isGhostTyping) {
+      setState(() => _isGhostTyping = false);
+    }
   }
 
   void _updateEditorHeight() {
@@ -284,6 +321,16 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
                       onTapDown: widget.onTapDown,
                     ),
                     _DragOverlay(isDragOver: widget.isDragOver),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: OnyxiaIconButton(
+                        icon: LucideIcons.ghost, 
+                        isSelected: _isGhostTyping,
+                        tooltip: 'Ghost-type lorem ipsum (debug)',
+                        onPressed: _toggleGhostType,
+                      ),
+                    ),
                   ],
                 ),
               );

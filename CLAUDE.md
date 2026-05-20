@@ -88,6 +88,13 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
   Note: painters are **not** an exception — use `NarwhalPainter` which receives `BuildContext` directly.
 - **EXCEPTION — transparency**: `Colors.transparent` is always acceptable and requires no comment
 
+### Prefer Project Widget Wrappers - CRITICAL RULE
+
+- **ALWAYS** check `lib/presentation/common_widget/` for a project-wrapped equivalent (typical prefixes: `Onyxia*`, `Narwhal*`) before using a native Flutter widget
+- **NEVER** use Flutter's `IconButton` — **ALWAYS** use `OnyxiaIconButton` from [lib/presentation/common_widget/onyxia_icon_button.dart](lib/presentation/common_widget/onyxia_icon_button.dart)
+- `OnyxiaIconButton` accepts `icon: IconData` (use a `LucideIcons.*` constant), plus `onPressed`, `tooltip`, `iconColor`, `isPressed`, `isSelected`, `size`, `badgeCount` — it handles hover/press states, tooltip styling, and theme color resolution for you
+- The same spirit applies to other widgets: prefer `OnyxiaButton` over `ElevatedButton`, `OnyxiaDialog` over native dialogs, `NarwhalSpinner` over `CircularProgressIndicator`, etc. — if a project wrapper exists, use it
+
 ---
 
 ## Architecture Quick Reference

@@ -474,9 +474,9 @@ class IconButtonThemeHelper {
 
   Color hoveredBackgroundColor(BuildContext context) => ThemeHelper.neutral200(context);
 
-  Color selectedBackgroundColor(BuildContext context) => ThemeHelper.blue400(context).withValues(alpha: 0.5);
+  Color selectedBackgroundColor(BuildContext context) => ThemeHelper.neutral400(context).withValues(alpha: 0.8);
 
-  Color pressedBackgroundColor(BuildContext context) => ThemeHelper.neutral400(context);
+  Color pressedBackgroundColor(BuildContext context) => ThemeHelper.neutral400(context).withValues(alpha: 0.5);
 
   Color iconColor(BuildContext context) => ThemeHelper.neutral800(context);
 }
