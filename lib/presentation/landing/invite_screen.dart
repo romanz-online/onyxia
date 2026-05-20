@@ -6,6 +6,8 @@ import 'package:onyxia/export.dart';
 class InviteScreen extends ConsumerStatefulWidget {
   final String destinationPath;
 
+  // TODO: this should not be its own screen, it should just be a different piece of content for the main landing page
+
   const InviteScreen({super.key, required this.destinationPath});
 
   @override

@@ -61,7 +61,10 @@
       "Bash(grep -E \"\\\\.\\(dart\\)$\")",
       "WebFetch(domain:developer.atlassian.com)",
       "WebFetch(domain:forum.figma.com)",
-      "Bash(git check-ignore *)"
+      "Bash(git check-ignore *)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\RZinoviev\\\\Projects\\\\onyxia\" -Directory)",
+      "Bash(Select-Object Name)",
+      "PowerShell(ls -Path \"c:\\\\Users\\\\RZinoviev\\\\Projects\\\\onyxia\" -Force | where-object { $_.PSIsContainer } | Select-Object -ExpandProperty Name)"
     ],
     "deny": []
   },
