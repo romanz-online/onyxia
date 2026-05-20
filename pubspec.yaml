@@ -57,6 +57,7 @@ dependencies:
   gap: ^3.0.1
   lucide_icons_flutter: ^3.1.13
   crdt_lf: ^2.5.0
+  postgres: ^3.4.0
 
 dependency_overrides:
   super_tree:
