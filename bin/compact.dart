@@ -54,9 +54,19 @@ Future<void> main() async {
       }
     }
     stdout.writeln('Done. compacted=$compacted skipped=$skipped');
+
+    await _cleanupExpiredInvitations(conn);
   } finally {
     await conn.close();
   }
+}
+
+Future<void> _cleanupExpiredInvitations(Connection conn) async {
+  final result = await conn.execute(Sql.named('''
+    DELETE FROM vault_invitations
+    WHERE expires_at < NOW()
+  '''));
+  stdout.writeln('Deleted ${result.affectedRows} expired invitation(s).');
 }
 
 Endpoint _parseEndpoint(String url) {

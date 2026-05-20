@@ -143,7 +143,6 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   Widget _buildContent(BuildContext context, User user) {
     if (!user.isLogged) return _buildPreAuth(context);
-    if (user.pending) return Center(child: NarwhalSpinner());
 
     final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
 

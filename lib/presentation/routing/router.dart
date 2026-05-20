@@ -6,7 +6,6 @@ final navigatorKey = GlobalKey<NavigatorState>();
 /// re-evaluate its redirect without recreating the router instance.
 class _RouterNotifier extends ChangeNotifier {
   bool isAuth = false;
-  bool isPending = false;
   bool isAuthLoading = true;
 
   /// null = vaults haven't loaded yet (suppress membership kickback);
@@ -23,10 +22,6 @@ class _RouterNotifier extends ChangeNotifier {
     ref.listen<AsyncValue<Session?>>(authProvider, (_, next) {
       isAuth = next.value != null;
       isAuthLoading = next is AsyncLoading;
-      notifyListeners();
-    });
-    ref.listen<AsyncValue<User>>(currentUserProvider, (_, next) {
-      isPending = next.value?.pending ?? false;
       notifyListeners();
     });
     ref.listen<AsyncValue<List<Vault>>>(vaultsProvider, (_, next) {
@@ -57,6 +52,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => InviteScreen(
           destinationPath: Uri.decodeComponent(
               state.uri.queryParameters['dest'] ?? '/${Routes.vaults}'),
+          token: state.uri.queryParameters['token'],
         ),
       ),
       GoRoute(
@@ -89,12 +85,14 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       if (notifier.isAuthLoading) return null;
       final isAuth = notifier.isAuth;
-      final isPending = notifier.isPending;
       final isOnInvite = state.matchedLocation == Routes.invite;
       final hasInvite = state.uri.queryParameters['invite'] == 'true';
 
       if (isOnInvite) {
-        if (isAuth && !isPending) {
+        // When a token is present, InviteScreen runs accept_vault_invitation
+        // and navigates itself — don't preempt it.
+        if (state.uri.queryParameters.containsKey('token')) return null;
+        if (isAuth) {
           return Uri.decodeComponent(
               state.uri.queryParameters['dest'] ?? '/${Routes.vaults}');
         }
@@ -102,7 +100,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (hasInvite) {
-        if (!isAuth || isPending) {
+        if (!isAuth) {
           final params = Map<String, String>.from(state.uri.queryParameters)
             ..remove('invite');
           final path = state.matchedLocation;

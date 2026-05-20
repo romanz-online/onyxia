@@ -1,3 +1,11 @@
+## Provider Portability — PREFERENCE
+
+- **Prefer architectures that minimize lock-in to any specific database, auth, or hosting provider.** This codebase happens to run on Supabase today, but the design should let us swap to a different Postgres host (Neon, RDS, self-hosted) or auth provider without unwinding deep wiring.
+- **AVOID** Supabase-specific admin APIs (`auth.admin.*`), provider-exclusive Edge Function shapes, or proprietary client-only features when an equivalent pattern works against vanilla Postgres + a generic auth session.
+- **PREFER** app-owned tables + plain SQL functions over provider-built-in workflows. Example: the vault invitation system uses our own `vault_invitations` table and a SECURITY DEFINER `accept_vault_invitation` function rather than `inviteUserByEmail`.
+- When a Supabase-specific call is unavoidable, isolate it behind a thin interface (a single repository method or service) so the substitution point is obvious.
+- This preference is about **direction of travel**, not absolutism — `BaseSupabaseRepository` already centralizes the Supabase client; new code should not spread vendor surface area further.
+
 ## Error Handling and Code Quality Guidelines
 
 ### Fallback Methods - CRITICAL RULE

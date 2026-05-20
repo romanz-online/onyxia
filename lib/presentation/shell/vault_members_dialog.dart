@@ -12,6 +12,9 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
   final Map<String, User> _resolvedUsers = {};
   String _email = '';
   List<String> _resolvedForMemberIds = const [];
+  bool _isSending = false;
+  String? _generatedLink;
+  String? _generatedLinkEmail;
 
   @override
   void initState() {
@@ -49,14 +52,70 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
 
   bool get _isValidEmail => _email.trim().isNotEmpty && _email.contains('@');
 
-  void _onSendInvite() {
-    // TODO: implement
-    final trimmed = _email.trim();
-    OnyxiaToast.show(
-      text: 'Invite sent to $trimmed',
-      type: ToastType.success,
-    );
-    _emailController.clear();
+  Future<void> _onSendInvite() async {
+    if (!_isValidEmail || _isSending) return;
+    final vault = ref.read(selectedVaultProvider);
+    if (vault == null) {
+      OnyxiaToast.show(text: 'No vault selected.', type: ToastType.error);
+      return;
+    }
+    final me = ref.read(currentUserProvider).value;
+    if (me == null) {
+      OnyxiaToast.show(text: 'Not signed in.', type: ToastType.error);
+      return;
+    }
+    final email = _email.trim().toLowerCase();
+
+    setState(() => _isSending = true);
+
+    // Branch A: email already belongs to an existing Onyxia user → add directly.
+    final existing = await UsersRepository().getByEmail(email);
+    if (!mounted) return;
+
+    if (existing != null) {
+      await VaultMembersRepository(vaultId: vault.id).add([
+        VaultMember(
+          vaultId: vault.id,
+          userId: existing.id,
+          role: UserRole.member,
+          createdBy: me.id,
+          updatedBy: me.id,
+        ),
+      ]).then((_) {
+        if (!mounted) return;
+        OnyxiaToast.show(
+          text: '${existing.email} added to vault.',
+          type: ToastType.success,
+        );
+        _emailController.clear();
+        setState(() {
+          _isSending = false;
+          _generatedLink = null;
+          _generatedLinkEmail = null;
+        });
+      });
+    }
+    // Branch B: not registered → create invitation row + surface copy-link.
+    // Generate the UUID client-side (uuid: ^4.5.1 is already a dep) so we don't
+    // need a roundtrip to read back the DB-generated token.
+    else {
+      final token = const Uuid().v4();
+      await VaultInvitationsRepository(vaultId: vault.id).add([
+        VaultInvitation(
+          vaultId: vault.id,
+          email: email,
+          token: token,
+        ),
+      ]).then((_) {
+        if (!mounted) return;
+        setState(() {
+          _generatedLink = '${Uri.base.origin}/invite?token=$token';
+          _generatedLinkEmail = email;
+          _isSending = false;
+        });
+        _emailController.clear();
+      });
+    }
   }
 
   @override
@@ -101,18 +160,84 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           ),
         ),
         const Gap(8),
-        TextField(
-          controller: _emailController,
-          decoration: NarwhalModalInputDecoration.create(
-            context,
-            hintText: 'invite@example.com',
-          ),
-          style: NarwhalTextStyle(),
-          keyboardType: TextInputType.emailAddress,
-          onSubmitted: (_) {
-            if (_isValidEmail) _onSendInvite();
-          },
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: TextField(
+                controller: _emailController,
+                enabled: !_isSending,
+                decoration: NarwhalModalInputDecoration.create(
+                  context,
+                  hintText: 'invite@example.com',
+                ),
+                style: NarwhalTextStyle(),
+                keyboardType: TextInputType.emailAddress,
+                onSubmitted: (_) {
+                  if (_isValidEmail) _onSendInvite();
+                },
+              ),
+            ),
+            const Gap(8),
+            if (_isSending)
+              SizedBox(width: 20, height: 20, child: NarwhalSpinner())
+            else
+              OnyxiaButton(
+                label: 'Send',
+                onTap: _isValidEmail ? _onSendInvite : null,
+              ),
+          ],
         ),
+        if (_generatedLink != null) ...[
+          const Gap(8),
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: ThemeHelper.neutral200(context),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Invite link for $_generatedLinkEmail',
+                  style: NarwhalTextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: ThemeHelper.neutral700(context),
+                  ),
+                ),
+                const Gap(6),
+                Row(
+                  children: [
+                    Expanded(
+                      child: SelectableText(
+                        _generatedLink!,
+                        style: NarwhalTextStyle(
+                          fontSize: 12,
+                          color: ThemeHelper.neutral800(context),
+                        ),
+                        maxLines: 1,
+                      ),
+                    ),
+                    const Gap(8),
+                    OnyxiaButton(
+                      label: 'Copy',
+                      onTap: () {
+                        Clipboard.setData(
+                            ClipboardData(text: _generatedLink!));
+                        OnyxiaToast.show(
+                          text: 'Link copied.',
+                          type: ToastType.success,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
         const Gap(16),
         Text(
           'Members (${members.length})',
