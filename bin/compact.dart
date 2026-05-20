@@ -152,6 +152,7 @@ Future<bool> _compactArtifact(
     ];
 
     final doc = CRDTDocument(peerId: PeerId.generate());
+    CRDTFugueTextHandler(doc, 'content');
     try {
       if (priorSnap != null) {
         doc.importSnapshot(priorSnap);
@@ -160,6 +161,20 @@ Future<bool> _compactArtifact(
       final newSnap = doc.takeSnapshot(pruneHistory: true);
       final snapBytes = _encodeSnapshot(newSnap);
       final versionVectorJson = jsonEncode(newSnap.versionVector.toJson());
+
+      final verifyDoc = CRDTDocument(peerId: PeerId.generate());
+      final verifyText = CRDTFugueTextHandler(verifyDoc, 'content');
+      verifyDoc.importSnapshot(_decodeSnapshot(snapBytes));
+      final expectedLen = (newSnap.data['content'] as List).length;
+      if (verifyText.value.isEmpty && changes.isNotEmpty && expectedLen > 0) {
+        verifyDoc.dispose();
+        throw StateError(
+          'Snapshot round-trip produced empty text despite '
+          '${changes.length} folded ops and $expectedLen nodes in the '
+          'snapshot. Aborting before write.',
+        );
+      }
+      verifyDoc.dispose();
 
       await tx.execute(
         Sql.named('''
@@ -212,5 +227,27 @@ Change _decodeChange(Uint8List bytes) =>
 Uint8List _encodeSnapshot(Snapshot snap) =>
     Uint8List.fromList(utf8.encode(jsonEncode(snap.toJson())));
 
-Snapshot _decodeSnapshot(Uint8List bytes) =>
-    Snapshot.fromJson(jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>);
+Snapshot _decodeSnapshot(Uint8List bytes) {
+  final json = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
+  final raw = Snapshot.fromJson(json);
+  // crdt_lf 2.5.0's Snapshot.fromJson does only a shallow Map.from on `data`,
+  // so the handler's `is List<FugueValueNode<String>>` check (in
+  // _initialState) fails after a JSON round-trip and the text loads empty.
+  // Rebuild the typed content list here.
+  final content = raw.data['content'];
+  if (content is List) {
+    final typed = content
+        .map(
+          (e) => FugueValueNode<String>.fromJson(
+            Map<String, dynamic>.from(e as Map),
+          ),
+        )
+        .toList();
+    return Snapshot(
+      id: raw.id,
+      versionVector: raw.versionVector,
+      data: {...raw.data, 'content': typed},
+    );
+  }
+  return raw;
+}

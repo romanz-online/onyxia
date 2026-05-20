@@ -137,6 +137,26 @@ class BardCrdtEngine {
 
   static Snapshot _decodeSnapshot(Uint8List bytes) {
     final json = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
-    return Snapshot.fromJson(json);
+    final raw = Snapshot.fromJson(json);
+    // crdt_lf 2.5.0's Snapshot.fromJson does only a shallow Map.from on
+    // `data`, so the handler's `is List<FugueValueNode<String>>` check
+    // (in _initialState) fails after a JSON round-trip and text loads empty.
+    // Rebuild the typed content list here.
+    final content = raw.data['content'];
+    if (content is List) {
+      final typed = content
+          .map(
+            (e) => FugueValueNode<String>.fromJson(
+              Map<String, dynamic>.from(e as Map),
+            ),
+          )
+          .toList();
+      return Snapshot(
+        id: raw.id,
+        versionVector: raw.versionVector,
+        data: {...raw.data, 'content': typed},
+      );
+    }
+    return raw;
   }
 }
