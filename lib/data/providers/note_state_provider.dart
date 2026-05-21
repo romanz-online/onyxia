@@ -67,6 +67,17 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     final opsRepo = ArtifactOpsRepository(vaultId: _vaultId);
     final snapsRepo = ArtifactSnapshotsRepository(vaultId: _vaultId);
 
+    // Subscribe to realtime BEFORE the snapshot+catch-up fetches. With two
+    // concurrent writers, any op committed during the fetch window would
+    // otherwise be missed (not in catch-up, not in the realtime stream that
+    // hasn't started yet) and cause CausallyNotReady on a later dep reference.
+    // The single-listener controller buffers events arriving during the fetch
+    // so the engine drains them in order after applying the catch-up ops.
+    final remoteOps = StreamController<Uint8List>();
+    _remoteOpsController = remoteOps;
+    final supabaseSub = opsRepo.opByteStreamFor(note.id).listen(remoteOps.add);
+    ref.onDispose(supabaseSub.cancel);
+
     final snap = await snapsRepo.latestFor(note.id);
     if (!ref.mounted) return const NoteState();
 
@@ -75,15 +86,6 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       sinceSeq: snap?.maxOpSeq,
     );
     if (!ref.mounted) return const NoteState();
-
-    // Fanout: we have to multiplex the realtime stream into something the
-    // engine can subscribe to. We also use this same controller to forward
-    // realtime ops the moment they arrive, with no echo filtering (CRDT
-    // applyChange is idempotent on duplicate ids — own echoes are no-ops).
-    final remoteOps = StreamController<Uint8List>.broadcast();
-    _remoteOpsController = remoteOps;
-    final supabaseSub = opsRepo.opByteStreamFor(note.id).listen(remoteOps.add);
-    ref.onDispose(supabaseSub.cancel);
 
     final collab = BardCollabConfig(
       initialSnapshot: snap?.snapshotBytes,

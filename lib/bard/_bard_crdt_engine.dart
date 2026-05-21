@@ -27,10 +27,20 @@ class BardCrdtEngine {
   late final StreamSubscription<Change> _localSub;
   late final StreamSubscription<Uint8List> _remoteSub;
 
-  /// True while applying a remote op — guards the local-change emission to
-  /// avoid loops. (CRDT already dedupes by id, but this skips a wasted encode
-  /// + network round-trip.)
-  bool _applyingRemote = false;
+  /// Ids of changes we just applied as remote, waiting for the matching
+  /// async-broadcast emission on `_doc.localChanges` so we can skip
+  /// re-broadcasting them as outbound ops. A boolean flag won't survive the
+  /// microtask gap between `applyChange` returning and the broadcast listener
+  /// firing — crdt_lf's `_localChangesController` is an async-broadcast
+  /// stream, so a transient sync guard always resets too early.
+  final Set<String> _recentRemoteIds = <String>{};
+
+  /// Remote changes that arrived before one of their causal deps. Drained on
+  /// every subsequent remote event — once a new dep lands in the DAG, any
+  /// previously-buffered descendant becomes applicable. crdt_lf doesn't buffer
+  /// internally; without this, an out-of-order arrival drops the change
+  /// permanently.
+  final List<Change> _pendingCausallyNotReady = <Change>[];
 
   /// Fires after any state mutation (local or remote). The editor listens to
   /// this to refresh the BardController text.
@@ -57,21 +67,53 @@ class BardCrdtEngine {
       _doc.importChanges(_config.initialOps.map(_decodeChange).toList());
     }
 
-    // Inbound: remote op bytes → applyChange.
+    // Inbound: remote op bytes → applyChange. Mark the change id BEFORE
+    // applyChange runs so the (async-broadcast) localChanges echo for this
+    // change can identify itself when it fires later.
+    //
+    // After each apply, drain the causally-pending buffer: a new dep in the
+    // DAG may unblock previously-buffered descendants. Fixed-point retry
+    // handles chains.
     _remoteSub = _config.remoteOps.listen((bytes) {
-      _applyingRemote = true;
-      try {
-        _doc.applyChange(_decodeChange(bytes));
-      } finally {
-        _applyingRemote = false;
+      _tryApply(_decodeChange(bytes));
+      while (_pendingCausallyNotReady.isNotEmpty) {
+        final beforeCount = _pendingCausallyNotReady.length;
+        final retries = List<Change>.from(_pendingCausallyNotReady);
+        _pendingCausallyNotReady.clear();
+        for (final c in retries) {
+          _tryApply(c);
+        }
+        if (_pendingCausallyNotReady.length == beforeCount) break;
       }
     });
 
-    // Outbound: local Change → bytes → callback.
+    // Outbound: local Change → bytes → callback. Drop echoes of changes we
+    // just applied as remote.
     _localSub = _doc.localChanges.listen((change) {
-      if (_applyingRemote) return;
+      if (_recentRemoteIds.remove(change.id.toString())) return;
       _config.onLocalOp(_encodeChange(change));
     });
+  }
+
+  /// Applies a remote [change]. On `CausallyNotReadyException`, buffers the
+  /// change for retry once a later event lands its missing deps in the DAG.
+  /// Maintains the `_recentRemoteIds` echo guard around every apply attempt.
+  void _tryApply(Change change) {
+    final idKey = change.id.toString();
+    _recentRemoteIds.add(idKey);
+    try {
+      final applied = _doc.applyChange(change);
+      // crdt_lf only emits to localChanges when applied=true. For duplicates,
+      // no echo will arrive, so drop the marker now to avoid accumulating.
+      if (!applied) _recentRemoteIds.remove(idKey);
+    } on CausallyNotReadyException {
+      // No echo will fire for a change that wasn't applied. Buffer for retry.
+      _recentRemoteIds.remove(idKey);
+      _pendingCausallyNotReady.add(change);
+    } catch (_) {
+      _recentRemoteIds.remove(idKey);
+      rethrow;
+    }
   }
 
   /// Inserts [str] at character position [pos] into the CRDT.

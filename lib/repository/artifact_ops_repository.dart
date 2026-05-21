@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:onyxia/export.dart';
@@ -40,14 +41,43 @@ class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
     return filtered.map((o) => o.opBytes).toList(growable: false);
   }
 
-  /// Realtime stream of op bytes for a given artifact. Emits every op insert
-  /// (initial backfill + subsequent realtime events) ordered by op_seq.
+  /// Realtime stream of op bytes for a given artifact. Subscribes to
+  /// INSERT-only Postgres changes filtered by `artifact_id` and emits each new
+  /// op exactly once. Initial backfill is the caller's responsibility (use
+  /// [opBytesFor] for that).
+  ///
+  /// `.stream()` was the wrong primitive here — it emits the full sorted
+  /// result set on every change, which produced O(N²) apply attempts and
+  /// magnified any pre-existing DB duplicates. `onPostgresChanges` gives us
+  /// exactly-once INSERT delivery.
   Stream<Uint8List> opByteStreamFor(String artifactId) {
-    return queryStream(
-      field: 'artifact_id',
-      isEqualTo: artifactId,
-      orderBy: 'op_seq',
-    ).expand((ops) => ops.map((o) => o.opBytes));
+    late final RealtimeChannel channel;
+    late final StreamController<Uint8List> controller;
+    controller = StreamController<Uint8List>(
+      onListen: () {
+        channel = Supabase.instance.client
+            .channel('artifact_ops:$artifactId')
+            .onPostgresChanges(
+          event: PostgresChangeEvent.insert,
+          schema: 'public',
+          table: tableName,
+          filter: PostgresChangeFilter(
+            type: PostgresChangeFilterType.eq,
+            column: 'artifact_id',
+            value: artifactId,
+          ),
+          callback: (payload) {
+            final encoded = payload.newRecord['op_bytes'] as String?;
+            if (encoded == null) return;
+            controller.add(base64Decode(encoded));
+          },
+        )..subscribe();
+      },
+      onCancel: () async {
+        await Supabase.instance.client.removeChannel(channel);
+      },
+    );
+    return controller.stream;
   }
 
   /// Appends a single CRDT op. Server assigns `op_seq`, `created_at`, and
