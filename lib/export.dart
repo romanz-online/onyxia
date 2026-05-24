@@ -51,7 +51,6 @@ export 'package:onyxia/presentation/routing/routes.dart';
 export 'package:onyxia/presentation/routing/providers/auth_provider.dart';
 export 'package:onyxia/data/providers/vaults_provider.dart';
 export 'package:onyxia/data/providers/current_user_provider.dart';
-export 'package:onyxia/data/providers/user_lookup_provider.dart';
 export 'package:onyxia/data/providers/vault_members_provider.dart';
 export 'package:onyxia/data/providers/vault_invitations_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';

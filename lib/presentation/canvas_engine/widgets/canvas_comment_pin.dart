@@ -250,11 +250,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       child: Transform.scale(
         alignment: Alignment.topLeft,
         scale: 1 / scale,
-        child: FutureBuilder<User>(
-          future: ref
-              .read(userLookupProvider)
-              .getUserById(widget.comment.createdBy),
-          builder: (context, snapshot) {
+        child: Builder(
+          builder: (context) {
             return Container(
               key: _inputContainerKey,
               width: containerWidth,
@@ -450,12 +447,11 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             ),
                           ],
                         ),
-                        child: FutureBuilder<User>(
-                          future: ref
-                              .read(userLookupProvider)
-                              .getUserById(widget.comment.createdBy),
-                          builder: (context, snapshot) {
-                            final user = snapshot.data ?? User.initial();
+                        child: Builder(
+                          builder: (context) {
+                            final user = ref.watch(vaultMemberUserByIdProvider)[
+                                    widget.comment.createdBy] ??
+                                User.initial();
                             final timeAgo = widget.comment.createdAt != null
                                 ? TimestampService.formatTimeAgo(
                                     widget.comment.createdAt!,

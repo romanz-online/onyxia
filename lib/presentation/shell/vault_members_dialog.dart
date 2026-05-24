@@ -9,9 +9,7 @@ class VaultMembersDialog extends ConsumerStatefulWidget {
 
 class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
   final TextEditingController _emailController = TextEditingController();
-  final Map<String, User> _resolvedUsers = {};
   String _email = '';
-  List<String> _resolvedForMemberIds = const [];
   bool _isSending = false;
   String? _generatedLink;
   String? _generatedLinkEmail;
@@ -29,25 +27,6 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
   void dispose() {
     _emailController.dispose();
     super.dispose();
-  }
-
-  Future<void> _resolveMissing(List<VaultMember> members) async {
-    final missing = members
-        .map((m) => m.userId)
-        .where((id) => !_resolvedUsers.containsKey(id))
-        .toList();
-    if (missing.isEmpty) return;
-
-    final lookup = ref.read(userLookupProvider);
-    final users = await Future.wait(missing.map(lookup.getUserById));
-    if (!mounted) return;
-
-    setState(() {
-      for (final u in users) {
-        _resolvedUsers[u.id] = u;
-      }
-      _resolvedForMemberIds = members.map((m) => m.userId).toList();
-    });
   }
 
   bool get _isValidEmail => _email.trim().isNotEmpty && _email.contains('@');
@@ -120,34 +99,24 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final membersAsync = ref.watch(vaultMembersProvider);
+    final entriesAsync = ref.watch(vaultMembersWithUsersProvider);
 
     return OnyxiaDialog(
       title: 'Members',
       width: 480,
       height: 480,
-      content: membersAsync.when(
+      content: entriesAsync.when(
         loading: () => Center(child: NarwhalSpinner()),
         error: (e, _) => Text(
           'Failed to load members: $e',
           style: NarwhalTextStyle(color: ThemeHelper.red600(context)),
         ),
-        data: (members) => _buildContent(members),
+        data: (entries) => _buildContent(entries),
       ),
     );
   }
 
-  Widget _buildContent(List<VaultMember> members) {
-    final memberIds = members.map((m) => m.userId).toList();
-    if (!_listEquals(memberIds, _resolvedForMemberIds)) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) _resolveMissing(members);
-      });
-    }
-
-    final unresolved =
-        members.any((m) => !_resolvedUsers.containsKey(m.userId));
-
+  Widget _buildContent(List<VaultMemberWithUser> entries) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -240,7 +209,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         ],
         const Gap(16),
         Text(
-          'Members (${members.length})',
+          'Members (${entries.length})',
           style: NarwhalTextStyle(
             fontSize: 13,
             fontWeight: FontWeight.w600,
@@ -250,31 +219,21 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         const Gap(8),
         ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 270),
-          child: unresolved && _resolvedUsers.isEmpty
-              ? Center(child: NarwhalSpinner())
-              : ListView.separated(
-                  shrinkWrap: true,
-                  itemCount: members.length,
-                  separatorBuilder: (_, __) => Divider(
-                    height: 1,
-                    color: ThemeHelper.neutral300(context),
-                  ),
-                  itemBuilder: (_, i) => _MemberRow(
-                    member: members[i],
-                    user: _resolvedUsers[members[i].userId],
-                  ),
-                ),
+          child: ListView.separated(
+            shrinkWrap: true,
+            itemCount: entries.length,
+            separatorBuilder: (_, __) => Divider(
+              height: 1,
+              color: ThemeHelper.neutral300(context),
+            ),
+            itemBuilder: (_, i) => _MemberRow(
+              member: entries[i].member,
+              user: entries[i].user,
+            ),
+          ),
         ),
       ],
     );
-  }
-
-  static bool _listEquals(List<String> a, List<String> b) {
-    if (a.length != b.length) return false;
-    for (var i = 0; i < a.length; i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
   }
 }
 

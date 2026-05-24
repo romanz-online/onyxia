@@ -466,10 +466,10 @@ class _CanvasCommentPinExpandedState
     required DateTime? createdAt,
     required bool isSubComment,
   }) {
-    return FutureBuilder<User>(
-      future: ref.read(userLookupProvider).getUserById(createdBy),
-      builder: (context, snapshot) {
-        final user = snapshot.data ?? User.initial();
+    return Builder(
+      builder: (context) {
+        final user =
+            ref.watch(vaultMemberUserByIdProvider)[createdBy] ?? User.initial();
         final timeAgo = createdAt != null
             ? TimestampService.formatTimeAgo(
                 createdAt,
