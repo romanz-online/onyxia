@@ -28,6 +28,7 @@ class CurrentUserNotifier extends StreamNotifier<User> {
 
   Future<void> signOut() async => await _repository.signOut();
 
+  // TODO: this should create a popup window, not fully redirect the user to a different URL
   Future<bool> signInWithGoogle() async => _repository.signInWithGoogle();
 
   Future<bool> signInWithFakeAccount() async =>

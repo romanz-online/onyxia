@@ -13,11 +13,9 @@ export 'package:onyxia/presentation/workspaces/graph/graph_workspace.dart';
 export 'package:onyxia/presentation/workspaces/artifact_editor/artifact_editor_workspace.dart';
 export 'package:onyxia/presentation/shell/master_sidebar.dart';
 export 'package:onyxia/presentation/shell/app_shell.dart';
-export 'package:onyxia/presentation/landing/invite_screen.dart';
 export 'package:onyxia/presentation/landing/landing_background.dart';
 export 'package:onyxia/presentation/landing/landing_overlay.dart';
 export 'package:onyxia/presentation/landing/email_auth_form.dart';
-export 'package:onyxia/presentation/landing/reset_password_screen.dart';
 export 'package:onyxia/data/models/artifacts/canvas/expandable_pin.dart';
 
 export 'package:onyxia/presentation/common_widget/hover_builder.dart';

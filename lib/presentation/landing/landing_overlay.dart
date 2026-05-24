@@ -1,7 +1,22 @@
 import 'package:onyxia/export.dart';
 
+// TODO: when on any screen but the unauth base screen and vaults list screen, there should be a backwards arro in the top left corner that directs the user back to the unauth base screen
+
+// TODO: "create account" and "forgot password?" should lead to new "screens" rather than just swapping out the email sign in form
+
+enum LandingMode { signIn, invite, resetPassword }
+
 class LandingOverlay extends ConsumerStatefulWidget {
-  const LandingOverlay({super.key});
+  final LandingMode initialMode;
+  final String? inviteToken;
+  final String? inviteDestPath;
+
+  const LandingOverlay({
+    super.key,
+    this.initialMode = LandingMode.signIn,
+    this.inviteToken,
+    this.inviteDestPath,
+  });
 
   @override
   ConsumerState<LandingOverlay> createState() => _LandingOverlayState();
@@ -17,6 +32,17 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   final TextEditingController _newVaultNameController = TextEditingController();
 
+  // Reset-password mode state.
+  final TextEditingController _resetPasswordController =
+      TextEditingController();
+  final TextEditingController _resetConfirmController = TextEditingController();
+  String? _resetError;
+  bool _resetSubmitting = false;
+
+  // Invite-mode state.
+  Future<Vault?>? _inviteVaultFuture;
+  bool _acceptInFlight = false;
+
   @override
   void initState() {
     super.initState();
@@ -31,12 +57,36 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
         _positionInitialized = true;
       });
     });
+
+    if (widget.initialMode == LandingMode.invite) {
+      final destVaultId = _extractVaultId(widget.inviteDestPath ?? '');
+      if (destVaultId != null) {
+        _inviteVaultFuture = VaultsRepository().get(destVaultId);
+      }
+      // Already-signed-in case: ref.listen won't fire if there's no state
+      // transition, so kick the RPC after the first frame.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        if (widget.inviteToken == null) return;
+        final user = ref.read(currentUserProvider).value;
+        if (user != null && user.isLogged) _acceptInvitation();
+      });
+    }
   }
 
   @override
   void dispose() {
     _newVaultNameController.dispose();
+    _resetPasswordController.dispose();
+    _resetConfirmController.dispose();
     super.dispose();
+  }
+
+  String? _extractVaultId(String path) {
+    final uri = Uri.parse(path);
+    final segments = uri.pathSegments;
+    if (segments.length >= 2 && segments[0] == 'vault') return segments[1];
+    return null;
   }
 
   void _onPanUpdate(DragUpdateDetails details) {
@@ -51,6 +101,48 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   void _navigateToVault(Vault vault) {
     context.go('/vault/${vault.id}/graph');
+  }
+
+  Future<void> _acceptInvitation() async {
+    final token = widget.inviteToken;
+    if (token == null || _acceptInFlight) return;
+    _acceptInFlight = true;
+    try {
+      final vaultId = await Supabase.instance.client
+          .rpc('accept_vault_invitation', params: {'p_token': token}) as String;
+      if (!mounted) return;
+      GoRouter.of(context).go('/vault/$vaultId');
+    } on PostgrestException catch (e) {
+      _acceptInFlight = false;
+      throw _humanizeInvitationError(e);
+    }
+  }
+
+  Future<void> _submitReset() async {
+    final password = _resetPasswordController.text;
+    if (password.length < 6) {
+      setState(() => _resetError = 'Password must be at least 6 characters.');
+      return;
+    }
+    if (password != _resetConfirmController.text) {
+      setState(() => _resetError = 'Passwords do not match.');
+      return;
+    }
+
+    setState(() {
+      _resetSubmitting = true;
+      _resetError = null;
+    });
+
+    try {
+      await ref.read(currentUserProvider.notifier).updatePassword(password);
+      if (!mounted) return;
+      context.go(Routes.home);
+    } on AuthException catch (e) {
+      if (mounted) setState(() => _resetError = e.message);
+    } finally {
+      if (mounted) setState(() => _resetSubmitting = false);
+    }
   }
 
   void _showNewVaultDialog() {
@@ -111,6 +203,16 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider).value ?? User.initial();
 
+    // Invite-mode: kick the accept RPC on the sign-out→sign-in transition.
+    if (widget.initialMode == LandingMode.invite &&
+        widget.inviteToken != null) {
+      ref.listen<AsyncValue<User>>(currentUserProvider, (prev, next) {
+        final wasLogged = prev?.value?.isLogged ?? false;
+        final nowLogged = next.value?.isLogged ?? false;
+        if (!wasLogged && nowLogged) _acceptInvitation();
+      });
+    }
+
     return Positioned(
       left: _position.dx,
       top: _position.dy,
@@ -142,20 +244,25 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   }
 
   Widget _buildContent(BuildContext context, User user) {
-    if (!user.isLogged) return _buildPreAuth(context);
-
-    final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
-
-    return Row(
-      children: [
-        SizedBox(
-          width: _leftColumnWidth,
-          child: _buildVaultList(context, vaults),
-        ),
-        VerticalDivider(width: 2, color: ThemeHelper.neutral300(context)),
-        Expanded(child: _buildRightColumn(context, user)),
-      ],
-    );
+    switch (widget.initialMode) {
+      case LandingMode.invite:
+        return _buildInvite(context);
+      case LandingMode.resetPassword:
+        return _buildResetPassword(context);
+      case LandingMode.signIn:
+        if (!user.isLogged) return _buildPreAuth(context);
+        final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
+        return Row(
+          children: [
+            SizedBox(
+              width: _leftColumnWidth,
+              child: _buildVaultList(context, vaults),
+            ),
+            VerticalDivider(width: 2, color: ThemeHelper.neutral300(context)),
+            Expanded(child: _buildRightColumn(context, user)),
+          ],
+        );
+    }
   }
 
   Widget _buildPreAuth(BuildContext context) {
@@ -177,6 +284,136 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
             SizedBox(
               width: 320,
               child: AutofillGroup(child: const EmailAuthForm()),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInvite(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          spacing: 16,
+          children: [
+            Text(
+              'Onyxia',
+              style: NarwhalTextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: ThemeHelper.neutral700(context),
+              ),
+            ),
+            FutureBuilder<Vault?>(
+              future: _inviteVaultFuture,
+              builder: (context, snapshot) {
+                final vaultName = snapshot.data?.name;
+                final titleText = vaultName != null
+                    ? "You've been invited to $vaultName"
+                    : "You've been invited to a vault.";
+                return Text(
+                  titleText,
+                  style: NarwhalTextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: ThemeHelper.neutral800(context),
+                  ),
+                  textAlign: TextAlign.center,
+                );
+              },
+            ),
+            Text(
+              'Invitations expire 14 days after being sent.',
+              style: NarwhalTextStyle(
+                fontSize: 13,
+                color: ThemeHelper.neutral600(context),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Sign in with your Google account to join.',
+              style: NarwhalTextStyle(
+                fontSize: 14,
+                color: ThemeHelper.neutral600(context),
+              ),
+              textAlign: TextAlign.center,
+            ),
+            OnyxiaButton(
+              label: 'Sign in with Google',
+              onTap: ref.read(currentUserProvider.notifier).signInWithGoogle,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResetPassword(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Set a new password',
+              textAlign: TextAlign.center,
+              style: NarwhalTextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.w600,
+                color: ThemeHelper.neutral800(context),
+              ),
+            ),
+            const Gap(20),
+            AutofillGroup(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  TextField(
+                    controller: _resetPasswordController,
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.newPassword],
+                    decoration: NarwhalModalInputDecoration.create(
+                      context,
+                      hintText: 'New password',
+                    ),
+                    style: NarwhalTextStyle(fontSize: 13),
+                  ),
+                  const Gap(8),
+                  TextField(
+                    controller: _resetConfirmController,
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.newPassword],
+                    decoration: NarwhalModalInputDecoration.create(
+                      context,
+                      hintText: 'Confirm new password',
+                    ),
+                    style: NarwhalTextStyle(fontSize: 13),
+                    onSubmitted: (_) => _submitReset(),
+                  ),
+                ],
+              ),
+            ),
+            if (_resetError != null) ...[
+              const Gap(8),
+              Text(
+                _resetError!,
+                style: NarwhalTextStyle(
+                  fontSize: 12,
+                  color: ThemeHelper.red600(context),
+                ),
+              ),
+            ],
+            const Gap(16),
+            Center(
+              child: OnyxiaButton(
+                label: _resetSubmitting ? '...' : 'Update password',
+                onTap: _resetSubmitting ? null : _submitReset,
+              ),
             ),
           ],
         ),
@@ -287,4 +524,24 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       ),
     );
   }
+}
+
+Exception _humanizeInvitationError(PostgrestException e) {
+  final msg = e.message;
+  if (msg.contains('invitation_not_found')) {
+    return Exception(
+        'This invitation has already been used or does not exist.');
+  }
+  if (msg.contains('invitation_expired')) {
+    return Exception(
+        'This invitation has expired. Ask the vault owner for a new one.');
+  }
+  if (msg.contains('invitation_email_mismatch')) {
+    return Exception(
+        'This invitation was sent to a different email than the one you signed in with.');
+  }
+  if (msg.contains('unauthenticated')) {
+    return Exception('You need to be signed in to accept an invitation.');
+  }
+  return Exception('Could not accept invitation: $msg');
 }

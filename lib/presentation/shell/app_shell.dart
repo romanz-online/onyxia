@@ -3,8 +3,18 @@ import 'package:onyxia/export.dart';
 class AppShell extends ConsumerStatefulWidget {
   final String? selectedId;
   final String vaultId;
+  final LandingMode initialLandingMode;
+  final String? inviteToken;
+  final String? inviteDestPath;
 
-  const AppShell({super.key, this.selectedId, required this.vaultId});
+  const AppShell({
+    super.key,
+    this.selectedId,
+    required this.vaultId,
+    this.initialLandingMode = LandingMode.signIn,
+    this.inviteToken,
+    this.inviteDestPath,
+  });
 
   @override
   ConsumerState createState() => _AppShellState();
@@ -72,7 +82,12 @@ class _AppShellState extends ConsumerState<AppShell> {
               ),
             ],
           ),
-          if (widget.vaultId.isEmpty) const LandingOverlay(),
+          if (widget.vaultId.isEmpty)
+            LandingOverlay(
+              initialMode: widget.initialLandingMode,
+              inviteToken: widget.inviteToken,
+              inviteDestPath: widget.inviteDestPath,
+            ),
         ],
       ),
     );

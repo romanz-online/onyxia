@@ -46,20 +46,25 @@ final routerProvider = Provider<GoRouter>((ref) {
       return Scaffold(body: Center(child: NarwhalSpinner()));
     },
     routes: <RouteBase>[
-      // TODO: for claude: analyze the current status of invites and how they work
       GoRoute(
         path: Routes.invite,
         name: 'invite',
-        builder: (context, state) => InviteScreen(
-          destinationPath: Uri.decodeComponent(
+        builder: (context, state) => AppShell(
+          vaultId: '',
+          initialLandingMode: LandingMode.invite,
+          inviteToken: state.uri.queryParameters['token'],
+          inviteDestPath: Uri.decodeComponent(
               state.uri.queryParameters['dest'] ?? Routes.home),
-          token: state.uri.queryParameters['token'],
         ),
       ),
+      // TODO: maybe think of a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
       GoRoute(
         path: Routes.resetPassword,
         name: 'resetPassword',
-        builder: (context, state) => const ResetPasswordScreen(),
+        builder: (context, state) => const AppShell(
+          vaultId: '',
+          initialLandingMode: LandingMode.resetPassword,
+        ),
       ),
       GoRoute(
         path: Routes.home,
@@ -90,8 +95,8 @@ final routerProvider = Provider<GoRouter>((ref) {
       final hasInvite = state.uri.queryParameters['invite'] == 'true';
 
       if (isOnInvite) {
-        // When a token is present, InviteScreen runs accept_vault_invitation
-        // and navigates itself — don't preempt it.
+        // When a token is present, LandingOverlay (invite mode) runs
+        // accept_vault_invitation and navigates itself — don't preempt it.
         if (state.uri.queryParameters.containsKey('token')) return null;
         if (isAuth) {
           return Uri.decodeComponent(
