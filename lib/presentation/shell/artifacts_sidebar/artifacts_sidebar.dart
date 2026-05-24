@@ -2,7 +2,8 @@ import 'package:onyxia/export.dart';
 
 class ArtifactsSidebar extends StatelessWidget {
   static const double _minWidth = 200;
-  static const double _defaultWidth = 260;
+  static const double _sidebarWidth = 42;
+  static const double _collapseThreshold = _sidebarWidth * 2;
 
   final ValueNotifier<double> width;
   final ValueNotifier<bool> isCollapsed;
@@ -29,7 +30,7 @@ class ArtifactsSidebar extends StatelessWidget {
         final animate = animateNextCollapseChange.value;
 
         return ClipRect(
-          child: AnimatedSize(
+          child: AnimatedContainer(
             duration:
                 animate ? const Duration(milliseconds: 150) : Duration.zero,
             curve: Curves.easeInOut,
@@ -89,17 +90,16 @@ class ArtifactsSidebar extends StatelessWidget {
                           onDragStart: () {
                             animateNextCollapseChange.value = false;
                           },
-                          onDragUpdate: (delta, globalDx) {
+                          onDragUpdate: (_, globalDx) {
                             final maxWidth =
                                 MediaQuery.of(context).size.width - 46 - 300;
-                            width.value = (width.value + delta).clamp(
-                              _minWidth,
-                              maxWidth,
-                            );
-                            if (globalDx <= 84) {
-                              width.value = _defaultWidth;
-                              isCollapsed.value = true;
-                            }
+                            // Track absolute cursor position so the divider
+                            // follows the cursor rather than drifting via
+                            // accumulated deltas across collapse transitions.
+                            width.value = (globalDx - _sidebarWidth)
+                                .clamp(_minWidth, maxWidth);
+                            isCollapsed.value = globalDx < _collapseThreshold;
+                            // TODO: when this sidebar is collapsed, the resize divider should still be present but with a sidebar width of 0 so that it looks instead like it's attached to the master sidebar. same behavior
                           },
                         ),
                       ),
@@ -114,11 +114,6 @@ class ArtifactsSidebar extends StatelessWidget {
     );
   }
 }
-
-// TODO: the resize divider should stop at the minimum width while dragging,
-// but if the user drags to within 40px of the left edge it should snap disappear
-// BUT this shouldn't actually end the drag gesture, so if the user drags their cursor
-// back to the right outside of the disappear margin, the sidebar should come back and still follow the cursor
 
 class _ResizeDivider extends StatefulWidget {
   final VoidCallback onDragStart;

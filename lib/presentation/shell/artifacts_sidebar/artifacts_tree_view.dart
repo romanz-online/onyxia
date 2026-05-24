@@ -113,6 +113,10 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
+    // TODO: tree should show filename extensions on image artifacts, trailing on the right edge of the node
+
+    // TODO: not here up uploading an image to be an image artifact should remove its file extension from the name
+
     return SuperTreeView<Artifact>(
       controller: treeController,
       expansionSlotSize: 20,
