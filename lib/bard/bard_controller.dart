@@ -1,10 +1,12 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
-
 import 'markdown_parser.dart';
 import 'markdown_span.dart';
+
+// TODO: integrate visi-links, taking the form ![[...]] which embed the linked item's content beneath the link
+
+// TODO: claude did a lot of work here for CRDT and parsing that i haven't checked manually yet. seems to be working but needs to be analyzed for efficiency and coherency
 
 const Color _kMarkerDimColor = Color(0xFF9CA3AF);
 const Color _kWikiLinkColor = Colors.orangeAccent;
@@ -25,10 +27,13 @@ class BardController extends TextEditingController {
 
   MarkdownParseResult get parseResult => _parseResult;
 
-  List<MarkdownSpan> spansAt(int offset) => _parseResult.inlineSpans.where((s) => s.containsOffset(offset)).toList();
+  List<MarkdownSpan> spansAt(int offset) =>
+      _parseResult.inlineSpans.where((s) => s.containsOffset(offset)).toList();
 
   List<MarkdownSpan> spansContaining(int start, int end) =>
-      _parseResult.inlineSpans.where((s) => s.fullyContainsRange(start, end)).toList();
+      _parseResult.inlineSpans
+          .where((s) => s.fullyContainsRange(start, end))
+          .toList();
 
   @override
   TextSpan buildTextSpan({
@@ -53,7 +58,9 @@ class BardController extends TextEditingController {
     }
 
     // Tier 2: rebuild span tree when cursor moves or base style changes
-    if (_cachedSpan == null || cursorOffset != _cachedCursorOffset || style != _cachedBaseStyle) {
+    if (_cachedSpan == null ||
+        cursorOffset != _cachedCursorOffset ||
+        style != _cachedBaseStyle) {
       _cachedSpan = _buildSpanTree(val.text, _parseResult, cursorOffset, style);
       _cachedCursorOffset = cursorOffset;
       _cachedBaseStyle = style;
@@ -64,13 +71,15 @@ class BardController extends TextEditingController {
 
   TextSpan _buildWithComposing(TextEditingValue val, TextStyle? style) {
     final before = val.text.substring(0, val.composing.start);
-    final composing = val.text.substring(val.composing.start, val.composing.end);
+    final composing =
+        val.text.substring(val.composing.start, val.composing.end);
     final after = val.text.substring(val.composing.end);
 
     return TextSpan(
       style: style,
       children: [
-        if (before.isNotEmpty) _buildSpanTree(before, parseMarkdown(before), -1, style),
+        if (before.isNotEmpty)
+          _buildSpanTree(before, parseMarkdown(before), -1, style),
         TextSpan(
           text: composing,
           style: (style ?? const NarwhalTextStyle()).copyWith(
@@ -78,7 +87,8 @@ class BardController extends TextEditingController {
             backgroundColor: Colors.transparent,
           ),
         ),
-        if (after.isNotEmpty) _buildSpanTree(after, parseMarkdown(after), -1, style),
+        if (after.isNotEmpty)
+          _buildSpanTree(after, parseMarkdown(after), -1, style),
       ],
     );
   }
@@ -125,30 +135,43 @@ class BardController extends TextEditingController {
 
       final intervalText = text.substring(start, actualEnd);
 
-      final activeInline =
-          result.inlineSpans.where((s) => s.markerStartOpen <= start && actualEnd <= s.markerEndClose).toList();
+      final activeInline = result.inlineSpans
+          .where((s) =>
+              s.markerStartOpen <= start && actualEnd <= s.markerEndClose)
+          .toList();
 
-      final activeLines = result.lineSpans.where((s) => s.lineStart <= start && actualEnd <= s.lineEnd).toList();
+      final activeLines = result.lineSpans
+          .where((s) => s.lineStart <= start && actualEnd <= s.lineEnd)
+          .toList();
 
       // Classify: is this interval a marker region for any inline span?
       final markerOwners = activeInline
-          .where((s) => s.intervalIsOpenMarker(start, actualEnd) || s.intervalIsCloseMarker(start, actualEnd))
+          .where((s) =>
+              s.intervalIsOpenMarker(start, actualEnd) ||
+              s.intervalIsCloseMarker(start, actualEnd))
           .toList();
 
       // Is this a line prefix marker?
-      final linePrefixOwner = activeLines.where((s) => s.intervalIsPrefix(start, actualEnd)).firstOrNull;
+      final linePrefixOwner = activeLines
+          .where((s) => s.intervalIsPrefix(start, actualEnd))
+          .firstOrNull;
 
-      final contentSpans = activeInline.where((s) => s.intervalIsContent(start, actualEnd)).toList();
+      final contentSpans = activeInline
+          .where((s) => s.intervalIsContent(start, actualEnd))
+          .toList();
 
       final TextStyle intervalStyle;
 
       if (markerOwners.isNotEmpty) {
-        final cursorInAnyOwner =
-            markerOwners.any((s) => cursorOffset >= s.markerStartOpen && cursorOffset <= s.markerEndClose);
+        final cursorInAnyOwner = markerOwners.any((s) =>
+            cursorOffset >= s.markerStartOpen &&
+            cursorOffset <= s.markerEndClose);
 
         if (cursorInAnyOwner) {
           // Show marker dimly, still apply content styles underneath
-          intervalStyle = _buildContentStyle(baseStyle, contentSpans, activeLines).copyWith(color: _kMarkerDimColor);
+          intervalStyle =
+              _buildContentStyle(baseStyle, contentSpans, activeLines)
+                  .copyWith(color: _kMarkerDimColor);
         } else {
           intervalStyle = const NarwhalTextStyle(
             fontSize: _kHiddenFontSize,
@@ -156,10 +179,13 @@ class BardController extends TextEditingController {
           );
         }
       } else if (linePrefixOwner != null) {
-        final cursorOnLine = cursorOffset >= linePrefixOwner.lineStart && cursorOffset <= linePrefixOwner.lineEnd;
+        final cursorOnLine = cursorOffset >= linePrefixOwner.lineStart &&
+            cursorOffset <= linePrefixOwner.lineEnd;
 
         if (cursorOnLine) {
-          intervalStyle = _buildContentStyle(baseStyle, contentSpans, activeLines).copyWith(color: _kMarkerDimColor);
+          intervalStyle =
+              _buildContentStyle(baseStyle, contentSpans, activeLines)
+                  .copyWith(color: _kMarkerDimColor);
         } else {
           intervalStyle = const NarwhalTextStyle(
             fontSize: _kHiddenFontSize,
@@ -167,7 +193,8 @@ class BardController extends TextEditingController {
           );
         }
       } else {
-        intervalStyle = _buildContentStyle(baseStyle, contentSpans, activeLines);
+        intervalStyle =
+            _buildContentStyle(baseStyle, contentSpans, activeLines);
       }
 
       children.add(TextSpan(text: intervalText, style: intervalStyle));
@@ -189,7 +216,8 @@ class BardController extends TextEditingController {
     final fontFamily = baseStyle?.fontFamily ?? 'Segoe UI';
     final decorations = <TextDecoration>[];
 
-    if (baseStyle?.decoration != null && baseStyle!.decoration != TextDecoration.none) {
+    if (baseStyle?.decoration != null &&
+        baseStyle!.decoration != TextDecoration.none) {
       decorations.add(baseStyle.decoration!);
     }
 

@@ -6,6 +6,8 @@ import 'package:onyxia/export.dart';
 class ResetPasswordScreen extends ConsumerStatefulWidget {
   const ResetPasswordScreen({super.key});
 
+  // TODO: should not be its own screen. integrate this into LandingOverlay
+
   @override
   ConsumerState<ResetPasswordScreen> createState() =>
       _ResetPasswordScreenState();

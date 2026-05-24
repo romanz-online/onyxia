@@ -46,6 +46,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       return Scaffold(body: Center(child: NarwhalSpinner()));
     },
     routes: <RouteBase>[
+      // TODO: for claude: analyze the current status of invites and how they work
       GoRoute(
         path: Routes.invite,
         name: 'invite',

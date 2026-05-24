@@ -30,9 +30,8 @@ class ArtifactsSidebar extends StatelessWidget {
 
         return ClipRect(
           child: AnimatedSize(
-            duration: animate
-                ? const Duration(milliseconds: 150)
-                : Duration.zero,
+            duration:
+                animate ? const Duration(milliseconds: 150) : Duration.zero,
             curve: Curves.easeInOut,
             alignment: Alignment.centerLeft,
             onEnd: () {
@@ -115,6 +114,11 @@ class ArtifactsSidebar extends StatelessWidget {
     );
   }
 }
+
+// TODO: the resize divider should stop at the minimum width while dragging,
+// but if the user drags to within 40px of the left edge it should snap disappear
+// BUT this shouldn't actually end the drag gesture, so if the user drags their cursor
+// back to the right outside of the disappear margin, the sidebar should come back and still follow the cursor
 
 class _ResizeDivider extends StatefulWidget {
   final VoidCallback onDragStart;

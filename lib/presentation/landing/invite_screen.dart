@@ -14,6 +14,7 @@ class InviteScreen extends ConsumerStatefulWidget {
   final String? token;
 
   // TODO: this should not be its own screen, it should just be a different piece of content for the main landing page
+  // TODO: integrate this into LandingOverlay
 
   const InviteScreen({
     super.key,
