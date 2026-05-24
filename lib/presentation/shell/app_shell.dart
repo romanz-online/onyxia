@@ -39,7 +39,7 @@ class _AppShellState extends ConsumerState<AppShell> {
       final vaultExists = vaults.any((p) => p.id == widget.vaultId);
       if (!vaultExists) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) context.replace('/${Routes.vaults}');
+          if (mounted) context.replace(Routes.home);
         });
         return Scaffold(body: Center(child: NarwhalSpinner()));
       }

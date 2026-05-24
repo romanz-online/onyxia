@@ -21,7 +21,7 @@ class ArtifactsSidebarFooter extends ConsumerWidget {
         children: [
           OnyxiaButton(
             label: vaultName,
-            onTap: () => context.go('/${Routes.vaults}'),
+            onTap: () => context.go(Routes.home),
           ),
           const Spacer(),
           if (selectedVault != null) const VaultSettingsButton(),

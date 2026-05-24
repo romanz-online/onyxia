@@ -47,7 +47,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
     try {
       await ref.read(currentUserProvider.notifier).updatePassword(password);
       if (!mounted) return;
-      context.go('/${Routes.vaults}');
+      context.go(Routes.home);
     } on AuthException catch (e) {
       if (mounted) setState(() => _errorMessage = e.message);
     } finally {

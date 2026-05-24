@@ -37,11 +37,11 @@ final routerProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     debugLogDiagnostics: true,
     navigatorKey: navigatorKey,
-    initialLocation: '/${Routes.vaults}',
+    initialLocation: Routes.home,
     refreshListenable: notifier,
     errorBuilder: (context, state) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go('/${Routes.vaults}');
+        context.go(Routes.home);
       });
       return Scaffold(body: Center(child: NarwhalSpinner()));
     },
@@ -52,7 +52,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         name: 'invite',
         builder: (context, state) => InviteScreen(
           destinationPath: Uri.decodeComponent(
-              state.uri.queryParameters['dest'] ?? '/${Routes.vaults}'),
+              state.uri.queryParameters['dest'] ?? Routes.home),
           token: state.uri.queryParameters['token'],
         ),
       ),
@@ -62,8 +62,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ResetPasswordScreen(),
       ),
       GoRoute(
-        path: '/${Routes.vaults}',
-        name: Routes.vaults,
+        path: Routes.home,
+        name: 'home',
         builder: (context, state) => const AppShell(vaultId: ''),
       ),
       GoRoute(
@@ -95,7 +95,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (state.uri.queryParameters.containsKey('token')) return null;
         if (isAuth) {
           return Uri.decodeComponent(
-              state.uri.queryParameters['dest'] ?? '/${Routes.vaults}');
+              state.uri.queryParameters['dest'] ?? Routes.home);
         }
         return null;
       }
@@ -121,9 +121,9 @@ final routerProvider = Provider<GoRouter>((ref) {
       }
 
       if (!isAuth &&
-          state.matchedLocation != '/${Routes.vaults}' &&
+          state.matchedLocation != Routes.home &&
           state.matchedLocation != Routes.resetPassword) {
-        return '/${Routes.vaults}';
+        return Routes.home;
       }
 
       final pathvaultId = state.pathParameters['id'];
@@ -131,7 +131,7 @@ final routerProvider = Provider<GoRouter>((ref) {
         // null means vaults haven't loaded yet — don't false-kick on cold boot.
         if (notifier.accessibleVaultIds == null) return null;
         if (!notifier.accessibleVaultIds!.contains(pathvaultId)) {
-          return '/${Routes.vaults}';
+          return Routes.home;
         }
       }
 
