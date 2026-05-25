@@ -35,12 +35,9 @@ class ImageService {
           fileOptions: FileOptions(contentType: mime, upsert: false),
         );
 
-    // TODO: make this safer so it explicitly removes .ext from the end of the string
-    final dotIndex = fileName.lastIndexOf('.');
-
     final artifact = ImageArtifact(
       id: id,
-      name: dotIndex == -1 ? fileName : fileName.substring(0, dotIndex),
+      name: fileName,
       storagePath: storagePath,
       mimeType: mime,
     );
