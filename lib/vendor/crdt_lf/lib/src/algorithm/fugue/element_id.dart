@@ -1,0 +1,104 @@
+import 'package:crdt_lf/src/peer_id.dart';
+
+/// Represents the ID of an element in the Fugue algorithm
+class FugueElementID implements Comparable<FugueElementID> {
+  /// Constructor that initializes the element ID
+  FugueElementID(this.replicaID, this.counter);
+
+  /// Constructor to create a null ID (used for the root)
+  factory FugueElementID.nullID() {
+    return FugueElementID(
+      PeerId.empty(),
+      null,
+    );
+  }
+
+  /// Creates an ID from a JSON object
+  factory FugueElementID.fromJson(Map<String, dynamic> json) {
+    if (json['counter'] == null) {
+      return FugueElementID.nullID();
+    }
+    return FugueElementID(
+      PeerId.parse(json['replicaID'] as String),
+      json['counter'] as int?,
+    );
+  }
+
+  /// Creates an ID from a string
+  factory FugueElementID.parse(String value) {
+    if (value == 'null') {
+      return FugueElementID.nullID();
+    }
+
+    final index = value.indexOf(':');
+    if (index == -1) {
+      throw FormatException('Invalid FugueElementID format: $value');
+    }
+
+    return FugueElementID(
+      PeerId.parse(value.substring(0, index)),
+      int.parse(value.substring(index + 1)),
+    );
+  }
+
+  /// ID of the replica that generated this element
+  final PeerId replicaID;
+
+  /// Local counter of the replica at the time of element creation
+  final int? counter;
+
+  late final int _hashCode = Object.hash(replicaID, counter);
+
+  /// Checks if this is a null ID
+  bool get isNull => counter == null;
+
+  /// Compares two element IDs
+  @override
+  int compareTo(FugueElementID other) {
+    if (isNull && other.isNull) {
+      return 0;
+    }
+    if (isNull) {
+      return -1;
+    }
+    if (other.isNull) {
+      return 1;
+    }
+
+    // Compare first by replicaID
+    final replicaCompare = replicaID.compareTo(other.replicaID);
+    if (replicaCompare != 0) {
+      return replicaCompare;
+    }
+
+    // Then by counter
+    return counter!.compareTo(other.counter!);
+  }
+
+  /// Serializes the ID to JSON format
+  Map<String, dynamic> toJson() => {
+        'replicaID': replicaID.toString(),
+        'counter': counter,
+      };
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    return other is FugueElementID &&
+        other.replicaID == replicaID &&
+        other.counter == counter;
+  }
+
+  @override
+  int get hashCode => _hashCode;
+
+  @override
+  String toString() {
+    if (isNull) {
+      return 'null';
+    }
+    return '$replicaID:$counter';
+  }
+}

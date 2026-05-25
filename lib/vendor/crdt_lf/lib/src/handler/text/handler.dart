@@ -1,0 +1,324 @@
+import 'dart:math';
+
+import 'package:crdt_lf/crdt_lf.dart';
+
+part 'operation.dart';
+
+/// # CRDT Text
+///
+/// ## Description
+/// A CRDTText is a text data structure
+/// that uses CRDT for conflict-free collaboration.
+/// It provides methods for inserting, deleting, and accessing text content.
+///
+/// ## Algorithm
+/// Process operations in clock order.
+/// Interleaving is handled just using the HLC.
+///
+/// ## Example
+/// ```dart
+/// final doc = CRDTDocument();
+/// final text = CRDTTextHandler(doc, 'text');
+/// text..insert(0, 'Hello')..insert(5, ' World!');
+/// print(text.value); // Prints "Hello World!"
+/// ```
+class CRDTTextHandler extends Handler<String> {
+  /// Creates a new CRDTText with the given document and ID
+  CRDTTextHandler(super.doc, this._id);
+
+  /// The ID of this text in the document
+  final String _id;
+
+  @override
+  String get id => _id;
+
+  @override
+  late final OperationFactory operationFactory =
+      _TextOperationFactory(this).fromPayload;
+
+  /// Inserts [text] at the specified [index]
+  void insert(int index, String text) {
+    final operation = _TextInsertOperation.fromHandler(
+      this,
+      index: index,
+      text: text,
+    );
+    doc.registerOperation(operation);
+  }
+
+  /// Deletes [count] characters starting at the specified [index]
+  void delete(int index, int count) {
+    final operation = _TextDeleteOperation.fromHandler(
+      this,
+      index: index,
+      count: count,
+    );
+    doc.registerOperation(operation);
+  }
+
+  /// Updates the text at the specified [index]
+  void update(int index, String text) {
+    final operation = _TextUpdateOperation.fromHandler(
+      this,
+      index: index,
+      text: text,
+    );
+    doc.registerOperation(operation);
+  }
+
+  /// Changes the entire text to [newText] using the
+  /// [Myers diff algorithm](https://link.springer.com/article/10.1007/BF01840446).
+  ///
+  /// This method computes the differences between the current text
+  /// and [newText] using the [Myers diff algorithm](http://www.xmailserver.org/diff2.pdf),
+  /// then converts these differences into a series of
+  /// atomic [insert] and [delete] operations.
+  ///
+  /// Since this method may generate multiple operations,
+  /// it is recommended to use it within a [CRDTDocument.runInTransaction]
+  /// for better performance and atomicity.
+  ///
+  /// ## Example
+  /// ```dart
+  /// final text = CRDTTextHandler(doc, 'text');
+  /// text.insert(0, 'Hello World');
+  ///
+  /// // Using change within a transaction
+  /// doc.runInTransaction(() {
+  ///   text.change('Hello Brave New World');
+  /// });
+  /// ```
+  void change(String newText) {
+    final currentText = value;
+    final diff = myersDiff(currentText, newText);
+
+    // Track offset as text length changes during operations
+    var offset = 0;
+
+    for (final segment in diff) {
+      switch (segment.op) {
+        case DiffOp.equal:
+          // Nothing to do, text is already correct
+          break;
+        case DiffOp.insert:
+          // Insert new text at adjusted position
+          insert(segment.oldStart + offset, segment.text);
+          offset += segment.text.length;
+          break;
+        case DiffOp.remove:
+          // Remove text at adjusted position
+          delete(segment.oldStart + offset, segment.text.length);
+          offset -= segment.text.length;
+          break;
+      }
+    }
+  }
+
+  /// Gets the current state of the text
+  String get value {
+    // Check if the cached state is still valid
+    if (cachedState != null) {
+      return cachedState!;
+    }
+
+    // Compute the state from scratch
+    final state = _computeState();
+
+    // Cache the state
+    updateCachedState(state);
+
+    return state;
+  }
+
+  @override
+  String getSnapshotState() {
+    return value;
+  }
+
+  /// Gets the length of the text
+  int get length => value.length;
+
+  /// Computes the current state of the text from the document's changes
+  String _computeState() {
+    final buffer = StringBuffer(_initialState());
+
+    // Apply changes in order
+    for (final operation in operations()) {
+      _applyOperationToBuffer(buffer, operation);
+    }
+
+    return buffer.toString();
+  }
+
+  /// Applies a single operation to a StringBuffer
+  void _applyOperationToBuffer(StringBuffer buffer, Operation operation) {
+    if (operation is _TextInsertOperation) {
+      return _bufferInsert(
+        buffer,
+        index: operation.index,
+        text: operation.text,
+      );
+    } else if (operation is _TextDeleteOperation) {
+      return _bufferDelete(
+        buffer,
+        index: operation.index,
+        count: operation.count,
+      );
+    } else if (operation is _TextUpdateOperation) {
+      return _bufferUpdate(
+        buffer,
+        index: operation.index,
+        text: operation.text,
+      );
+    }
+  }
+
+  void _bufferInsert(
+    StringBuffer buffer, {
+    required int index,
+    required String text,
+  }) {
+    // Insert at the specified index,
+    // or at the end if the index is out of bounds
+    final currentText = buffer.toString();
+    if (index <= currentText.length) {
+      buffer
+        ..clear()
+        ..write(currentText.substring(0, index))
+        ..write(text)
+        ..write(currentText.substring(index));
+      return;
+    }
+
+    buffer.write(text);
+    return;
+  }
+
+  void _bufferDelete(
+    StringBuffer buffer, {
+    required int index,
+    required int count,
+  }) {
+    // Delete text if the index is valid
+    final currentText = buffer.toString();
+    if (index < currentText.length) {
+      final actualCount = index + count > currentText.length
+          ? currentText.length - index
+          : count;
+      buffer
+        ..clear()
+        ..write(currentText.substring(0, index))
+        ..write(currentText.substring(index + actualCount));
+    }
+  }
+
+  void _bufferUpdate(
+    StringBuffer buffer, {
+    required int index,
+    required String text,
+  }) {
+    // Update the text at the specified index
+    final currentText = buffer.toString();
+
+    if (index < currentText.length) {
+      buffer
+        ..clear()
+        ..write(currentText.substring(0, index));
+
+      final remainingLength = currentText.length - index;
+      final truncatedText =
+          text.substring(0, min(text.length, remainingLength));
+
+      buffer.write(truncatedText);
+
+      if (remainingLength > text.length) {
+        buffer.write(currentText.substring(index + text.length));
+      }
+    }
+  }
+
+  @override
+  String? incrementCachedState({
+    required Operation operation,
+    required String state,
+  }) {
+    final buffer = StringBuffer(state);
+    _applyOperationToBuffer(buffer, operation);
+    return buffer.toString();
+  }
+
+  @override
+  Operation? compound(Operation accumulator, Operation current) {
+    if (accumulator is _TextInsertOperation &&
+        current is _TextInsertOperation &&
+        _isContiguousInsertion(accumulator, current)) {
+      final buffer = StringBuffer()
+        ..write(
+          accumulator.text.substring(0, current.index - accumulator.index),
+        )
+        ..write(current.text)
+        ..write(
+          accumulator.text.substring(current.index - accumulator.index),
+        );
+      return _TextInsertOperation.fromHandler(
+        this,
+        index: accumulator.index,
+        text: buffer.toString(),
+      );
+    }
+    if (accumulator is _TextInsertOperation &&
+        current is _TextDeleteOperation &&
+        _isDeletingPartialInsertion(accumulator, current)) {
+      final buffer = StringBuffer()
+        ..write(
+          accumulator.text.substring(0, current.index - accumulator.index),
+        )
+        ..write(
+          accumulator.text.substring(
+            current.index - accumulator.index + current.count,
+          ),
+        );
+      return _TextInsertOperation.fromHandler(
+        this,
+        index: accumulator.index,
+        text: buffer.toString(),
+      );
+    }
+
+    return null;
+  }
+
+  bool _isContiguousInsertion(
+    _TextInsertOperation accumulator,
+    _TextInsertOperation current,
+  ) {
+    return accumulator.index + accumulator.text.length >= current.index;
+  }
+
+  bool _isDeletingPartialInsertion(
+    _TextInsertOperation accumulator,
+    _TextDeleteOperation current,
+  ) {
+    return current.index >= accumulator.index &&
+        current.index + current.count <=
+            accumulator.index + accumulator.text.length;
+  }
+
+  /// Gets the initial state of the text
+  String _initialState() {
+    final snapshot = lastSnapshot();
+    if (snapshot is String) {
+      return snapshot;
+    }
+
+    return '';
+  }
+
+  /// Returns a string representation of this text
+  @override
+  String toString() {
+    final truncated =
+        value.length > 20 ? '${value.substring(0, 20)}...' : value;
+    return 'CRDTText($_id, "$truncated")';
+  }
+}
