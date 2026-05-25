@@ -79,12 +79,21 @@ class PortingService {
 
     // TODO: this is importing file content correctly BUT it's not creating a snapshot or ops for the note artifact, resulting in nothing appearing in the editor
 
-    // TODO: make this safer so it explicitly removes .md or .markdown from the end of the string
-    final dotIndex = file.name.lastIndexOf('.');
+    String strippedFileName = file.name;
+    for (final ext in _markdownExtensions) {
+      final suffix = '.$ext';
+      if (strippedFileName.toLowerCase().endsWith(suffix)) {
+        strippedFileName = strippedFileName.substring(
+          0,
+          strippedFileName.length - suffix.length,
+        );
+        break;
+      }
+    }
 
     await ArtifactsRepository(vaultId: vaultId).add([
       NoteArtifact(
-        name: dotIndex == -1 ? file.name : file.name.substring(0, dotIndex),
+        name: strippedFileName,
         content: content,
         createdBy: userId,
         updatedBy: userId,
