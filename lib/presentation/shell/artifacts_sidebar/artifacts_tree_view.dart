@@ -113,6 +113,10 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
+    // TODO: there's some weird state management or caching going on here.
+    // TODO: cont. i'll often delete or move an artifact and it might update immediately
+    // TODO: cont. but then on the next update it will be there again, even though it's gone from the database
+
     return SuperTreeView<Artifact>(
       controller: treeController,
       expansionSlotSize: 20,
