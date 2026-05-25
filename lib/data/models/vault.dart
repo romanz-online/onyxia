@@ -10,14 +10,14 @@ class Vault {
   final String? updatedBy;
 
   Vault({
-    required this.id,
+    String? id,
     required this.name,
     //
     this.createdAt,
     this.createdBy,
     this.updatedAt,
     this.updatedBy,
-  });
+  }) : this.id = id == null || id.isEmpty ? const Uuid().v4() : id;
 
   Vault copyWith({
     String? id,
@@ -28,9 +28,7 @@ class Vault {
     return Vault(id: id ?? this.id, name: name ?? this.name);
   }
 
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'name': name};
-  }
+  Map<String, dynamic> toMap() => {'id': id, 'name': name};
 
   Vault.fromMap(Map<String, dynamic> map)
       : id = map['id'] ?? '',

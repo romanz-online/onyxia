@@ -119,35 +119,6 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
             ),
           ],
         ),
-        const Gap(12),
-        _buildDivider(context),
-        const Gap(12),
-        Center(
-          child: OnyxiaButton(
-            label: 'Sign in with Google',
-            onTap: ref.read(currentUserProvider.notifier).signInWithGoogle,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDivider(BuildContext context) {
-    final color = ThemeHelper.neutral300(context);
-    return Row(
-      children: [
-        Expanded(child: Container(height: 1, color: color)),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: Text(
-            'or',
-            style: NarwhalTextStyle(
-              fontSize: 11,
-              color: ThemeHelper.neutral500(context),
-            ),
-          ),
-        ),
-        Expanded(child: Container(height: 1, color: color)),
       ],
     );
   }

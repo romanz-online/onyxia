@@ -48,18 +48,6 @@ class InviteView extends ConsumerWidget {
               ),
               textAlign: TextAlign.center,
             ),
-            Text(
-              'Sign in with your Google account to join.',
-              style: NarwhalTextStyle(
-                fontSize: 14,
-                color: ThemeHelper.neutral600(context),
-              ),
-              textAlign: TextAlign.center,
-            ),
-            OnyxiaButton(
-              label: 'Sign in with Google',
-              onTap: ref.read(currentUserProvider.notifier).signInWithGoogle,
-            ),
           ],
         ),
       ),

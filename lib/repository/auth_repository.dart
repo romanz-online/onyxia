@@ -11,31 +11,6 @@ class AuthRepository {
 
   Session? get currentSession => _client.auth.currentSession;
 
-  /// Initiates the Google OAuth flow. On web this triggers a popup (or
-  /// redirect) and the auth state stream emits the new session asynchronously.
-  Future<bool> signInWithGoogle() async {
-    try {
-      return await _client.auth.signInWithOAuth(OAuthProvider.google);
-    } catch (e) {
-      debugPrint('Error signing in with Google: $e');
-      return false;
-    }
-  }
-
-  /// Email + password sign-in for the staging test account.
-  Future<bool> signInWithFakeAccount() async {
-    try {
-      await _client.auth.signInWithPassword(
-        email: 'onyxia@test.com',
-        password: '123456',
-      );
-      return true;
-    } catch (e) {
-      debugPrint('Error signing in with fake account: $e');
-      return false;
-    }
-  }
-
   Future<void> signUpWithEmail({
     required String email,
     required String password,

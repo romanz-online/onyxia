@@ -106,17 +106,7 @@ class _RightColumn extends ConsumerWidget {
           onActionPressed: () {
             final name = controller.text.trim();
             if (name.isEmpty) return;
-            final currentUserId = ref.read(currentUserProvider).value?.id ?? '';
-            final now = DateTime.now();
-            final newVault = Vault(
-              // TODO: check if i actually need id, createdBy, createdAt, and updatedAt to be set here or if the database does it automatically
-              // TODO: if it doesn't, it should
-              id: const Uuid().v4(),
-              createdBy: currentUserId,
-              createdAt: now,
-              updatedAt: now,
-              name: name,
-            );
+            final newVault = Vault(name: name);
             VaultsRepository().add([newVault]);
             Navigator.of(dialogContext).pop();
             context.go('/vault/${newVault.id}/graph');

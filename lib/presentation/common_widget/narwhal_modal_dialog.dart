@@ -72,9 +72,7 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
       child: Container(
         width: widget.width,
         height: widget.height,
-        constraints: const BoxConstraints(
-          minWidth: 300,
-        ),
+        constraints: const BoxConstraints(minWidth: 300),
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
           borderRadius: BorderRadius.circular(20),
