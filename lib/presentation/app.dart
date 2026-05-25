@@ -1,7 +1,7 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/core/narwhal_text_theme.dart';
 
-// TODO: redo or get rid of narwhal branding in the loading screens
+// TODO: get rid of ThemeMode.dark. it's forcing me to always invert my neutral### calls. there's only one theme for the website anyway
 
 class NarwhalApp extends ConsumerStatefulWidget {
   const NarwhalApp({super.key});
@@ -25,8 +25,9 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
       routeInformationProvider: routerInstance.routeInformationProvider,
       theme: _buildTheme(),
       themeMode: ThemeMode.dark,
-      builder: (context, child) =>
-          Portal(child: child ?? const SizedBox.shrink()),
+      builder: (context, child) => Portal(
+        child: child ?? const SizedBox.shrink(),
+      ),
     );
   }
 
