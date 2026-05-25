@@ -1,6 +1,8 @@
 ﻿import 'package:onyxia/export.dart';
 
 class MasterSidebar extends ConsumerWidget {
+  static const double width = 42;
+
   final String vaultId;
   final ValueNotifier<bool> isArtifactsSidebarCollapsed;
   final ValueNotifier<bool> animateNextCollapseChange;
@@ -15,7 +17,7 @@ class MasterSidebar extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
-      width: 42,
+      width: width,
       height: double.infinity,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),

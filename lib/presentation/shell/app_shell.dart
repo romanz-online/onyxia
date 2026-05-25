@@ -82,6 +82,47 @@ class _AppShellState extends ConsumerState<AppShell> {
               ),
             ],
           ),
+          AnimatedBuilder(
+            animation: Listenable.merge([
+              _artifactsSidebarWidth,
+              _isArtifactsSidebarCollapsed,
+              _animateNextCollapseChange,
+            ]),
+            builder: (context, _) {
+              final artifactsW = _isArtifactsSidebarCollapsed.value
+                  ? ArtifactsSidebar.dividerStripWidth
+                  : _artifactsSidebarWidth.value;
+              final boundaryX = MasterSidebar.width + artifactsW;
+              final animate = _animateNextCollapseChange.value;
+              final duration =
+                  animate ? const Duration(milliseconds: 150) : Duration.zero;
+
+              return AnimatedPositioned(
+                duration: duration,
+                curve: Curves.easeInOut,
+                left: boundaryX -
+                    (ArtifactsSidebar.dividerStripWidth * 1.5).ceil(),
+                top: 0,
+                bottom: 0,
+                width: ArtifactsSidebar.dividerStripWidth,
+                child: _ResizeDivider(
+                  onDragStart: () {
+                    _animateNextCollapseChange.value = false;
+                  },
+                  onDragUpdate: (globalDx) {
+                    final maxWidth =
+                        MediaQuery.of(context).size.width - 46 - 300;
+                    _artifactsSidebarWidth.value = (globalDx -
+                            MasterSidebar.width +
+                            ArtifactsSidebar.dividerStripWidth)
+                        .clamp(ArtifactsSidebar.minWidth, maxWidth);
+                    _isArtifactsSidebarCollapsed.value =
+                        globalDx < ArtifactsSidebar.collapseThreshold;
+                  },
+                ),
+              );
+            },
+          ),
           if (widget.vaultId.isEmpty)
             LandingOverlay(
               initialMode: widget.initialLandingMode,
@@ -90,6 +131,50 @@ class _AppShellState extends ConsumerState<AppShell> {
             ),
         ],
       ),
+    );
+  }
+}
+
+class _ResizeDivider extends StatefulWidget {
+  final VoidCallback onDragStart;
+  final void Function(double globalDx) onDragUpdate;
+
+  const _ResizeDivider({required this.onDragStart, required this.onDragUpdate});
+
+  @override
+  State<_ResizeDivider> createState() => _ResizeDividerState();
+}
+
+class _ResizeDividerState extends State<_ResizeDivider> {
+  bool _isDragging = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return HoverBuilder(
+      builder: (context, isHovered) {
+        return MouseRegion(
+          cursor: SystemMouseCursors.resizeLeftRight,
+          child: GestureDetector(
+            behavior: HitTestBehavior.translucent,
+            onHorizontalDragStart: (_) {
+              widget.onDragStart();
+              setState(() => _isDragging = true);
+            },
+            onHorizontalDragUpdate: (details) =>
+                widget.onDragUpdate(details.globalPosition.dx),
+            onHorizontalDragEnd: (_) => setState(() => _isDragging = false),
+            child: Center(
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 150),
+                width: (_isDragging || isHovered) ? 3 : 1,
+                color: (_isDragging || isHovered)
+                    ? ThemeHelper.accentColor()
+                    : ThemeHelper.neutral300(context),
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

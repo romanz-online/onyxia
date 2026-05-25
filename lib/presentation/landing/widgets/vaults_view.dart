@@ -68,53 +68,12 @@ class _RightColumn extends ConsumerWidget {
 
   const _RightColumn({required this.user});
 
-  // TODO: this causes an exception when it closes and tries to immediately navigate because it's an inline async widget
-  // TODO: cont. fixed by moving to its own statefulwidget. frankly this should also be a redesign of narwhalmodaldialog
-  Future<void> _showNewVaultDialog(BuildContext context, WidgetRef ref) async {
-    final controller = TextEditingController();
-    await showDialog(
+  void _showNewVaultDialog(BuildContext context) {
+    showDialog(
       context: context,
       barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
-      builder: (dialogContext) {
-        return NarwhalModalDialog(
-          width: 600,
-          height: 260,
-          title: 'New Vault',
-          content: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            spacing: 10,
-            children: [
-              Text(
-                'Vault Name',
-                style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext),
-              ),
-              TextFormField(
-                maxLength: 50,
-                controller: controller,
-                autofocus: true,
-                decoration: NarwhalModalInputDecoration.create(
-                  dialogContext,
-                  hintText: 'Enter vault name',
-                ),
-                style: NarwhalTextStyle(),
-              ),
-            ],
-          ),
-          onCancelPressed: () => Navigator.of(dialogContext).pop(),
-          actionButtonText: 'Create',
-          onActionPressed: () {
-            final name = controller.text.trim();
-            if (name.isEmpty) return;
-            final newVault = Vault(name: name);
-            VaultsRepository().add([newVault]);
-            Navigator.of(dialogContext).pop();
-            context.go('/vault/${newVault.id}/graph');
-          },
-        );
-      },
+      builder: (_) => _NewVaultDialog(),
     );
-    controller.dispose();
   }
 
   Future<void> _showImportVaultDialog(
@@ -180,7 +139,7 @@ class _RightColumn extends ConsumerWidget {
                 children: [
                   OnyxiaButton(
                     label: 'New Vault',
-                    onTap: () => _showNewVaultDialog(context, ref),
+                    onTap: () => _showNewVaultDialog(context),
                   ),
                   OnyxiaButton(
                     label: 'Import Vault',
@@ -192,6 +151,67 @@ class _RightColumn extends ConsumerWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _NewVaultDialog extends StatefulWidget {
+  const _NewVaultDialog();
+
+  @override
+  State<_NewVaultDialog> createState() => _NewVaultDialogState();
+}
+
+class _NewVaultDialogState extends State<_NewVaultDialog> {
+  final TextEditingController _nameController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  void _create() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+    final newVault = Vault(name: name);
+    await VaultsRepository().add([newVault]).then((_) {
+      Navigator.of(context).pop();
+      // TODO: context.go isn't working here and the list still isn't updating
+      context.go('/vault/${newVault.id}/graph');
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return NarwhalModalDialog(
+      width: 600,
+      height: 260,
+      title: 'New Vault',
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 10,
+        children: [
+          Text(
+            'Vault Name',
+            style: NarwhalStyles.modalTextFieldTitleStyle(context),
+          ),
+          TextFormField(
+            maxLength: 50,
+            controller: _nameController,
+            autofocus: true,
+            decoration: NarwhalModalInputDecoration.create(
+              context,
+              hintText: 'Enter vault name',
+            ),
+            style: NarwhalTextStyle(),
+          ),
+        ],
+      ),
+      onCancelPressed: () => Navigator.of(context).pop(),
+      actionButtonText: 'Create',
+      onActionPressed: _create,
     );
   }
 }
