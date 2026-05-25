@@ -7,40 +7,23 @@ import 'package:onyxia/presentation/landing/widgets/vaults_tree_context_menu.dar
 
 class VaultRow extends ConsumerWidget {
   final Vault vault;
-  final VoidCallback onOpen;
-  final VoidCallback onOpenInNewTab;
 
-  const VaultRow({
-    super.key,
-    required this.vault,
-    required this.onOpen,
-    required this.onOpenInNewTab,
-  });
+  const VaultRow({super.key, required this.vault});
 
-  void _showMenu(BuildContext context, WidgetRef ref, Offset position) {
+  void _showMenu(BuildContext context, Offset position) {
     ContextMenuOverlay.show(
       context: context,
       position: position,
-      items: buildVaultContextMenuItems(context, ref, vault),
+      items: buildVaultContextMenuItems(context, vault),
     );
-  }
-
-  bool _isCtrlOrCmdPressed() {
-    return HardwareKeyboard.instance.logicalKeysPressed.intersection({
-      LogicalKeyboardKey.controlLeft,
-      LogicalKeyboardKey.controlRight,
-      LogicalKeyboardKey.metaLeft,
-      LogicalKeyboardKey.metaRight,
-    }).isNotEmpty;
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onSecondaryTapDown: (details) {
-        _showMenu(context, ref, details.globalPosition);
-      },
+      onSecondaryTapDown: (details) =>
+          _showMenu(context, details.globalPosition),
       child: HoverBuilder(
         builder: (context, isHovered) {
           return Container(
@@ -56,13 +39,7 @@ class VaultRow extends ConsumerWidget {
                 Expanded(
                   child: GestureDetector(
                     behavior: HitTestBehavior.opaque,
-                    onTap: () {
-                      if (_isCtrlOrCmdPressed()) {
-                        onOpenInNewTab();
-                      } else {
-                        onOpen();
-                      }
-                    },
+                    onTap: () => context.go('/vault/${vault.id}/graph'),
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(1.5, 4, 1.5, 6),
                       child: Text(
@@ -79,6 +56,11 @@ class VaultRow extends ConsumerWidget {
                   ),
                 ),
                 Builder(
+                  // TODO: this should use flutter_portal, not supertree's context menu. menu's topLeft should align with button's topRight
+
+                  // TODO: build flutter_portal into OnyxiaButton. specifically: copy the format that vaultsettingsbutton already establishes with onyxiaoverlay (which uses flutter_portal) and then also homogenize vaultsettingsbutton to use the new layout
+
+                  // TODO: add flutter_portal usage to CLAUDE.md so that claude uses flutter_portal instead of doing this builder/renderbox stuff
                   builder: (buttonContext) => OnyxiaIconButton(
                     icon: LucideIcons.ellipsisVertical,
                     size: 20,
@@ -89,7 +71,7 @@ class VaultRow extends ConsumerWidget {
                           ? renderBox
                               .localToGlobal(Offset(0, renderBox.size.height))
                           : Offset.zero;
-                      _showMenu(context, ref, position);
+                      _showMenu(context, position);
                     },
                   ),
                 ),

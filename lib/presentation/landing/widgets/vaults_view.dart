@@ -30,16 +30,6 @@ class _VaultListColumn extends StatelessWidget {
 
   const _VaultListColumn({required this.vaults});
 
-  void _open(BuildContext context, Vault vault) {
-    context.go('/vault/${vault.id}/graph');
-  }
-
-  void _openInNewTab(Vault vault) {
-    NavigationContextMenu.openInNewTab(
-      NavigationUrlBuilder.buildGraphUrl(vault.id),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -61,14 +51,8 @@ class _VaultListColumn extends StatelessWidget {
                   )
                 : ListView.builder(
                     itemCount: vaults.length,
-                    itemBuilder: (context, index) {
-                      final vault = vaults[index];
-                      return VaultRow(
-                        vault: vault,
-                        onOpen: () => _open(context, vault),
-                        onOpenInNewTab: () => _openInNewTab(vault),
-                      );
-                    },
+                    itemBuilder: (context, index) =>
+                        VaultRow(vault: vaults[index]),
                   ),
           ),
         ],
@@ -118,8 +102,7 @@ class _RightColumn extends ConsumerWidget {
           onActionPressed: () {
             final name = controller.text.trim();
             if (name.isEmpty) return;
-            final currentUserId =
-                ref.read(currentUserProvider).value?.id ?? '';
+            final currentUserId = ref.read(currentUserProvider).value?.id ?? '';
             final now = DateTime.now();
             final newVault = Vault(
               id: const Uuid().v4(),

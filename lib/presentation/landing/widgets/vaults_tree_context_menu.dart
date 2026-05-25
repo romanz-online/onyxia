@@ -11,7 +11,6 @@ import 'package:onyxia/presentation/landing/widgets/rename_vault_dialog.dart';
 
 List<ContextMenuItem> buildVaultContextMenuItems(
   BuildContext context,
-  WidgetRef ref,
   Vault vault,
 ) {
   final items = <ContextMenuItem>[];
@@ -25,8 +24,9 @@ List<ContextMenuItem> buildVaultContextMenuItems(
       ],
     ),
     onTap: () {
-      final url = NavigationUrlBuilder.buildGraphUrl(vault.id);
-      NavigationContextMenu.openInNewTab(url);
+      NavigationContextMenu.openInNewTab(
+        NavigationUrlBuilder.buildGraphUrl(vault.id),
+      );
     },
   ));
 
@@ -69,13 +69,13 @@ List<ContextMenuItem> buildVaultContextMenuItems(
 
   items.add(ContextMenuItem(
     child: Text('Delete Vault', style: NarwhalTextStyle()),
-    onTap: () => _confirmRemove(context, ref, vault),
+    onTap: () => _confirmRemove(context, vault),
   ));
 
   return items;
 }
 
-void _confirmRemove(BuildContext context, WidgetRef ref, Vault vault) async {
+void _confirmRemove(BuildContext context, Vault vault) async {
   String vaultName = vault.name;
   if (vaultName.length > 25) vaultName = '${vaultName.substring(0, 25)}... ';
 
