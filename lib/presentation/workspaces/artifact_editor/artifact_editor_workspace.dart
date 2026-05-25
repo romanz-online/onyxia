@@ -7,6 +7,8 @@ import 'image/image_editor_view.dart';
 // TODO: cont. i should be able to at least load the artifact title immediately
 // TODO: cont. which would significantly reduce the jarring lack of transition
 
+// TODO: renaming an artifact now correctly updates the URL but doesn't immediately update the loaded title text and links to that artifact aren't getting updated
+
 class ArtifactWorkspace extends ConsumerStatefulWidget {
   final NoteStateProvider? noteProvider;
 
