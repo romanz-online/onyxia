@@ -258,6 +258,8 @@ CREATE TABLE IF NOT EXISTS "public"."artifacts" (
     CONSTRAINT "artifacts_type_check" CHECK (("type" = ANY (ARRAY['folder'::"text", 'note'::"text", 'canvas'::"text", 'image'::"text"])))
 );
 
+ALTER TABLE ONLY "public"."artifacts" REPLICA IDENTITY FULL;
+
 
 ALTER TABLE "public"."artifacts" OWNER TO "postgres";
 
@@ -376,6 +378,8 @@ CREATE TABLE IF NOT EXISTS "public"."vaults" (
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "updated_by" "uuid"
 );
+
+ALTER TABLE ONLY "public"."vaults" REPLICA IDENTITY FULL;
 
 
 ALTER TABLE "public"."vaults" OWNER TO "postgres";
