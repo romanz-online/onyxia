@@ -79,8 +79,6 @@ class PortingService {
 
     // TODO: this is importing file content correctly BUT it's not creating a snapshot or ops for the note artifact, resulting in nothing appearing in the editor
 
-    print(content);
-
     // TODO: make this safer so it explicitly removes .md or .markdown from the end of the string
     final dotIndex = file.name.lastIndexOf('.');
 
