@@ -31,10 +31,9 @@ class PortingService {
       final list = <web.File>[];
       for (var i = 0; i < files.length; i++) {
         final f = files.item(i);
-        if (f != null) list.add(f);
+        if (f != null && _isImportable(f)) list.add(f);
       }
-      completer
-          .complete(list.where((e) => PortingService.isImportable(e)).toList());
+      completer.complete(list);
     });
     input.click();
     return completer.future;
@@ -59,8 +58,6 @@ class PortingService {
     required String userId,
     void Function(int done, int total)? onProgress,
   }) async {
-    // TODO: this currently reads in a bunch of files that aren't explicitly markdown or images.
-    // TODO: cont. they should be filtered out before the browser even confirms with the user, before this method is even reached.
     for (var i = 0; i < files.length; i++) {
       final file = files[i];
       final ext = file.name.toLowerCase().split('.').last;
@@ -140,7 +137,7 @@ class PortingService {
     await ImageService.uploadImage(bytes, file.name, vaultId: vaultId);
   }
 
-  static bool isImportable(web.File f) {
+  static bool _isImportable(web.File f) {
     final ext = f.name.toLowerCase().split('.').last;
     return _markdownExtensions.contains(ext) || _imageExtensions.contains(ext);
   }
