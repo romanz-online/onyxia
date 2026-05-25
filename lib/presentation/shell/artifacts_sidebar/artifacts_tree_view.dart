@@ -115,6 +115,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     // TODO: loading an artifact page without clicking the tree means the artifact's tree node isn't selected. the tree ends up out of sync
 
+    // TODO: it's also possible to deselect all nodes through the tree widget but that won't deselect the currently-selected artifact
+
     return SuperTreeView<Artifact>(
       controller: treeController,
       expansionSlotSize: 20,

@@ -2,32 +2,19 @@
 import 'note/note_editor_view.dart';
 import 'image/image_editor_view.dart';
 
-// TODO: there's too much loading flickering happening.
-// TODO: cont. even if i can't load the content of the artifact immediately,
-// TODO: cont. i should be able to at least load the artifact title immediately
-// TODO: cont. which would significantly reduce the jarring lack of transition
-
 // TODO: renaming an artifact now correctly updates the URL but doesn't immediately update the loaded title text and links to that artifact aren't getting updated
 
 class ArtifactWorkspace extends ConsumerStatefulWidget {
-  final NoteStateProvider? noteProvider;
-
-  const ArtifactWorkspace({super.key, this.noteProvider});
+  const ArtifactWorkspace({super.key});
 
   @override
   ConsumerState<ArtifactWorkspace> createState() => _ArtifactWorkspaceState();
 }
 
 class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
-  NoteStateProvider get _noteProvider =>
-      widget.noteProvider ?? selectedNoteStateProvider;
-
   Widget _buildEditorContent(Artifact artifact) {
     return switch (artifact.type) {
-      ArtifactType.note => NoteEditorView(
-          key: ValueKey('note-${artifact.id}'),
-          provider: widget.noteProvider,
-        ),
+      ArtifactType.note => NoteEditorView(),
       ArtifactType.canvas => CanvasEditorView(canvasId: artifact.id),
       ArtifactType.folder => const SizedBox.shrink(),
       ArtifactType.image =>
@@ -47,20 +34,30 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
     );
   }
 
+  Widget _buildBody(Artifact selectedItem, AsyncValue noteAsyncState) {
+    if (selectedItem.type == ArtifactType.note) {
+      if (noteAsyncState.isLoading) {
+        return Center(child: NarwhalSpinner());
+      }
+      if (noteAsyncState.hasError) {
+        return Center(
+          child: Text(
+            'Error: ${noteAsyncState.error}',
+            style: NarwhalTextStyle(color: ThemeHelper.neutral700(context)),
+          ),
+        );
+      }
+    }
+    return _buildEditorContent(selectedItem);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Always subscribe to note state for save tracking
-    final noteAsyncState = ref.watch(_noteProvider);
-
-    // When a custom note provider is given, the item comes from it.
-    // For notes with the global provider, prefer the live note state over the stale selectedArtifactProvider.
-    // For non-note items (canvases, folders), selectedArtifactProvider is authoritative.
+    final noteAsyncState = ref.watch(selectedNoteStateProvider);
     final rawSelectedItem = ref.watch(selectedArtifactProvider);
-    final Artifact? selectedItem = widget.noteProvider != null
-        ? noteAsyncState.value?.note
-        : (rawSelectedItem?.type == ArtifactType.note
-            ? (noteAsyncState.value?.note ?? rawSelectedItem)
-            : rawSelectedItem);
+    final Artifact? selectedItem =
+        noteAsyncState.value?.note ?? rawSelectedItem;
 
     if (selectedItem == null) {
       return Container(
@@ -90,27 +87,6 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
       );
     }
 
-    // Notes gate on the async note provider state
-    if (selectedItem.type == ArtifactType.note) {
-      if (noteAsyncState.isLoading) {
-        return Container(
-          color: ThemeHelper.neutral100(context),
-          child: Center(child: NarwhalSpinner()),
-        );
-      }
-      if (noteAsyncState.hasError) {
-        return Container(
-          color: ThemeHelper.neutral100(context),
-          child: Center(
-            child: Text(
-              'Error: ${noteAsyncState.error}',
-              style: NarwhalTextStyle(color: ThemeHelper.neutral700(context)),
-            ),
-          ),
-        );
-      }
-    }
-
     return Stack(
       children: [
         Scaffold(
@@ -119,7 +95,9 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
             child: _buildAppBar(selectedItem.name),
           ),
           backgroundColor: ThemeHelper.neutral100(context),
-          body: SizedBox.expand(child: _buildEditorContent(selectedItem)),
+          body: SizedBox.expand(
+            child: _buildBody(selectedItem, noteAsyncState),
+          ),
         ),
       ],
     );

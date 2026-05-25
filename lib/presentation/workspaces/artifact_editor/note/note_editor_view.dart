@@ -11,18 +11,13 @@ const String _kGhostLorem =
 const Duration _kGhostTypeDelay = Duration(milliseconds: 80);
 
 class NoteEditorView extends ConsumerStatefulWidget {
-  final NoteStateProvider? provider;
-
-  const NoteEditorView({super.key, this.provider});
+  const NoteEditorView({super.key});
 
   @override
   ConsumerState<NoteEditorView> createState() => _NoteEditorState();
 }
 
 class _NoteEditorState extends ConsumerState<NoteEditorView> {
-  NoteStateProvider get _provider =>
-      widget.provider ?? selectedNoteStateProvider;
-
   final FocusNode _focusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
 
@@ -49,7 +44,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   }
 
   void _checkNoteChange() {
-    final noteState = ref.read(_provider);
+    final noteState = ref.read(selectedNoteStateProvider);
     noteState.whenData((state) {
       final newNoteId = state.note?.id;
       if (newNoteId != _currentNoteId) {
@@ -108,9 +103,10 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    final noteState = ref.watch(_provider);
+    final noteState = ref.watch(selectedNoteStateProvider);
 
-    final item = ref.watch(_provider.select((state) => state.value?.note));
+    final item = ref
+        .watch(selectedNoteStateProvider.select((state) => state.value?.note));
     if (item == null) {
       return const Center(
         child: Text(
@@ -124,7 +120,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       loading: () => Center(child: NarwhalSpinner()),
       error: (error, _) => _ErrorView(
         error: error,
-        onRetry: () => ref.invalidate(_provider),
+        onRetry: () => ref.invalidate(selectedNoteStateProvider),
       ),
       data: (state) {
         final controller = state.bardController;
@@ -139,7 +135,9 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            ref.read(_provider.notifier).setFocusNode(_focusNode);
+            ref
+                .read(selectedNoteStateProvider.notifier)
+                .setFocusNode(_focusNode);
           }
         });
 
@@ -153,7 +151,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
             showHoverContainer: _showHoverContainer,
             hoverPosition: _hoverPosition,
             isDragOver: _isDragOver,
-            provider: _provider,
+            provider: selectedNoteStateProvider,
             onDragOver: (over) => setState(() => _isDragOver = over),
             onImageDrop: _handleImageDrop,
             onTapDown: (details) {

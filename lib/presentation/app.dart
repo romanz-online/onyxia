@@ -1,8 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/core/narwhal_text_theme.dart';
 
-// TODO: fix the white loading screen while the app is loading. it should be dark.
-
 // TODO: redo or get rid of narwhal branding in the loading screens
 
 class NarwhalApp extends ConsumerStatefulWidget {
