@@ -33,7 +33,8 @@ class PortingService {
         final f = files.item(i);
         if (f != null) list.add(f);
       }
-      completer.complete(list);
+      completer
+          .complete(list.where((e) => PortingService.isImportable(e)).toList());
     });
     input.click();
     return completer.future;
@@ -137,5 +138,10 @@ class PortingService {
     final bytes = await completer.future;
 
     await ImageService.uploadImage(bytes, file.name, vaultId: vaultId);
+  }
+
+  static bool isImportable(web.File f) {
+    final ext = f.name.toLowerCase().split('.').last;
+    return _markdownExtensions.contains(ext) || _imageExtensions.contains(ext);
   }
 }

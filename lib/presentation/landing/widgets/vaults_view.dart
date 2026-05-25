@@ -1,6 +1,7 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/import_vault_dialog.dart';
 import 'package:onyxia/presentation/landing/widgets/vault_row.dart';
+import 'dart:async';
 
 class VaultsView extends ConsumerWidget {
   static const double leftColumnWidth = 180;
@@ -154,14 +155,14 @@ class _RightColumn extends ConsumerWidget {
   }
 }
 
-class _NewVaultDialog extends StatefulWidget {
+class _NewVaultDialog extends ConsumerStatefulWidget {
   const _NewVaultDialog();
 
   @override
-  State<_NewVaultDialog> createState() => _NewVaultDialogState();
+  ConsumerState<_NewVaultDialog> createState() => _NewVaultDialogState();
 }
 
-class _NewVaultDialogState extends State<_NewVaultDialog> {
+class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
   final TextEditingController _nameController = TextEditingController();
 
   @override
@@ -170,18 +171,37 @@ class _NewVaultDialogState extends State<_NewVaultDialog> {
     super.dispose();
   }
 
+  // TODO: when redesigning NarwhalModalDialog, use it here and add a loading state here while the async methods run
   void _create() async {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
     final newVault = Vault(name: name);
-    await VaultsRepository().add([newVault]).then((_) {
-      Navigator.of(context).pop();
-      // TODO: context.go isn't working here and the list still isn't updating
-      // TODO: cont. getting this error:
-      /// GoRouter: INFO: going to /vault/ed82b5bb-ddc5-4861-bc86-f919444505fa/graph
-      /// js_primitives.dart:28 GoRouter: INFO: redirecting to RouteMatchList#4b4fd(uri: /, matches: [RouteMatch#6e12c(route: GoRoute#15abd(name: "home", path: "/"))])
-      context.go('/vault/${newVault.id}/graph');
+    await VaultsRepository().add([newVault]).then((_) async {
+      await _waitForVaultInProvider(newVault.id).then((_) {
+        if (mounted) {
+          Navigator.of(context).pop();
+          navigatorKey.currentContext?.go('/vault/${newVault.id}/graph');
+        }
+      });
     });
+  }
+
+  Future<void> _waitForVaultInProvider(String id) {
+    final completer = Completer<void>();
+    late ProviderSubscription sub;
+    sub = ref.listenManual<AsyncValue<List<Vault>>>(
+      vaultsProvider,
+      (_, next) {
+        if ((next.value?.any((v) => v.id == id) ?? false) &&
+            !completer.isCompleted) {
+          completer.complete();
+        }
+      },
+      fireImmediately: true,
+    );
+    return completer.future
+        .timeout(const Duration(seconds: 5), onTimeout: () {})
+        .whenComplete(sub.close);
   }
 
   @override
