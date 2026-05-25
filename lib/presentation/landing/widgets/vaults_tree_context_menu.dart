@@ -1,6 +1,14 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/rename_vault_dialog.dart';
 
+// TODO: fix dimensions/overflow issue
+
+// TODO: icons are dark and need to be light
+
+// TODO: for some reason deletes might happen eventually but it's extremely unresponsive
+
+// TODO: give all options an icon to keep it uniform
+
 List<ContextMenuItem> buildVaultContextMenuItems(
   BuildContext context,
   WidgetRef ref,

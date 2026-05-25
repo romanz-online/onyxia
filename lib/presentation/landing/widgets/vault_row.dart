@@ -1,6 +1,10 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/vaults_tree_context_menu.dart';
 
+// TODO: make widget bigger and different background color
+
+// TODO: three-dot menu isn't visually responsive
+
 class VaultRow extends ConsumerWidget {
   final Vault vault;
   final VoidCallback onOpen;
@@ -82,8 +86,8 @@ class VaultRow extends ConsumerWidget {
                       final renderBox =
                           buttonContext.findRenderObject() as RenderBox?;
                       final position = renderBox != null
-                          ? renderBox.localToGlobal(
-                              Offset(0, renderBox.size.height))
+                          ? renderBox
+                              .localToGlobal(Offset(0, renderBox.size.height))
                           : Offset.zero;
                       _showMenu(context, ref, position);
                     },
