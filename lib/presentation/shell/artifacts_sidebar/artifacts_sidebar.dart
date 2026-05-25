@@ -1,5 +1,7 @@
 import 'package:onyxia/export.dart';
 
+// TODO: clicking the collapse sidebar button in the master sidebar causes the background here to turn white for some reason
+
 class ArtifactsSidebar extends StatelessWidget {
   static const double _minWidth = 170;
   static const double _sidebarWidth = 42;
@@ -55,36 +57,34 @@ class ArtifactsSidebar extends StatelessWidget {
                   alignment: Alignment.topLeft,
                   minWidth: w,
                   maxWidth: w,
-                  child: SizedBox(
+                  child: Container(
+                    color: ThemeHelper.neutral100(context),
                     width: w,
-                    child: Container(
-                      color: ThemeHelper.neutral100(context),
-                      child: Column(
-                        children: [
-                          Container(
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(right: 7),
+                          child: const ArtifactsSidebarHeader(),
+                        ),
+                        Expanded(
+                          child: Container(
                             width: double.infinity,
-                            padding: const EdgeInsets.only(right: 7),
-                            child: const ArtifactsSidebarHeader(),
-                          ),
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(
-                                left: 6,
-                                top: 6,
-                                bottom: 6,
-                                right: 13,
-                              ),
-                              child: ArtifactsTreeView(),
+                            padding: const EdgeInsets.only(
+                              left: 6,
+                              top: 6,
+                              bottom: 6,
+                              right: 13,
                             ),
+                            child: ArtifactsTreeView(),
                           ),
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.only(right: 7),
-                            child: const ArtifactsSidebarFooter(),
-                          ),
-                        ],
-                      ),
+                        ),
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.only(right: 7),
+                          child: const ArtifactsSidebarFooter(),
+                        ),
+                      ],
                     ),
                   ),
                 ),
