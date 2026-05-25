@@ -6,6 +6,8 @@ import 'markdown_span.dart';
 
 // TODO: integrate visi-links, taking the form ![[...]] which embed the linked item's content beneath the link
 
+// TODO: also integrate ![](link) for non-artifact embeds that have a URL
+
 // TODO: claude did a lot of work here for CRDT and parsing that i haven't checked manually yet. seems to be working but needs to be analyzed for efficiency and coherency
 
 const Color _kMarkerDimColor = Color(0xFF9CA3AF);

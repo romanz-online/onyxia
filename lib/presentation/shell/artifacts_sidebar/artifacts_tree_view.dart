@@ -113,6 +113,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
+    // TODO: loading an artifact page without clicking the tree means the artifact's tree node isn't selected. the tree ends up out of sync
+
     return SuperTreeView<Artifact>(
       controller: treeController,
       expansionSlotSize: 20,

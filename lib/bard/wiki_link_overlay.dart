@@ -32,7 +32,8 @@ class WikiLinkOverlay extends StatelessWidget {
       borderRadius: BorderRadius.circular(6),
       color: Theme.of(context).colorScheme.surface,
       child: Container(
-        constraints: const BoxConstraints(maxHeight: 200, minWidth: 200, maxWidth: 320),
+        constraints:
+            const BoxConstraints(maxHeight: 200, minWidth: 200, maxWidth: 320),
         decoration: BoxDecoration(
           border: Border.all(color: Theme.of(context).dividerColor),
           borderRadius: BorderRadius.circular(6),
@@ -48,14 +49,22 @@ class WikiLinkOverlay extends StatelessWidget {
             return InkWell(
               onTap: () => onSelected(target),
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                color: isSelected ? Theme.of(context).colorScheme.primary.withValues(alpha: 0.12) : Colors.transparent,
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                color: isSelected
+                    ? Theme.of(context)
+                        .colorScheme
+                        .primary
+                        .withValues(alpha: 0.12)
+                    : Colors.transparent,
                 child: Text(
                   target,
                   style: NarwhalTextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
-                    color: isSelected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurface,
+                    color: isSelected
+                        ? Theme.of(context).colorScheme.primary
+                        : Theme.of(context).colorScheme.onSurface,
                   ),
                 ),
               ),
