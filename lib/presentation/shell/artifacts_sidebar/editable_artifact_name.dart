@@ -5,7 +5,17 @@ import 'package:speech_balloon/speech_balloon.dart';
 class EditableArtifactName extends ConsumerStatefulWidget {
   final Artifact item;
 
-  const EditableArtifactName({super.key, required this.item});
+  /// When non-null, the tail of [item.name] is split off as a render-only
+  /// suffix (e.g. `.png`). The base portion is what gets shown in the
+  /// editable text field; on save the suffix is re-appended so the stored
+  /// artifact name still ends in the extension.
+  final String? trailingExtension;
+
+  const EditableArtifactName({
+    super.key,
+    required this.item,
+    this.trailingExtension,
+  });
 
   @override
   ConsumerState<EditableArtifactName> createState() =>
@@ -20,8 +30,16 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
   final LayerLink _layerLink = LayerLink();
   String? _errorMessage;
 
+  String get _baseName {
+    final ext = widget.trailingExtension;
+    if (ext == null || !widget.item.name.endsWith(ext)) {
+      return widget.item.name;
+    }
+    return widget.item.name.substring(0, widget.item.name.length - ext.length);
+  }
+
   void startEditing() {
-    _controller.text = widget.item.name;
+    _controller.text = _baseName;
     setState(() {
       _isEditing = true;
     });
@@ -33,7 +51,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(text: widget.item.name);
+    _controller = TextEditingController(text: _baseName);
 
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus && _isEditing) {
@@ -55,12 +73,14 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       _isEditing = false;
     });
     _overlayController.hide();
+    final newName =
+        _controller.text + (widget.trailingExtension ?? '');
     final error = await ref
         .read(artifactsProvider.notifier)
-        .renameItem(widget.item, _controller.text);
+        .renameItem(widget.item, newName);
     if (!mounted) return;
     if (error != null) {
-      _controller.text = widget.item.name;
+      _controller.text = _baseName;
     }
   }
 
@@ -163,17 +183,46 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
             )
           : GestureDetector(
               onDoubleTap: startEditing,
-              child: Text(
-                widget.item.name,
-                style: NarwhalTextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.normal,
-                  color: ThemeHelper.neutral700(context),
-                  letterSpacing: 0.5,
-                ),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1,
-              ),
+              child: widget.trailingExtension == null
+                  ? Text(
+                      widget.item.name,
+                      style: NarwhalTextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.normal,
+                        color: ThemeHelper.neutral700(context),
+                        letterSpacing: 0.5,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    )
+                  : Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            _baseName,
+                            style: NarwhalTextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.normal,
+                              color: ThemeHelper.neutral700(context),
+                              letterSpacing: 0.5,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            maxLines: 1,
+                          ),
+                        ),
+                        Text(
+                          widget.trailingExtension!,
+                          style: NarwhalTextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.normal,
+                            color: ThemeHelper.neutral500(context),
+                            letterSpacing: 0.5,
+                          ),
+                          maxLines: 1,
+                        ),
+                      ],
+                    ),
             ),
     );
   }

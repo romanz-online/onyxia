@@ -38,8 +38,18 @@ class TreeTile extends ConsumerWidget {
           : null,
       child: Padding(
         padding: const EdgeInsets.only(right: 12),
-        child: EditableArtifactName(item: nodeData),
+        child: EditableArtifactName(
+          item: nodeData,
+          trailingExtension: _imageExt(nodeData),
+        ),
       ),
     );
+  }
+
+  String? _imageExt(Artifact a) {
+    if (a is! ImageArtifact) return null;
+    final dot = a.name.lastIndexOf('.');
+    if (dot <= 0 || dot == a.name.length - 1) return null;
+    return a.name.substring(dot);
   }
 }

@@ -1,9 +1,13 @@
 import 'package:onyxia/export.dart';
 
 class ArtifactsSidebar extends StatelessWidget {
-  static const double _minWidth = 200;
+  static const double _minWidth = 170;
   static const double _sidebarWidth = 42;
   static const double _collapseThreshold = _sidebarWidth * 2;
+  // Width of the always-present divider strip: 9px divider + 2px right padding.
+  // When collapsed the artifacts column shrinks to this strip so the divider
+  // hugs the master sidebar's right edge and stays draggable.
+  static const double _dividerStripWidth = 11;
 
   final ValueNotifier<double> width;
   final ValueNotifier<bool> isCollapsed;
@@ -25,90 +29,87 @@ class ArtifactsSidebar extends StatelessWidget {
         animateNextCollapseChange,
       ]),
       builder: (context, _) {
-        final w = width.value;
-        final collapsed = isCollapsed.value;
+        final w = isCollapsed.value ? _dividerStripWidth : width.value;
         final animate = animateNextCollapseChange.value;
+        final duration =
+            animate ? const Duration(milliseconds: 150) : Duration.zero;
 
-        return ClipRect(
-          child: AnimatedContainer(
-            duration:
-                animate ? const Duration(milliseconds: 150) : Duration.zero,
-            curve: Curves.easeInOut,
-            alignment: Alignment.centerLeft,
-            onEnd: () {
-              if (animateNextCollapseChange.value) {
-                animateNextCollapseChange.value = false;
-              }
-            },
-            child: SizedBox(
-              width: collapsed ? 0 : w,
-              child: OverflowBox(
-                alignment: Alignment.topLeft,
-                minWidth: w,
-                maxWidth: w,
-                child: SizedBox(
-                  width: w,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        color: ThemeHelper.neutral100(context),
-                        child: Column(
-                          children: [
-                            Container(
+        return Stack(
+          clipBehavior: Clip.none,
+          alignment: Alignment.topLeft,
+          children: [
+            ClipRect(
+              child: AnimatedContainer(
+                duration: duration,
+                curve: Curves.easeInOut,
+                width: w,
+                onEnd: () {
+                  if (animateNextCollapseChange.value) {
+                    animateNextCollapseChange.value = false;
+                  }
+                },
+                child: OverflowBox(
+                  alignment: Alignment.topLeft,
+                  minWidth: w,
+                  maxWidth: w,
+                  child: SizedBox(
+                    width: w,
+                    child: Container(
+                      color: ThemeHelper.neutral100(context),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.only(right: 7),
+                            child: const ArtifactsSidebarHeader(),
+                          ),
+                          Expanded(
+                            child: Container(
                               width: double.infinity,
-                              padding: const EdgeInsets.only(right: 7),
-                              child: const ArtifactsSidebarHeader(),
-                            ),
-                            Expanded(
-                              child: Container(
-                                width: double.infinity,
-                                color: ThemeHelper.neutral100(context),
-                                padding: const EdgeInsets.only(
-                                  left: 6,
-                                  top: 6,
-                                  bottom: 6,
-                                  right: 13,
-                                ),
-                                child: ArtifactsTreeView(),
+                              padding: const EdgeInsets.only(
+                                left: 6,
+                                top: 6,
+                                bottom: 6,
+                                right: 13,
                               ),
+                              child: ArtifactsTreeView(),
                             ),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.only(right: 7),
-                              child: const ArtifactsSidebarFooter(),
-                            ),
-                          ],
-                        ),
+                          ),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.only(right: 7),
+                            child: const ArtifactsSidebarFooter(),
+                          ),
+                        ],
                       ),
-                      Positioned(
-                        right: 2,
-                        top: 0,
-                        bottom: 0,
-                        width: 9,
-                        child: _ResizeDivider(
-                          onDragStart: () {
-                            animateNextCollapseChange.value = false;
-                          },
-                          onDragUpdate: (_, globalDx) {
-                            final maxWidth =
-                                MediaQuery.of(context).size.width - 46 - 300;
-                            // Track absolute cursor position so the divider
-                            // follows the cursor rather than drifting via
-                            // accumulated deltas across collapse transitions.
-                            width.value = (globalDx - _sidebarWidth)
-                                .clamp(_minWidth, maxWidth);
-                            isCollapsed.value = globalDx < _collapseThreshold;
-                            // TODO: when this sidebar is collapsed, the resize divider should still be present but with a sidebar width of 0 so that it looks instead like it's attached to the master sidebar. same behavior
-                          },
-                        ),
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            AnimatedPositioned(
+              duration: duration,
+              curve: Curves.easeInOut,
+              left: w - _dividerStripWidth,
+              top: 0,
+              bottom: 0,
+              width: _dividerStripWidth,
+              child: _ResizeDivider(
+                onDragStart: () {
+                  animateNextCollapseChange.value = false;
+                },
+                onDragUpdate: (_, globalDx) {
+                  final maxWidth = MediaQuery.of(context).size.width - 46 - 300;
+                  // Track absolute cursor position so the divider follows
+                  // the cursor rather than drifting via accumulated deltas
+                  // across collapse transitions.
+                  width.value =
+                      (globalDx - _sidebarWidth).clamp(_minWidth, maxWidth);
+                  isCollapsed.value = globalDx < _collapseThreshold;
+                },
+              ),
+            ),
+          ],
         );
       },
     );

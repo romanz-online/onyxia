@@ -108,6 +108,9 @@ export 'package:onyxia/services/image_service.dart';
 export 'package:onyxia/services/porting_service.dart';
 export 'package:onyxia/services/timestamp_service.dart';
 
+//bard
+export 'package:onyxia/bard/bard_codec.dart';
+
 //helpers
 export 'package:onyxia/helpers/offset_extension.dart';
 export 'package:onyxia/helpers/theme_helper.dart';

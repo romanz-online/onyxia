@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:js_interop';
 
+import 'package:crdt_lf/crdt_lf.dart';
 import 'package:onyxia/export.dart';
 import 'package:web/web.dart' as web;
 
@@ -77,8 +78,6 @@ class PortingService {
     reader.readAsText(file);
     final content = await completer.future;
 
-    // TODO: this is importing file content correctly BUT it's not creating a snapshot or ops for the note artifact, resulting in nothing appearing in the editor
-
     String strippedFileName = file.name;
     for (final ext in _markdownExtensions) {
       final suffix = '.$ext';
@@ -91,14 +90,31 @@ class PortingService {
       }
     }
 
-    await ArtifactsRepository(vaultId: vaultId).add([
-      NoteArtifact(
-        name: strippedFileName,
-        content: content,
-        createdBy: userId,
-        updatedBy: userId,
-      ),
-    ]);
+    final note = NoteArtifact(
+      name: strippedFileName,
+      content: content,
+      createdBy: userId,
+      updatedBy: userId,
+    );
+    await ArtifactsRepository(vaultId: vaultId).add([note]);
+
+    // BardEditor hydrates from artifact_snapshots + artifact_ops, not from
+    // NoteArtifact.content. Seed an initial CRDT snapshot containing the
+    // imported text so the editor renders it on open.
+    if (content.isNotEmpty) {
+      final doc = CRDTDocument(peerId: PeerId.generate());
+      CRDTFugueTextHandler(doc, BardCodec.handlerKey).insert(0, content);
+      final snap = doc.takeSnapshot(pruneHistory: false);
+
+      await ArtifactSnapshotsRepository(vaultId: vaultId).add([
+        ArtifactSnapshot(
+          artifactId: note.id,
+          vaultId: vaultId,
+          snapshotBytes: BardCodec.encodeSnapshot(snap),
+          versionVector: snap.versionVector.toJson(),
+        ),
+      ]);
+    }
   }
 
   static Future<void> _importImage({

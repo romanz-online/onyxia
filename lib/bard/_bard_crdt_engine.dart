@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:crdt_lf/crdt_lf.dart';
 
+import 'bard_codec.dart';
 import 'bard_collab_config.dart';
 
 /// Owns one CRDTDocument + CRDTFugueTextHandler for the lifetime of a
@@ -18,8 +18,6 @@ import 'bard_collab_config.dart';
 /// The engine is internal to `lib/bard/`; the rest of the app should never
 /// touch it directly. The public seam is [BardCollabConfig].
 class BardCrdtEngine {
-  static const _handlerKey = 'content';
-
   final BardCollabConfig _config;
   late final CRDTDocument _doc;
   late final CRDTFugueTextHandler _text;
@@ -56,15 +54,17 @@ class BardCrdtEngine {
     // sidesteps that — the doc gains one version-vector entry per session,
     // which compaction collapses.
     _doc = CRDTDocument(peerId: PeerId.generate());
-    _text = CRDTFugueTextHandler(_doc, _handlerKey);
+    _text = CRDTFugueTextHandler(_doc, BardCodec.handlerKey);
 
     // Hydrate from snapshot then catch-up ops.
     final snap = _config.initialSnapshot;
     if (snap != null) {
-      _doc.importSnapshot(_decodeSnapshot(snap));
+      _doc.importSnapshot(BardCodec.decodeSnapshot(snap));
     }
     if (_config.initialOps.isNotEmpty) {
-      _doc.importChanges(_config.initialOps.map(_decodeChange).toList());
+      _doc.importChanges(
+        _config.initialOps.map(BardCodec.decodeChange).toList(),
+      );
     }
 
     // Inbound: remote op bytes → applyChange. Mark the change id BEFORE
@@ -75,7 +75,7 @@ class BardCrdtEngine {
     // DAG may unblock previously-buffered descendants. Fixed-point retry
     // handles chains.
     _remoteSub = _config.remoteOps.listen((bytes) {
-      _tryApply(_decodeChange(bytes));
+      _tryApply(BardCodec.decodeChange(bytes));
       while (_pendingCausallyNotReady.isNotEmpty) {
         final beforeCount = _pendingCausallyNotReady.length;
         final retries = List<Change>.from(_pendingCausallyNotReady);
@@ -91,7 +91,7 @@ class BardCrdtEngine {
     // just applied as remote.
     _localSub = _doc.localChanges.listen((change) {
       if (_recentRemoteIds.remove(change.id.toString())) return;
-      _config.onLocalOp(_encodeChange(change));
+      _config.onLocalOp(BardCodec.encodeChange(change));
     });
   }
 
@@ -153,52 +153,12 @@ class BardCrdtEngine {
   /// compaction service does the canonical version.
   Uint8List takeSnapshotBytes() {
     final snap = _doc.takeSnapshot(pruneHistory: false);
-    return _encodeSnapshot(snap);
+    return BardCodec.encodeSnapshot(snap);
   }
 
   void dispose() {
     _localSub.cancel();
     _remoteSub.cancel();
     _doc.dispose();
-  }
-
-  // ── Codec ─────────────────────────────────────────────────────────────────
-
-  static Uint8List _encodeChange(Change change) {
-    return Uint8List.fromList(utf8.encode(jsonEncode(change.toJson())));
-  }
-
-  static Change _decodeChange(Uint8List bytes) {
-    final json = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
-    return Change.fromJson(json);
-  }
-
-  static Uint8List _encodeSnapshot(Snapshot snap) {
-    return Uint8List.fromList(utf8.encode(jsonEncode(snap.toJson())));
-  }
-
-  static Snapshot _decodeSnapshot(Uint8List bytes) {
-    final json = jsonDecode(utf8.decode(bytes)) as Map<String, dynamic>;
-    final raw = Snapshot.fromJson(json);
-    // crdt_lf 2.5.0's Snapshot.fromJson does only a shallow Map.from on
-    // `data`, so the handler's `is List<FugueValueNode<String>>` check
-    // (in _initialState) fails after a JSON round-trip and text loads empty.
-    // Rebuild the typed content list here.
-    final content = raw.data['content'];
-    if (content is List) {
-      final typed = content
-          .map(
-            (e) => FugueValueNode<String>.fromJson(
-              Map<String, dynamic>.from(e as Map),
-            ),
-          )
-          .toList();
-      return Snapshot(
-        id: raw.id,
-        versionVector: raw.versionVector,
-        data: {...raw.data, 'content': typed},
-      );
-    }
-    return raw;
   }
 }
