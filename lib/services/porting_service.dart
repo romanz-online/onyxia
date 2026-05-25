@@ -71,12 +71,17 @@ class PortingService {
   }) async {
     final reader = web.FileReader();
     final completer = Completer<String>();
-    reader.onLoadEnd.listen((_) {
-      completer.complete((reader.result as JSString).toDart);
-    });
+    reader.onLoadEnd.listen(
+      (_) => completer.complete((reader.result as JSString).toDart),
+    );
     reader.readAsText(file);
     final content = await completer.future;
 
+    // TODO: this isn't importing the text content of the markdown files. resulting NoteArtifacts are completely empty
+
+    print(content);
+
+    // TODO: make this safer so it explicitly removes .md or .markdown from the end of the string
     final dotIndex = file.name.lastIndexOf('.');
 
     await ArtifactsRepository(vaultId: vaultId).add([
