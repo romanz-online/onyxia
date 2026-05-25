@@ -68,6 +68,8 @@ class _RightColumn extends ConsumerWidget {
 
   const _RightColumn({required this.user});
 
+  // TODO: this causes an exception when it closes and tries to immediately navigate because it's an inline async widget
+  // TODO: cont. fixed by moving to its own statefulwidget. frankly this should also be a redesign of narwhalmodaldialog
   Future<void> _showNewVaultDialog(BuildContext context, WidgetRef ref) async {
     final controller = TextEditingController();
     await showDialog(
@@ -107,6 +109,8 @@ class _RightColumn extends ConsumerWidget {
             final currentUserId = ref.read(currentUserProvider).value?.id ?? '';
             final now = DateTime.now();
             final newVault = Vault(
+              // TODO: check if i actually need id, createdBy, createdAt, and updatedAt to be set here or if the database does it automatically
+              // TODO: if it doesn't, it should
               id: const Uuid().v4(),
               createdBy: currentUserId,
               createdAt: now,

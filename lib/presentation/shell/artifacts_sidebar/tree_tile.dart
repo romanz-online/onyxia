@@ -50,6 +50,6 @@ class TreeTile extends ConsumerWidget {
     if (a is! ImageArtifact) return null;
     final dot = a.name.lastIndexOf('.');
     if (dot <= 0 || dot == a.name.length - 1) return null;
-    return a.name.substring(dot);
+    return a.name.substring(dot + 1).toUpperCase();
   }
 }

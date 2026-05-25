@@ -2,6 +2,11 @@
 import 'note/note_editor_view.dart';
 import 'image/image_editor_view.dart';
 
+// TODO: there's too much loading flickering happening.
+// TODO: cont. even if i can't load the content of the artifact immediately,
+// TODO: cont. i should be able to at least load the artifact title immediately
+// TODO: cont. which would significantly reduce the jarring lack of transition
+
 class ArtifactWorkspace extends ConsumerStatefulWidget {
   final NoteStateProvider? noteProvider;
 
@@ -65,11 +70,17 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
             children: [
               Text(
                 'No item selected',
-                style: NarwhalTextStyle.bodyLarge(fontStyle: FontStyle.normal),
+                style: NarwhalTextStyle(
+                  fontStyle: FontStyle.normal,
+                  fontSize: 20,
+                ),
               ),
               Text(
                 'Select an item from the sidebar to view',
-                style: NarwhalTextStyle.bodyLarge(fontStyle: FontStyle.normal),
+                style: NarwhalTextStyle(
+                  fontStyle: FontStyle.normal,
+                  fontSize: 20,
+                ),
               ),
             ],
           ),
