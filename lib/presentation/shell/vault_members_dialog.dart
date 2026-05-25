@@ -106,7 +106,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
       width: 480,
       height: 480,
       content: entriesAsync.when(
-        loading: () => Center(child: NarwhalSpinner()),
+        loading: () => Expanded(child: Center(child: OnyxiaLoadingIndicator())),
         error: (e, _) => Text(
           'Failed to load members: $e',
           style: NarwhalTextStyle(color: ThemeHelper.red600(context)),
@@ -149,7 +149,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
             ),
             const Gap(8),
             if (_isSending)
-              SizedBox(width: 20, height: 20, child: NarwhalSpinner())
+              SizedBox(width: 20, height: 20, child: OnyxiaLoadingIndicator())
             else
               OnyxiaButton(
                 label: 'Send',
@@ -193,8 +193,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                     OnyxiaButton(
                       label: 'Copy',
                       onTap: () {
-                        Clipboard.setData(
-                            ClipboardData(text: _generatedLink!));
+                        Clipboard.setData(ClipboardData(text: _generatedLink!));
                         OnyxiaToast.show(
                           text: 'Link copied.',
                           type: ToastType.success,

@@ -218,7 +218,7 @@ class ArtifactObject extends ConsumerWidget {
         ),
       ),
       child: Center(
-        child: NarwhalSpinner(),
+        child: OnyxiaLoadingIndicator(),
       ),
     );
   }

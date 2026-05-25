@@ -109,7 +109,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
         ),
       );
 
-    if (!async.hasValue) return Center(child: NarwhalSpinner());
+    if (!async.hasValue) return Center(child: OnyxiaLoadingIndicator());
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 

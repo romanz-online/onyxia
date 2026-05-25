@@ -67,7 +67,7 @@ class _ConstellationState extends ConsumerState<Constellation> {
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(artifactsProvider);
-    if (!async.hasValue) return Center(child: NarwhalSpinner());
+    if (!async.hasValue) return Center(child: OnyxiaLoadingIndicator());
     final items = async.value!;
 
     final layout = _buildWikiLinks(context, items);

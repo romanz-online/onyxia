@@ -37,7 +37,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   Widget _buildBody(Artifact selectedItem, AsyncValue noteAsyncState) {
     if (selectedItem.type == ArtifactType.note) {
       if (noteAsyncState.isLoading) {
-        return Center(child: NarwhalSpinner());
+        return Center(child: OnyxiaLoadingIndicator());
       }
       if (noteAsyncState.hasError) {
         return Center(

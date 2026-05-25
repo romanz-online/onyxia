@@ -72,33 +72,54 @@
 
     #loading_indicator {
       position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #1C1C1E;
+      z-index: 2147483647; /* sit above flutter-view during boot */
     }
 
-    .indicator {
-      width: 100px;
-      /* Loading size */
-      height: auto;
+    /* Pulse-dot loader. Mirrors OnyxiaLoadingIndicator in
+       lib/presentation/common_widget/onyxia_loading_indicator.dart —
+       keep duration / scale / opacity / color in sync if you change them.
+       #909699 matches ThemeHelper.neutral500 (NarwhalColors.neutral500);
+       hardcoded here because no BuildContext exists pre-Flutter. */
+    .pulse-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      opacity: 0.5;
+      background-color: #FF9800;
+      animation: pulse-dot 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { transform: scale(1);   opacity: 0.8; }
+      50%      { transform: scale(1.3); opacity: 1;   }
     }
   </style>
 </head>
 
 <body>
-  <div id="loading_indicator" class="container">
-    <img class="indicator" src="./assets/loading.gif" />
+  <div id="loading_indicator">
+    <span class="pulse-dot" role="status" aria-label="Loading"></span>
   </div>
   <script src="flutter_bootstrap.js" async></script>
+
+
   <script>
-    window.onload = function () {
+    window.addEventListener('flutter-first-frame', function () {
+
+      
       setTimeout(function () {
         var loadingIndicator = document.getElementById("loading_indicator");
         if (loadingIndicator) {
           loadingIndicator.remove();
         }
-      }, 10000);
-    };
+      }, 2000);
+
+    });
   </script>
 </body>
 

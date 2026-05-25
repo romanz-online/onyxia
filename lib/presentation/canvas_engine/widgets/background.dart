@@ -73,7 +73,7 @@ class BackgroundState extends ConsumerState<Background>
         return Container(
           color: ThemeHelper.neutral200(context),
           child: Center(
-            child: NarwhalSpinner(),
+            child: OnyxiaLoadingIndicator(),
           ),
         );
       }
@@ -87,7 +87,7 @@ class BackgroundState extends ConsumerState<Background>
         return Container(
           color: ThemeHelper.neutral200(context),
           child: Center(
-            child: NarwhalSpinner(),
+            child: OnyxiaLoadingIndicator(),
           ),
         );
       }

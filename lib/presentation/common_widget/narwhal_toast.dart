@@ -1,6 +1,8 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
+// TODO: clicking a toast should make it hide immediate, but only the one that was clicked
+
 enum ToastType {
   success,
   warning,

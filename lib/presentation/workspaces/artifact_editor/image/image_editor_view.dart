@@ -21,7 +21,7 @@ class ImageEditorView extends StatelessWidget {
                     artifact.downloadUrl,
                     fit: BoxFit.scaleDown,
                     loadingBuilder: (ctx, child, progress) =>
-                        progress == null ? child : NarwhalSpinner(),
+                        progress == null ? child : OnyxiaLoadingIndicator(),
                     errorBuilder: (ctx, err, _) => Text(
                       'Failed to load image',
                       style: NarwhalTextStyle(

@@ -43,7 +43,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     if (widget.vaultId.isNotEmpty) {
       final vaultsAsync = ref.watch(vaultsProvider);
       if (vaultsAsync.isLoading) {
-        return Scaffold(body: Center(child: NarwhalSpinner()));
+        return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
       }
       final vaults = vaultsAsync.value ?? const <Vault>[];
       final vaultExists = vaults.any((p) => p.id == widget.vaultId);
@@ -51,7 +51,7 @@ class _AppShellState extends ConsumerState<AppShell> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) context.replace(Routes.home);
         });
-        return Scaffold(body: Center(child: NarwhalSpinner()));
+        return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
       }
     }
 

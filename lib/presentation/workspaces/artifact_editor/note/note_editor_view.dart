@@ -117,7 +117,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
     }
 
     return noteState.when(
-      loading: () => Center(child: NarwhalSpinner()),
+      loading: () => Center(child: OnyxiaLoadingIndicator()),
       error: (error, _) => _ErrorView(
         error: error,
         onRetry: () => ref.invalidate(selectedNoteStateProvider),

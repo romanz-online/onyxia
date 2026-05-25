@@ -93,7 +93,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final canvasBounds = ref.watch(canvasBoundsProvider);
 
     if (canvasBounds.isLoading) {
-      return Scaffold(body: Center(child: NarwhalSpinner()));
+      return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
     }
 
     if (currentCanvas == null) {

@@ -120,7 +120,7 @@ export 'package:onyxia/presentation/canvas_engine/utils/connection_points.dart';
 export 'package:onyxia/presentation/canvas_engine/utils/pathfinder.dart';
 export 'package:onyxia/presentation/canvas_engine/utils/arrow_path_helper.dart';
 export 'package:onyxia/helpers/image_helper.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_spinner.dart';
+export 'package:onyxia/presentation/common_widget/onyxia_loading_indicator.dart';
 export 'package:onyxia/helpers/narwhal_enum.dart';
 
 //others

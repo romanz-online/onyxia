@@ -43,7 +43,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context.go(Routes.home);
       });
-      return Scaffold(body: Center(child: NarwhalSpinner()));
+      return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
     },
     routes: <RouteBase>[
       GoRoute(

@@ -100,7 +100,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
         const Gap(12),
         Center(
           child: OnyxiaButton(
-            label: _isSubmitting ? '...' : 'Sign in',
+            label: 'Sign in',
             onTap: _isSubmitting ? null : _submit,
           ),
         ),
