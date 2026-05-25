@@ -923,6 +923,10 @@ ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."sub_comments";
 
 
 
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."vaults";
+
+
+
 GRANT USAGE ON SCHEMA "public" TO "postgres";
 GRANT USAGE ON SCHEMA "public" TO "anon";
 GRANT USAGE ON SCHEMA "public" TO "authenticated";

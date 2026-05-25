@@ -58,6 +58,8 @@ class PortingService {
     required String userId,
     void Function(int done, int total)? onProgress,
   }) async {
+    // TODO: this currently reads in a bunch of files that aren't explicitly markdown or images.
+    // TODO: cont. they should be filtered out before the browser even confirms with the user, before this method is even reached.
     for (var i = 0; i < files.length; i++) {
       final file = files[i];
       final ext = file.name.toLowerCase().split('.').last;

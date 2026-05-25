@@ -59,19 +59,16 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         .where((p) => p.isNotEmpty)
         .toList();
 
-    final router = ref.read(routerProvider);
-    final urlSelectedName =
-        router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
-    final selectedItem = urlSelectedName == null
-        ? null
-        : _items.firstWhereOrNull((a) => a.name == urlSelectedName);
+    final urlSelectedName = ref
+        .read(routerProvider)
+        .routerDelegate
+        .currentConfiguration
+        .pathParameters['selectedId'];
+    final selectedItem =
+        _items.firstWhereOrNull((a) => a.name == urlSelectedName);
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
-      router.go('/vault/$_vaultId/${Routes.graph}');
+      ref.read(routerProvider).go('/vault/$_vaultId/${Routes.graph}');
     }
-
-    state = AsyncData(
-      _items.where((e) => !idsToDelete.contains(e.id)).toList(),
-    );
 
     await _repository.deleteMultiple(idsToDelete);
     await ImageService.deleteImages(storagePathsToDelete);
@@ -97,10 +94,9 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   // --- Update ---
 
   void updateItemState(Artifact item) {
-    final items = _items;
-    final index = items.indexWhere((e) => e.id == item.id);
+    final index = _items.indexWhere((e) => e.id == item.id);
     if (index == -1) return;
-    final updated = List<Artifact>.from(items);
+    final updated = List<Artifact>.from(_items);
     updated[index] = item;
     state = AsyncData(updated);
   }
