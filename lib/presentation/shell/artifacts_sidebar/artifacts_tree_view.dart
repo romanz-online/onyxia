@@ -116,6 +116,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     // TODO: there's some weird state management or caching going on here.
     // TODO: cont. i'll often delete or move an artifact and it might update immediately
     // TODO: cont. but then on the next update it will be there again, even though it's gone from the database
+    // TODO: cont. and otherwise the update just won't even go through at all
 
     return SuperTreeView<Artifact>(
       controller: treeController,
@@ -123,7 +124,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       expansionBuilder: (ctx, node) => node.hasChildren
           ? Padding(
               padding: EdgeInsets.fromLTRB(
-                node.isExpanded ? 0 : 5,
+                node.isExpanded ? 2 : 3,
                 0,
                 0,
                 node.isExpanded ? 4 : 2,
