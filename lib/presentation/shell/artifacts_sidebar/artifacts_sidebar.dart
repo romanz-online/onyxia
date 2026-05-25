@@ -29,6 +29,9 @@ class ArtifactsSidebar extends StatelessWidget {
         animateNextCollapseChange,
       ]),
       builder: (context, _) {
+        // TODO: this is a little complicated. there's a gap that appears to the left of the master sidebar because it and this sidebar are in a Row
+        // TODO: cont. i'd probably need the master sidebar itself to be aware of the artifacts sidebar state, or have a global sidebar manager, or
+        // TODO: cont. have the resize divider in a stack above both sidebars and somehow have a system that ties it to the artifacts sidebar
         final w = isCollapsed.value ? _dividerStripWidth : width.value;
         final animate = animateNextCollapseChange.value;
         final duration =
