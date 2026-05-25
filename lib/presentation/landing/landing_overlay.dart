@@ -304,8 +304,10 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
           decoration: BoxDecoration(
             color: ThemeHelper.neutral100(context),
             borderRadius: BorderRadius.circular(8),
-            border:
-                Border.all(color: ThemeHelper.neutral300(context), width: 2),
+            border: Border.all(
+              color: ThemeHelper.neutral300(context),
+              width: 2,
+            ),
             boxShadow: [
               BoxShadow(
                 color: ThemeHelper.neutral900(context).withValues(alpha: 0.15),
@@ -323,6 +325,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   }
 
   Widget _buildContent(BuildContext context, User user) {
+    // TODO: separate all of these separate "screens" into their own widgets under landing/widgets/
     switch (widget.initialMode) {
       case LandingMode.invite:
         return _buildInvite(context);
@@ -530,6 +533,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   }
 
   Widget _buildVaultRow(BuildContext context, Vault vault) {
+    // TODO: this shouldn't be an OnyxiaButton. it should have a 3-dot menu on the right that's always visible and has the same behavior as right-clicking anywhere on this list item
     return OnyxiaButton(
       label: vault.name,
       onTap: () {
