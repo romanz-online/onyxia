@@ -77,7 +77,7 @@ class PortingService {
     reader.readAsText(file);
     final content = await completer.future;
 
-    // TODO: this isn't importing the text content of the markdown files. resulting NoteArtifacts are completely empty
+    // TODO: this is importing file content correctly BUT it's not creating a snapshot or ops for the note artifact, resulting in nothing appearing in the editor
 
     print(content);
 
