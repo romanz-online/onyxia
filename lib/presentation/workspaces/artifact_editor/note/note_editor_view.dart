@@ -35,9 +35,6 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
 
   String? _currentNoteId;
 
-  // TODO: handle inserting images
-  // static const _imageFormats = [Formats.png, Formats.jpeg, Formats.bmp, Formats.gif];
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -75,7 +72,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
     });
   }
 
-  // TODO: implement
+  // TODO: handle inserting images
   Future<void> _handleImageDrop(PerformDropEvent event) async {
     // final item = event.session.items.first;
     // final reader = item.dataReader!;
@@ -325,7 +322,7 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
                       top: 8,
                       right: 8,
                       child: OnyxiaIconButton(
-                        icon: LucideIcons.ghost, 
+                        icon: LucideIcons.ghost,
                         isSelected: _isGhostTyping,
                         tooltip: 'Ghost-type lorem ipsum (debug)',
                         onPressed: _toggleGhostType,
