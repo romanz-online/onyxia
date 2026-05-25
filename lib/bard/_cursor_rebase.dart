@@ -2,15 +2,15 @@ import 'package:flutter/material.dart';
 
 /// Rebases a [TextSelection] across an external text change.
 ///
-/// Computes the change region as the common-prefix / common-suffix split
-/// between [oldText] and [newText], then shifts each selection endpoint:
-/// - Endpoints at or before the change region: unchanged.
-/// - Endpoints at or past the change region: shifted by `insertedLen - removedLen`.
-/// - Endpoints inside the change region: collapsed to the region start.
+/// For each selection endpoint, finds the longest unchanged anchor of
+/// characters adjacent to the cursor (backward first, then forward) that
+/// also appears in [newText], and uses that anchor's new position to
+/// compute the rebased offset. Handles single-region edits *and*
+/// multi-region edits (where text changes on both sides of the cursor)
+/// without collapsing the cursor onto the boundary of an edit.
 ///
-/// This handles single-region inserts, deletes, and replacements correctly.
-/// Multi-region updates collapse into one super-region — cursor placement is
-/// slightly suboptimal but never broken.
+/// Anchor search is bounded by [_maxAnchor] characters in each direction,
+/// keeping the cost predictable for interactive use.
 TextSelection rebaseSelection({
   required String oldText,
   required String newText,
@@ -19,34 +19,7 @@ TextSelection rebaseSelection({
   if (oldText == newText) return oldSelection;
   if (!oldSelection.isValid) return oldSelection;
 
-  final shorter =
-      oldText.length < newText.length ? oldText.length : newText.length;
-
-  // Common prefix.
-  int prefix = 0;
-  while (prefix < shorter &&
-      oldText.codeUnitAt(prefix) == newText.codeUnitAt(prefix)) {
-    prefix++;
-  }
-
-  // Common suffix, bounded so it can't overlap the prefix on the shorter side.
-  int suffix = 0;
-  while (suffix < shorter - prefix &&
-      oldText.codeUnitAt(oldText.length - 1 - suffix) ==
-          newText.codeUnitAt(newText.length - 1 - suffix)) {
-    suffix++;
-  }
-
-  final removedLen = oldText.length - suffix - prefix;
-  final insertedLen = newText.length - suffix - prefix;
-  final delta = insertedLen - removedLen;
-  final regionEnd = oldText.length - suffix;
-
-  int rebase(int p) {
-    if (p <= prefix) return p;
-    if (p >= regionEnd) return p + delta;
-    return prefix;
-  }
+  int rebase(int p) => _rebasePosition(oldText, newText, p);
 
   return TextSelection(
     baseOffset: rebase(oldSelection.baseOffset),
@@ -54,4 +27,34 @@ TextSelection rebaseSelection({
     affinity: oldSelection.affinity,
     isDirectional: oldSelection.isDirectional,
   );
+}
+
+const int _maxAnchor = 32;
+
+int _rebasePosition(String oldText, String newText, int oldPos) {
+  if (oldPos <= 0) return 0;
+  if (oldPos >= oldText.length) return newText.length;
+
+  // Backward anchor: longest run of chars immediately before the cursor that
+  // appears in newText. Use its position to place the new cursor right after.
+  final backMax = oldPos < _maxAnchor ? oldPos : _maxAnchor;
+  for (int k = backMax; k > 0; k--) {
+    final anchor = oldText.substring(oldPos - k, oldPos);
+    final at = newText.indexOf(anchor);
+    if (at != -1) return at + k;
+  }
+
+  // Forward anchor: longest run of chars immediately after the cursor that
+  // appears in newText. Place the cursor right before that run.
+  final fwdMax = (oldText.length - oldPos) < _maxAnchor
+      ? (oldText.length - oldPos)
+      : _maxAnchor;
+  for (int k = fwdMax; k > 0; k--) {
+    final anchor = oldText.substring(oldPos, oldPos + k);
+    final at = newText.indexOf(anchor);
+    if (at != -1) return at;
+  }
+
+  // No anchor matched in either direction — clamp to newText length.
+  return oldPos.clamp(0, newText.length);
 }

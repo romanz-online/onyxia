@@ -20,10 +20,19 @@ class BardController extends TextEditingController {
   String? _cachedText;
   MarkdownParseResult _parseResult = MarkdownParseResult.empty;
 
-  // Tier 2: render cache — invalidated when cursor offset changes
+  // Tier 2: render cache — invalidated when cursor crosses a span boundary
+  // or the base style changes. Pure cursor movement within a "neutral zone"
+  // between spans reuses the cached span without rebuilding.
   int _cachedCursorOffset = -1;
   TextSpan? _cachedSpan;
   TextStyle? _cachedBaseStyle;
+
+  /// Sorted offsets at which the per-interval `cursorInAnyOwner` /
+  /// `cursorOnLine` checks in [_buildSpanTree] can change their answer. For
+  /// inline spans these are `markerStartOpen` and `markerEndClose + 1`; for
+  /// line spans, `lineStart` and `lineEnd + 1`. Two offsets that fall in the
+  /// same bucket between consecutive boundaries produce identical span trees.
+  List<int>? _cursorBoundaries;
 
   MarkdownParseResult get parseResult => _parseResult;
 
@@ -55,18 +64,49 @@ class BardController extends TextEditingController {
       _cachedText = val.text;
       _cachedCursorOffset = -1; // force Tier 2 rebuild
       _cachedSpan = null;
+      _cursorBoundaries = _computeCursorBoundaries(_parseResult);
     }
 
-    // Tier 2: rebuild span tree when cursor moves or base style changes
+    // Tier 2: rebuild only when the cursor crosses a span boundary, the
+    // base style changes, or we don't have a cached span yet. Pure cursor
+    // movement within a single bucket is a no-op.
+    final boundaries = _cursorBoundaries!;
+    final oldBucket = _bucketOf(_cachedCursorOffset, boundaries);
+    final newBucket = _bucketOf(cursorOffset, boundaries);
     if (_cachedSpan == null ||
-        cursorOffset != _cachedCursorOffset ||
-        style != _cachedBaseStyle) {
+        style != _cachedBaseStyle ||
+        oldBucket != newBucket) {
       _cachedSpan = _buildSpanTree(val.text, _parseResult, cursorOffset, style);
-      _cachedCursorOffset = cursorOffset;
       _cachedBaseStyle = style;
     }
-
+    _cachedCursorOffset = cursorOffset;
     return _cachedSpan!;
+  }
+
+  static List<int> _computeCursorBoundaries(MarkdownParseResult r) {
+    final set = SplayTreeSet<int>();
+    for (final s in r.inlineSpans) {
+      set.add(s.markerStartOpen);
+      set.add(s.markerEndClose + 1);
+    }
+    for (final s in r.lineSpans) {
+      set.add(s.lineStart);
+      set.add(s.lineEnd + 1);
+    }
+    return set.toList();
+  }
+
+  static int _bucketOf(int offset, List<int> sortedBoundaries) {
+    int lo = 0, hi = sortedBoundaries.length;
+    while (lo < hi) {
+      final mid = (lo + hi) >> 1;
+      if (sortedBoundaries[mid] <= offset) {
+        lo = mid + 1;
+      } else {
+        hi = mid;
+      }
+    }
+    return lo;
   }
 
   TextSpan _buildWithComposing(TextEditingValue val, TextStyle? style) {
