@@ -1,4 +1,7 @@
 import 'package:onyxia/export.dart';
+import 'package:web/web.dart' as web;
+
+bool _onyxiaReadyDispatched = false;
 
 class AppShell extends ConsumerStatefulWidget {
   final String? selectedId;
@@ -53,6 +56,13 @@ class _AppShellState extends ConsumerState<AppShell> {
         });
         return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
       }
+    }
+
+    if (!_onyxiaReadyDispatched) {
+      _onyxiaReadyDispatched = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        web.window.dispatchEvent(web.Event('onyxia-ready'));
+      });
     }
 
     return Scaffold(

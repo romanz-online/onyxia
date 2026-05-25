@@ -101,24 +101,22 @@
   </style>
 </head>
 
+<!-- TODO: eventually i'll want to render a skeleton ui that mimics the standard onyxia app layout so that there's no dedicated "loading screen" like this -->
+<!-- TODO: cont. at that point i'll also probably remove the 1000ms timer that only exists to mask a bit of loading in the flutter app -->
+
 <body>
   <div id="loading_indicator">
     <span class="pulse-dot" role="status" aria-label="Loading"></span>
   </div>
   <script src="flutter_bootstrap.js" async></script>
-
-
   <script>
-    window.addEventListener('flutter-first-frame', function () {
-
-      
+    window.addEventListener('onyxia-ready', function () {
       setTimeout(function () {
         var loadingIndicator = document.getElementById("loading_indicator");
         if (loadingIndicator) {
           loadingIndicator.remove();
         }
-      }, 2000);
-
+      }, 1000);
     });
   </script>
 </body>
