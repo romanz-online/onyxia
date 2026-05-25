@@ -10,7 +10,6 @@ class VaultsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value ?? User.initial();
-    // TODO: this stream doesn't seem to be updating when i delete a vault
     final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
 
     return Row(
@@ -178,6 +177,9 @@ class _NewVaultDialogState extends State<_NewVaultDialog> {
     await VaultsRepository().add([newVault]).then((_) {
       Navigator.of(context).pop();
       // TODO: context.go isn't working here and the list still isn't updating
+      // TODO: cont. getting this error:
+      /// GoRouter: INFO: going to /vault/ed82b5bb-ddc5-4861-bc86-f919444505fa/graph
+      /// js_primitives.dart:28 GoRouter: INFO: redirecting to RouteMatchList#4b4fd(uri: /, matches: [RouteMatch#6e12c(route: GoRoute#15abd(name: "home", path: "/"))])
       context.go('/vault/${newVault.id}/graph');
     });
   }
