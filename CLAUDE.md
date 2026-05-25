@@ -103,6 +103,14 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
 - `OnyxiaIconButton` accepts `icon: IconData` (use a `LucideIcons.*` constant), plus `onPressed`, `tooltip`, `iconColor`, `isPressed`, `isSelected`, `size`, `badgeCount` — it handles hover/press states, tooltip styling, and theme color resolution for you
 - The same spirit applies to other widgets: prefer `OnyxiaButton` over `ElevatedButton`, `OnyxiaDialog` over native dialogs, `NarwhalSpinner` over `CircularProgressIndicator`, etc. — if a project wrapper exists, use it
 
+### Overlays, Menus, Popovers - CRITICAL RULE
+
+- **ALWAYS** use `OnyxiaOverlay` (flutter_portal-backed, see [lib/presentation/common_widget/onyxia_overlay.dart](lib/presentation/common_widget/onyxia_overlay.dart)) for any popover, dropdown, tooltip surface, or context menu anchored to a trigger widget. It handles outside-click dismissal, route-change dismissal, focus-loss dismissal, and edge-overflow fallback positioning via `Aligned`'s `backup`
+- **NEVER** call `Overlay.of(context).insert(OverlayEntry(...))` directly in app code
+- **NEVER** position floating UI with `Builder` + `findRenderObject().localToGlobal(...)` math — pass an `Aligned` anchor to `OnyxiaOverlay` instead. For cursor-anchored menus (e.g. right-click), capture `details.localPosition` and feed it into the anchor's `offset`
+- **For menu surfaces** use `OnyxiaMenu` + `OnyxiaMenuItem` from [lib/presentation/common_widget/onyxia_menu.dart](lib/presentation/common_widget/onyxia_menu.dart) rather than rebuilding Material/ListView/InkWell trees by hand. `OnyxiaMenuItem` takes `icon` + `child` + `onTap`; use `OnyxiaMenuItem.divider()` for separators
+- **EXCEPTION**: vendored packages under `lib/vendor/` (e.g. `super_tree`'s `ContextMenuOverlay`) are out of scope to refactor, but app code calling into vendored overlays should be migrated to `OnyxiaOverlay` + `OnyxiaMenu`
+
 ---
 
 ## Architecture Quick Reference

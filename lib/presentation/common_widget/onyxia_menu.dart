@@ -1,0 +1,96 @@
+import 'package:onyxia/export.dart';
+
+class OnyxiaMenuItem {
+  final IconData? icon;
+  final Widget? child;
+  final VoidCallback? onTap;
+  final bool isDivider;
+
+  const OnyxiaMenuItem({
+    this.icon,
+    required Widget this.child,
+    required VoidCallback this.onTap,
+  }) : isDivider = false;
+
+  const OnyxiaMenuItem.divider()
+      : icon = null,
+        child = null,
+        onTap = null,
+        isDivider = true;
+}
+
+class OnyxiaMenu extends StatelessWidget {
+  final List<OnyxiaMenuItem> items;
+  final VoidCallback closeOverlay;
+  final double width;
+
+  const OnyxiaMenu({
+    super.key,
+    required this.items,
+    required this.closeOverlay,
+    this.width = 180,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      elevation: 8,
+      borderRadius: BorderRadius.circular(6.0),
+      color:
+          Theme.of(context).popupMenuTheme.color ?? Theme.of(context).cardColor,
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(6.0),
+          border: Border.all(
+            color: ThemeHelper.neutral400(context).withAlpha(25),
+          ),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          shrinkWrap: true,
+          children: items.map((item) => _buildItem(context, item)).toList(),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItem(BuildContext context, OnyxiaMenuItem item) {
+    if (item.isDivider) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Divider(
+          height: 1,
+          thickness: 1,
+          color: ThemeHelper.neutral400(context),
+        ),
+      );
+    }
+
+    return InkWell(
+      mouseCursor: SystemMouseCursors.basic,
+      onTap: () {
+        closeOverlay();
+        item.onTap!();
+      },
+      child: Container(
+        width: double.infinity,
+        alignment: Alignment.centerLeft,
+        padding: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 16.0),
+        child: Row(
+          spacing: 8,
+          children: [
+            if (item.icon != null)
+              Icon(
+                item.icon,
+                size: 14,
+                color: ThemeHelper.neutral700(context),
+              ),
+            Expanded(child: item.child!),
+          ],
+        ),
+      ),
+    );
+  }
+}

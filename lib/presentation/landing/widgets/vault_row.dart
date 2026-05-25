@@ -1,84 +1,117 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/vaults_tree_context_menu.dart';
 
-// TODO: make widget bigger and different background color
-
-// TODO: three-dot menu isn't visually responsive
-
-class VaultRow extends ConsumerWidget {
+class VaultRow extends ConsumerStatefulWidget {
   final Vault vault;
 
   const VaultRow({super.key, required this.vault});
 
-  void _showMenu(BuildContext context, Offset position) {
-    ContextMenuOverlay.show(
-      context: context,
-      position: position,
-      items: buildVaultContextMenuItems(context, vault),
-    );
+  @override
+  ConsumerState<VaultRow> createState() => _VaultRowState();
+}
+
+class _VaultRowState extends ConsumerState<VaultRow> {
+  Offset? _cursorOffset;
+  bool _isButtonMenuOpen = false;
+
+  void _openCursorMenu(Offset localPosition) {
+    setState(() {
+      _isButtonMenuOpen = false;
+      _cursorOffset = localPosition;
+    });
+  }
+
+  void _toggleButtonMenu() {
+    setState(() {
+      _cursorOffset = null;
+      _isButtonMenuOpen = !_isButtonMenuOpen;
+    });
+  }
+
+  void _closeCursorMenu() {
+    if (_cursorOffset == null) return;
+    setState(() => _cursorOffset = null);
+  }
+
+  void _closeButtonMenu() {
+    if (!_isButtonMenuOpen) return;
+    setState(() => _isButtonMenuOpen = false);
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onSecondaryTapDown: (details) =>
-          _showMenu(context, details.globalPosition),
-      child: HoverBuilder(
-        builder: (context, isHovered) {
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
-            decoration: BoxDecoration(
-              color: isHovered
-                  ? ThemeHelper.neutral200(context)
-                  : Colors.transparent,
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    behavior: HitTestBehavior.opaque,
-                    onTap: () => context.go('/vault/${vault.id}/graph'),
-                    child: Padding(
-                      padding: const EdgeInsets.fromLTRB(1.5, 4, 1.5, 6),
-                      child: Text(
-                        vault.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: NarwhalTextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: ThemeHelper.neutral700(context),
+  Widget build(BuildContext context) {
+    final vault = widget.vault;
+
+    return OnyxiaOverlay(
+      isOpen: _cursorOffset != null,
+      onClose: _closeCursorMenu,
+      anchor: Aligned(
+        follower: Alignment.topLeft,
+        target: Alignment.topLeft,
+        offset: _cursorOffset ?? Offset.zero,
+      ),
+      builder: (context, closeOverlay) => OnyxiaMenu(
+        items: buildVaultContextMenuItems(context, vault),
+        closeOverlay: closeOverlay,
+      ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onSecondaryTapDown: (details) => _openCursorMenu(details.localPosition),
+        child: HoverBuilder(
+          builder: (context, isHovered) {
+            return Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              decoration: BoxDecoration(
+                color: isHovered
+                    ? ThemeHelper.neutral300(context).withValues(alpha: 0.5)
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      behavior: HitTestBehavior.opaque,
+                      onTap: () => context.go('/vault/${vault.id}/graph'),
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(1.5, 6, 1.5, 8),
+                        child: Text(
+                          vault.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: NarwhalTextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: ThemeHelper.neutral700(context),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                Builder(
-                  // TODO: this should use flutter_portal, not supertree's context menu. menu's topLeft should align with button's topRight
-
-                  // TODO: build flutter_portal into OnyxiaButton. specifically: copy the format that vaultsettingsbutton already establishes with onyxiaoverlay (which uses flutter_portal) and then also homogenize vaultsettingsbutton to use the new layout
-
-                  // TODO: add flutter_portal usage to CLAUDE.md so that claude uses flutter_portal instead of doing this builder/renderbox stuff
-                  builder: (buttonContext) => OnyxiaIconButton(
-                    icon: LucideIcons.ellipsisVertical,
-                    size: 20,
-                    onPressed: () {
-                      final renderBox =
-                          buttonContext.findRenderObject() as RenderBox?;
-                      final position = renderBox != null
-                          ? renderBox
-                              .localToGlobal(Offset(0, renderBox.size.height))
-                          : Offset.zero;
-                      _showMenu(context, position);
-                    },
+                  OnyxiaOverlay(
+                    isOpen: _isButtonMenuOpen,
+                    onClose: _closeButtonMenu,
+                    anchor: const Aligned(
+                      follower: Alignment.topLeft,
+                      target: Alignment.topRight,
+                      offset: Offset(4, 0),
+                    ),
+                    builder: (context, closeOverlay) => OnyxiaMenu(
+                      items: buildVaultContextMenuItems(context, vault),
+                      closeOverlay: closeOverlay,
+                    ),
+                    child: OnyxiaIconButton(
+                      icon: LucideIcons.ellipsisVertical,
+                      size: 24,
+                      isPressed: _isButtonMenuOpen,
+                      onPressed: _toggleButtonMenu,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }

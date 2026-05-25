@@ -24,6 +24,8 @@ class NarwhalModalInputDecoration {
   }
 }
 
+// TODO: this thing is an ugly piece of shit and needs to be redesigned posthaste
+
 /// A reusable modal dialog widget with title, content, and action buttons
 class NarwhalModalDialog extends ConsumerStatefulWidget {
   final String title;

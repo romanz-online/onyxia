@@ -10,6 +10,7 @@ class VaultsView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value ?? User.initial();
+    // TODO: this stream doesn't seem to be updating when i delete a vault
     final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
 
     return Row(
@@ -32,7 +33,8 @@ class _VaultListColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return Container(
+      color: ThemeHelper.neutral200(context),
       padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

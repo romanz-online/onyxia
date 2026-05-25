@@ -1,78 +1,46 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/rename_vault_dialog.dart';
 
-// TODO: fix dimensions/overflow issue
-
-// TODO: icons are dark and need to be light
-
-// TODO: for some reason deletes might happen eventually but it's extremely unresponsive
-
-// TODO: give all options an icon to keep it uniform
-
-List<ContextMenuItem> buildVaultContextMenuItems(
+List<OnyxiaMenuItem> buildVaultContextMenuItems(
   BuildContext context,
   Vault vault,
 ) {
-  final items = <ContextMenuItem>[];
-
-  items.add(ContextMenuItem(
-    child: Row(
-      spacing: 8,
-      children: [
-        const Icon(LucideIcons.externalLink, size: 14),
-        Text('Open in New Tab', style: NarwhalTextStyle()),
-      ],
-    ),
-    onTap: () {
-      NavigationContextMenu.openInNewTab(
+  return [
+    OnyxiaMenuItem(
+      icon: LucideIcons.externalLink,
+      child: Text('Open in New Tab', style: NarwhalTextStyle()),
+      onTap: () => NavigationContextMenu.openInNewTab(
         NavigationUrlBuilder.buildGraphUrl(vault.id),
-      );
-    },
-  ));
-
-  items.add(ContextMenuItem(
-    child: Row(
-      spacing: 8,
-      children: [
-        const Icon(LucideIcons.link, size: 14),
-        Text('Copy Link', style: NarwhalTextStyle()),
-      ],
+      ),
     ),
-    onTap: () {
-      final url = NavigationUrlBuilder.buildGraphUrl(vault.id);
-      NavigationContextMenu.copyLinkToClipboard(url);
-    },
-  ));
-
-  items.add(ContextMenuItem(
-    child: Divider(
-      height: 1,
-      thickness: 1,
-      color: ThemeHelper.neutral400(context),
+    OnyxiaMenuItem(
+      icon: LucideIcons.link,
+      child: Text('Copy Link', style: NarwhalTextStyle()),
+      onTap: () => NavigationContextMenu.copyLinkToClipboard(
+        NavigationUrlBuilder.buildGraphUrl(vault.id),
+      ),
     ),
-    onTap: () {},
-  ));
-
-  items.add(ContextMenuItem(
-    child: Text('Rename Vault', style: NarwhalTextStyle()),
-    onTap: () {
-      showDialog(
-        context: context,
-        barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
-        builder: (_) => RenameVaultDialog(
-          vaultName: vault.name,
-          vaultId: vault.id,
-        ),
-      );
-    },
-  ));
-
-  items.add(ContextMenuItem(
-    child: Text('Delete Vault', style: NarwhalTextStyle()),
-    onTap: () => _confirmRemove(context, vault),
-  ));
-
-  return items;
+    const OnyxiaMenuItem.divider(),
+    OnyxiaMenuItem(
+      icon: LucideIcons.pencil,
+      child: Text('Rename Vault', style: NarwhalTextStyle()),
+      onTap: () {
+        showDialog(
+          context: context,
+          barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
+          builder: (_) => RenameVaultDialog(
+            vaultName: vault.name,
+            vaultId: vault.id,
+          ),
+        );
+      },
+    ),
+    OnyxiaMenuItem(
+      icon: LucideIcons.trash2,
+      child: Text('Delete Vault', style: NarwhalTextStyle()),
+      onTap: () => _confirmRemove(context, vault),
+    ),
+  ];
 }
 
 void _confirmRemove(BuildContext context, Vault vault) async {
