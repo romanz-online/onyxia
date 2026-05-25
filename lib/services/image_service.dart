@@ -35,9 +35,11 @@ class ImageService {
           fileOptions: FileOptions(contentType: mime, upsert: false),
         );
 
+    final dotIndex = fileName.lastIndexOf('.');
+
     final artifact = ImageArtifact(
       id: id,
-      name: fileName,
+      name: dotIndex == -1 ? fileName : fileName.substring(0, dotIndex),
       storagePath: storagePath,
       mimeType: mime,
     );

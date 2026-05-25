@@ -105,6 +105,7 @@ export 'package:onyxia/repository/artifact_snapshots_repository.dart';
 
 //services
 export 'package:onyxia/services/image_service.dart';
+export 'package:onyxia/services/porting_service.dart';
 export 'package:onyxia/services/timestamp_service.dart';
 
 //helpers

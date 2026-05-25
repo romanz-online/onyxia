@@ -31,6 +31,8 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   bool _positionInitialized = false;
 
   final TextEditingController _newVaultNameController = TextEditingController();
+  final TextEditingController _importVaultNameController =
+      TextEditingController();
 
   // Reset-password mode state.
   final TextEditingController _resetPasswordController =
@@ -77,6 +79,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   @override
   void dispose() {
     _newVaultNameController.dispose();
+    _importVaultNameController.dispose();
     _resetPasswordController.dispose();
     _resetConfirmController.dispose();
     super.dispose();
@@ -143,6 +146,82 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     } finally {
       if (mounted) setState(() => _resetSubmitting = false);
     }
+  }
+
+  Future<void> _showImportVaultDialog() async {
+    // TODO: after selecting, this should show a progress bar of uploads that the user has to sit through and after that they're redirected to the vault automatically
+    final files = await PortingService.pickFolder();
+    if (files.isEmpty || !mounted) return;
+
+    _importVaultNameController.text =
+        PortingService.folderNameFromFiles(files) ?? '';
+
+    showDialog(
+      context: context,
+      barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
+      builder: (dialogContext) {
+        return NarwhalModalDialog(
+          width: 600,
+          height: 260,
+          title: 'Import Vault',
+          content: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: 10,
+            children: [
+              Text(
+                'Vault Name',
+                style: NarwhalStyles.modalTextFieldTitleStyle(dialogContext),
+              ),
+              TextFormField(
+                maxLength: 50,
+                controller: _importVaultNameController,
+                autofocus: true,
+                decoration: NarwhalModalInputDecoration.create(
+                  dialogContext,
+                  hintText: 'Enter vault name',
+                ),
+                style: NarwhalTextStyle(),
+              ),
+              Text(
+                'Importing ${files.length} files from folder.',
+                style: NarwhalTextStyle(
+                  fontSize: 12,
+                  color: ThemeHelper.neutral500(dialogContext),
+                ),
+              ),
+            ],
+          ),
+          onCancelPressed: () => Navigator.of(dialogContext).pop(),
+          actionButtonText: 'Import',
+          onActionPressed: () async {
+            final name = _importVaultNameController.text.trim();
+            if (name.isEmpty) return;
+            final userId = ref.read(currentUserProvider).value?.id ?? '';
+            final now = DateTime.now();
+            final newVault = Vault(
+              id: const Uuid().v4(),
+              createdBy: userId,
+              createdAt: now,
+              updatedAt: now,
+              name: name,
+            );
+            await VaultsRepository().add([newVault]);
+            if (!dialogContext.mounted) return;
+            Navigator.of(dialogContext).pop();
+            _navigateToVault(newVault);
+            // Fire-and-forget: imports stream into the vault as they
+            // complete via the realtime channel. Errors surface via the
+            // global error handler.
+            PortingService.importFiles(
+              files: files,
+              vaultId: newVault.id,
+              userId: userId,
+            );
+          },
+        );
+      },
+    );
   }
 
   void _showNewVaultDialog() {
@@ -514,8 +593,14 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
                 spacing: 6,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  OnyxiaButton(label: 'New Vault', onTap: _showNewVaultDialog),
-                  OnyxiaButton(label: 'Import Vault'), // TODO: implement
+                  OnyxiaButton(
+                    label: 'New Vault',
+                    onTap: _showNewVaultDialog,
+                  ),
+                  OnyxiaButton(
+                    label: 'Import Vault',
+                    onTap: _showImportVaultDialog,
+                  ),
                 ],
               ),
             ],
