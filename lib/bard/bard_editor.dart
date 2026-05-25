@@ -14,6 +14,10 @@ part '_char_behaviors.dart';
 part '_format_application.dart';
 part '_wiki_overlay_controller.dart';
 
+// TODO: editing very big notes ends up being incredibly slow. i need some way to making this more efficient. i'm not sure what specifically is causing it to be slow
+// TODO: cont. perhaps i could somehow chunk-load the note, almost like paginating it and i only load the current page the user is on and the adjacent pages and unload everything else
+// TODO: cont. but without having actual pages so it seems seamless
+
 class BardEditor extends StatefulWidget {
   const BardEditor({
     super.key,
@@ -114,7 +118,8 @@ class _BardEditorState extends State<BardEditor> {
   void _attachCollab(BardCollabConfig config) {
     final engine = BardCrdtEngine(config);
     _engine = engine;
-    _engineUpdatesSub = engine.updates.listen((_) => _applyEngineToController());
+    _engineUpdatesSub =
+        engine.updates.listen((_) => _applyEngineToController());
     // Sync initial state (snapshot + catch-up ops) into the controller without
     // waiting for the first updates event. addPostFrameCallback so widget
     // build is complete and selection logic in BardController's listener won't
@@ -319,7 +324,8 @@ class _BardEditorState extends State<BardEditor> {
     return KeyEventResult.ignored;
   }
 
-  static final _kFormatHotkeys = <(LogicalKeyboardKey, bool), MarkdownFormatType>{
+  static final _kFormatHotkeys =
+      <(LogicalKeyboardKey, bool), MarkdownFormatType>{
     (LogicalKeyboardKey.keyI, false): MarkdownFormatType.italic,
     (LogicalKeyboardKey.keyB, false): MarkdownFormatType.bold,
     (LogicalKeyboardKey.keyX, true): MarkdownFormatType.strikethrough,
@@ -332,7 +338,8 @@ class _BardEditorState extends State<BardEditor> {
       child: Listener(
         onPointerDown: (_) {
           _focusFromTap = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) => _focusFromTap = false);
+          WidgetsBinding.instance
+              .addPostFrameCallback((_) => _focusFromTap = false);
         },
         child: TextField(
           controller: _controller,
