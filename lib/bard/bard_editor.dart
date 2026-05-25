@@ -17,6 +17,7 @@ part '_wiki_overlay_controller.dart';
 // TODO: editing very big notes ends up being incredibly slow. i need some way to making this more efficient. i'm not sure what specifically is causing it to be slow
 // TODO: cont. perhaps i could somehow chunk-load the note, almost like paginating it and i only load the current page the user is on and the adjacent pages and unload everything else
 // TODO: cont. but without having actual pages so it seems seamless
+// TODO: cont. but need to first figure out where exactly the bottleneck is
 
 class BardEditor extends StatefulWidget {
   const BardEditor({
