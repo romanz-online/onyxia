@@ -50,18 +50,23 @@ class PortingService {
 
   /// Imports markdown and image files into the vault at [vaultId]. Unsupported
   /// extensions are silently skipped. Walks files in the order given.
+  /// [onProgress] is called after each file is processed (or skipped) with the
+  /// number of files completed so far and the total file count.
   static Future<void> importFiles({
     required List<web.File> files,
     required String vaultId,
     required String userId,
+    void Function(int done, int total)? onProgress,
   }) async {
-    for (final file in files) {
+    for (var i = 0; i < files.length; i++) {
+      final file = files[i];
       final ext = file.name.toLowerCase().split('.').last;
       if (_markdownExtensions.contains(ext)) {
         await _importMarkdown(file: file, vaultId: vaultId, userId: userId);
       } else if (_imageExtensions.contains(ext)) {
         await _importImage(file: file, vaultId: vaultId);
       }
+      onProgress?.call(i + 1, files.length);
     }
   }
 

@@ -1,0 +1,127 @@
+import 'package:onyxia/export.dart';
+import 'package:onyxia/presentation/landing/widgets/import_progress_view.dart';
+import 'package:web/web.dart' as web;
+
+class ImportVaultDialog extends ConsumerStatefulWidget {
+  final List<web.File> files;
+  final void Function(Vault vault) onComplete;
+
+  const ImportVaultDialog({
+    super.key,
+    required this.files,
+    required this.onComplete,
+  });
+
+  @override
+  ConsumerState<ImportVaultDialog> createState() => _ImportVaultDialogState();
+}
+
+class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
+  final TextEditingController _nameController = TextEditingController();
+
+  bool _importing = false;
+  int _done = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController.text =
+        PortingService.folderNameFromFiles(widget.files) ?? '';
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _startImport() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) return;
+
+    final userId = ref.read(currentUserProvider).value?.id ?? '';
+    final now = DateTime.now();
+    final newVault = Vault(
+      id: const Uuid().v4(),
+      createdBy: userId,
+      createdAt: now,
+      updatedAt: now,
+      name: name,
+    );
+
+    setState(() {
+      _importing = true;
+      _done = 0;
+    });
+
+    await VaultsRepository().add([newVault]);
+
+    await PortingService.importFiles(
+      files: widget.files,
+      vaultId: newVault.id,
+      userId: userId,
+      onProgress: (done, _) {
+        if (mounted) setState(() => _done = done);
+      },
+    );
+
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    widget.onComplete(newVault);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_importing) {
+      return NarwhalModalDialog(
+        width: 600,
+        height: 260,
+        title: 'Importing Vault',
+        cancelButtonText: null,
+        actionButtonText: 'Importing...',
+        onActionPressed: null,
+        content: ImportProgressView(
+          done: _done,
+          total: widget.files.length,
+        ),
+      );
+    }
+
+    return NarwhalModalDialog(
+      width: 600,
+      height: 260,
+      title: 'Import Vault',
+      content: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        spacing: 10,
+        children: [
+          Text(
+            'Vault Name',
+            style: NarwhalStyles.modalTextFieldTitleStyle(context),
+          ),
+          TextFormField(
+            maxLength: 50,
+            controller: _nameController,
+            autofocus: true,
+            decoration: NarwhalModalInputDecoration.create(
+              context,
+              hintText: 'Enter vault name',
+            ),
+            style: NarwhalTextStyle(),
+          ),
+          Text(
+            'Importing ${widget.files.length} files from folder.',
+            style: NarwhalTextStyle(
+              fontSize: 12,
+              color: ThemeHelper.neutral500(context),
+            ),
+          ),
+        ],
+      ),
+      onCancelPressed: () => Navigator.of(context).pop(),
+      actionButtonText: 'Import',
+      onActionPressed: _startImport,
+    );
+  }
+}

@@ -1,10 +1,6 @@
 import 'package:onyxia/export.dart';
 
 class VaultsRepository extends BaseSupabaseRepository<Vault> {
-  final String? userId;
-
-  VaultsRepository({this.userId});
-
   @override
   String get tableName => 'vaults';
 

@@ -748,7 +748,21 @@ CREATE POLICY "artifact_ops_select" ON "public"."artifact_ops" FOR SELECT USING 
 ALTER TABLE "public"."artifact_snapshots" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "artifact_snapshots_insert" ON "public"."artifact_snapshots" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."vault_members" "vm"
+  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
+
+
+
 CREATE POLICY "artifact_snapshots_select" ON "public"."artifact_snapshots" FOR SELECT USING ((EXISTS ( SELECT 1
+   FROM "public"."vault_members" "vm"
+  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
+
+
+
+CREATE POLICY "artifact_snapshots_update" ON "public"."artifact_snapshots" FOR UPDATE USING ((EXISTS ( SELECT 1
+   FROM "public"."vault_members" "vm"
+  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"()))))) WITH CHECK ((EXISTS ( SELECT 1
    FROM "public"."vault_members" "vm"
   WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
 
