@@ -391,18 +391,17 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
       case Alignment.topLeft:
       case Alignment.topCenter:
       case Alignment.topRight:
-        // For top positions: index 0 = top (newest), higher indices move down
+      // For top positions: index 0 = top (newest), higher indices move down
+      case Alignment.centerLeft:
+      case Alignment.center:
+      case Alignment.centerRight:
+        // For center positions: stack downward
         return stackOffset; // Stack downward from top
       case Alignment.bottomLeft:
       case Alignment.bottomCenter:
       case Alignment.bottomRight:
         // For bottom positions: index 0 = bottom (newest), higher indices move up
         return -stackOffset; // Stack upward from bottom (negative offset)
-      case Alignment.centerLeft:
-      case Alignment.center:
-      case Alignment.centerRight:
-        // For center positions: stack downward
-        return stackOffset; // Stack downward from center
       default:
         return 0.0;
     }
@@ -464,11 +463,7 @@ class _ToastWidget extends StatelessWidget {
   final Widget? child;
   final ToastType type;
 
-  const _ToastWidget({
-    this.text,
-    this.child,
-    required this.type,
-  });
+  const _ToastWidget({this.text, this.child, required this.type});
 
   @override
   Widget build(BuildContext context) {
@@ -484,13 +479,13 @@ class _ToastWidget extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           mainAxisSize: child != null ? MainAxisSize.max : MainAxisSize.min,
+          spacing: 12,
           children: [
             Icon(
               _getIcon(),
               color: _getIconColor(context),
               size: 20,
             ),
-            const Gap(12),
             if (child != null)
               Expanded(child: child!)
             else
@@ -510,57 +505,33 @@ class _ToastWidget extends StatelessWidget {
     );
   }
 
-  Color _getBackgroundColor(BuildContext context) {
-    switch (type) {
-      case ToastType.success:
-        return ThemeHelper.green100(context);
-      case ToastType.warning:
-        return ThemeHelper.amber();
-      case ToastType.error:
-        return ThemeHelper.errorColor();
-      case ToastType.info:
-        return ThemeHelper.neutral600(context);
-    }
-  }
+  Color _getBackgroundColor(BuildContext context) => switch (type) {
+        ToastType.success => ThemeHelper.green100(context),
+        ToastType.warning => ThemeHelper.amber(),
+        ToastType.error => ThemeHelper.errorColor(),
+        ToastType.info => ThemeHelper.neutral600(context),
+      };
 
-  Color _getTextColor(BuildContext context) {
-    switch (type) {
-      case ToastType.success:
-        return ThemeHelper.neutral700(context);
-      case ToastType.warning:
-        return ThemeHelper.neutral900(context);
-      case ToastType.error:
-        return ThemeHelper.white(context);
-      case ToastType.info:
-        return ThemeHelper.neutral200(context);
-    }
-  }
+  Color _getTextColor(BuildContext context) => switch (type) {
+        ToastType.success => ThemeHelper.neutral700(context),
+        ToastType.warning => ThemeHelper.neutral900(context),
+        ToastType.error => ThemeHelper.white(context),
+        ToastType.info => ThemeHelper.neutral200(context),
+      };
 
-  Color _getIconColor(BuildContext context) {
-    switch (type) {
-      case ToastType.success:
-        return ThemeHelper.green700(context);
-      case ToastType.warning:
-        return ThemeHelper.neutral900(context);
-      case ToastType.error:
-        return ThemeHelper.white(context);
-      case ToastType.info:
-        return ThemeHelper.accentColor();
-    }
-  }
+  Color _getIconColor(BuildContext context) => switch (type) {
+        ToastType.success => ThemeHelper.green700(context),
+        ToastType.warning => ThemeHelper.neutral900(context),
+        ToastType.error => ThemeHelper.white(context),
+        ToastType.info => ThemeHelper.accentColor(),
+      };
 
-  IconData _getIcon() {
-    switch (type) {
-      case ToastType.success:
-        return LucideIcons.circleCheck;
-      case ToastType.warning:
-        return LucideIcons.triangleAlert;
-      case ToastType.error:
-        return LucideIcons.circleX;
-      case ToastType.info:
-        return LucideIcons.info;
-    }
-  }
+  IconData _getIcon() => switch (type) {
+        ToastType.success => LucideIcons.circleCheck,
+        ToastType.warning => LucideIcons.triangleAlert,
+        ToastType.error => LucideIcons.circleX,
+        ToastType.info => LucideIcons.info,
+      };
 }
 
 /// Content widget used inside upload progress toasts.
@@ -569,10 +540,7 @@ class _ProgressToastContent extends StatelessWidget {
   final String label;
   final ValueNotifier<double> progress;
 
-  const _ProgressToastContent({
-    required this.label,
-    required this.progress,
-  });
+  const _ProgressToastContent({required this.label, required this.progress});
 
   @override
   Widget build(BuildContext context) {
