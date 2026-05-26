@@ -8,14 +8,20 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
   return [
     OnyxiaMenuItem(
       icon: LucideIcons.externalLink,
-      child: Text('Open in New Tab', style: NarwhalTextStyle()),
+      child: Text(
+        'Open in New Tab',
+        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+      ),
       onTap: () => NavigationContextMenu.openInNewTab(
         NavigationUrlBuilder.buildGraphUrl(vault.id),
       ),
     ),
     OnyxiaMenuItem(
       icon: LucideIcons.link,
-      child: Text('Copy Link', style: NarwhalTextStyle()),
+      child: Text(
+        'Copy Link',
+        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+      ),
       onTap: () => NavigationContextMenu.copyLinkToClipboard(
         NavigationUrlBuilder.buildGraphUrl(vault.id),
       ),
@@ -23,7 +29,10 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
     const OnyxiaMenuItem.divider(),
     OnyxiaMenuItem(
       icon: LucideIcons.pencil,
-      child: Text('Rename Vault', style: NarwhalTextStyle()),
+      child: Text(
+        'Rename Vault',
+        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+      ),
       onTap: () {
         showDialog(
           context: context,
@@ -37,7 +46,10 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
     ),
     OnyxiaMenuItem(
       icon: LucideIcons.trash2,
-      child: Text('Delete Vault', style: NarwhalTextStyle()),
+      child: Text(
+        'Delete Vault',
+        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+      ),
       onTap: () => _confirmRemove(context, vault),
     ),
   ];
@@ -58,8 +70,8 @@ void _confirmRemove(BuildContext context, Vault vault) async {
       content: Text(
         'This is permanent.',
         style: NarwhalTextStyle(
-          fontWeight: FontWeight.bold,
           fontSize: 20,
+          color: ThemeHelper.neutral900(context),
         ),
       ),
       onCancelPressed: () => Navigator.of(context).pop(false),
@@ -68,7 +80,5 @@ void _confirmRemove(BuildContext context, Vault vault) async {
     ),
   );
 
-  if (confirm == true) {
-    VaultsRepository().delete(vault.id);
-  }
+  if (confirm == true) VaultsRepository().delete(vault.id);
 }

@@ -1,9 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'package:onyxia/core/narwhal_text_theme.dart';
-
-// TODO: get rid of ThemeMode.dark. it's forcing me to always invert my neutral### calls. there's only one theme for the website anyway
-// TODO: in the same vein get rid of ThemeData Brightness.dark since there's only one brightness and it's forcing me to always invert my neutral### calls. there's only one theme for the website anyway
-// TODO: cont. then get rid of all of the dark/light them color inversions and just use the dark mode colors all the time
 
 class NarwhalApp extends ConsumerStatefulWidget {
   const NarwhalApp({super.key});
@@ -26,7 +21,6 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
       routerDelegate: routerInstance.routerDelegate,
       routeInformationProvider: routerInstance.routeInformationProvider,
       theme: _buildTheme(),
-      themeMode: ThemeMode.dark,
       builder: (context, child) => Portal(
         child: child ?? const SizedBox.shrink(),
       ),
@@ -35,10 +29,8 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
 
   ThemeData _buildTheme() {
     return ThemeData(
-      brightness: Brightness.dark,
       colorScheme: ColorScheme.fromSeed(
         seedColor: ThemeHelper.accentColor(),
-        brightness: Brightness.dark,
       ),
       scaffoldBackgroundColor: ThemeHelper.neutral100(context),
       cardColor: ThemeHelper.neutral100(context),
@@ -53,7 +45,63 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
         iconTheme: IconThemeData(color: ThemeHelper.neutral800(context)),
       ),
       iconTheme: IconThemeData(color: ThemeHelper.neutral800(context)),
-      textTheme: NarwhalTextTheme.textTheme.apply(
+      textTheme: const TextTheme(
+        // Small scale (10px)
+        labelSmall: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w400,
+          fontFamily: 'Segoe UI',
+        ),
+        bodySmall: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Segoe UI',
+        ),
+        titleSmall: TextStyle(
+          fontSize: 10,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Segoe UI',
+        ),
+        // Medium scale (12px)
+        labelMedium: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w300,
+          fontFamily: 'Segoe UI',
+        ),
+        bodyMedium: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          fontFamily: 'Segoe UI',
+        ),
+        titleMedium: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'Segoe UI',
+        ),
+        headlineSmall: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w700,
+          fontFamily: 'Segoe UI',
+        ),
+        displaySmall: TextStyle(
+          fontSize: 12,
+          fontWeight: FontWeight.w400,
+          fontStyle: FontStyle.italic,
+          fontFamily: 'Segoe UI',
+        ),
+        // Large scale (16px)
+        labelLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w300,
+          fontFamily: 'Segoe UI',
+        ),
+        bodyLarge: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w400,
+          fontStyle: FontStyle.italic,
+          fontFamily: 'Segoe UI',
+        ),
+      ).apply(
         bodyColor: ThemeHelper.neutral300(context),
         displayColor: ThemeHelper.neutral300(context),
       ),

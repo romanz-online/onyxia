@@ -64,7 +64,7 @@ class ArtifactsSidebar extends StatelessWidget {
                           left: 6,
                           top: 6,
                           bottom: 6,
-                          right: 13,
+                          right: 18,
                         ),
                         child: ArtifactsTreeView(),
                       ),

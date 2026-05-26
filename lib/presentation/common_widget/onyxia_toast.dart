@@ -1,8 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
-// TODO: clicking a toast should make it hide immediate, but only the one that was clicked
-
 enum ToastType {
   success,
   warning,
@@ -10,23 +8,11 @@ enum ToastType {
   info,
 }
 
-enum ToastPosition {
-  topLeft,
-  topCenter,
-  topRight,
-  centerLeft,
-  center,
-  centerRight,
-  bottomLeft,
-  bottomCenter,
-  bottomRight,
-}
-
 class _ToastEntry {
   final String id;
   final OverlayEntry overlayEntry;
   final Timer timer;
-  final ToastPosition position;
+  final Alignment position;
   final GlobalKey<_ToastStackOverlayState> stateKey;
   bool isExiting = false;
 
@@ -40,16 +26,15 @@ class _ToastEntry {
 }
 
 class OnyxiaToast {
-  static final Map<ToastPosition, List<_ToastEntry>> _toastsByPosition = {};
-  static final Map<ToastPosition, StreamController<void>> _positionControllers =
-      {};
+  static final Map<Alignment, List<_ToastEntry>> _toastsByPosition = {};
+  static final Map<Alignment, StreamController<void>> _positionControllers = {};
   static int _nextId = 0;
 
   static String show({
     String? text,
     Widget? child,
     ToastType type = ToastType.info,
-    ToastPosition position = ToastPosition.topRight,
+    Alignment position = Alignment.topRight,
     Duration? duration,
     double margin = 16.0,
   }) {
@@ -131,7 +116,7 @@ class OnyxiaToast {
   /// Call [hideById] with the returned ID when done.
   static ({String id, ValueNotifier<double> progress}) showProgress({
     required String label,
-    ToastPosition position = ToastPosition.topRight,
+    Alignment position = Alignment.topRight,
   }) {
     final progress = ValueNotifier<double>(0.0);
     final id = show(
@@ -155,7 +140,7 @@ class OnyxiaToast {
     }
   }
 
-  static void _startExit(String toastId, ToastPosition position) {
+  static void _startExit(String toastId, Alignment position) {
     final toasts = _toastsByPosition[position];
     if (toasts == null) return;
     final idx = toasts.indexWhere((t) => t.id == toastId);
@@ -174,7 +159,7 @@ class OnyxiaToast {
     state.playExit().whenComplete(() => _removeToast(toastId, position));
   }
 
-  static void _removeToast(String toastId, ToastPosition position) {
+  static void _removeToast(String toastId, Alignment position) {
     final toasts = _toastsByPosition[position];
     if (toasts == null) return;
 
@@ -196,20 +181,20 @@ class OnyxiaToast {
     }
   }
 
-  static void _notifyPositionUpdate(ToastPosition position) {
+  static void _notifyPositionUpdate(Alignment position) {
     _positionControllers[position]?.add(null);
   }
 
-  static bool _isBottomPosition(ToastPosition position) {
-    return position == ToastPosition.bottomLeft ||
-        position == ToastPosition.bottomCenter ||
-        position == ToastPosition.bottomRight;
+  static bool _isBottomPosition(Alignment position) {
+    return position == Alignment.bottomLeft ||
+        position == Alignment.bottomCenter ||
+        position == Alignment.bottomRight;
   }
 
-  static bool _isTopPosition(ToastPosition position) {
-    return position == ToastPosition.topLeft ||
-        position == ToastPosition.topCenter ||
-        position == ToastPosition.topRight;
+  static bool _isTopPosition(Alignment position) {
+    return position == Alignment.topLeft ||
+        position == Alignment.topCenter ||
+        position == Alignment.topRight;
   }
 
   static void hideAll() {
@@ -233,7 +218,7 @@ class _ToastStackOverlay extends StatefulWidget {
   final String? text;
   final Widget? child;
   final ToastType type;
-  final ToastPosition position;
+  final Alignment position;
   final double margin;
   final Stream<void> positionStream;
 
@@ -372,20 +357,22 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
 
   Offset _getSlideOffset() {
     switch (widget.position) {
-      case ToastPosition.topLeft:
-      case ToastPosition.topCenter:
-      case ToastPosition.topRight:
+      case Alignment.topLeft:
+      case Alignment.topCenter:
+      case Alignment.topRight:
         return const Offset(0, -1);
-      case ToastPosition.bottomLeft:
-      case ToastPosition.bottomCenter:
-      case ToastPosition.bottomRight:
+      case Alignment.bottomLeft:
+      case Alignment.bottomCenter:
+      case Alignment.bottomRight:
         return const Offset(0, 1);
-      case ToastPosition.centerLeft:
+      case Alignment.centerLeft:
         return const Offset(-1, 0);
-      case ToastPosition.centerRight:
+      case Alignment.centerRight:
         return const Offset(1, 0);
-      case ToastPosition.center:
+      case Alignment.center:
         return const Offset(0, -0.1);
+      default:
+        return Offset.zero;
     }
   }
 
@@ -401,21 +388,23 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
 
     // Adjust offset direction based on position
     switch (widget.position) {
-      case ToastPosition.topLeft:
-      case ToastPosition.topCenter:
-      case ToastPosition.topRight:
+      case Alignment.topLeft:
+      case Alignment.topCenter:
+      case Alignment.topRight:
         // For top positions: index 0 = top (newest), higher indices move down
         return stackOffset; // Stack downward from top
-      case ToastPosition.bottomLeft:
-      case ToastPosition.bottomCenter:
-      case ToastPosition.bottomRight:
+      case Alignment.bottomLeft:
+      case Alignment.bottomCenter:
+      case Alignment.bottomRight:
         // For bottom positions: index 0 = bottom (newest), higher indices move up
         return -stackOffset; // Stack upward from bottom (negative offset)
-      case ToastPosition.centerLeft:
-      case ToastPosition.center:
-      case ToastPosition.centerRight:
+      case Alignment.centerLeft:
+      case Alignment.center:
+      case Alignment.centerRight:
         // For center positions: stack downward
         return stackOffset; // Stack downward from center
+      default:
+        return 0.0;
     }
   }
 
@@ -431,22 +420,26 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
                 _positionAnimation.value;
 
         return Positioned.fill(
-          child: IgnorePointer(
-            ignoring: true,
-            child: Align(
-              alignment: _getAlignment(),
-              child: Transform.translate(
-                offset: _getOffsetForPosition(interpolatedOffset),
-                child: Container(
-                  margin: EdgeInsets.all(widget.margin),
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: SlideTransition(
-                      position: _slideAnimation,
-                      child: FadeTransition(
-                        opacity: _exitFadeAnimation,
-                        child: SlideTransition(
-                          position: _exitSlideAnimation,
+          child: Align(
+            alignment: widget.position,
+            child: Transform.translate(
+              offset: Offset(0, interpolatedOffset),
+              child: Container(
+                margin: EdgeInsets.all(widget.margin),
+                child: FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: FadeTransition(
+                      opacity: _exitFadeAnimation,
+                      child: SlideTransition(
+                        position: _exitSlideAnimation,
+                        child: GestureDetector(
+                          behavior: HitTestBehavior.opaque,
+                          onTap: () => OnyxiaToast._startExit(
+                            widget.toastId,
+                            widget.position,
+                          ),
                           child: _ToastWidget(
                             text: widget.text,
                             type: widget.type,
@@ -463,44 +456,6 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
         );
       },
     );
-  }
-
-  Offset _getOffsetForPosition(double stackOffset) {
-    switch (widget.position) {
-      case ToastPosition.topLeft:
-      case ToastPosition.topCenter:
-      case ToastPosition.topRight:
-      case ToastPosition.centerLeft:
-      case ToastPosition.center:
-      case ToastPosition.centerRight:
-      case ToastPosition.bottomLeft:
-      case ToastPosition.bottomCenter:
-      case ToastPosition.bottomRight:
-        return Offset(0, stackOffset);
-    }
-  }
-
-  Alignment _getAlignment() {
-    switch (widget.position) {
-      case ToastPosition.topLeft:
-        return Alignment.topLeft;
-      case ToastPosition.topCenter:
-        return Alignment.topCenter;
-      case ToastPosition.topRight:
-        return Alignment.topRight;
-      case ToastPosition.centerLeft:
-        return Alignment.centerLeft;
-      case ToastPosition.center:
-        return Alignment.center;
-      case ToastPosition.centerRight:
-        return Alignment.centerRight;
-      case ToastPosition.bottomLeft:
-        return Alignment.bottomLeft;
-      case ToastPosition.bottomCenter:
-        return Alignment.bottomCenter;
-      case ToastPosition.bottomRight:
-        return Alignment.bottomRight;
-    }
   }
 }
 

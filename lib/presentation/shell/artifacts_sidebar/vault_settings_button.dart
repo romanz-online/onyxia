@@ -48,7 +48,10 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
       closeOverlay: closeOverlay,
       items: [
         OnyxiaMenuItem(
-          child: Text('Members', style: NarwhalTextStyle()),
+          child: Text(
+            'Members',
+            style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+          ),
           onTap: () => showDialog(
             context: context,
             builder: (_) => const VaultMembersDialog(),

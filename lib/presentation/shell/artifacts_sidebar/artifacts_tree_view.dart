@@ -101,6 +101,20 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       WidgetsBinding.instance.addPostFrameCallback((_) => _syncTree(newRoots));
     }
 
+    // Push URL → tree: when the selected artifact changes from anywhere
+    // (direct URL paste, browser back/forward, rename redirect), keep the
+    // tree highlight in sync.
+    ref.listen<Artifact?>(selectedArtifactProvider, (_, next) {
+      if (next != null) {
+        final ids = treeController.selectedNodeIds;
+        if (ids.length == 1 && ids.first == next.id) return;
+        treeController.deselectAll();
+        treeController.setSelectedNodeId(next.id);
+      } else if (treeController.selectedNodeIds.isNotEmpty) {
+        treeController.deselectAll();
+      }
+    });
+
     if (async.hasError)
       return Center(
         child: Text(
@@ -113,9 +127,10 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
-    // TODO: loading an artifact page without clicking the tree means the artifact's tree node isn't selected. the tree ends up out of sync
-
-    // TODO: it's also possible to deselect all nodes through the tree widget but that won't deselect the currently-selected artifact
+    // TODO: it's also possible to deselect all nodes through the tree widget but that won't deselect the currently-selected artifact.
+    // TODO: cont. Wiring this requires an on-selection-change callback in vendored super_tree, which CLAUDE.md keeps out of scope.
+    // TODO: cont. but a workaround would be that if the user clicks the sidebar background (missing a node) then it deselects;
+    // TODO: cont. this is the tree's behavior anyway, it's just being mimicked this way
 
     return SuperTreeView<Artifact>(
       controller: treeController,

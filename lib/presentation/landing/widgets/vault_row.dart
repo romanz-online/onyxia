@@ -82,7 +82,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                           style: NarwhalTextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w600,
-                            color: ThemeHelper.neutral700(context),
+                            color: ThemeHelper.neutral900(context),
                           ),
                         ),
                       ),

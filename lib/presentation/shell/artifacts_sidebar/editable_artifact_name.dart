@@ -73,10 +73,9 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       _isEditing = false;
     });
     _overlayController.hide();
-    final newName = _controller.text + (widget.trailingExtension ?? '');
     final error = await ref
         .read(artifactsProvider.notifier)
-        .renameItem(widget.item, newName);
+        .renameItem(widget.item, _controller.text);
     if (!mounted) return;
     if (error != null) {
       _controller.text = _baseName;
@@ -197,7 +196,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                   : Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      spacing: 4,
+                      spacing: 8,
                       children: [
                         Flexible(
                           child: Text(

@@ -25,6 +25,7 @@ class NarwhalModalInputDecoration {
 }
 
 // TODO: this thing is an ugly piece of shit and needs to be redesigned posthaste
+// TODO: cont. use OnyxiaDialog instead and bring it up to date with whatever this widget does that's needed which OnyxiaDialog isn't currently doing
 
 /// A reusable modal dialog widget with title, content, and action buttons
 class NarwhalModalDialog extends ConsumerStatefulWidget {
@@ -95,9 +96,11 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
                 children: [
                   Text(
                     widget.title,
-                    style: widget.hasLargeTitle
-                        ? NarwhalStyles.modalLargeTitleStyle(context)
-                        : NarwhalStyles.modalTitleStyle(context),
+                    style: NarwhalTextStyle(
+                      fontSize: widget.hasLargeTitle ? 28 : 20,
+                      fontWeight: FontWeight.w400,
+                      color: ThemeHelper.neutral800(context),
+                    ),
                   ),
                 ],
               ),

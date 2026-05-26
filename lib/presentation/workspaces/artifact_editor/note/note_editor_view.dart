@@ -380,7 +380,9 @@ class _NoteEditorField extends ConsumerWidget {
                 child: BardEditor(
                   controller: controller,
                   collab: collab,
-                  style: NarwhalTextStyle(),
+                  style: NarwhalTextStyle(
+                    color: ThemeHelper.neutral900(context),
+                  ),
                   autofocus: true,
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),

@@ -30,7 +30,15 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
       elevation: 0,
       centerTitle: false,
       toolbarHeight: 32,
-      title: Center(child: Text(title, style: NarwhalTextStyle(fontSize: 14))),
+      title: Center(
+        child: Text(
+          title,
+          style: NarwhalTextStyle(
+            fontSize: 14,
+            color: ThemeHelper.neutral900(context),
+          ),
+        ),
+      ),
     );
   }
 

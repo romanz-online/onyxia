@@ -36,8 +36,7 @@ class OnyxiaMenu extends StatelessWidget {
     return Material(
       elevation: 8,
       borderRadius: BorderRadius.circular(6.0),
-      color:
-          Theme.of(context).popupMenuTheme.color ?? Theme.of(context).cardColor,
+      color: ThemeHelper.neutral100(context),
       clipBehavior: Clip.antiAlias,
       child: Container(
         width: width,
