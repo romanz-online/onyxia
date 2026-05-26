@@ -7,7 +7,7 @@ topics: [crdt, local-first, fugue, hlc]
 version: 2.5.0
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
+  sdk: ">=3.10.0 <4.0.0"
 
 dependencies:
   crypto: ^3.0.0
