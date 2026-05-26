@@ -2,6 +2,8 @@ import 'package:onyxia/export.dart';
 import 'package:onyxia/core/narwhal_text_theme.dart';
 
 // TODO: get rid of ThemeMode.dark. it's forcing me to always invert my neutral### calls. there's only one theme for the website anyway
+// TODO: in the same vein get rid of ThemeData Brightness.dark since there's only one brightness and it's forcing me to always invert my neutral### calls. there's only one theme for the website anyway
+// TODO: cont. then get rid of all of the dark/light them color inversions and just use the dark mode colors all the time
 
 class NarwhalApp extends ConsumerStatefulWidget {
   const NarwhalApp({super.key});
