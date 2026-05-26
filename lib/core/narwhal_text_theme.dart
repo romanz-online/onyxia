@@ -29,8 +29,6 @@ import 'package:flutter/material.dart';
 /// - Large Semi-light (16px) → labelLarge
 /// - Large Italics (16px) → bodyLarge
 class NarwhalTextTheme {
-  // TODO: find a font that's better for this app. not sure what it would be or how to find it
-
   // TODO: entirely get rid of this file
 
   // Primary typeface

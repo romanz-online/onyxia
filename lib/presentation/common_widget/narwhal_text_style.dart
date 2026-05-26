@@ -24,6 +24,7 @@ class NarwhalTextStyle extends TextStyle {
     super.decorationStyle,
     super.decorationThickness,
     super.debugLabel,
+    // TODO: find a font that's better for this app. not sure what it would be or how to find it
     super.fontFamily = 'Segoe UI',
     super.fontFamilyFallback,
     super.package,
