@@ -3,19 +3,18 @@ import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/constellation/constellation_simulation.dart';
 import 'package:onyxia/constellation/constellation_renderer.dart';
 
-// â”€â”€ Force presets â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// TODO: add menu that lets users decide whether to show ImageArtifacts, orphans, zombies, etc.
+// TODO: cont. but don't literally type in "ImageArtifact"; it should see if the node name has an extension to determine if it's a file
 
 const _defaultForces = {
   'repelStrength': 1000,
-  'linkDistance': 250,
+  'linkDistance': 300,
   'linkStrength': 1,
   'centerStrength': 0.1,
 };
 
 ConstellationNode _nodeFromItem(BuildContext context, Artifact i) =>
     ConstellationNode(id: i.name);
-
-// â”€â”€ Layout builders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 typedef ConstellationLayout = ({
   List<ConstellationNode> nodes,
@@ -46,8 +45,6 @@ ConstellationLayout _buildWikiLinks(
 
   return (nodes: nodes, edges: edges, forces: _defaultForces);
 }
-
-// â”€â”€ Widget â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 class Constellation extends ConsumerStatefulWidget {
   const Constellation({super.key});
