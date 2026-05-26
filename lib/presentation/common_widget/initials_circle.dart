@@ -1,7 +1,6 @@
 import 'package:onyxia/export.dart';
 
-// TODO: consider assigning people a random avatar (maybe let them switch it out, maybe not) from flutter_boring_avatars
-// TODO: cont. it's nice because there's no stupid image management that needs to happen
+// TODO: consider assigning people a random avatar (maybe let them switch it out, maybe not) from flutter_boring_avatars it's nice because there's no stupid image management that needs to happen
 
 class InitialsCircle extends StatelessWidget {
   final String name;

@@ -3,8 +3,7 @@ import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/constellation/constellation_simulation.dart';
 import 'package:onyxia/constellation/constellation_renderer.dart';
 
-// TODO: add menu that lets users decide whether to show ImageArtifacts, orphans, zombies, etc.
-// TODO: cont. but don't literally type in "ImageArtifact"; it should see if the node name has an extension to determine if it's a file
+// TODO: add menu that lets users decide whether to show ImageArtifacts, orphans, zombies, etc. but don't literally type in "ImageArtifact"; it should see if the node name has an extension to determine if it's a file
 
 const _defaultForces = {
   'repelStrength': 1000,
@@ -24,7 +23,9 @@ typedef ConstellationLayout = ({
 
 /// Wiki-link layout: edges follow [[Title]] references in note content.
 ConstellationLayout _buildWikiLinks(
-    BuildContext context, List<Artifact> items) {
+  BuildContext context,
+  List<Artifact> items,
+) {
   final nodes = items.map((i) => _nodeFromItem(context, i)).toList();
 
   // Case-insensitive lookup: lowercased title â†’ canonical title

@@ -72,8 +72,7 @@ class NarwhalColors {
 class ThemeHelper {
   ThemeHelper._();
 
-  // TODO: remove unnecessary BuildContext arguments
-  // TODO: cont. even better, switch to using themed: https://pub.dev/packages/themed
+  // TODO: remove unnecessary BuildContext arguments. even better, switch to using themed: https://pub.dev/packages/themed
 
   // TODO: fix the inverted naming
 

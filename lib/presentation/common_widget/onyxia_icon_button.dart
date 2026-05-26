@@ -93,11 +93,7 @@ class OnyxiaIconButton extends StatelessWidget {
     Widget child = button;
 
     if (tooltip != null) {
-      // TODO: tooltips now have a white background because of the material theme change away from brightness.dark
-      // TODO: cont. tooltips in general should be reworked slightly.
-      // TODO: cont. their positions need refining, they should have a small ease-in-ease-out animation,
-      // TODO: cont. they should be a bit styled (background, etc.)
-      // TODO: cont. look into packages, maybe use flutter_portal + speech_balloon and have the alignment change which direction the speech balloon tip comes from
+      // TODO: tooltips now have a white background because of the material theme change away from brightness.dark tooltips in general should be reworked slightly. their positions need refining, they should have a small ease-in-ease-out animation, they should be a bit styled (background, etc.) look into packages, maybe use flutter_portal + speech_balloon and have the alignment change which direction the speech balloon tip comes from
       child = Tooltip(
         message: tooltip!,
         waitDuration: const Duration(milliseconds: 500),

@@ -1,9 +1,6 @@
 import 'package:onyxia/export.dart';
 
-// TODO: this doesn't apply just here, but i should get rid of the Onyxia* prefix
-// TODO: cont. and instead adopt a method of hiding TextFormField from material.dart in my export.dart
-// TODO: cont. so that i can properly fully override and not risk using flutter's native
-// TODO: cont. on accident. need to properly weigh the pros and cons and how realistic this is
+// TODO: this doesn't apply just here, but i should get rid of the Onyxia* prefix and instead adopt a method of hiding TextFormField from material.dart in my export.dart so that i can properly fully override and not risk using flutter's native on accident. need to properly weigh the pros and cons and how realistic this is
 
 class OnyxiaTextFormField extends StatelessWidget {
   final TextEditingController? controller;

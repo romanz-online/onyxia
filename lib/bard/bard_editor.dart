@@ -14,10 +14,7 @@ part '_char_behaviors.dart';
 part '_format_application.dart';
 part '_wiki_overlay_controller.dart';
 
-// TODO: editing very big notes ends up being incredibly slow. i need some way to making this more efficient. i'm not sure what specifically is causing it to be slow
-// TODO: cont. perhaps i could somehow chunk-load the note, almost like paginating it and i only load the current page the user is on and the adjacent pages and unload everything else
-// TODO: cont. but without having actual pages so it seems seamless
-// TODO: cont. but need to first figure out where exactly the bottleneck is
+// TODO: editing very big notes ends up being incredibly slow. i need some way to making this more efficient. i'm not sure what specifically is causing it to be slow perhaps i could somehow chunk-load the note, almost like paginating it and i only load the current page the user is on and the adjacent pages and unload everything else but without having actual pages so it seems seamless but need to first figure out where exactly the bottleneck is
 
 class BardEditor extends StatefulWidget {
   const BardEditor({
@@ -119,8 +116,9 @@ class _BardEditorState extends State<BardEditor> {
   void _attachCollab(BardCollabConfig config) {
     final engine = BardCrdtEngine(config);
     _engine = engine;
-    _engineUpdatesSub =
-        engine.updates.listen((_) => _applyEngineToController());
+    _engineUpdatesSub = engine.updates.listen(
+      (_) => _applyEngineToController(),
+    );
     // Sync initial state (snapshot + catch-up ops) into the controller without
     // waiting for the first updates event. addPostFrameCallback so widget
     // build is complete and selection logic in BardController's listener won't
@@ -172,8 +170,9 @@ class _BardEditorState extends State<BardEditor> {
   void _applyLocalEditToEngine(String prevText, String currText) {
     final engine = _engine;
     if (engine == null || prevText == currText) return;
-    final shorter =
-        prevText.length < currText.length ? prevText.length : currText.length;
+    final shorter = prevText.length < currText.length
+        ? prevText.length
+        : currText.length;
     int p = 0;
     while (p < shorter && prevText.codeUnitAt(p) == currText.codeUnitAt(p)) {
       p++;
@@ -283,21 +282,26 @@ class _BardEditorState extends State<BardEditor> {
       return KeyEventResult.ignored;
     }
 
-    final isCtrl = HardwareKeyboard.instance.isControlPressed ||
+    final isCtrl =
+        HardwareKeyboard.instance.isControlPressed ||
         HardwareKeyboard.instance.isMetaPressed;
     final isShift = HardwareKeyboard.instance.isShiftPressed;
 
     // Wiki overlay navigation
     if (_wikiOverlay != null) {
       if (event.logicalKey == LogicalKeyboardKey.arrowDown) {
-        _wikiSelectedIndex =
-            (_wikiSelectedIndex + 1).clamp(0, _filteredTargets.length - 1);
+        _wikiSelectedIndex = (_wikiSelectedIndex + 1).clamp(
+          0,
+          _filteredTargets.length - 1,
+        );
         _wikiOverlay?.markNeedsBuild();
         return KeyEventResult.handled;
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
-        _wikiSelectedIndex =
-            (_wikiSelectedIndex - 1).clamp(0, _filteredTargets.length - 1);
+        _wikiSelectedIndex = (_wikiSelectedIndex - 1).clamp(
+          0,
+          _filteredTargets.length - 1,
+        );
         _wikiOverlay?.markNeedsBuild();
         return KeyEventResult.handled;
       }
@@ -327,10 +331,10 @@ class _BardEditorState extends State<BardEditor> {
 
   static final _kFormatHotkeys =
       <(LogicalKeyboardKey, bool), MarkdownFormatType>{
-    (LogicalKeyboardKey.keyI, false): MarkdownFormatType.italic,
-    (LogicalKeyboardKey.keyB, false): MarkdownFormatType.bold,
-    (LogicalKeyboardKey.keyX, true): MarkdownFormatType.strikethrough,
-  };
+        (LogicalKeyboardKey.keyI, false): MarkdownFormatType.italic,
+        (LogicalKeyboardKey.keyB, false): MarkdownFormatType.bold,
+        (LogicalKeyboardKey.keyX, true): MarkdownFormatType.strikethrough,
+      };
 
   @override
   Widget build(BuildContext context) {
@@ -339,8 +343,9 @@ class _BardEditorState extends State<BardEditor> {
       child: Listener(
         onPointerDown: (_) {
           _focusFromTap = true;
-          WidgetsBinding.instance
-              .addPostFrameCallback((_) => _focusFromTap = false);
+          WidgetsBinding.instance.addPostFrameCallback(
+            (_) => _focusFromTap = false,
+          );
         },
         child: TextField(
           controller: _controller,
