@@ -130,6 +130,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     // TODO: cont. Wiring this requires an on-selection-change callback in vendored super_tree, which CLAUDE.md keeps out of scope.
     // TODO: cont. but a workaround would be that if the user clicks the sidebar background (missing a node) then it deselects;
     // TODO: cont. this is the tree's behavior anyway, it's just being mimicked this way
+    // TODO: cont. but more realistically i probably need to dig into the vendor code and expose several signals to properly sync things up
 
     // TODO: clicking a selected artifact should deselect it
 

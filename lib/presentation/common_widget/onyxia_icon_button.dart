@@ -97,7 +97,7 @@ class OnyxiaIconButton extends StatelessWidget {
       // TODO: cont. tooltips in general should be reworked slightly.
       // TODO: cont. their positions need refining, they should have a small ease-in-ease-out animation,
       // TODO: cont. they should be a bit styled (background, etc.)
-      // TODO: cont. look into packages
+      // TODO: cont. look into packages, maybe use flutter_portal + speech_balloon and have the alignment change which direction the speech balloon tip comes from
       child = Tooltip(
         message: tooltip!,
         waitDuration: const Duration(milliseconds: 500),
