@@ -6,8 +6,7 @@ class ForgotPasswordView extends ConsumerStatefulWidget {
   const ForgotPasswordView({super.key, required this.onNavigate});
 
   @override
-  ConsumerState<ForgotPasswordView> createState() =>
-      _ForgotPasswordViewState();
+  ConsumerState<ForgotPasswordView> createState() => _ForgotPasswordViewState();
 }
 
 class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
@@ -37,7 +36,9 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
     });
 
     try {
-      await ref.read(currentUserProvider.notifier).sendPasswordResetEmail(email);
+      await ref
+          .read(currentUserProvider.notifier)
+          .sendPasswordResetEmail(email);
       if (mounted) widget.onNavigate(LandingMode.resetSent);
     } on AuthException catch (e) {
       if (mounted) setState(() => _errorMessage = e.message);
@@ -50,27 +51,27 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        padding: .symmetric(horizontal: 40, vertical: 24),
         child: SizedBox(
           width: 320,
           child: AutofillGroup(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: .min,
+              crossAxisAlignment: .stretch,
               children: [
                 Text(
                   'Reset password',
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                   style: NarwhalTextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                     color: ThemeHelper.neutral800(context),
                   ),
                 ),
                 const Gap(20),
                 TextField(
                   controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: .emailAddress,
                   autofillHints: const [AutofillHints.email],
                   decoration: NarwhalModalInputDecoration.create(
                     context,

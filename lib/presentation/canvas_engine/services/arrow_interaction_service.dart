@@ -26,10 +26,11 @@ class ArrowInteractionService {
 
     if (arrowPreview.hasGhostObject) {
       final ghostObject = arrowPreview.ghostObject!;
- 
+
       ghostObject.color = sourceObject.color;
-      ghostObject.topLeft =
-          ref.read(canvasBoundsProvider.notifier).clamp(ghostObject.topLeft);
+      ghostObject.topLeft = ref
+          .read(canvasBoundsProvider.notifier)
+          .clamp(ghostObject.topLeft);
       ghostObject.bottomRight = ref
           .read(canvasBoundsProvider.notifier)
           .clamp(ghostObject.bottomRight);
@@ -43,7 +44,7 @@ class ArrowInteractionService {
     }
 
     if (endObject == null) return;
- 
+
     arrowPreview.arrow.color = ThemeHelper.neutral600(context);
     arrowPreview.arrow.stroke = StrokeType.solid;
     arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
@@ -78,11 +79,11 @@ class ArrowInteractionService {
     Offset? startRelativeOffset,
   }) {
     final arrow = CanvasObject(
-      id: const Uuid().v4(), 
+      id: const Uuid().v4(),
       color: NarwhalColors.neutral600,
       type: CanvasObjectType.arrow,
-      topLeft: Offset.zero,
-      bottomRight: Offset.zero,
+      topLeft: .zero,
+      bottomRight: .zero,
       stroke: StrokeType.solid,
       arrowProperties: ArrowProperties(
         startObjectId: sourceObject.id,
@@ -121,7 +122,10 @@ class ArrowInteractionService {
       final endObj = arrow.getEndObject(ref);
       if (endObj == null) return;
 
-      final startObj = ref.read(canvasObjectsProvider).objects.firstWhere(
+      final startObj = ref
+          .read(canvasObjectsProvider)
+          .objects
+          .firstWhere(
             (obj) =>
                 !obj.isArrow &&
                 !obj.isBrush &&
@@ -134,7 +138,10 @@ class ArrowInteractionService {
       final startObj = arrow.getStartObject(ref);
       if (startObj == null) return;
 
-      final endObj = ref.read(canvasObjectsProvider).objects.firstWhere(
+      final endObj = ref
+          .read(canvasObjectsProvider)
+          .objects
+          .firstWhere(
             (obj) =>
                 !obj.isArrow &&
                 !obj.isBrush &&
@@ -149,19 +156,25 @@ class ArrowInteractionService {
 
     ref.read(canvasObjectsProvider.notifier).updateObjectState(arrow);
 
-    ref.read(arrowPrimedObjectsProvider.notifier).set(ref
-        .read(canvasObjectsProvider)
-        .objects
-        .where((obj) =>
-            !obj.isArrow &&
-            !obj.isBrush &&
-            obj.id != arrow.arrowProps.startObjectId &&
-            obj.id != arrow.arrowProps.endObjectId &&
-            obj.isPointInObject(
-              canvasPosition,
-              margin: CanvasBounds.gridSpacing * 3,
-            ))
-        .toList());
+    ref
+        .read(arrowPrimedObjectsProvider.notifier)
+        .set(
+          ref
+              .read(canvasObjectsProvider)
+              .objects
+              .where(
+                (obj) =>
+                    !obj.isArrow &&
+                    !obj.isBrush &&
+                    obj.id != arrow.arrowProps.startObjectId &&
+                    obj.id != arrow.arrowProps.endObjectId &&
+                    obj.isPointInObject(
+                      canvasPosition,
+                      margin: CanvasBounds.gridSpacing * 3,
+                    ),
+              )
+              .toList(),
+        );
   }
 
   static void endArrowPan(

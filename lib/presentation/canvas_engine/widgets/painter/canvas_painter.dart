@@ -81,7 +81,8 @@ class CanvasPainter extends NarwhalPainter {
         isGhost: true,
         gestureRouter: gestureRouter,
         interactionContext: ObjectFillInteractionContext(
-            targetObject: paletteState.ghostObject!),
+          targetObject: paletteState.ghostObject!,
+        ),
         isInteractive: isInteractive,
       );
     }
@@ -104,7 +105,8 @@ class CanvasPainter extends NarwhalPainter {
 
     for (final object in objects) {
       // Calculate if this object should have gaps drawn
-      final bool drawGaps = (activeObject != null &&
+      final bool drawGaps =
+          (activeObject != null &&
               activeObject.isArrow &&
               ((moveType == ArrowMoveType.start &&
                       activeObject.arrowProps.startObjectId == object.id) ||
@@ -133,7 +135,7 @@ class CanvasPainter extends NarwhalPainter {
       if (object.isBrush) {
         final highlightPaint = Paint()
           ..color = ThemeHelper.blue500(context)
-          ..style = PaintingStyle.stroke
+          ..style = .stroke
           ..strokeWidth = 1.5;
 
         canvas.drawRect(
@@ -161,7 +163,7 @@ class CanvasPainter extends NarwhalPainter {
     final paint = Paint()
       ..color = ThemeHelper.accentColor()
       ..strokeWidth = 1.0
-      ..style = PaintingStyle.stroke;
+      ..style = .stroke;
 
     for (final draggedObject in draggedObjects.where((o) => !o.isArrow)) {
       for (final object in objects.where((o) => !o.isArrow)) {
@@ -249,9 +251,13 @@ class CanvasPainter extends NarwhalPainter {
   }
 
   void _drawArrowPreview(
-      TouchyCanvas touchyCanvas, Canvas canvas, ArrowPreview preview) {
-    final arrowInteractionContext =
-        ObjectFillInteractionContext(targetObject: preview.arrow);
+    TouchyCanvas touchyCanvas,
+    Canvas canvas,
+    ArrowPreview preview,
+  ) {
+    final arrowInteractionContext = ObjectFillInteractionContext(
+      targetObject: preview.arrow,
+    );
     CanvasObjectPainter.paint(
       touchyCanvas,
       canvas,
@@ -266,8 +272,9 @@ class CanvasPainter extends NarwhalPainter {
 
     if (preview.hasGhostObject) {
       final ghostObject = preview.ghostObject!;
-      final ghostInteractionContext =
-          ObjectFillInteractionContext(targetObject: ghostObject);
+      final ghostInteractionContext = ObjectFillInteractionContext(
+        targetObject: ghostObject,
+      );
       CanvasObjectPainter.paint(
         touchyCanvas,
         canvas,
@@ -308,44 +315,45 @@ class CanvasPainter extends NarwhalPainter {
 
     final visualFillPaint = Paint()
       ..color = selectionColor
-      ..style = PaintingStyle.fill;
+      ..style = .fill;
 
     final hitBoxFillPaint = Paint()
       ..color = Colors.transparent
-      ..style = PaintingStyle.fill;
+      ..style = .fill;
 
     for (final handle in edgeHandles) {
       final Rect handleRect = switch (handle) {
         ResizeHandle.topCenter => Rect.fromLTWH(
-            topLeftPos.dx,
-            topLeftPos.dy - edgeHandleThickness / 2,
-            objWidth,
-            edgeHandleThickness,
-          ),
+          topLeftPos.dx,
+          topLeftPos.dy - edgeHandleThickness / 2,
+          objWidth,
+          edgeHandleThickness,
+        ),
         ResizeHandle.centerRight => Rect.fromLTWH(
-            topRightPos.dx - edgeHandleThickness / 2,
-            topRightPos.dy,
-            edgeHandleThickness,
-            objHeight,
-          ),
+          topRightPos.dx - edgeHandleThickness / 2,
+          topRightPos.dy,
+          edgeHandleThickness,
+          objHeight,
+        ),
         ResizeHandle.bottomCenter => Rect.fromLTWH(
-            bottomLeftPos.dx,
-            bottomLeftPos.dy - edgeHandleThickness / 2,
-            objWidth,
-            edgeHandleThickness,
-          ),
+          bottomLeftPos.dx,
+          bottomLeftPos.dy - edgeHandleThickness / 2,
+          objWidth,
+          edgeHandleThickness,
+        ),
         ResizeHandle.centerLeft => Rect.fromLTWH(
-            topLeftPos.dx - edgeHandleThickness / 2,
-            topLeftPos.dy,
-            edgeHandleThickness,
-            objHeight,
-          ),
+          topLeftPos.dx - edgeHandleThickness / 2,
+          topLeftPos.dy,
+          edgeHandleThickness,
+          objHeight,
+        ),
         _ => Rect.zero,
       };
 
       if (handleRect == Rect.zero) continue;
 
-      final isHorizontal = handle == ResizeHandle.centerLeft ||
+      final isHorizontal =
+          handle == ResizeHandle.centerLeft ||
           handle == ResizeHandle.centerRight;
       final lineHeight = isHorizontal ? handleRect.height : edgeWidth;
       final lineWidth = isHorizontal ? edgeWidth : handleRect.width;
@@ -397,11 +405,11 @@ class CanvasPainter extends NarwhalPainter {
 
     final fillPaint = Paint()
       ..color = backgroundColor
-      ..style = PaintingStyle.fill;
+      ..style = .fill;
 
     final borderPaint = Paint()
       ..color = selectionColor
-      ..style = PaintingStyle.stroke
+      ..style = .stroke
       ..strokeWidth = borderWidth;
 
     for (final handle in cornerHandles) {
@@ -410,7 +418,7 @@ class CanvasPainter extends NarwhalPainter {
         ResizeHandle.topRight => topRightPos,
         ResizeHandle.bottomLeft => bottomLeftPos,
         ResizeHandle.bottomRight => bottomRightPos,
-        _ => Offset.zero,
+        _ => .zero,
       };
 
       final handleRect = Rect.fromLTWH(
@@ -431,7 +439,7 @@ class CanvasPainter extends NarwhalPainter {
       ).drawRect(handleRect, fillPaint);
 
       canvas.drawRRect(
-        RRect.fromRectAndRadius(handleRect, Radius.circular(borderRadius)),
+        RRect.fromRectAndRadius(handleRect, .circular(borderRadius)),
         borderPaint,
       );
     }
@@ -479,10 +487,7 @@ class CanvasPainter extends NarwhalPainter {
       }
 
       // Calculate segment midpoint
-      final midpoint = Offset(
-        (start.dx + end.dx) / 2,
-        (start.dy + end.dy) / 2,
-      );
+      final midpoint = Offset((start.dx + end.dx) / 2, (start.dy + end.dy) / 2);
 
       // Determine if segment is more horizontal or vertical
       final deltaX = (end.dx - start.dx).abs();
@@ -520,11 +525,11 @@ class CanvasPainter extends NarwhalPainter {
       // Step 1: Draw visual handle using regular canvas (rounded rectangle with selection color)
       final handlePaint = Paint()
         ..color = selectionColor
-        ..style = PaintingStyle.fill;
+        ..style = .fill;
 
       final borderRadius = 3.0 / scale;
       canvas.drawRRect(
-        RRect.fromRectAndRadius(handleRect, Radius.circular(borderRadius)),
+        RRect.fromRectAndRadius(handleRect, .circular(borderRadius)),
         handlePaint,
       );
 
@@ -551,7 +556,7 @@ class CanvasPainter extends NarwhalPainter {
       // Create transparent paint for interaction area
       final transparentPaint = Paint()
         ..color = Colors.transparent
-        ..style = PaintingStyle.fill;
+        ..style = .fill;
 
       // Draw the transparent interaction rectangle
       arrowHandlePainter.drawRect(expandedRect, transparentPaint);
@@ -577,10 +582,10 @@ class CanvasPainter extends NarwhalPainter {
       final startObj = object.getStartObject(ref);
       startPoint = startObj != null
           ? arrowProps.startPoint.getOffset(startObj) +
-              (arrowProps.startRelativeOffset ?? Offset.zero)
-          : (arrowProps.startAbsoluteOffset ?? Offset.zero);
+                (arrowProps.startRelativeOffset ?? .zero)
+          : (arrowProps.startAbsoluteOffset ?? .zero);
     } else {
-      startPoint = arrowProps.startAbsoluteOffset ?? Offset.zero;
+      startPoint = arrowProps.startAbsoluteOffset ?? .zero;
     }
 
     // Calculate end point
@@ -589,10 +594,10 @@ class CanvasPainter extends NarwhalPainter {
       final endObj = object.getEndObject(ref);
       endPoint = endObj != null
           ? arrowProps.endPoint.getOffset(endObj) +
-              (arrowProps.endRelativeOffset ?? Offset.zero)
-          : (arrowProps.endAbsoluteOffset ?? Offset.zero);
+                (arrowProps.endRelativeOffset ?? .zero)
+          : (arrowProps.endAbsoluteOffset ?? .zero);
     } else {
-      endPoint = arrowProps.endAbsoluteOffset ?? Offset.zero;
+      endPoint = arrowProps.endAbsoluteOffset ?? .zero;
     }
 
     ArrowPointPainter.paint(

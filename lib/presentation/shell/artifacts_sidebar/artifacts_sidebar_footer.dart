@@ -16,13 +16,10 @@ class ArtifactsSidebarFooter extends ConsumerWidget {
           top: BorderSide(color: ThemeHelper.neutral300(context), width: 1),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: .symmetric(horizontal: 12, vertical: 4),
       child: Row(
         children: [
-          OnyxiaButton(
-            label: vaultName,
-            onTap: () => context.go(Routes.home),
-          ),
+          OnyxiaButton(label: vaultName, onTap: () => context.go(Routes.home)),
           const Spacer(),
           if (selectedVault != null) const VaultSettingsButton(),
         ],

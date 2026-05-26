@@ -13,10 +13,10 @@ class OnyxiaMenuItem {
   }) : isDivider = false;
 
   const OnyxiaMenuItem.divider()
-      : icon = null,
-        child = null,
-        onTap = null,
-        isDivider = true;
+    : icon = null,
+      child = null,
+      onTap = null,
+      isDivider = true;
 }
 
 class OnyxiaMenu extends StatelessWidget {
@@ -35,19 +35,17 @@ class OnyxiaMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 8,
-      borderRadius: BorderRadius.circular(6.0),
+      borderRadius: .circular(6.0),
       color: ThemeHelper.neutral100(context),
-      clipBehavior: Clip.antiAlias,
+      clipBehavior: .antiAlias,
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.0),
-          border: Border.all(
-            color: ThemeHelper.neutral400(context).withAlpha(25),
-          ),
+          borderRadius: .circular(6.0),
+          border: .all(color: ThemeHelper.neutral400(context).withAlpha(25)),
         ),
         child: ListView(
-          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          padding: .symmetric(vertical: 4.0),
           shrinkWrap: true,
           children: items.map((item) => _buildItem(context, item)).toList(),
         ),
@@ -58,7 +56,7 @@ class OnyxiaMenu extends StatelessWidget {
   Widget _buildItem(BuildContext context, OnyxiaMenuItem item) {
     if (item.isDivider) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
+        padding: .symmetric(vertical: 4),
         child: Divider(
           height: 1,
           thickness: 1,
@@ -74,18 +72,14 @@ class OnyxiaMenu extends StatelessWidget {
         item.onTap!();
       },
       child: Container(
-        width: double.infinity,
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.symmetric(vertical: 7.5, horizontal: 16.0),
+        width: .infinity,
+        alignment: .centerLeft,
+        padding: .symmetric(vertical: 7.5, horizontal: 16.0),
         child: Row(
           spacing: 8,
           children: [
             if (item.icon != null)
-              Icon(
-                item.icon,
-                size: 14,
-                color: ThemeHelper.neutral700(context),
-              ),
+              Icon(item.icon, size: 14, color: ThemeHelper.neutral700(context)),
             Expanded(child: item.child!),
           ],
         ),

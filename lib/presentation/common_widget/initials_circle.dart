@@ -15,7 +15,7 @@ class InitialsCircle extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        shape: BoxShape.circle,
+        shape: .circle,
         color: ThemeHelper.accentColor(),
       ),
       child: Center(
@@ -23,14 +23,14 @@ class InitialsCircle extends StatelessWidget {
           name.trim().isEmpty
               ? '?'
               : name
-                  .trim()
-                  .split(RegExp(r'\s+'))
-                  .take(2)
-                  .map((p) => p[0].toUpperCase())
-                  .join(),
+                    .trim()
+                    .split(RegExp(r'\s+'))
+                    .take(2)
+                    .map((p) => p[0].toUpperCase())
+                    .join(),
           style: NarwhalTextStyle(
             fontSize: size * 0.38,
-            fontWeight: FontWeight.w500,
+            fontWeight: .w500,
             color: ThemeHelper.neutral100(context),
           ),
         ),

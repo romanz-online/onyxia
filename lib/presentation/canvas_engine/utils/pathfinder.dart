@@ -58,8 +58,11 @@ class Pathfinder {
   ) {
     final List<Offset> path = [];
 
-    final Offset startJut =
-        _calculateJutPoint(startOffset, startObject, startPoint);
+    final Offset startJut = _calculateJutPoint(
+      startOffset,
+      startObject,
+      startPoint,
+    );
 
     // print('startOffset $startOffset');
     path.add(startOffset);
@@ -163,7 +166,8 @@ class Pathfinder {
 
     // no path was found (shouldn't ever happen)
     throw UnimplementedError(
-        'Warning: No path found after wrapping around start object');
+      'Warning: No path found after wrapping around start object',
+    );
   }
 
   bool _shouldWrapClockwise(ConnectionPoint startPoint, Offset directionToEnd) {
@@ -190,8 +194,8 @@ class Pathfinder {
   ) {
     final List<Offset> perimeterPoints = [];
     final Size objDimensions = startObject?.getDimensions() ?? Size.zero;
-    final Offset topLeft = startObject?.topLeft ?? Offset.zero;
-    final Offset bottomRight = startObject?.bottomRight ?? Offset.zero;
+    final Offset topLeft = startObject?.topLeft ?? .zero;
+    final Offset bottomRight = startObject?.bottomRight ?? .zero;
     final double objWidth = objDimensions.width;
     final double objHeight = objDimensions.height;
 
@@ -203,8 +207,8 @@ class Pathfinder {
 
     // Calculate total perimeter distance for safety check
     final double perimeterLength = 2 * (objWidth + objHeight + 4 * spacing);
-    final int maxPoints =
-        (perimeterLength / spacing * 2).ceil(); // Safety factor
+    final int maxPoints = (perimeterLength / spacing * 2)
+        .ceil(); // Safety factor
 
     Offset currentPoint = startJut;
     ConnectionPoint currentSide = startPoint;
@@ -315,7 +319,8 @@ class Pathfinder {
     final Offset horizontalOffset = Offset(end.dx, start.dy);
     final Offset verticalOffset = Offset(start.dx, end.dy);
 
-    final bool horizontalHasVision = _isObjectNotBetween(
+    final bool horizontalHasVision =
+        _isObjectNotBetween(
           start: start,
           end: horizontalOffset,
           object: startObject,
@@ -336,7 +341,8 @@ class Pathfinder {
           object: endObject,
         );
 
-    final bool verticalHasVision = _isObjectNotBetween(
+    final bool verticalHasVision =
+        _isObjectNotBetween(
           start: start,
           end: verticalOffset,
           object: startObject,
@@ -351,11 +357,7 @@ class Pathfinder {
           end: end,
           object: startObject,
         ) &&
-        _isObjectNotBetween(
-          start: verticalOffset,
-          end: end,
-          object: endObject,
-        );
+        _isObjectNotBetween(start: verticalOffset, end: end, object: endObject);
 
     if (horizontalHasVision && verticalHasVision) {
       return horizontal ? horizontalOffset : verticalOffset;
@@ -374,8 +376,8 @@ class Pathfinder {
     required CanvasObject? object,
   }) {
     final Rect objectRect = Rect.fromPoints(
-      object?.topLeft ?? Offset.zero,
-      object?.bottomRight ?? Offset.infinite,
+      object?.topLeft ?? .zero,
+      object?.bottomRight ?? .infinite,
     ).inflate(spacing / 2);
 
     final Rect betweenRect = Rect.fromPoints(start, end).inflate(0.1);
@@ -387,12 +389,7 @@ class Pathfinder {
     required Offset start,
     required Offset end,
     required CanvasObject? object,
-  }) =>
-      !_isObjectBetween(
-        start: start,
-        end: end,
-        object: object,
-      );
+  }) => !_isObjectBetween(start: start, end: end, object: object);
 
   bool _isMovementHorizontal(Offset start, Offset end) {
     final delta = end - start;

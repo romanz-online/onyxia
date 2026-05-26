@@ -20,7 +20,7 @@ import 'package:onyxia/export.dart';
 //       Rect.fromPoints(dragSelect!.topLeft, dragSelect!.bottomRight),
 //       Paint()
 //         ..color = NarwhalColors.highlight.withAlpha(75)
-//         ..style = PaintingStyle.fill,
+//         ..style = .fill,
 //     );
 
 //     // Draw stroke rectangle with full highlight color
@@ -28,7 +28,7 @@ import 'package:onyxia/export.dart';
 //       Rect.fromPoints(dragSelect!.topLeft, dragSelect!.bottomRight),
 //       Paint()
 //         ..color = NarwhalColors.highlight
-//         ..style = PaintingStyle.stroke
+//         ..style = .stroke
 //         ..strokeWidth = 2.0,
 //     );
 //   }
@@ -51,7 +51,7 @@ void paintDragSelect(BuildContext context, Canvas canvas, Rect? dragSelect) {
     Rect.fromPoints(dragSelect.topLeft, dragSelect.bottomRight),
     Paint()
       ..color = ThemeHelper.blue400(context).withValues(alpha: 0.5)
-      ..style = PaintingStyle.fill,
+      ..style = .fill,
   );
 
   // Draw stroke rectangle with full highlight color
@@ -59,7 +59,7 @@ void paintDragSelect(BuildContext context, Canvas canvas, Rect? dragSelect) {
     Rect.fromPoints(dragSelect.topLeft, dragSelect.bottomRight),
     Paint()
       ..color = ThemeHelper.blue400(context)
-      ..style = PaintingStyle.stroke
+      ..style = .stroke
       ..strokeWidth = 2.0,
   );
 }

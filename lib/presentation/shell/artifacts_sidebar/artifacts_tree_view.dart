@@ -41,10 +41,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
   void _onNodesMoved(TreeNodeMovedEvent<Artifact> event) {
     for (final node in event.nodes) {
-      final success = ref.read(artifactsProvider.notifier).updateParent(
-            node.data.id,
-            newParentId: node.parent?.data.id ?? '',
-          );
+      final success = ref
+          .read(artifactsProvider.notifier)
+          .updateParent(node.data.id, newParentId: node.parent?.data.id ?? '');
       if (success && node.parent != null)
         treeController.expandNode(node.parent!);
     }
@@ -137,7 +136,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       expansionSlotSize: 20,
       expansionBuilder: (ctx, node) => node.hasChildren
           ? Padding(
-              padding: EdgeInsets.fromLTRB(
+              padding: .fromLTRB(
                 node.isExpanded ? 2 : 3,
                 0,
                 0,
@@ -150,9 +149,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
               ),
             )
           : const SizedBox.shrink(),
-      prefixBuilder: (ctx, node) => node.data.type == ArtifactType.folder
+      prefixBuilder: (ctx, node) => node.data.type == .folder
           ? Padding(
-              padding: const EdgeInsets.only(left: 7),
+              padding: .only(left: 7),
               child: Icon(
                 node.isExpanded ? LucideIcons.folderOpen : LucideIcons.folder,
                 color: ThemeHelper.neutral900(context),
@@ -163,26 +162,26 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       contentBuilder: (context, node, _) => TreeTile(node: node),
       style: TreeViewStyle(
         indentAmount: 16.0,
-        padding: EdgeInsets.symmetric(vertical: 0),
+        padding: .symmetric(vertical: 0),
         hoverColor: ThemeHelper.neutral200(context),
         selectedColor: ThemeHelper.neutral200(context),
       ),
       logic: TreeViewConfig(
         enableDragAndDrop: true,
-        selectionMode: SelectionMode.multiple,
-        expansionTrigger: ExpansionTrigger.tap,
+        selectionMode: .multiple,
+        expansionTrigger: .tap,
         onNodeTap: (id) => _onNodeTapped(id),
         onNodeDoubleTap: (id) => _onNodeDoubleTapped(id),
         dragAndDrop: TreeDragAndDropConfig(
           canAcceptDrop: (draggedNode, targetNode, position) {
-            if (position != NodeDropPosition.inside) return false;
-            if (targetNode.data.type != ArtifactType.folder) return false;
+            if (position != .inside) return false;
+            if (targetNode.data.type != .folder) return false;
             if (targetNode.id == draggedNode.id) return false;
             return true;
           },
           canAcceptDropMany: (draggedNodes, targetNode, position) {
-            if (position != NodeDropPosition.inside) return false;
-            if (targetNode.data.type != ArtifactType.folder) return false;
+            if (position != .inside) return false;
+            if (targetNode.data.type != .folder) return false;
             if (draggedNodes.map((e) => e.data.id).contains(targetNode.id)) {
               return false;
             }
@@ -190,10 +189,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
           },
         ),
       ),
-      contextMenuBuilder: (ctx, node) => _buildContextMenuItems(
-        artifactsContextMenuOptions().options,
-        node,
-      ),
+      contextMenuBuilder: (ctx, node) =>
+          _buildContextMenuItems(artifactsContextMenuOptions().options, node),
     );
   }
 
@@ -204,14 +201,15 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       return;
     }
 
-    final hasModifier = HardwareKeyboard.instance.isControlPressed ||
+    final hasModifier =
+        HardwareKeyboard.instance.isControlPressed ||
         HardwareKeyboard.instance.isMetaPressed ||
         HardwareKeyboard.instance.isShiftPressed;
     if (hasModifier) return;
 
     final item = ref.read(artifactsProvider.notifier).getItemById(id);
     // don't select folders, just let the tree open them
-    if (item == null || item.type == ArtifactType.folder) return;
+    if (item == null || item.type == .folder) return;
     _selectItem(item);
   }
 
@@ -233,7 +231,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     for (int i = 0; i < oldRoots.length; i++) {
       if (oldRoots[i].data.name != newRoots[i].data.name) return true;
       if (_isTreeChanged(
-          oldRoots[i].children.toList(), newRoots[i].children.toList()))
+        oldRoots[i].children.toList(),
+        newRoots[i].children.toList(),
+      ))
         return true;
     }
     return false;
@@ -255,7 +255,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   }
 
   void _applyExpansionState(
-      List<TreeNode<Artifact>> roots, Map<String, bool> state) {
+    List<TreeNode<Artifact>> roots,
+    Map<String, bool> state,
+  ) {
     void apply(TreeNode<Artifact> node) {
       node.isExpanded = state[node.id] ?? true;
       for (final child in node.children) {
@@ -276,18 +278,22 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     final selectedIds = treeController.selectedNodeIds;
     for (final opt in options) {
       if (opt.dividerBefore && items.isNotEmpty) {
-        items.add(ContextMenuItem(
-          child: const Divider(height: 1, thickness: 1),
-          onTap: () {},
-        ));
+        items.add(
+          ContextMenuItem(
+            child: const Divider(height: 1, thickness: 1),
+            onTap: () {},
+          ),
+        );
       }
-      items.add(ContextMenuItem(
-        child: Text(opt.label, style: NarwhalTextStyle()),
-        onTap: () {
-          opt.callback(ref, node, selectedIds);
-          if (opt.clearSelectionAfter) treeController.deselectAll();
-        },
-      ));
+      items.add(
+        ContextMenuItem(
+          child: Text(opt.label, style: NarwhalTextStyle()),
+          onTap: () {
+            opt.callback(ref, node, selectedIds);
+            if (opt.clearSelectionAfter) treeController.deselectAll();
+          },
+        ),
+      );
     }
     return items;
   }

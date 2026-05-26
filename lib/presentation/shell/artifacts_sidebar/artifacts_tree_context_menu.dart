@@ -1,11 +1,11 @@
 ﻿import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/shell/artifacts_sidebar/providers/rename_artifact_id_provider.dart';
 
-typedef TreeContextMenuCallback = void Function(
-  WidgetRef ref,
-  TreeNode<Artifact> node,
-  Set<String> selectedIds,
-);
+typedef TreeContextMenuCallback =
+    void Function(
+      WidgetRef ref,
+      TreeNode<Artifact> node,
+      Set<String> selectedIds,
+    );
 
 class TreeContextMenuOption {
   final String label;
@@ -59,16 +59,11 @@ void _handleOpenInNewTab(
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,
-) =>
-    NavigationContextMenu.openInNewTab(
-      node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
-    );
+) => NavigationContextMenu.openInNewTab(
+  node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
+);
 
-void _handleCopyLink(
-  WidgetRef ref,
-  TreeNode<Artifact> node,
-  Set<String> _,
-) =>
+void _handleCopyLink(WidgetRef ref, TreeNode<Artifact> node, Set<String> _) =>
     NavigationContextMenu.copyLinkToClipboard(
       node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
     );
@@ -87,10 +82,6 @@ void _handleRemove(
   }
 }
 
-void _handleRename(
-  WidgetRef ref,
-  TreeNode<Artifact> node,
-  Set<String> _,
-) {
+void _handleRename(WidgetRef ref, TreeNode<Artifact> node, Set<String> _) {
   ref.read(renameArtifactIdProvider.notifier).set(node.data.id);
 }

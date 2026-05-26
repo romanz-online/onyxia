@@ -1,12 +1,7 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
-enum ToastType {
-  success,
-  warning,
-  error,
-  info,
-}
+enum ToastType { success, warning, error, info }
 
 class _ToastEntry {
   final String id;
@@ -33,24 +28,29 @@ class OnyxiaToast {
   static String show({
     String? text,
     Widget? child,
-    ToastType type = ToastType.info,
-    Alignment position = Alignment.topRight,
+    ToastType type = .info,
+    Alignment position = .topRight,
     Duration? duration,
     double margin = 16.0,
   }) {
     assert(
-        text != null || child != null, 'Either text or child must be provided');
+      text != null || child != null,
+      'Either text or child must be provided',
+    );
     assert(
-        !(text != null && child != null), 'Cannot provide both text and child');
+      !(text != null && child != null),
+      'Cannot provide both text and child',
+    );
 
     // Errors stay longer so users can read them; other types use 3 s default.
-    final effectiveDuration = duration ??
-        (type == ToastType.error
+    final effectiveDuration =
+        duration ??
+        (type == .error
             ? const Duration(seconds: 10)
             : const Duration(seconds: 3));
 
     // Always log errors to the console so they can be reviewed after dismissal.
-    if (type == ToastType.error && text != null) {
+    if (type == .error && text != null) {
       debugPrint('[Toast Error] $text');
     }
 
@@ -116,12 +116,12 @@ class OnyxiaToast {
   /// Call [hideById] with the returned ID when done.
   static ({String id, ValueNotifier<double> progress}) showProgress({
     required String label,
-    Alignment position = Alignment.topRight,
+    Alignment position = .topRight,
   }) {
     final progress = ValueNotifier<double>(0.0);
     final id = show(
       child: _ProgressToastContent(label: label, progress: progress),
-      type: ToastType.info,
+      type: .info,
       duration: const Duration(days: 365),
       position: position,
     );
@@ -186,15 +186,15 @@ class OnyxiaToast {
   }
 
   static bool _isBottomPosition(Alignment position) {
-    return position == Alignment.bottomLeft ||
-        position == Alignment.bottomCenter ||
-        position == Alignment.bottomRight;
+    return position == .bottomLeft ||
+        position == .bottomCenter ||
+        position == .bottomRight;
   }
 
   static bool _isTopPosition(Alignment position) {
-    return position == Alignment.topLeft ||
-        position == Alignment.topCenter ||
-        position == Alignment.topRight;
+    return position == .topLeft ||
+        position == .topCenter ||
+        position == .topRight;
   }
 
   static void hideAll() {
@@ -281,42 +281,26 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
     _fadeAnimation = Tween<double>(
       begin: 0.0,
       end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _entryController,
-      curve: Curves.easeOut,
-    ));
+    ).animate(CurvedAnimation(parent: _entryController, curve: Curves.easeOut));
 
     _slideAnimation = Tween<Offset>(
       begin: _getSlideOffset(),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(
-      parent: _entryController,
-      curve: Curves.easeOut,
-    ));
+      end: .zero,
+    ).animate(CurvedAnimation(parent: _entryController, curve: Curves.easeOut));
 
-    _positionAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _positionController,
-      curve: Curves.easeInOut,
-    ));
+    _positionAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _positionController, curve: Curves.easeInOut),
+    );
 
     _exitFadeAnimation = Tween<double>(
       begin: 1.0,
       end: 0.0,
-    ).animate(CurvedAnimation(
-      parent: _exitController,
-      curve: Curves.easeIn,
-    ));
+    ).animate(CurvedAnimation(parent: _exitController, curve: Curves.easeIn));
 
     _exitSlideAnimation = Tween<Offset>(
-      begin: Offset.zero,
+      begin: .zero,
       end: _getSlideOffset(),
-    ).animate(CurvedAnimation(
-      parent: _exitController,
-      curve: Curves.easeIn,
-    ));
+    ).animate(CurvedAnimation(parent: _exitController, curve: Curves.easeIn));
 
     // Listen to position updates
     _positionSubscription = widget.positionStream.listen((_) {
@@ -357,30 +341,31 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
 
   Offset _getSlideOffset() {
     switch (widget.position) {
-      case Alignment.topLeft:
-      case Alignment.topCenter:
-      case Alignment.topRight:
+      case .topLeft:
+      case .topCenter:
+      case .topRight:
         return const Offset(0, -1);
-      case Alignment.bottomLeft:
-      case Alignment.bottomCenter:
-      case Alignment.bottomRight:
+      case .bottomLeft:
+      case .bottomCenter:
+      case .bottomRight:
         return const Offset(0, 1);
-      case Alignment.centerLeft:
+      case .centerLeft:
         return const Offset(-1, 0);
-      case Alignment.centerRight:
+      case .centerRight:
         return const Offset(1, 0);
-      case Alignment.center:
+      case .center:
         return const Offset(0, -0.1);
       default:
-        return Offset.zero;
+        return .zero;
     }
   }
 
   double _getStackOffset() {
     // Calculate the current stack index based on existing toasts
     final toasts = OnyxiaToast._toastsByPosition[widget.position] ?? [];
-    final currentIndex =
-        toasts.indexWhere((toast) => toast.id == widget.toastId);
+    final currentIndex = toasts.indexWhere(
+      (toast) => toast.id == widget.toastId,
+    );
 
     if (currentIndex == -1) return 0;
 
@@ -388,18 +373,18 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
 
     // Adjust offset direction based on position
     switch (widget.position) {
-      case Alignment.topLeft:
-      case Alignment.topCenter:
-      case Alignment.topRight:
+      case .topLeft:
+      case .topCenter:
+      case .topRight:
       // For top positions: index 0 = top (newest), higher indices move down
-      case Alignment.centerLeft:
-      case Alignment.center:
-      case Alignment.centerRight:
+      case .centerLeft:
+      case .center:
+      case .centerRight:
         // For center positions: stack downward
         return stackOffset; // Stack downward from top
-      case Alignment.bottomLeft:
-      case Alignment.bottomCenter:
-      case Alignment.bottomRight:
+      case .bottomLeft:
+      case .bottomCenter:
+      case .bottomRight:
         // For bottom positions: index 0 = bottom (newest), higher indices move up
         return -stackOffset; // Stack upward from bottom (negative offset)
       default:
@@ -410,11 +395,15 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge(
-          [_entryController, _positionController, _exitController]),
+      animation: Listenable.merge([
+        _entryController,
+        _positionController,
+        _exitController,
+      ]),
       builder: (context, child) {
         // Interpolate between current and target stack offsets
-        final interpolatedOffset = _currentStackOffset +
+        final interpolatedOffset =
+            _currentStackOffset +
             (_targetStackOffset - _currentStackOffset) *
                 _positionAnimation.value;
 
@@ -424,7 +413,7 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
             child: Transform.translate(
               offset: Offset(0, interpolatedOffset),
               child: Container(
-                margin: EdgeInsets.all(widget.margin),
+                margin: .all(widget.margin),
                 child: FadeTransition(
                   opacity: _fadeAnimation,
                   child: SlideTransition(
@@ -434,7 +423,7 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
                       child: SlideTransition(
                         position: _exitSlideAnimation,
                         child: GestureDetector(
-                          behavior: HitTestBehavior.opaque,
+                          behavior: .opaque,
                           onTap: () => OnyxiaToast._startExit(
                             widget.toastId,
                             widget.position,
@@ -469,23 +458,16 @@ class _ToastWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 8,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: .circular(8),
       color: _getBackgroundColor(context),
       child: Container(
-        constraints: const BoxConstraints(
-          minHeight: 48,
-          maxWidth: 400,
-        ),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        constraints: const BoxConstraints(minHeight: 48, maxWidth: 400),
+        padding: .symmetric(horizontal: 16, vertical: 12),
         child: Row(
-          mainAxisSize: child != null ? MainAxisSize.max : MainAxisSize.min,
+          mainAxisSize: child != null ? .max : .min,
           spacing: 12,
           children: [
-            Icon(
-              _getIcon(),
-              color: _getIconColor(context),
-              size: 20,
-            ),
+            Icon(_getIcon(), color: _getIconColor(context), size: 20),
             if (child != null)
               Expanded(child: child!)
             else
@@ -495,7 +477,7 @@ class _ToastWidget extends StatelessWidget {
                   style: NarwhalTextStyle(
                     color: _getTextColor(context),
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: .w500,
                   ),
                 ),
               ),
@@ -506,32 +488,32 @@ class _ToastWidget extends StatelessWidget {
   }
 
   Color _getBackgroundColor(BuildContext context) => switch (type) {
-        ToastType.success => ThemeHelper.green100(context),
-        ToastType.warning => ThemeHelper.amber(),
-        ToastType.error => ThemeHelper.errorColor(),
-        ToastType.info => ThemeHelper.neutral600(context),
-      };
+    .success => ThemeHelper.green100(context),
+    .warning => ThemeHelper.amber(),
+    .error => ThemeHelper.errorColor(),
+    .info => ThemeHelper.neutral600(context),
+  };
 
   Color _getTextColor(BuildContext context) => switch (type) {
-        ToastType.success => ThemeHelper.neutral700(context),
-        ToastType.warning => ThemeHelper.neutral900(context),
-        ToastType.error => ThemeHelper.white(context),
-        ToastType.info => ThemeHelper.neutral200(context),
-      };
+    .success => ThemeHelper.neutral700(context),
+    .warning => ThemeHelper.neutral900(context),
+    .error => ThemeHelper.white(context),
+    .info => ThemeHelper.neutral200(context),
+  };
 
   Color _getIconColor(BuildContext context) => switch (type) {
-        ToastType.success => ThemeHelper.green700(context),
-        ToastType.warning => ThemeHelper.neutral900(context),
-        ToastType.error => ThemeHelper.white(context),
-        ToastType.info => ThemeHelper.accentColor(),
-      };
+    .success => ThemeHelper.green700(context),
+    .warning => ThemeHelper.neutral900(context),
+    .error => ThemeHelper.white(context),
+    .info => ThemeHelper.accentColor(),
+  };
 
   IconData _getIcon() => switch (type) {
-        ToastType.success => LucideIcons.circleCheck,
-        ToastType.warning => LucideIcons.triangleAlert,
-        ToastType.error => LucideIcons.circleX,
-        ToastType.info => LucideIcons.info,
-      };
+    .success => LucideIcons.circleCheck,
+    .warning => LucideIcons.triangleAlert,
+    .error => LucideIcons.circleX,
+    .info => LucideIcons.info,
+  };
 }
 
 /// Content widget used inside upload progress toasts.
@@ -550,12 +532,12 @@ class _ProgressToastContent extends StatelessWidget {
         final safeValue = value.isFinite ? value.clamp(0.0, 1.0) : 0.0;
         final percent = (safeValue * 100).toInt();
         return Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
           spacing: 8,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: .spaceBetween,
               spacing: 8,
               children: [
                 Flexible(
@@ -564,9 +546,9 @@ class _ProgressToastContent extends StatelessWidget {
                     style: NarwhalTextStyle(
                       color: ThemeHelper.neutral200(context),
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                     ),
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
                 ),
                 Text(
@@ -574,13 +556,13 @@ class _ProgressToastContent extends StatelessWidget {
                   style: NarwhalTextStyle(
                     color: ThemeHelper.neutral400(context),
                     fontSize: 12,
-                    fontWeight: FontWeight.w400,
+                    fontWeight: .w400,
                   ),
                 ),
               ],
             ),
             ClipRRect(
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: .circular(4),
               child: LinearProgressIndicator(
                 value: safeValue > 0 ? safeValue : null,
                 minHeight: 4,

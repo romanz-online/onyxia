@@ -18,7 +18,7 @@ class MasterSidebar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       width: width,
-      height: double.infinity,
+      height: .infinity,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
         border: Border(
@@ -26,10 +26,10 @@ class MasterSidebar extends ConsumerWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+        padding: .symmetric(horizontal: 4, vertical: 8),
         child: Column(
           spacing: 8,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: .start,
           children: [
             ValueListenableBuilder<bool>(
               valueListenable: isArtifactsSidebarCollapsed,
@@ -51,7 +51,6 @@ class MasterSidebar extends ConsumerWidget {
                 icon: LucideIcons.share2,
                 tooltip: 'Open graph',
                 onPressed: () {
-                  OnyxiaToast.show(text: 'Some test text!');
                   if (vaultId.isEmpty) return;
                   context.go('/vault/$vaultId/${Routes.graph}');
                 },

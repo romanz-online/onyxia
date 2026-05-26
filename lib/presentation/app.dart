@@ -21,17 +21,14 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
       routerDelegate: routerInstance.routerDelegate,
       routeInformationProvider: routerInstance.routeInformationProvider,
       theme: _buildTheme(),
-      builder: (context, child) => Portal(
-        child: child ?? const SizedBox.shrink(),
-      ),
+      builder: (context, child) =>
+          Portal(child: child ?? const SizedBox.shrink()),
     );
   }
 
   ThemeData _buildTheme() {
     return ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: ThemeHelper.accentColor(),
-      ),
+      colorScheme: ColorScheme.fromSeed(seedColor: ThemeHelper.accentColor()),
       scaffoldBackgroundColor: ThemeHelper.neutral100(context),
       cardColor: ThemeHelper.neutral100(context),
       dividerColor: ThemeHelper.neutral400(context),
@@ -45,66 +42,67 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
         iconTheme: IconThemeData(color: ThemeHelper.neutral800(context)),
       ),
       iconTheme: IconThemeData(color: ThemeHelper.neutral800(context)),
-      textTheme: const TextTheme(
-        // Small scale (10px)
-        labelSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w400,
-          fontFamily: 'Segoe UI',
-        ),
-        bodySmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Segoe UI',
-        ),
-        titleSmall: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w700,
-          fontFamily: 'Segoe UI',
-        ),
-        // Medium scale (12px)
-        labelMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w300,
-          fontFamily: 'Segoe UI',
-        ),
-        bodyMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-          fontFamily: 'Segoe UI',
-        ),
-        titleMedium: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-          fontFamily: 'Segoe UI',
-        ),
-        headlineSmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w700,
-          fontFamily: 'Segoe UI',
-        ),
-        displaySmall: TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w400,
-          fontStyle: FontStyle.italic,
-          fontFamily: 'Segoe UI',
-        ),
-        // Large scale (16px)
-        labelLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w300,
-          fontFamily: 'Segoe UI',
-        ),
-        bodyLarge: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w400,
-          fontStyle: FontStyle.italic,
-          fontFamily: 'Segoe UI',
-        ),
-      ).apply(
-        bodyColor: ThemeHelper.neutral300(context),
-        displayColor: ThemeHelper.neutral300(context),
-      ),
+      textTheme:
+          const TextTheme(
+            // Small scale (10px)
+            labelSmall: TextStyle(
+              fontSize: 10,
+              fontWeight: .w400,
+              fontFamily: 'Segoe UI',
+            ),
+            bodySmall: TextStyle(
+              fontSize: 10,
+              fontWeight: .w600,
+              fontFamily: 'Segoe UI',
+            ),
+            titleSmall: TextStyle(
+              fontSize: 10,
+              fontWeight: .w700,
+              fontFamily: 'Segoe UI',
+            ),
+            // Medium scale (12px)
+            labelMedium: TextStyle(
+              fontSize: 12,
+              fontWeight: .w300,
+              fontFamily: 'Segoe UI',
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 12,
+              fontWeight: .w400,
+              fontFamily: 'Segoe UI',
+            ),
+            titleMedium: TextStyle(
+              fontSize: 12,
+              fontWeight: .w600,
+              fontFamily: 'Segoe UI',
+            ),
+            headlineSmall: TextStyle(
+              fontSize: 12,
+              fontWeight: .w700,
+              fontFamily: 'Segoe UI',
+            ),
+            displaySmall: TextStyle(
+              fontSize: 12,
+              fontWeight: .w400,
+              fontStyle: .italic,
+              fontFamily: 'Segoe UI',
+            ),
+            // Large scale (16px)
+            labelLarge: TextStyle(
+              fontSize: 16,
+              fontWeight: .w300,
+              fontFamily: 'Segoe UI',
+            ),
+            bodyLarge: TextStyle(
+              fontSize: 16,
+              fontWeight: .w400,
+              fontStyle: .italic,
+              fontFamily: 'Segoe UI',
+            ),
+          ).apply(
+            bodyColor: ThemeHelper.neutral300(context),
+            displayColor: ThemeHelper.neutral300(context),
+          ),
       inputDecorationTheme: InputDecorationTheme(
         fillColor: ThemeHelper.neutral300(context),
         filled: true,
@@ -116,11 +114,12 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
         waitDuration: Duration(milliseconds: 800),
         decoration: BoxDecoration(
           color: ThemeHelper.neutral700(context),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: .circular(4),
         ),
       ),
-      popupMenuTheme:
-          PopupMenuThemeData(color: ThemeHelper.neutral800(context)),
+      popupMenuTheme: PopupMenuThemeData(
+        color: ThemeHelper.neutral800(context),
+      ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: _NoTransitionBuilder(),
@@ -145,6 +144,5 @@ class _NoTransitionBuilder extends PageTransitionsBuilder {
     Animation<double> animation,
     Animation<double> secondaryAnimation,
     Widget child,
-  ) =>
-      child;
+  ) => child;
 }

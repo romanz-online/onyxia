@@ -47,7 +47,9 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
     });
 
     try {
-      await ref.read(currentUserProvider.notifier).signInWithEmail(
+      await ref
+          .read(currentUserProvider.notifier)
+          .signInWithEmail(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
@@ -61,12 +63,12 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisSize: MainAxisSize.min,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: .min,
+      crossAxisAlignment: .stretch,
       children: [
         TextField(
           controller: _emailController,
-          keyboardType: TextInputType.emailAddress,
+          keyboardType: .emailAddress,
           autofillHints: const [AutofillHints.email],
           decoration: NarwhalModalInputDecoration.create(
             context,
@@ -106,16 +108,16 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
         ),
         const Gap(8),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           spacing: 8,
           children: [
             OnyxiaButton(
               label: 'Create an account',
-              onTap: () => widget.onNavigate(LandingMode.createAccount),
+              onTap: () => widget.onNavigate(.createAccount),
             ),
             OnyxiaButton(
               label: 'Forgot password?',
-              onTap: () => widget.onNavigate(LandingMode.forgotPassword),
+              onTap: () => widget.onNavigate(.forgotPassword),
             ),
           ],
         ),

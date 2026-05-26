@@ -409,18 +409,6 @@ void main() {
 
 ---
 
-## Violation Scanner
-
-Run `/sweep-violations` (`.claude/commands/sweep-violations.md`) at any time for a full audit of all 600+ Dart files.
-
-To install the pre-commit hook (one-time, from the repo root):
-
-```bash
-ln -sf ../../scripts/check_narwhal_rules.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
-```
-
----
-
 ## Database Schema
 
 The current remote Supabase schema is dumped at supabase/schema.sql. Read it before writing repository code, RLS-aware queries, or migration SQL. Refresh with supabase db dump --schema-only -f supabase/schema.sql.

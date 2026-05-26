@@ -58,8 +58,9 @@ class CanvasObjectTextArea extends ConsumerWidget {
   }
 
   Widget _buildHoverHint({required WidgetRef ref}) {
-    final interactionContext =
-        ObjectFillInteractionContext(targetObject: canvasObject);
+    final interactionContext = ObjectFillInteractionContext(
+      targetObject: canvasObject,
+    );
     return Positioned(
       left: canvasObject.topLeft.dx,
       top: canvasObject.topLeft.dy,
@@ -74,17 +75,19 @@ class CanvasObjectTextArea extends ConsumerWidget {
             onPanStart: gestureRouter.getHandlePanStart(interactionContext),
             onPanUpdate: gestureRouter.getHandlePanUpdate(),
             onPanEnd: gestureRouter.getHandlePanEnd(),
-            onSecondaryTapDown:
-                gestureRouter.getHandleSecondaryTapDown(interactionContext),
-            onSecondaryTapUp:
-                gestureRouter.getHandleSecondaryTapUp(interactionContext),
+            onSecondaryTapDown: gestureRouter.getHandleSecondaryTapDown(
+              interactionContext,
+            ),
+            onSecondaryTapUp: gestureRouter.getHandleSecondaryTapUp(
+              interactionContext,
+            ),
             child: Center(
               child: Text(
                 isHovered ? 'Add Text' : '',
                 style: NarwhalTextStyle(
                   fontSize: 17,
                   color: ThemeHelper.neutral500(context).withValues(alpha: 0.6),
-                  fontWeight: FontWeight.w500,
+                  fontWeight: .w500,
                 ),
               ),
             ),
@@ -117,7 +120,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
               maxHeight: maxHeight,
             ),
             child: Container(
-              padding: const EdgeInsets.only(left: 1, top: 1),
+              padding: .only(left: 1, top: 1),
               child: IntrinsicWidth(
                 child: IntrinsicHeight(
                   child: TextField(
@@ -130,13 +133,14 @@ class CanvasObjectTextArea extends ConsumerWidget {
                       fontSize: 16,
                     ),
                     decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
+                      border: .none,
+                      contentPadding: .zero,
                       isDense: true,
                     ),
                     onChanged: (value) {
-                      canvasObject.content =
-                          ref.read(canvasTextProvider.notifier).text;
+                      canvasObject.content = ref
+                          .read(canvasTextProvider.notifier)
+                          .text;
                       onTextKeyPress(canvasObject);
                     },
                   ),
@@ -158,8 +162,9 @@ class CanvasObjectTextArea extends ConsumerWidget {
     final double centerX = position.dx + (maxWidth / 2);
     final double centerY = position.dy + (maxHeight / 2);
 
-    final interactionContext =
-        ObjectFillInteractionContext(targetObject: canvasObject);
+    final interactionContext = ObjectFillInteractionContext(
+      targetObject: canvasObject,
+    );
 
     return Positioned(
       left: centerX + padding,
@@ -181,10 +186,12 @@ class CanvasObjectTextArea extends ConsumerWidget {
               onPanStart: gestureRouter.getHandlePanStart(interactionContext),
               onPanUpdate: gestureRouter.getHandlePanUpdate(),
               onPanEnd: gestureRouter.getHandlePanEnd(),
-              onSecondaryTapDown:
-                  gestureRouter.getHandleSecondaryTapDown(interactionContext),
-              onSecondaryTapUp:
-                  gestureRouter.getHandleSecondaryTapUp(interactionContext),
+              onSecondaryTapDown: gestureRouter.getHandleSecondaryTapDown(
+                interactionContext,
+              ),
+              onSecondaryTapUp: gestureRouter.getHandleSecondaryTapUp(
+                interactionContext,
+              ),
               child: Center(
                 child: Text(
                   canvasObject.content,
@@ -208,12 +215,9 @@ class CanvasObjectTextArea extends ConsumerWidget {
       child: Container(
         key: canvasObject.textAreaKey,
         decoration: BoxDecoration(
-          border: Border.all(
-            color: ThemeHelper.blue500(context),
-            width: 1.5,
-          ),
+          border: .all(color: ThemeHelper.blue500(context), width: 1.5),
         ),
-        padding: const EdgeInsets.all(5.0),
+        padding: .all(5.0),
         child: IntrinsicWidth(
           child: IntrinsicHeight(
             child: TextField(
@@ -226,19 +230,22 @@ class CanvasObjectTextArea extends ConsumerWidget {
                 fontSize: 16,
               ),
               decoration: const InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.zero,
+                border: .none,
+                contentPadding: .zero,
                 isDense: true,
                 hintText: 'Enter text',
               ),
               onChanged: (value) {
-                canvasObject.content =
-                    ref.read(canvasTextProvider.notifier).text;
-                final renderBox = canvasObject.textAreaKey.currentContext
-                    ?.findRenderObject() as RenderBox?;
+                canvasObject.content = ref
+                    .read(canvasTextProvider.notifier)
+                    .text;
+                final renderBox =
+                    canvasObject.textAreaKey.currentContext?.findRenderObject()
+                        as RenderBox?;
                 if (renderBox != null && renderBox.hasSize) {
                   final containerSize = renderBox.size;
-                  canvasObject.bottomRight = canvasObject.topLeft +
+                  canvasObject.bottomRight =
+                      canvasObject.topLeft +
                       Offset(containerSize.width, containerSize.height);
                 }
                 onTextKeyPress(canvasObject);
@@ -251,8 +258,9 @@ class CanvasObjectTextArea extends ConsumerWidget {
   }
 
   Widget _buildTextViewer({required WidgetRef ref}) {
-    final interactionContext =
-        ObjectFillInteractionContext(targetObject: canvasObject);
+    final interactionContext = ObjectFillInteractionContext(
+      targetObject: canvasObject,
+    );
 
     return Positioned(
       left: canvasObject.topLeft.dx,
@@ -264,14 +272,17 @@ class CanvasObjectTextArea extends ConsumerWidget {
         onPanStart: gestureRouter.getHandlePanStart(interactionContext),
         onPanUpdate: gestureRouter.getHandlePanUpdate(),
         onPanEnd: gestureRouter.getHandlePanEnd(),
-        onSecondaryTapDown:
-            gestureRouter.getHandleSecondaryTapDown(interactionContext),
-        onSecondaryTapUp:
-            gestureRouter.getHandleSecondaryTapUp(interactionContext),
+        onSecondaryTapDown: gestureRouter.getHandleSecondaryTapDown(
+          interactionContext,
+        ),
+        onSecondaryTapUp: gestureRouter.getHandleSecondaryTapUp(
+          interactionContext,
+        ),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(
-              color: ref
+            border: .all(
+              color:
+                  ref
                       .read(canvasObjectsProvider)
                       .selectedObjects
                       .contains(canvasObject)
@@ -280,7 +291,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
               width: 1.5,
             ),
           ),
-          padding: const EdgeInsets.all(5.0),
+          padding: .all(5.0),
           child: IntrinsicWidth(
             child: IntrinsicHeight(
               child: Text(
@@ -344,9 +355,10 @@ class CanvasArrowTextArea extends ConsumerWidget {
     if (keypoints.length >= 2) {
       double totalLength = 0.0;
       for (int i = 0; i < canvasObject.arrowProps.points.length - 1; i++) {
-        totalLength += (canvasObject.arrowProps.points[i + 1] -
-                canvasObject.arrowProps.points[i])
-            .distance;
+        totalLength +=
+            (canvasObject.arrowProps.points[i + 1] -
+                    canvasObject.arrowProps.points[i])
+                .distance;
       }
       maxWidth = math.max(totalLength * 0.3, 100.0) + padding * 2;
       maxHeight = math.min(maxWidth * 0.6, 100.0);
@@ -360,19 +372,13 @@ class CanvasArrowTextArea extends ConsumerWidget {
       child: FractionalTranslation(
         translation: const Offset(-0.5, -0.5),
         child: ConstrainedBox(
-          constraints: BoxConstraints(
-            maxWidth: maxWidth,
-            maxHeight: maxHeight,
-          ),
+          constraints: BoxConstraints(maxWidth: maxWidth, maxHeight: maxHeight),
           child: Container(
-            padding: const EdgeInsets.all(padding),
+            padding: .all(padding),
             decoration: BoxDecoration(
               color: ThemeHelper.neutral100(context),
-              border: Border.all(
-                color: ThemeHelper.blue500(context),
-                width: 3.0,
-              ),
-              borderRadius: BorderRadius.circular(8.0),
+              border: .all(color: ThemeHelper.blue500(context), width: 3.0),
+              borderRadius: .circular(8.0),
             ),
             child: Container(
               color: ThemeHelper.neutral100(context).withAlpha(10),
@@ -388,13 +394,14 @@ class CanvasArrowTextArea extends ConsumerWidget {
                       fontSize: 16,
                     ),
                     decoration: const InputDecoration(
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.zero,
+                      border: .none,
+                      contentPadding: .zero,
                       isDense: true,
                     ),
                     onChanged: (value) {
-                      canvasObject.content =
-                          ref.read(canvasTextProvider.notifier).text;
+                      canvasObject.content = ref
+                          .read(canvasTextProvider.notifier)
+                          .text;
                       onTextKeyPress(canvasObject);
                     },
                   ),
@@ -408,8 +415,10 @@ class CanvasArrowTextArea extends ConsumerWidget {
   }
 
   Widget _buildArrowViewer({required WidgetRef ref}) {
-    final isSelected =
-        ref.read(canvasObjectsProvider).selectedObjects.contains(canvasObject);
+    final isSelected = ref
+        .read(canvasObjectsProvider)
+        .selectedObjects
+        .contains(canvasObject);
     const double padding = 5.0;
     final position = canvasObject.getTextOffset();
 
@@ -417,9 +426,10 @@ class CanvasArrowTextArea extends ConsumerWidget {
 
     double totalLength = 0.0;
     for (int i = 0; i < canvasObject.arrowProps.points.length - 1; i++) {
-      totalLength += (canvasObject.arrowProps.points[i + 1] -
-              canvasObject.arrowProps.points[i])
-          .distance;
+      totalLength +=
+          (canvasObject.arrowProps.points[i + 1] -
+                  canvasObject.arrowProps.points[i])
+              .distance;
     }
 
     final maxWidth = math.max(totalLength * 0.3, 100.0) + padding * 2;
@@ -440,16 +450,16 @@ class CanvasArrowTextArea extends ConsumerWidget {
               child: IntrinsicWidth(
                 child: IntrinsicHeight(
                   child: Container(
-                    padding: const EdgeInsets.all(padding),
+                    padding: .all(padding),
                     decoration: BoxDecoration(
                       color: ThemeHelper.neutral100(context),
-                      border: Border.all(
+                      border: .all(
                         color: isSelected
                             ? ThemeHelper.blue500(context)
                             : canvasObject.color,
                         width: 3.0,
                       ),
-                      borderRadius: BorderRadius.circular(8.0),
+                      borderRadius: .circular(8.0),
                     ),
                     child: Text(
                       canvasObject.content,
@@ -466,9 +476,10 @@ class CanvasArrowTextArea extends ConsumerWidget {
             return CanvasGestureDetector(
               gestureKey: canvasObject.arrowTextAreaKey,
               gestureRouter: gestureRouter,
-              interactionContext:
-                  ArrowTextInteraction(targetObject: canvasObject),
-              behavior: HitTestBehavior.opaque,
+              interactionContext: ArrowTextInteraction(
+                targetObject: canvasObject,
+              ),
+              behavior: .opaque,
               child: textWidget,
             );
           },

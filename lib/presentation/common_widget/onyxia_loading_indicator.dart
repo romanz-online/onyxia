@@ -6,11 +6,7 @@ class OnyxiaLoadingIndicator extends StatefulWidget {
   final double size;
   final Color? color;
 
-  const OnyxiaLoadingIndicator({
-    super.key,
-    this.size = 24,
-    this.color,
-  });
+  const OnyxiaLoadingIndicator({super.key, this.size = 24, this.color});
 
   @override
   State<OnyxiaLoadingIndicator> createState() => _OnyxiaLoadingIndicatorState();
@@ -57,7 +53,7 @@ class _OnyxiaLoadingIndicatorState extends State<OnyxiaLoadingIndicator>
                 height: dotBase,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: opacity),
-                  shape: BoxShape.circle,
+                  shape: .circle,
                 ),
               ),
             );

@@ -21,270 +21,275 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
   bool get allowsViewportScaling => true;
 
   @override
-  void Function(TapUpDetails, WidgetRef, BuildContext,
-      CanvasInteractionContext)? get onTapUp => (details, ref, buildContext,
-          interactionContext) {
-        switch (interactionContext) {
-          case ArrowToolWellInteraction():
-            break;
-          case ArrowWellInteraction(
-              :final sourceObject,
-              :final connectionPoint
-            ):
-            ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-            ArrowInteractionService.autoCompleteArrow(
-                sourceObject, connectionPoint, ref, buildContext);
-            break;
-          case ArrowTextInteraction(targetObject: final targetObject):
-          case ObjectResizeInteraction(:final targetObject):
-          case ArrowResizeInteraction(:final targetObject):
-          case ArrowMoveInteraction(:final targetObject):
-          case ObjectFillInteractionContext(:final targetObject):
-            _canvasObjectTapUp(targetObject, ref);
-            break;
-          case BackgroundInteraction():
-            ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-            ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-            break;
+  void Function(
+    TapUpDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onTapUp => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ArrowToolWellInteraction():
+        break;
+      case ArrowWellInteraction(:final sourceObject, :final connectionPoint):
+        ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+        ArrowInteractionService.autoCompleteArrow(
+          sourceObject,
+          connectionPoint,
+          ref,
+          buildContext,
+        );
+        break;
+      case ArrowTextInteraction(targetObject: final targetObject):
+      case ObjectResizeInteraction(:final targetObject):
+      case ArrowResizeInteraction(:final targetObject):
+      case ArrowMoveInteraction(:final targetObject):
+      case ObjectFillInteractionContext(:final targetObject):
+        _canvasObjectTapUp(targetObject, ref);
+        break;
+      case BackgroundInteraction():
+        ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+        ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+        break;
+    }
+  };
+
+  @override
+  void Function(
+    DragStartDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onPanStart => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ArrowWellInteraction(:final sourceObject, :final connectionPoint):
+        final arrow = ArrowInteractionService.startArrowWellPan(
+          details,
+          sourceObject,
+          connectionPoint,
+          ref,
+          buildContext,
+          canvasConfig,
+        );
+        ref.read(canvasGestureStateProvider.notifier).setActiveObject(arrow);
+        ref
+            .read(canvasGestureStateProvider.notifier)
+            .setArrowMoveType(ArrowMoveType.end);
+        break;
+      case ObjectResizeInteraction(:final targetObject, :final handle):
+        ref
+            .read(canvasGestureStateProvider.notifier)
+            .setActiveObject(targetObject);
+        _startObjectResize(details.localPosition, targetObject, handle, ref);
+        break;
+      case ArrowResizeInteraction(:final targetObject, :final segmentIndex):
+        ref
+            .read(canvasGestureStateProvider.notifier)
+            .setActiveObject(targetObject);
+        _startArrowResize(details, targetObject, segmentIndex, ref);
+        break;
+      case ArrowMoveInteraction(:final targetObject, :final moveType):
+        ref
+            .read(canvasGestureStateProvider.notifier)
+            .setActiveObject(targetObject);
+        ref
+            .read(canvasGestureStateProvider.notifier)
+            .setArrowMoveType(moveType);
+        ref.read(canvasObjectsProvider.notifier).selectObject(targetObject);
+        break;
+      case ObjectFillInteractionContext(:final targetObject):
+        ref
+            .read(canvasGestureStateProvider.notifier)
+            .setActiveObject(targetObject);
+        _startObjectMovePan(details.localPosition, targetObject, ref);
+        break;
+      case BackgroundInteraction():
+        ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+        ref
+            .read(dragSelectProvider.notifier)
+            .startDragSelect(details.localPosition);
+        break;
+      case _:
+        break;
+    }
+  };
+
+  @override
+  void Function(
+    DragUpdateDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onPanUpdate => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ArrowTextInteraction(targetObject: final arrowObject):
+        _handleArrowTextDrag(details, arrowObject, ref);
+        break;
+      case ArrowWellInteraction():
+        ArrowInteractionService.updateArrowPan(
+          details,
+          ref,
+          ref.read(canvasGestureStateProvider).activeObject,
+        );
+        break;
+      case ObjectResizeInteraction(:final targetObject, :final handle):
+        _updateObjectResizePan(details, targetObject, handle, ref);
+        break;
+      case ArrowResizeInteraction(:final targetObject, :final segmentIndex):
+        _handleArrowResize(details, targetObject, segmentIndex, ref);
+        break;
+      case ArrowMoveInteraction(:final targetObject, :final moveType):
+        ArrowInteractionService.updateArrowPan(
+          details,
+          ref,
+          targetObject,
+          part: moveType,
+        );
+        break;
+      case ObjectFillInteractionContext():
+        _updateObjectMovePan(details, ref);
+        break;
+      case BackgroundInteraction():
+        ref
+            .read(dragSelectProvider.notifier)
+            .updateDragSelect(details.localPosition);
+        break;
+      case _:
+        break;
+    }
+  };
+
+  @override
+  void Function(
+    DragEndDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onPanEnd => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ArrowWellInteraction():
+        ArrowInteractionService.endArrowPan(
+          details,
+          ref,
+          ref.read(canvasGestureStateProvider).activeObject,
+          true,
+          canvasConfig,
+        );
+        break;
+      case ArrowMoveInteraction():
+        ArrowInteractionService.endArrowPan(
+          details,
+          ref,
+          ref.read(canvasGestureStateProvider).activeObject,
+          false,
+          canvasConfig,
+        );
+        break;
+      case ArrowTextInteraction(targetObject: final arrowObject):
+        _handleArrowTextDragEnd(details, arrowObject, ref);
+        break;
+      case ObjectResizeInteraction(:final targetObject):
+        _endObjectResizePan(details, targetObject, ref);
+        break;
+      case ArrowResizeInteraction(:final targetObject):
+        _handleArrowResizeEnd(details, targetObject, ref);
+        break;
+      case ObjectFillInteractionContext():
+        _endObjectMovePan(details, ref);
+        break;
+      case BackgroundInteraction():
+        ref.read(dragSelectProvider.notifier).endDragSelect();
+        break;
+      case _:
+        break;
+    }
+
+    if (interactionContext is ArrowWellInteraction ||
+        interactionContext is ArrowMoveInteraction) {
+      // do this without resetInteraction so that the headless arrow palette doesn't automatically close
+    } else {
+      ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+    }
+  };
+
+  @override
+  void Function(
+    TapDownDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onSecondaryTapDown => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ObjectFillInteractionContext(:final targetObject):
+        canvasRightClick(
+          buildContext,
+          canvasConfig.allowArtifactsOnBackground, // isMarkup
+          details.globalPosition,
+          details.localPosition,
+          ref,
+          clickedObj: targetObject,
+        );
+        break;
+      case BackgroundInteraction():
+        canvasRightClick(
+          buildContext,
+          canvasConfig.allowArtifactsOnBackground, // isMarkup
+          details.globalPosition,
+          details.localPosition,
+          ref,
+          clickedObj: null,
+        );
+      case _:
+        break;
+    }
+  };
+
+  @override
+  void Function(
+    PointerHoverEvent,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onHover => (event, ref, buildContext, interactionContext) {
+    final cursorNotifier = ref.read(cursorIconOverrideProvider.notifier);
+    final selectedObjects = ref.read(canvasObjectsProvider).selectedObjects;
+
+    switch (interactionContext) {
+      case ObjectResizeInteraction(:final targetObject, :final handle):
+        if (selectedObjects.contains(targetObject)) {
+          final cursor = switch (handle) {
+            ResizeHandle.topLeft || ResizeHandle.bottomRight =>
+              SystemMouseCursors.resizeUpLeftDownRight,
+            ResizeHandle.topRight ||
+            ResizeHandle.bottomLeft => SystemMouseCursors.resizeUpRightDownLeft,
+            ResizeHandle.topCenter ||
+            ResizeHandle.bottomCenter => SystemMouseCursors.resizeUpDown,
+            ResizeHandle.centerLeft ||
+            ResizeHandle.centerRight => SystemMouseCursors.resizeLeftRight,
+            _ => SystemMouseCursors.move,
+          };
+          cursorNotifier.set(cursor);
         }
-      };
-
-  @override
-  void Function(
-          DragStartDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onPanStart => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ArrowWellInteraction(
-                  :final sourceObject,
-                  :final connectionPoint
-                ):
-                final arrow = ArrowInteractionService.startArrowWellPan(
-                  details,
-                  sourceObject,
-                  connectionPoint,
-                  ref,
-                  buildContext,
-                  canvasConfig,
-                );
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setActiveObject(arrow);
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setArrowMoveType(ArrowMoveType.end);
-                break;
-              case ObjectResizeInteraction(:final targetObject, :final handle):
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setActiveObject(targetObject);
-                _startObjectResize(
-                    details.localPosition, targetObject, handle, ref);
-                break;
-              case ArrowResizeInteraction(
-                  :final targetObject,
-                  :final segmentIndex
-                ):
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setActiveObject(targetObject);
-                _startArrowResize(details, targetObject, segmentIndex, ref);
-                break;
-              case ArrowMoveInteraction(:final targetObject, :final moveType):
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setActiveObject(targetObject);
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setArrowMoveType(moveType);
-                ref
-                    .read(canvasObjectsProvider.notifier)
-                    .selectObject(targetObject);
-                break;
-              case ObjectFillInteractionContext(:final targetObject):
-                ref
-                    .read(canvasGestureStateProvider.notifier)
-                    .setActiveObject(targetObject);
-                _startObjectMovePan(details.localPosition, targetObject, ref);
-                break;
-              case BackgroundInteraction():
-                ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-                ref
-                    .read(dragSelectProvider.notifier)
-                    .startDragSelect(details.localPosition);
-                break;
-              case _:
-                break;
-            }
-          };
-
-  @override
-  void Function(
-          DragUpdateDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onPanUpdate => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ArrowTextInteraction(targetObject: final arrowObject):
-                _handleArrowTextDrag(details, arrowObject, ref);
-                break;
-              case ArrowWellInteraction():
-                ArrowInteractionService.updateArrowPan(
-                  details,
-                  ref,
-                  ref.read(canvasGestureStateProvider).activeObject,
-                );
-                break;
-              case ObjectResizeInteraction(:final targetObject, :final handle):
-                _updateObjectResizePan(details, targetObject, handle, ref);
-                break;
-              case ArrowResizeInteraction(
-                  :final targetObject,
-                  :final segmentIndex
-                ):
-                _handleArrowResize(details, targetObject, segmentIndex, ref);
-                break;
-              case ArrowMoveInteraction(:final targetObject, :final moveType):
-                ArrowInteractionService.updateArrowPan(
-                    details, ref, targetObject,
-                    part: moveType);
-                break;
-              case ObjectFillInteractionContext():
-                _updateObjectMovePan(details, ref);
-                break;
-              case BackgroundInteraction():
-                ref
-                    .read(dragSelectProvider.notifier)
-                    .updateDragSelect(details.localPosition);
-                break;
-              case _:
-                break;
-            }
-          };
-
-  @override
-  void Function(
-          DragEndDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onPanEnd => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ArrowWellInteraction():
-                ArrowInteractionService.endArrowPan(
-                  details,
-                  ref,
-                  ref.read(canvasGestureStateProvider).activeObject,
-                  true,
-                  canvasConfig,
-                );
-                break;
-              case ArrowMoveInteraction():
-                ArrowInteractionService.endArrowPan(
-                  details,
-                  ref,
-                  ref.read(canvasGestureStateProvider).activeObject,
-                  false,
-                  canvasConfig,
-                );
-                break;
-              case ArrowTextInteraction(targetObject: final arrowObject):
-                _handleArrowTextDragEnd(details, arrowObject, ref);
-                break;
-              case ObjectResizeInteraction(:final targetObject):
-                _endObjectResizePan(details, targetObject, ref);
-                break;
-              case ArrowResizeInteraction(:final targetObject):
-                _handleArrowResizeEnd(details, targetObject, ref);
-                break;
-              case ObjectFillInteractionContext():
-                _endObjectMovePan(details, ref);
-                break;
-              case BackgroundInteraction():
-                ref.read(dragSelectProvider.notifier).endDragSelect();
-                break;
-              case _:
-                break;
-            }
-
-            if (interactionContext is ArrowWellInteraction ||
-                interactionContext is ArrowMoveInteraction) {
-              // do this without resetInteraction so that the headless arrow palette doesn't automatically close
-            } else {
-              ref
-                  .read(canvasGestureStateProvider.notifier)
-                  .resetInteraction(ref);
-            }
-          };
-
-  @override
-  void Function(
-          TapDownDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onSecondaryTapDown =>
-          (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ObjectFillInteractionContext(:final targetObject):
-                canvasRightClick(
-                  buildContext,
-                  canvasConfig.allowArtifactsOnBackground, // isMarkup
-                  details.globalPosition,
-                  details.localPosition,
-                  ref,
-                  clickedObj: targetObject,
-                );
-                break;
-              case BackgroundInteraction():
-                canvasRightClick(
-                  buildContext,
-                  canvasConfig.allowArtifactsOnBackground, // isMarkup
-                  details.globalPosition,
-                  details.localPosition,
-                  ref,
-                  clickedObj: null,
-                );
-              case _:
-                break;
-            }
-          };
-
-  @override
-  void Function(
-          PointerHoverEvent, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onHover => (event, ref, buildContext, interactionContext) {
-            final cursorNotifier =
-                ref.read(cursorIconOverrideProvider.notifier);
-            final selectedObjects =
-                ref.read(canvasObjectsProvider).selectedObjects;
-
-            switch (interactionContext) {
-              case ObjectResizeInteraction(:final targetObject, :final handle):
-                if (selectedObjects.contains(targetObject)) {
-                  final cursor = switch (handle) {
-                    ResizeHandle.topLeft ||
-                    ResizeHandle.bottomRight =>
-                      SystemMouseCursors.resizeUpLeftDownRight,
-                    ResizeHandle.topRight ||
-                    ResizeHandle.bottomLeft =>
-                      SystemMouseCursors.resizeUpRightDownLeft,
-                    ResizeHandle.topCenter ||
-                    ResizeHandle.bottomCenter =>
-                      SystemMouseCursors.resizeUpDown,
-                    ResizeHandle.centerLeft ||
-                    ResizeHandle.centerRight =>
-                      SystemMouseCursors.resizeLeftRight,
-                    _ => SystemMouseCursors.move,
-                  };
-                  cursorNotifier.set(cursor);
-                }
-                break;
-              case ObjectFillInteractionContext(:final targetObject):
-                if (selectedObjects.contains(targetObject) &&
-                    !targetObject.isBrush &&
-                    !targetObject.isArrow) {
-                  cursorNotifier.set(SystemMouseCursors.grab);
-                }
-                break;
-              case ArrowWellInteraction():
-                cursorNotifier.set(SystemMouseCursors.grab);
-                break;
-              default:
-                cursorNotifier.set(null);
-            }
-          };
+        break;
+      case ObjectFillInteractionContext(:final targetObject):
+        if (selectedObjects.contains(targetObject) &&
+            !targetObject.isBrush &&
+            !targetObject.isArrow) {
+          cursorNotifier.set(SystemMouseCursors.grab);
+        }
+        break;
+      case ArrowWellInteraction():
+        cursorNotifier.set(SystemMouseCursors.grab);
+        break;
+      default:
+        cursorNotifier.set(null);
+    }
+  };
 
   void _canvasObjectTapUp(CanvasObject? object, WidgetRef ref) {
     if (object == null) return;
@@ -296,8 +301,10 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
         ref.read(canvasObjectsProvider.notifier).selectObject(object);
       }
     } else {
-      final wasSelected =
-          ref.read(canvasObjectsProvider).selectedObjects.contains(object);
+      final wasSelected = ref
+          .read(canvasObjectsProvider)
+          .selectedObjects
+          .contains(object);
       ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
       ref.read(canvasObjectsProvider.notifier).selectObject(object);
       if (!object.isImage && !object.isArrow && !object.isBrush) {
@@ -315,7 +322,10 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
   }
 
   void _startObjectMovePan(
-      Offset position, CanvasObject object, WidgetRef ref) {
+    Offset position,
+    CanvasObject object,
+    WidgetRef ref,
+  ) {
     if (object.isArrow) return;
 
     final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
@@ -349,14 +359,14 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
         .updateAccumulatedDelta(details.delta);
     final gridDelta = ref.read(canvasSettingsProvider(Setting.snapToGrid))
         ? ref
-            .read(canvasBoundsProvider.notifier)
-            .snap(ref.read(canvasGestureStateProvider).accumulatedDelta)
+              .read(canvasBoundsProvider.notifier)
+              .snap(ref.read(canvasGestureStateProvider).accumulatedDelta)
         : ref.read(canvasGestureStateProvider).accumulatedDelta;
     final deltaToUse = ref.read(canvasSettingsProvider(Setting.snapToGrid))
         ? gridDelta
         : details.delta;
 
-    if (deltaToUse != Offset.zero) {
+    if (deltaToUse != .zero) {
       // Get movement constraints for all selected objects
       List<Map<String, bool>> allConstraints = selectedObjects
           .map((obj) => obj.getMovementConstraints(ref, deltaToUse))
@@ -364,20 +374,24 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
 
       // Calculate which directions ALL objects can move
       bool allCanMoveUp = deltaToUse.dy < 0
-          ? allConstraints
-              .every((constraints) => constraints['canMoveUp'] == true)
+          ? allConstraints.every(
+              (constraints) => constraints['canMoveUp'] == true,
+            )
           : true;
       bool allCanMoveDown = deltaToUse.dy > 0
-          ? allConstraints
-              .every((constraints) => constraints['canMoveDown'] == true)
+          ? allConstraints.every(
+              (constraints) => constraints['canMoveDown'] == true,
+            )
           : true;
       bool allCanMoveLeft = deltaToUse.dx < 0
-          ? allConstraints
-              .every((constraints) => constraints['canMoveLeft'] == true)
+          ? allConstraints.every(
+              (constraints) => constraints['canMoveLeft'] == true,
+            )
           : true;
       bool allCanMoveRight = deltaToUse.dx > 0
-          ? allConstraints
-              .every((constraints) => constraints['canMoveRight'] == true)
+          ? allConstraints.every(
+              (constraints) => constraints['canMoveRight'] == true,
+            )
           : true;
 
       // Create constrained delta based on allowed directions
@@ -395,7 +409,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
       );
 
       // Apply movement if there's any allowed movement
-      if (constrainedDelta != Offset.zero) {
+      if (constrainedDelta != .zero) {
         for (final obj in selectedObjects) {
           obj.handleMove(ref, constrainedDelta);
         }
@@ -404,10 +418,11 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
         List<CanvasObject> objectsToUpdate = [...selectedObjects];
 
         for (final selectedObj in selectedObjects.where((e) => !e.isArrow)) {
-          for (final arrow in ref
-              .read(canvasObjectsProvider)
-              .objects
-              .where((e) => e.isArrow)) {
+          for (final arrow
+              in ref
+                  .read(canvasObjectsProvider)
+                  .objects
+                  .where((e) => e.isArrow)) {
             arrow.adjustPointsToObject(selectedObj);
             if (!objectsToUpdate.contains(arrow)) {
               objectsToUpdate.add(arrow);
@@ -467,14 +482,14 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
         .updateAccumulatedDelta(details.delta);
     final gridDelta = ref.read(canvasSettingsProvider(Setting.snapToGrid))
         ? ref
-            .read(canvasBoundsProvider.notifier)
-            .snap(ref.read(canvasGestureStateProvider).accumulatedDelta)
+              .read(canvasBoundsProvider.notifier)
+              .snap(ref.read(canvasGestureStateProvider).accumulatedDelta)
         : ref.read(canvasGestureStateProvider).accumulatedDelta;
     final deltaToUse = ref.read(canvasSettingsProvider(Setting.snapToGrid))
         ? gridDelta
         : details.delta;
 
-    if (deltaToUse != Offset.zero) {
+    if (deltaToUse != .zero) {
       // Perform the resize operation
       object.handleResize(ref, deltaToUse, handle);
 
@@ -544,14 +559,14 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
         .updateAccumulatedDelta(details.delta);
     final gridDelta = ref.read(canvasSettingsProvider(Setting.snapToGrid))
         ? ref
-            .read(canvasBoundsProvider.notifier)
-            .snap(ref.read(canvasGestureStateProvider).accumulatedDelta)
+              .read(canvasBoundsProvider.notifier)
+              .snap(ref.read(canvasGestureStateProvider).accumulatedDelta)
         : ref.read(canvasGestureStateProvider).accumulatedDelta;
     final deltaToUse = ref.read(canvasSettingsProvider(Setting.snapToGrid))
         ? gridDelta
         : details.delta;
 
-    if (deltaToUse != Offset.zero) {
+    if (deltaToUse != .zero) {
       final newSegmentCreated = arrow.handleResize(
         ref,
         deltaToUse,
@@ -600,9 +615,11 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
     if (!ref.read(canvasObjectsProvider).selectedObjects.contains(arrow))
       return;
 
-    arrow.updateTextPosition(ref
-        .read(canvasViewportProvider.notifier)
-        .convertToCanvasCoords(details.globalPosition));
+    arrow.updateTextPosition(
+      ref
+          .read(canvasViewportProvider.notifier)
+          .convertToCanvasCoords(details.globalPosition),
+    );
     ref.read(canvasObjectsProvider.notifier).updateObjectState(arrow);
   }
 

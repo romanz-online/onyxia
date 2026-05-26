@@ -53,7 +53,9 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
     });
 
     try {
-      await ref.read(currentUserProvider.notifier).signUpWithEmail(
+      await ref
+          .read(currentUserProvider.notifier)
+          .signUpWithEmail(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
@@ -69,27 +71,27 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        padding: .symmetric(horizontal: 40, vertical: 24),
         child: SizedBox(
           width: 320,
           child: AutofillGroup(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
+              mainAxisSize: .min,
+              crossAxisAlignment: .stretch,
               children: [
                 Text(
                   'Create account',
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                   style: NarwhalTextStyle(
                     fontSize: 20,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                     color: ThemeHelper.neutral800(context),
                   ),
                 ),
                 const Gap(20),
                 TextField(
                   controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
+                  keyboardType: .emailAddress,
                   autofillHints: const [AutofillHints.email],
                   decoration: NarwhalModalInputDecoration.create(
                     context,

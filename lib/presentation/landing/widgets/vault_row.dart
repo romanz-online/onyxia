@@ -46,42 +46,42 @@ class _VaultRowState extends ConsumerState<VaultRow> {
       isOpen: _cursorOffset != null,
       onClose: _closeCursorMenu,
       anchor: Aligned(
-        follower: Alignment.topLeft,
-        target: Alignment.topLeft,
-        offset: _cursorOffset ?? Offset.zero,
+        follower: .topLeft,
+        target: .topLeft,
+        offset: _cursorOffset ?? .zero,
       ),
       builder: (context, closeOverlay) => OnyxiaMenu(
         items: buildVaultContextMenuItems(context, vault),
         closeOverlay: closeOverlay,
       ),
       child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+        behavior: .opaque,
         onSecondaryTapDown: (details) => _openCursorMenu(details.localPosition),
         child: HoverBuilder(
           builder: (context, isHovered) {
             return Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: .symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: isHovered
                     ? ThemeHelper.neutral300(context).withValues(alpha: 0.5)
                     : Colors.transparent,
-                borderRadius: BorderRadius.circular(4),
+                borderRadius: .circular(4),
               ),
               child: Row(
                 children: [
                   Expanded(
                     child: GestureDetector(
-                      behavior: HitTestBehavior.opaque,
+                      behavior: .opaque,
                       onTap: () => context.go('/vault/${vault.id}/graph'),
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(1.5, 6, 1.5, 8),
+                        padding: .fromLTRB(1.5, 6, 1.5, 8),
                         child: Text(
                           vault.name,
                           maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          overflow: .ellipsis,
                           style: NarwhalTextStyle(
                             fontSize: 13,
-                            fontWeight: FontWeight.w600,
+                            fontWeight: .w600,
                             color: ThemeHelper.neutral900(context),
                           ),
                         ),
@@ -92,9 +92,9 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                     isOpen: _isButtonMenuOpen,
                     onClose: _closeButtonMenu,
                     anchor: const Aligned(
-                      follower: Alignment.topLeft,
-                      target: Alignment.topRight,
-                      offset: Offset(4, 0),
+                      follower: .topLeft,
+                      target: .topRight,
+                      offset: const Offset(4, 0),
                     ),
                     builder: (context, closeOverlay) => OnyxiaMenu(
                       items: buildVaultContextMenuItems(context, vault),

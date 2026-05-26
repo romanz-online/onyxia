@@ -14,8 +14,8 @@ class ImportProgressView extends StatelessWidget {
   Widget build(BuildContext context) {
     final value = total == 0 ? null : done / total;
     return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisAlignment: .center,
+      crossAxisAlignment: .stretch,
       spacing: 12,
       children: [
         Text(

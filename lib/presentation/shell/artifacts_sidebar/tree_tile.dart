@@ -1,12 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/shell/artifacts_sidebar/editable_artifact_name.dart';
 
 class TreeTile extends ConsumerWidget {
-  const TreeTile({
-    super.key,
-    required this.node,
-    this.isDragging = false,
-  });
+  const TreeTile({super.key, required this.node, this.isDragging = false});
 
   final TreeNode<Artifact> node;
   final bool isDragging;
@@ -37,7 +32,7 @@ class TreeTile extends ConsumerWidget {
             )
           : null,
       child: Padding(
-        padding: const EdgeInsets.only(right: 12),
+        padding: .only(right: 12),
         child: EditableArtifactName(
           item: nodeData,
           trailingExtension: _imageExt(nodeData),

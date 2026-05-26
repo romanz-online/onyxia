@@ -38,8 +38,8 @@ class DragOffBar extends StatelessWidget {
   BoxDecoration _getPanelDecoration(BuildContext context) {
     return BoxDecoration(
       color: ThemeHelper.neutral100(context),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: ThemeHelper.neutral400(context), width: 1),
+      borderRadius: .circular(8),
+      border: .all(color: ThemeHelper.neutral400(context), width: 1),
       boxShadow: [
         BoxShadow(
           color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
@@ -50,24 +50,23 @@ class DragOffBar extends StatelessWidget {
     );
   }
 
-  Widget _buildSeparator(BuildContext context) => Container(
-        width: 1,
-        height: 24,
-        color: ThemeHelper.neutral300(context),
-      );
+  Widget _buildSeparator(BuildContext context) =>
+      Container(width: 1, height: 24, color: ThemeHelper.neutral300(context));
 
   Widget _buildDefaultDragFeedback(
-      BuildContext context, DragOffBarButton button) {
+    BuildContext context,
+    DragOffBarButton button,
+  ) {
     return Material(
       elevation: 4,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: .circular(8),
       child: Container(
         width: defaultArtifactObjectDimensions.width,
         height: defaultArtifactObjectDimensions.height,
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: ThemeHelper.neutral300(context), width: 2),
+          borderRadius: .circular(8),
+          border: .all(color: ThemeHelper.neutral300(context), width: 2),
         ),
         child: Center(
           child: Icon(
@@ -80,14 +79,8 @@ class DragOffBar extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(
-    BuildContext context,
-    DragOffBarButton button,
-  ) {
-    final buttonWidget = OnyxiaIconButton(
-      icon: button.icon,
-      size: iconSize,
-    );
+  Widget _buildButton(BuildContext context, DragOffBarButton button) {
+    final buttonWidget = OnyxiaIconButton(icon: button.icon, size: iconSize);
 
     // If no drag data is provided, return just the button
     if (button.dragData == null) {
@@ -97,12 +90,10 @@ class DragOffBar extends StatelessWidget {
     // Wrap button with Draggable
     return Draggable<DragOffBarData>(
       data: button.dragData!,
-      feedback: button.dragFeedbackBuilder?.call() ??
+      feedback:
+          button.dragFeedbackBuilder?.call() ??
           _buildDefaultDragFeedback(context, button),
-      childWhenDragging: Opacity(
-        opacity: 0.5,
-        child: buttonWidget,
-      ),
+      childWhenDragging: Opacity(opacity: 0.5, child: buttonWidget),
       onDragCompleted: button.onDragCompleted,
       child: buttonWidget,
     );
@@ -135,16 +126,13 @@ class DragOffBar extends StatelessWidget {
     return Positioned.fill(
       bottom: 16,
       child: Align(
-        alignment: Alignment.bottomCenter,
+        alignment: .bottomCenter,
         child: Container(
           height: height,
           decoration: _getPanelDecoration(context),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: buttonWidgets,
-            ),
+            padding: .symmetric(horizontal: 10),
+            child: Row(mainAxisSize: .min, children: buttonWidgets),
           ),
         ),
       ),

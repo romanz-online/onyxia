@@ -9,16 +9,16 @@ class PreAuthView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        padding: .symmetric(horizontal: 40, vertical: 24),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           spacing: 24,
           children: [
             Text(
               'Onyxia',
               style: NarwhalTextStyle(
                 fontSize: 32,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 color: ThemeHelper.neutral700(context),
               ),
             ),

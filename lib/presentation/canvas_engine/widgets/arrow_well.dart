@@ -59,7 +59,9 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
   /// Determine if this arrow well should be visible and interactive
   bool get _shouldBeVisible =>
       !widget.isGesturing &&
-      (widget.isSourceSelected || (widget.isSourceHovered && widget.isArrowToolActive) || _isCurrentlyActive);
+      (widget.isSourceSelected ||
+          (widget.isSourceHovered && widget.isArrowToolActive) ||
+          _isCurrentlyActive);
 
   Offset _getConnectionPointPosition() {
     final margin = 24.0 / widget.scale;
@@ -74,7 +76,7 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
       ConnectionPoint.right => position.translate(margin, 0),
       ConnectionPoint.bottom => position.translate(0, margin),
       ConnectionPoint.left => position.translate(-margin, 0),
-      ConnectionPoint.none => Offset.zero
+      ConnectionPoint.none => .zero,
     };
   }
 
@@ -82,8 +84,12 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
   Widget build(BuildContext context) {
     final wellPosition = _getConnectionPointPosition();
 
-    final objWidth = (widget.sourceObject.topLeft.dx - widget.sourceObject.bottomRight.dx).abs();
-    final objHeight = (widget.sourceObject.topLeft.dy - widget.sourceObject.bottomRight.dy).abs();
+    final objWidth =
+        (widget.sourceObject.topLeft.dx - widget.sourceObject.bottomRight.dx)
+            .abs();
+    final objHeight =
+        (widget.sourceObject.topLeft.dy - widget.sourceObject.bottomRight.dy)
+            .abs();
 
     IconData arrowIcon = LucideIcons.x;
     double width, height;
@@ -139,7 +145,9 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
             opacity: opacity,
             child: MouseRegion(
               // necessary for it to be translucent because this allows the gesture to pass through to the canvas painter
-              hitTestBehavior: isVisible ? HitTestBehavior.translucent : HitTestBehavior.deferToChild,
+              hitTestBehavior: isVisible
+                  ? .translucent
+                  : .deferToChild,
               onEnter: isVisible ? (_) => _setAreaHovered(true) : null,
               onExit: isVisible ? (_) => _setAreaHovered(false) : null,
               child: AnimatedScale(
@@ -147,7 +155,7 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
                 duration: const Duration(milliseconds: 100),
                 curve: Curves.easeOut,
                 child: Stack(
-                  alignment: Alignment.center,
+                  alignment: .center,
                   children: [
                     IgnorePointer(
                       child: AnimatedContainer(
@@ -155,13 +163,12 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
                         height: wellSize,
                         duration: const Duration(milliseconds: 100),
                         decoration: BoxDecoration(
-                          color: _isIconHovered || !_isAreaHovered ? primaryColor : secondaryColor,
+                          color: _isIconHovered || !_isAreaHovered
+                              ? primaryColor
+                              : secondaryColor,
                           border: _isIconHovered
                               ? null
-                              : Border.all(
-                                  color: primaryColor,
-                                  width: 0.75,
-                                ),
+                              : .all(color: primaryColor, width: 0.75),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -174,7 +181,7 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
                     if ((_isAreaHovered && isVisible) || _isCurrentlyActive)
                       MouseRegion(
                         // necessary for it to be translucent because this allows the gesture to pass through to the canvas painter
-                        hitTestBehavior: HitTestBehavior.translucent,
+                        hitTestBehavior: .translucent,
                         onEnter: (_) => _setIconHovered(true),
                         onExit: (_) => _setIconHovered(false),
                         child: CanvasGestureDetector(
@@ -183,7 +190,7 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
                             sourceObject: widget.sourceObject,
                             connectionPoint: widget.connectionPoint,
                           ),
-                          behavior: HitTestBehavior.opaque,
+                          behavior: .opaque,
                           child: Container(
                             width: wellSize,
                             height: wellSize,

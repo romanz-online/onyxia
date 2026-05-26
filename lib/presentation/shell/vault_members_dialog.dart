@@ -52,48 +52,46 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
     if (!mounted) return;
 
     if (existing != null) {
-      await VaultMembersRepository(vaultId: vault.id).add([
-        VaultMember(
-          vaultId: vault.id,
-          userId: existing.id,
-          role: UserRole.member,
-          createdBy: me.id,
-          updatedBy: me.id,
-        ),
-      ]).then((_) {
-        if (!mounted) return;
-        OnyxiaToast.show(
-          text: '${existing.email} added to vault.',
-          type: ToastType.success,
-        );
-        _emailController.clear();
-        setState(() {
-          _isSending = false;
-          _generatedLink = null;
-          _generatedLinkEmail = null;
-        });
-      });
+      await VaultMembersRepository(vaultId: vault.id)
+          .add([
+            VaultMember(
+              vaultId: vault.id,
+              userId: existing.id,
+              role: .member,
+              createdBy: me.id,
+              updatedBy: me.id,
+            ),
+          ])
+          .then((_) {
+            if (!mounted) return;
+            OnyxiaToast.show(
+              text: '${existing.email} added to vault.',
+              type: ToastType.success,
+            );
+            _emailController.clear();
+            setState(() {
+              _isSending = false;
+              _generatedLink = null;
+              _generatedLinkEmail = null;
+            });
+          });
     }
     // Branch B: not registered → create invitation row + surface copy-link.
     // Generate the UUID client-side (uuid: ^4.5.1 is already a dep) so we don't
     // need a roundtrip to read back the DB-generated token.
     else {
       final token = const Uuid().v4();
-      await VaultInvitationsRepository(vaultId: vault.id).add([
-        VaultInvitation(
-          vaultId: vault.id,
-          email: email,
-          token: token,
-        ),
-      ]).then((_) {
-        if (!mounted) return;
-        setState(() {
-          _generatedLink = '${Uri.base.origin}/invite?token=$token';
-          _generatedLinkEmail = email;
-          _isSending = false;
-        });
-        _emailController.clear();
-      });
+      await VaultInvitationsRepository(vaultId: vault.id)
+          .add([VaultInvitation(vaultId: vault.id, email: email, token: token)])
+          .then((_) {
+            if (!mounted) return;
+            setState(() {
+              _generatedLink = '${Uri.base.origin}/invite?token=$token';
+              _generatedLinkEmail = email;
+              _isSending = false;
+            });
+            _emailController.clear();
+          });
     }
   }
 
@@ -118,19 +116,20 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
 
   Widget _buildContent(List<VaultMemberWithUser> entries) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: .start,
       children: [
         Text(
           'Invite by email',
           style: NarwhalTextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
+            fontWeight: .w600,
             color: ThemeHelper.neutral700(context),
           ),
         ),
         const Gap(8),
         Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
+          crossAxisAlignment: .center,
+          spacing: 8,
           children: [
             Expanded(
               child: TextField(
@@ -147,7 +146,6 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                 },
               ),
             ),
-            const Gap(8),
             if (_isSending)
               SizedBox(width: 20, height: 20, child: OnyxiaLoadingIndicator())
             else
@@ -160,24 +158,25 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         if (_generatedLink != null) ...[
           const Gap(8),
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: .all(12),
             decoration: BoxDecoration(
               color: ThemeHelper.neutral200(context),
-              borderRadius: BorderRadius.circular(8),
+              borderRadius: .circular(8),
             ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   'Invite link for $_generatedLinkEmail',
                   style: NarwhalTextStyle(
                     fontSize: 12,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                     color: ThemeHelper.neutral700(context),
                   ),
                 ),
                 const Gap(6),
                 Row(
+                  spacing: 8,
                   children: [
                     Expanded(
                       child: SelectableText(
@@ -189,15 +188,11 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                         maxLines: 1,
                       ),
                     ),
-                    const Gap(8),
                     OnyxiaButton(
                       label: 'Copy',
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: _generatedLink!));
-                        OnyxiaToast.show(
-                          text: 'Link copied.',
-                          type: ToastType.success,
-                        );
+                        OnyxiaToast.show(text: 'Link copied.', type: .success);
                       },
                     ),
                   ],
@@ -211,7 +206,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           'Members (${entries.length})',
           style: NarwhalTextStyle(
             fontSize: 13,
-            fontWeight: FontWeight.w600,
+            fontWeight: .w600,
             color: ThemeHelper.neutral700(context),
           ),
         ),
@@ -221,14 +216,10 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           child: ListView.separated(
             shrinkWrap: true,
             itemCount: entries.length,
-            separatorBuilder: (_, __) => Divider(
-              height: 1,
-              color: ThemeHelper.neutral300(context),
-            ),
-            itemBuilder: (_, i) => _MemberRow(
-              member: entries[i].member,
-              user: entries[i].user,
-            ),
+            separatorBuilder: (_, __) =>
+                Divider(height: 1, color: ThemeHelper.neutral300(context)),
+            itemBuilder: (_, i) =>
+                _MemberRow(member: entries[i].member, user: entries[i].user),
           ),
         ),
       ],
@@ -248,22 +239,22 @@ class _MemberRow extends StatelessWidget {
     final email = user?.email ?? '';
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: .symmetric(vertical: 8),
       child: Row(
         children: [
           Expanded(
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: .start,
               children: [
                 Text(
                   name,
                   style: NarwhalTextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                    fontWeight: .w500,
                     color: ThemeHelper.neutral900(context),
                   ),
                   maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                  overflow: .ellipsis,
                 ),
                 if (email.isNotEmpty)
                   Text(
@@ -273,7 +264,7 @@ class _MemberRow extends StatelessWidget {
                       color: ThemeHelper.neutral700(context),
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
               ],
             ),
@@ -282,7 +273,7 @@ class _MemberRow extends StatelessWidget {
             member.role.label,
             style: NarwhalTextStyle(
               fontSize: 12,
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
               color: ThemeHelper.neutral700(context),
             ),
           ),

@@ -89,10 +89,10 @@ class ButtonPropertyTheme {
     required Color Function(BuildContext) hoveredColor,
     required Color Function(BuildContext) pressedColor,
     required Color Function(BuildContext) disabledColor,
-  })  : _defaultColor = defaultColor,
-        _hoveredColor = hoveredColor,
-        _pressedColor = pressedColor,
-        _disabledColor = disabledColor;
+  }) : _defaultColor = defaultColor,
+       _hoveredColor = hoveredColor,
+       _pressedColor = pressedColor,
+       _disabledColor = disabledColor;
 
   Color defaultColor(BuildContext context) => _defaultColor(context);
   Color hovered(BuildContext context) => _hoveredColor(context);
@@ -135,85 +135,85 @@ class ButtonThemeHelper {
       ThemeHelper.neutral400(context);
 
   ButtonTypeTheme get primary => ButtonTypeTheme(
-        background: ButtonPropertyTheme(
-          defaultColor: _mainColor,
-          hoveredColor: (context) => _brighten(_mainColor(context)),
-          pressedColor: (context) => _darken(_mainColor(context)),
-          disabledColor: _disabledColor,
-        ),
-        border: ButtonPropertyTheme(
-          defaultColor: _none,
-          hoveredColor: _none,
-          pressedColor: _none,
-          disabledColor: _none,
-        ),
-        text: ButtonPropertyTheme(
-          defaultColor: _accentColor,
-          hoveredColor: _accentColor,
-          pressedColor: _accentColor,
-          disabledColor: _accentColor,
-        ),
-        icon: ButtonPropertyTheme(
-          defaultColor: _accentColor,
-          hoveredColor: _accentColor,
-          pressedColor: _accentColor,
-          disabledColor: _accentColor,
-        ),
-      );
+    background: ButtonPropertyTheme(
+      defaultColor: _mainColor,
+      hoveredColor: (context) => _brighten(_mainColor(context)),
+      pressedColor: (context) => _darken(_mainColor(context)),
+      disabledColor: _disabledColor,
+    ),
+    border: ButtonPropertyTheme(
+      defaultColor: _none,
+      hoveredColor: _none,
+      pressedColor: _none,
+      disabledColor: _none,
+    ),
+    text: ButtonPropertyTheme(
+      defaultColor: _accentColor,
+      hoveredColor: _accentColor,
+      pressedColor: _accentColor,
+      disabledColor: _accentColor,
+    ),
+    icon: ButtonPropertyTheme(
+      defaultColor: _accentColor,
+      hoveredColor: _accentColor,
+      pressedColor: _accentColor,
+      disabledColor: _accentColor,
+    ),
+  );
 
   ButtonTypeTheme get secondary => ButtonTypeTheme(
-        background: ButtonPropertyTheme(
-          defaultColor: _none,
-          hoveredColor: ThemeHelper.blue100,
-          pressedColor: ThemeHelper.blue400,
-          disabledColor: _none,
-        ),
-        border: ButtonPropertyTheme(
-          defaultColor: _mainColor,
-          hoveredColor: (context) => _brighten(_mainColor(context)),
-          pressedColor: (context) => _darken(_mainColor(context)),
-          disabledColor: _disabledColor,
-        ),
-        text: ButtonPropertyTheme(
-          defaultColor: _accentSecondaryColor,
-          hoveredColor: _accentSecondaryColor,
-          pressedColor: _accentSecondaryColor,
-          disabledColor: _disabledColor,
-        ),
-        icon: ButtonPropertyTheme(
-          defaultColor: _accentSecondaryColor,
-          hoveredColor: _accentSecondaryColor,
-          pressedColor: _accentSecondaryColor,
-          disabledColor: _disabledColor,
-        ),
-      );
+    background: ButtonPropertyTheme(
+      defaultColor: _none,
+      hoveredColor: ThemeHelper.blue100,
+      pressedColor: ThemeHelper.blue400,
+      disabledColor: _none,
+    ),
+    border: ButtonPropertyTheme(
+      defaultColor: _mainColor,
+      hoveredColor: (context) => _brighten(_mainColor(context)),
+      pressedColor: (context) => _darken(_mainColor(context)),
+      disabledColor: _disabledColor,
+    ),
+    text: ButtonPropertyTheme(
+      defaultColor: _accentSecondaryColor,
+      hoveredColor: _accentSecondaryColor,
+      pressedColor: _accentSecondaryColor,
+      disabledColor: _disabledColor,
+    ),
+    icon: ButtonPropertyTheme(
+      defaultColor: _accentSecondaryColor,
+      hoveredColor: _accentSecondaryColor,
+      pressedColor: _accentSecondaryColor,
+      disabledColor: _disabledColor,
+    ),
+  );
 
   ButtonTypeTheme get light => ButtonTypeTheme(
-        background: ButtonPropertyTheme(
-          defaultColor: _none,
-          hoveredColor: (context) => ThemeHelper.neutral300(context),
-          pressedColor: (context) => ThemeHelper.neutral400(context),
-          disabledColor: _none,
-        ),
-        border: ButtonPropertyTheme(
-          defaultColor: _none,
-          hoveredColor: _none,
-          pressedColor: _none,
-          disabledColor: _none,
-        ),
-        text: ButtonPropertyTheme(
-          defaultColor: _mainColor,
-          hoveredColor: _mainColor,
-          pressedColor: _mainColor,
-          disabledColor: _disabledColor,
-        ),
-        icon: ButtonPropertyTheme(
-          defaultColor: _accentSecondaryColor,
-          hoveredColor: _accentSecondaryColor,
-          pressedColor: _accentSecondaryColor,
-          disabledColor: _disabledColor,
-        ),
-      );
+    background: ButtonPropertyTheme(
+      defaultColor: _none,
+      hoveredColor: (context) => ThemeHelper.neutral300(context),
+      pressedColor: (context) => ThemeHelper.neutral400(context),
+      disabledColor: _none,
+    ),
+    border: ButtonPropertyTheme(
+      defaultColor: _none,
+      hoveredColor: _none,
+      pressedColor: _none,
+      disabledColor: _none,
+    ),
+    text: ButtonPropertyTheme(
+      defaultColor: _mainColor,
+      hoveredColor: _mainColor,
+      pressedColor: _mainColor,
+      disabledColor: _disabledColor,
+    ),
+    icon: ButtonPropertyTheme(
+      defaultColor: _accentSecondaryColor,
+      hoveredColor: _accentSecondaryColor,
+      pressedColor: _accentSecondaryColor,
+      disabledColor: _disabledColor,
+    ),
+  );
 }
 
 class SubSectionButtonThemeHelper {

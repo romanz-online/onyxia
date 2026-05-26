@@ -14,33 +14,36 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
           bottom: BorderSide(color: ThemeHelper.neutral300(context), width: 1),
         ),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: .symmetric(horizontal: 12, vertical: 4),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         spacing: 6,
         children: [
           OnyxiaIconButton(
             icon: LucideIcons.filePlus,
             tooltip: 'New note',
             onPressed: () async {
-              await ArtifactsRepository(vaultId: selectedVault.id)
-                  .add([NoteArtifact()]);
+              await ArtifactsRepository(
+                vaultId: selectedVault.id,
+              ).add([NoteArtifact()]);
             },
           ),
           OnyxiaIconButton(
             icon: LucideIcons.folderPlus,
             tooltip: 'New folder',
             onPressed: () async {
-              await ArtifactsRepository(vaultId: selectedVault.id)
-                  .add([FolderArtifact()]);
+              await ArtifactsRepository(
+                vaultId: selectedVault.id,
+              ).add([FolderArtifact()]);
             },
           ),
           OnyxiaIconButton(
             icon: LucideIcons.layoutGrid,
             tooltip: 'New canvas',
             onPressed: () async {
-              await ArtifactsRepository(vaultId: selectedVault.id)
-                  .add([CanvasArtifact()]);
+              await ArtifactsRepository(
+                vaultId: selectedVault.id,
+              ).add([CanvasArtifact()]);
             },
           ),
           OnyxiaIconButton(
@@ -48,7 +51,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
             tooltip: 'Upload image',
             onPressed: () async {
               final result = await FilePicker.platform.pickFiles(
-                type: FileType.image,
+                type: .image,
                 allowMultiple: true,
                 withData: true,
               );

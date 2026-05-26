@@ -44,53 +44,52 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
   }
 
   void _initializeAnimations() {
-    _widthAnimation = Tween<double>(
-      begin: 36.0,
-      end: 360.0, // Will be updated dynamically
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    ));
+    _widthAnimation =
+        Tween<double>(
+          begin: 36.0,
+          end: 360.0, // Will be updated dynamically
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeOutCubic,
+            reverseCurve: Curves.easeInCubic,
+          ),
+        );
 
-    _heightAnimation = Tween<double>(
-      begin: 36.0,
-      end: 44.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    ));
+    _heightAnimation = Tween<double>(begin: 36.0, end: 44.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+    );
 
-    _opacityAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
-    ));
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeOut),
+      ),
+    );
 
-    _paddingAnimation = Tween<double>(
-      begin: 4.0,
-      end: 6.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    ));
+    _paddingAnimation = Tween<double>(begin: 4.0, end: 6.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+    );
   }
 
   void _updateWidthAnimation(String text, BuildContext context) {
     final double targetWidth = _calculateRequiredWidth(text, context);
 
-    _widthAnimation = Tween<double>(
-      begin: 36.0,
-      end: targetWidth,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeOutCubic,
-      reverseCurve: Curves.easeInCubic,
-    ));
+    _widthAnimation = Tween<double>(begin: 36.0, end: targetWidth).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeOutCubic,
+        reverseCurve: Curves.easeInCubic,
+      ),
+    );
   }
 
   @override
@@ -111,7 +110,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
         text: text,
         style: NarwhalTextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontWeight: .w500,
           color: ThemeHelper.neutral900(context),
         ),
       ),
@@ -124,7 +123,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
     final double textLeftPadding = 4.0; // left padding for text
     final double textRightPadding = 20.0; // right padding for text
 
-    final double totalWidth = iconPadding +
+    final double totalWidth =
+        iconPadding +
         iconWidth +
         textLeftPadding +
         textPainter.width +
@@ -159,8 +159,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
   @override
   Widget build(BuildContext context) {
     try {
-      final double scale =
-          widget.transformationController.value.getMaxScaleOnAxis();
+      final double scale = widget.transformationController.value
+          .getMaxScaleOnAxis();
       final notesAsync = ref.watch(artifactsProvider);
       final notesLoaded = notesAsync.hasValue;
       final notes = notesAsync.value ?? const <Artifact>[];
@@ -169,7 +169,8 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
       );
 
       // Handle new pins with empty artifactId - use placeholder note
-      final effectiveNote = note ??
+      final effectiveNote =
+          note ??
           (widget.pin.linkedArtifactId.isEmpty ? NoteArtifact(name: '') : null);
 
       // Loading state - show spinner while notes are loading
@@ -217,7 +218,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
             width: widgetWidth * scale,
             height: widgetHeight * scale,
             child: Transform.scale(
-              alignment: Alignment.topLeft,
+              alignment: .topLeft,
               scale: 1 / scale,
               child: MouseRegion(
                 onEnter: (_) => _handleHoverEnter(),
@@ -231,16 +232,17 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                         width: _widthAnimation.value,
                         height: _heightAnimation.value,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color:
-                                isExpanded ? selectionColor : outerBorderColor,
+                          border: .all(
+                            color: isExpanded
+                                ? selectionColor
+                                : outerBorderColor,
                             width: isExpanded ? 2.0 : 1.5,
                           ),
-                          borderRadius: BorderRadius.only(
-                            topLeft: const Radius.circular(8),
-                            topRight: const Radius.circular(8),
-                            bottomRight: const Radius.circular(8),
-                            bottomLeft: const Radius.circular(1),
+                          borderRadius: .only(
+                            topLeft: .circular(8),
+                            topRight: .circular(8),
+                            bottomRight: .circular(8),
+                            bottomLeft: .circular(1),
                           ),
                           color: backgroundColor,
                           boxShadow: [
@@ -254,8 +256,9 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                         child: Row(
                           children: [
                             Padding(
-                              padding: EdgeInsets.only(
-                                left: _paddingAnimation.value +
+                              padding: .only(
+                                left:
+                                    _paddingAnimation.value +
                                     (isExpanded ? 0.0 : 0.5),
                                 right: _paddingAnimation.value,
                                 top: _paddingAnimation.value,
@@ -268,19 +271,18 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                                 child: Opacity(
                                   opacity: _opacityAnimation.value,
                                   child: Padding(
-                                    padding: const EdgeInsets.only(
-                                        right: 12, left: 4),
+                                    padding: .only(right: 12, left: 4),
                                     child: Text(
                                       effectiveNote.name.isNotEmpty
                                           ? effectiveNote.name
                                           : 'Untitled',
                                       style: NarwhalTextStyle(
                                         fontSize: 14,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: .w500,
                                         color: ThemeHelper.neutral900(context),
                                       ),
                                       maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                      overflow: .ellipsis,
                                     ),
                                   ),
                                 ),

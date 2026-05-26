@@ -14,26 +14,26 @@ class InfoMessageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        padding: .symmetric(horizontal: 40, vertical: 24),
         child: SizedBox(
           width: 320,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
+            spacing: 16,
             children: [
               Text(
                 title,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 style: NarwhalTextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: .w600,
                   color: ThemeHelper.neutral800(context),
                 ),
               ),
-              const Gap(16),
               Text(
                 message,
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 style: NarwhalTextStyle(
                   fontSize: 13,
                   color: ThemeHelper.neutral700(context),

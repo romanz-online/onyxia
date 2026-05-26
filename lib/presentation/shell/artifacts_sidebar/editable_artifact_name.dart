@@ -1,6 +1,17 @@
-﻿import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/shell/artifacts_sidebar/providers/rename_artifact_id_provider.dart';
+﻿import 'package:onyxia/export.dart'; 
 import 'package:speech_balloon/speech_balloon.dart';
+
+final renameArtifactIdProvider =
+    NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
+      RenameArtifactIdNotifier.new,
+    );
+
+class RenameArtifactIdNotifier extends Notifier<String?> {
+  @override
+  String? build() => null;
+
+  void set(String? value) => state = value;
+}
 
 class EditableArtifactName extends ConsumerStatefulWidget {
   final Artifact item;
@@ -96,30 +107,29 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       controller: _overlayController,
       overlayChildBuilder: (context) => CompositedTransformFollower(
         link: _layerLink,
-        targetAnchor: Alignment.bottomCenter,
-        followerAnchor: Alignment.topCenter,
+        targetAnchor: .bottomCenter,
+        followerAnchor: .topCenter,
         offset: const Offset(0, 9),
         child: Align(
-          alignment: Alignment.topCenter,
+          alignment: .topCenter,
           child: IntrinsicWidth(
             child: IntrinsicHeight(
               child: SpeechBalloon(
-                nipLocation: NipLocation.top,
+                nipLocation: .top,
                 color: ThemeHelper.red500(context),
                 borderRadius: 6,
                 nipHeight: 8,
-                width: double.infinity,
-                height: double.infinity,
+                width: .infinity,
+                height: .infinity,
                 child: Center(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                    padding: .symmetric(vertical: 5, horizontal: 12),
                     child: Text(
                       _errorMessage ?? '',
                       style: NarwhalTextStyle(
                         fontSize: 14,
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: .w700,
                       ),
                     ),
                   ),
@@ -140,19 +150,19 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       child: Container(
                         decoration: BoxDecoration(
                           color: ThemeHelper.neutral200(context),
-                          borderRadius: BorderRadius.circular(4),
+                          borderRadius: .circular(4),
                         ),
                         child: TextField(
                           controller: _controller,
                           focusNode: _focusNode,
                           style: NarwhalTextStyle(
                             fontSize: 14,
-                            fontWeight: FontWeight.normal,
+                            fontWeight: .normal,
                             color: ThemeHelper.neutral700(context),
                           ),
                           decoration: InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: EdgeInsets.zero,
+                            border: .none,
+                            contentPadding: .zero,
                             isDense: true,
                             fillColor: Colors.transparent,
                             hoverColor: Colors.transparent,
@@ -161,10 +171,11 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                           onSubmitted: (_) => _saveChanges(),
                           onChanged: (value) {
                             final msg = ItemTitleValidationService.errorMessage(
-                                ref.read(artifactsProvider).value ??
-                                    const <Artifact>[],
-                                value,
-                                widget.item.id);
+                              ref.read(artifactsProvider).value ??
+                                  const <Artifact>[],
+                              value,
+                              widget.item.id,
+                            );
                             setState(() => _errorMessage = msg);
                             if (msg != null) {
                               _overlayController.show();
@@ -186,16 +197,16 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       widget.item.name,
                       style: NarwhalTextStyle(
                         fontSize: 14,
-                        fontWeight: FontWeight.normal,
+                        fontWeight: .normal,
                         color: ThemeHelper.neutral700(context),
                         letterSpacing: 0.5,
                       ),
-                      overflow: TextOverflow.ellipsis,
+                      overflow: .ellipsis,
                       maxLines: 1,
                     )
                   : Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: .min,
+                      mainAxisAlignment: .spaceBetween,
                       spacing: 8,
                       children: [
                         Flexible(
@@ -203,11 +214,11 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                             _baseName,
                             style: NarwhalTextStyle(
                               fontSize: 14,
-                              fontWeight: FontWeight.normal,
+                              fontWeight: .normal,
                               color: ThemeHelper.neutral700(context),
                               letterSpacing: 0.5,
                             ),
-                            overflow: TextOverflow.ellipsis,
+                            overflow: .ellipsis,
                             maxLines: 1,
                           ),
                         ),
@@ -215,7 +226,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                           widget.trailingExtension!,
                           style: NarwhalTextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.normal,
+                            fontWeight: .normal,
                             color: ThemeHelper.neutral500(context),
                             letterSpacing: 0.5,
                           ),

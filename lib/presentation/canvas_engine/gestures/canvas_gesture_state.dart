@@ -13,7 +13,7 @@ class CanvasGestureState {
 
   const CanvasGestureState({
     this.activeObject,
-    this.accumulatedDelta = Offset.zero,
+    this.accumulatedDelta = .zero,
     this.arrowSegmentIndex,
     this.arrowMoveType = ArrowMoveType.none,
     this.interactionContext,
@@ -68,7 +68,7 @@ class CanvasGestureStateNotifier extends Notifier<CanvasGestureState> {
   }
 
   void resetAccumulatedDelta() {
-    state = state.copyWith(accumulatedDelta: Offset.zero);
+    state = state.copyWith(accumulatedDelta: .zero);
   }
 
   /// IMPORTANT: for the sake of clarity, future safety, ease of programming, and efficiency,
@@ -84,6 +84,7 @@ class CanvasGestureStateNotifier extends Notifier<CanvasGestureState> {
 }
 
 final canvasGestureStateProvider =
-    NotifierProvider.autoDispose<CanvasGestureStateNotifier, CanvasGestureState>(
-  CanvasGestureStateNotifier.new,
-);
+    NotifierProvider.autoDispose<
+      CanvasGestureStateNotifier,
+      CanvasGestureState
+    >(CanvasGestureStateNotifier.new);

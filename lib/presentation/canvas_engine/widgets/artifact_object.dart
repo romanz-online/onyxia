@@ -3,10 +3,7 @@
 class ArtifactObject extends ConsumerWidget {
   final CanvasObject canvasObject;
 
-  const ArtifactObject({
-    super.key,
-    required this.canvasObject,
-  });
+  const ArtifactObject({super.key, required this.canvasObject});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -43,10 +40,7 @@ class ArtifactObject extends ConsumerWidget {
     return Positioned(
       left: canvasObject.topLeft.dx,
       top: canvasObject.topLeft.dy,
-      child: IgnorePointer(
-        ignoring: true,
-        child: child,
-      ),
+      child: IgnorePointer(ignoring: true, child: child),
     );
   }
 
@@ -56,18 +50,10 @@ class ArtifactObject extends ConsumerWidget {
       height: height,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: ThemeHelper.neutral400(context),
-          width: 1,
-        ),
+        borderRadius: .circular(8),
+        border: .all(color: ThemeHelper.neutral400(context), width: 1),
       ),
-      child: const Center(
-        child: Icon(
-          LucideIcons.square,
-          size: 24,
-        ),
-      ),
+      child: const Center(child: Icon(LucideIcons.square, size: 24)),
     );
   }
 
@@ -82,23 +68,20 @@ class ArtifactObject extends ConsumerWidget {
       height: height,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: ThemeHelper.neutral400(context),
-          width: 1,
-        ),
+        borderRadius: .circular(8),
+        border: .all(color: ThemeHelper.neutral400(context), width: 1),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: .symmetric(horizontal: 12, vertical: 8),
       child: Center(
         child: Text(
           item.name.isEmpty ? 'Untitled' : item.name,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ThemeHelper.neutral700(context),
-                fontWeight: FontWeight.w500,
-              ),
-          overflow: TextOverflow.ellipsis,
+            color: ThemeHelper.neutral700(context),
+            fontWeight: .w500,
+          ),
+          overflow: .ellipsis,
           maxLines: 1,
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
       ),
     );
@@ -115,32 +98,29 @@ class ArtifactObject extends ConsumerWidget {
       height: height,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: ThemeHelper.neutral400(context),
-          width: 1,
-        ),
+        borderRadius: .circular(8),
+        border: .all(color: ThemeHelper.neutral400(context), width: 1),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
+        crossAxisAlignment: .stretch,
         children: [
           // Header area
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            padding: .symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
               color: ThemeHelper.neutral200(context),
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(7),
-                topRight: Radius.circular(7),
+              borderRadius: .only(
+                topLeft: .circular(7),
+                topRight: .circular(7),
               ),
             ),
             child: Text(
               item.name.isEmpty ? 'Untitled' : item.name,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: ThemeHelper.neutral700(context),
-                    fontWeight: FontWeight.w600,
-                  ),
-              overflow: TextOverflow.ellipsis,
+                color: ThemeHelper.neutral700(context),
+                fontWeight: .w600,
+              ),
+              overflow: .ellipsis,
               maxLines: 2,
             ),
           ),
@@ -155,10 +135,8 @@ class ArtifactObject extends ConsumerWidget {
           // Content area
           Expanded(
             child: Container(
-              padding: const EdgeInsets.all(12),
-              child: SingleChildScrollView(
-                child: _buildContent(context, item),
-              ),
+              padding: .all(12),
+              child: SingleChildScrollView(child: _buildContent(context, item)),
             ),
           ),
         ],
@@ -181,17 +159,17 @@ class ArtifactObject extends ConsumerWidget {
     // For other item types, use plain text as before
     String contentText;
     switch (item.type) {
-      case ArtifactType.canvas:
+      case .canvas:
         contentText = 'Canvas content';
         break;
-      case ArtifactType.folder:
+      case .folder:
         contentText = 'Folder content';
         break;
-      case ArtifactType.note:
+      case .note:
         // This case should not be reached due to the early return above
         contentText = 'Note content';
         break;
-      case ArtifactType.image:
+      case .image:
         contentText = 'Image content';
         break;
     }
@@ -199,9 +177,9 @@ class ArtifactObject extends ConsumerWidget {
     return Text(
       contentText,
       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: ThemeHelper.neutral500(context),
-            height: 1.4,
-          ),
+        color: ThemeHelper.neutral500(context),
+        height: 1.4,
+      ),
     );
   }
 
@@ -211,15 +189,10 @@ class ArtifactObject extends ConsumerWidget {
       height: height,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: ThemeHelper.neutral400(context),
-          width: 1,
-        ),
+        borderRadius: .circular(8),
+        border: .all(color: ThemeHelper.neutral400(context), width: 1),
       ),
-      child: Center(
-        child: OnyxiaLoadingIndicator(),
-      ),
+      child: Center(child: OnyxiaLoadingIndicator()),
     );
   }
 
@@ -229,29 +202,22 @@ class ArtifactObject extends ConsumerWidget {
       height: height,
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(
-          color: Colors.red.withValues(alpha: 0.5),
-          width: 1,
-        ),
+        borderRadius: .circular(8),
+        border: .all(color: Colors.red.withValues(alpha: 0.5), width: 1),
       ),
       child: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: .center,
           children: [
-            Icon(
-              LucideIcons.trash2,
-              color: Colors.red,
-              size: 24,
-            ),
+            Icon(LucideIcons.trash2, color: Colors.red, size: 24),
             const Gap(8),
             Text(
               'Note not found',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.red,
-                    fontWeight: FontWeight.w500,
-                  ),
-              textAlign: TextAlign.center,
+                color: Colors.red,
+                fontWeight: .w500,
+              ),
+              textAlign: .center,
             ),
           ],
         ),

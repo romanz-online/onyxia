@@ -14,9 +14,7 @@ class _GraphWorkspaceState extends ConsumerState<GraphWorkspace> {
     return Container(
       decoration: BoxDecoration(
         color: ThemeHelper.neutral100(context),
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(8),
-        ),
+        borderRadius: .only(topLeft: .circular(8)),
       ),
       child: const Constellation(),
     );

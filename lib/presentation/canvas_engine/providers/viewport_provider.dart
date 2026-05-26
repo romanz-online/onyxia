@@ -3,10 +3,11 @@ import 'package:vector_math/vector_math_64.dart' as v64;
 import 'bounds_provider.dart';
 
 /// Provider for a TransformationController used on the canvas
-final canvasViewportProvider = NotifierProvider.autoDispose<
-    TransformationNotifier, TransformationController>(
-  TransformationNotifier.new,
-);
+final canvasViewportProvider =
+    NotifierProvider.autoDispose<
+      TransformationNotifier,
+      TransformationController
+    >(TransformationNotifier.new);
 
 /// A Notifier that manages the TransformationController
 class TransformationNotifier extends Notifier<TransformationController> {
@@ -37,9 +38,11 @@ class TransformationNotifier extends Notifier<TransformationController> {
     final canvasSize = canvasBoundsState.bounds.size;
     double centerX = (screenSize.width - canvasSize.width) / 2;
     double centerY = (screenSize.height - canvasSize.height) / 2;
-    setTransformation(Matrix4.identity()
-      ..translateByDouble(centerX, centerY, 0.0, 1.0)
-      ..scaleByDouble(1.0, 1.0, 1.0, 1.0));
+    setTransformation(
+      Matrix4.identity()
+        ..translateByDouble(centerX, centerY, 0.0, 1.0)
+        ..scaleByDouble(1.0, 1.0, 1.0, 1.0),
+    );
   }
 
   void reset() {
@@ -108,10 +111,16 @@ class TransformationNotifier extends Notifier<TransformationController> {
 
     final newDelta = Offset(delta.dx * scale, delta.dy * scale);
 
-    setTransformation(Matrix4.identity()
-      ..translateByDouble(
-          translation.x + newDelta.dx, translation.y + newDelta.dy, 0.0, 1.0)
-      ..scaleByDouble(scale, scale, scale, 1.0));
+    setTransformation(
+      Matrix4.identity()
+        ..translateByDouble(
+          translation.x + newDelta.dx,
+          translation.y + newDelta.dy,
+          0.0,
+          1.0,
+        )
+        ..scaleByDouble(scale, scale, scale, 1.0),
+    );
   }
 
   void updateZoom({required double increment}) {
@@ -128,8 +137,10 @@ class TransformationNotifier extends Notifier<TransformationController> {
 
     double adjustedIncrement = increment;
 
-    final newScale =
-        (currentScale + adjustedIncrement).clamp(minScale, maxScale);
+    final newScale = (currentScale + adjustedIncrement).clamp(
+      minScale,
+      maxScale,
+    );
 
     if (currentScale == newScale) return;
 
@@ -148,9 +159,11 @@ class TransformationNotifier extends Notifier<TransformationController> {
     final newTranslationX = viewportCenter.dx - (contentCenterX * newScale);
     final newTranslationY = viewportCenter.dy - (contentCenterY * newScale);
 
-    setTransformation(Matrix4.identity()
-      ..translateByDouble(newTranslationX, newTranslationY, 0.0, 1.0)
-      ..scaleByDouble(newScale, newScale, newScale, 1.0));
+    setTransformation(
+      Matrix4.identity()
+        ..translateByDouble(newTranslationX, newTranslationY, 0.0, 1.0)
+        ..scaleByDouble(newScale, newScale, newScale, 1.0),
+    );
   }
 
   String getCurrentZoomAsString() {
@@ -172,28 +185,35 @@ class TransformationNotifier extends Notifier<TransformationController> {
   Rect getVisibleObjectRect(Size ivSize) {
     final inverseTransform = Matrix4.inverted(state.value);
 
-    final topLeftContent = _contentPoint(inverseTransform, Offset.zero);
-    final bottomRightContent =
-        _contentPoint(inverseTransform, Offset(ivSize.width, ivSize.height));
+    final topLeftContent = _contentPoint(inverseTransform, .zero);
+    final bottomRightContent = _contentPoint(
+      inverseTransform,
+      Offset(ivSize.width, ivSize.height),
+    );
 
     final boundsState = ref.read(canvasBoundsProvider);
-    final boundsOffset =
-        Offset(boundsState.bounds.left, boundsState.bounds.top);
+    final boundsOffset = Offset(
+      boundsState.bounds.left,
+      boundsState.bounds.top,
+    );
     return Rect.fromPoints(
-        topLeftContent + boundsOffset, bottomRightContent + boundsOffset);
+      topLeftContent + boundsOffset,
+      bottomRightContent + boundsOffset,
+    );
   }
 
   Offset _contentPoint(Matrix4 inverseTransform, Offset point) {
-    final v64.Vector3 result =
-        inverseTransform.transform3(v64.Vector3(point.dx, point.dy, 0));
+    final v64.Vector3 result = inverseTransform.transform3(
+      v64.Vector3(point.dx, point.dy, 0),
+    );
     return Offset(result.x, result.y);
   }
 
   Offset getViewportCenter() {
-    if (!ref.mounted || context == null) return Offset.zero;
+    if (!ref.mounted || context == null) return .zero;
 
     final mediaQuery = MediaQuery.maybeOf(context!);
-    if (mediaQuery == null) return Offset.zero;
+    if (mediaQuery == null) return .zero;
 
     final transform = state.value;
 

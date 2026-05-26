@@ -41,10 +41,10 @@ class BardController extends TextEditingController {
   List<MarkdownSpan> spansAt(int offset) =>
       _parseResult.inlineSpans.where((s) => s.containsOffset(offset)).toList();
 
-  List<MarkdownSpan> spansContaining(int start, int end) =>
-      _parseResult.inlineSpans
-          .where((s) => s.fullyContainsRange(start, end))
-          .toList();
+  List<MarkdownSpan> spansContaining(int start, int end) => _parseResult
+      .inlineSpans
+      .where((s) => s.fullyContainsRange(start, end))
+      .toList();
 
   @override
   TextSpan buildTextSpan({
@@ -113,8 +113,10 @@ class BardController extends TextEditingController {
 
   TextSpan _buildWithComposing(TextEditingValue val, TextStyle? style) {
     final before = val.text.substring(0, val.composing.start);
-    final composing =
-        val.text.substring(val.composing.start, val.composing.end);
+    final composing = val.text.substring(
+      val.composing.start,
+      val.composing.end,
+    );
     final after = val.text.substring(val.composing.end);
 
     return TextSpan(
@@ -178,8 +180,9 @@ class BardController extends TextEditingController {
       final intervalText = text.substring(start, actualEnd);
 
       final activeInline = result.inlineSpans
-          .where((s) =>
-              s.markerStartOpen <= start && actualEnd <= s.markerEndClose)
+          .where(
+            (s) => s.markerStartOpen <= start && actualEnd <= s.markerEndClose,
+          )
           .toList();
 
       final activeLines = result.lineSpans
@@ -188,9 +191,11 @@ class BardController extends TextEditingController {
 
       // Classify: is this interval a marker region for any inline span?
       final markerOwners = activeInline
-          .where((s) =>
-              s.intervalIsOpenMarker(start, actualEnd) ||
-              s.intervalIsCloseMarker(start, actualEnd))
+          .where(
+            (s) =>
+                s.intervalIsOpenMarker(start, actualEnd) ||
+                s.intervalIsCloseMarker(start, actualEnd),
+          )
           .toList();
 
       // Is this a line prefix marker?
@@ -205,15 +210,19 @@ class BardController extends TextEditingController {
       final TextStyle intervalStyle;
 
       if (markerOwners.isNotEmpty) {
-        final cursorInAnyOwner = markerOwners.any((s) =>
-            cursorOffset >= s.markerStartOpen &&
-            cursorOffset <= s.markerEndClose);
+        final cursorInAnyOwner = markerOwners.any(
+          (s) =>
+              cursorOffset >= s.markerStartOpen &&
+              cursorOffset <= s.markerEndClose,
+        );
 
         if (cursorInAnyOwner) {
           // Show marker dimly, still apply content styles underneath
-          intervalStyle =
-              _buildContentStyle(baseStyle, contentSpans, activeLines)
-                  .copyWith(color: _kMarkerDimColor);
+          intervalStyle = _buildContentStyle(
+            baseStyle,
+            contentSpans,
+            activeLines,
+          ).copyWith(color: _kMarkerDimColor);
         } else {
           intervalStyle = const NarwhalTextStyle(
             fontSize: _kHiddenFontSize,
@@ -221,13 +230,16 @@ class BardController extends TextEditingController {
           );
         }
       } else if (linePrefixOwner != null) {
-        final cursorOnLine = cursorOffset >= linePrefixOwner.lineStart &&
+        final cursorOnLine =
+            cursorOffset >= linePrefixOwner.lineStart &&
             cursorOffset <= linePrefixOwner.lineEnd;
 
         if (cursorOnLine) {
-          intervalStyle =
-              _buildContentStyle(baseStyle, contentSpans, activeLines)
-                  .copyWith(color: _kMarkerDimColor);
+          intervalStyle = _buildContentStyle(
+            baseStyle,
+            contentSpans,
+            activeLines,
+          ).copyWith(color: _kMarkerDimColor);
         } else {
           intervalStyle = const NarwhalTextStyle(
             fontSize: _kHiddenFontSize,
@@ -235,8 +247,11 @@ class BardController extends TextEditingController {
           );
         }
       } else {
-        intervalStyle =
-            _buildContentStyle(baseStyle, contentSpans, activeLines);
+        intervalStyle = _buildContentStyle(
+          baseStyle,
+          contentSpans,
+          activeLines,
+        );
       }
 
       children.add(TextSpan(text: intervalText, style: intervalStyle));
@@ -267,28 +282,28 @@ class BardController extends TextEditingController {
       switch (s.type) {
         case LineFormatType.heading1:
           fontSize = 24.0;
-          fontWeight = FontWeight.bold;
+          fontWeight = .bold;
         case LineFormatType.heading2:
           fontSize = 20.0;
-          fontWeight = FontWeight.bold;
+          fontWeight = .bold;
         case LineFormatType.heading3:
           fontSize = 16.0;
-          fontWeight = FontWeight.bold;
+          fontWeight = .bold;
         case LineFormatType.bulletList:
         case LineFormatType.numberedList:
           break;
         case LineFormatType.blockquote:
           color = _kBlockquoteColor;
-          fontStyle = FontStyle.italic;
+          fontStyle = .italic;
       }
     }
 
     for (final s in contentSpans) {
       switch (s.type) {
         case MarkdownFormatType.bold:
-          fontWeight = FontWeight.bold;
+          fontWeight = .bold;
         case MarkdownFormatType.italic:
-          fontStyle = FontStyle.italic;
+          fontStyle = .italic;
         case MarkdownFormatType.strikethrough:
           decorations.add(TextDecoration.lineThrough);
         case MarkdownFormatType.wikiLink:
@@ -300,13 +315,13 @@ class BardController extends TextEditingController {
     final decoration = decorations.isEmpty
         ? null
         : decorations.length == 1
-            ? decorations.first
-            : TextDecoration.combine(decorations);
+        ? decorations.first
+        : TextDecoration.combine(decorations);
 
     return NarwhalTextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
-      fontStyle: fontStyle ?? FontStyle.normal,
+      fontStyle: fontStyle ?? .normal,
       color: color,
       fontFamily: fontFamily,
       decoration: decoration,

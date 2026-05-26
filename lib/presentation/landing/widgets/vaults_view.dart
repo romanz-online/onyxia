@@ -35,9 +35,9 @@ class _VaultListColumn extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: ThemeHelper.neutral200(context),
-      padding: const EdgeInsets.fromLTRB(12, 12, 12, 6),
+      padding: .fromLTRB(12, 12, 12, 6),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         spacing: 6,
         children: [
           Expanded(
@@ -96,25 +96,25 @@ class _RightColumn extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: .symmetric(horizontal: 16, vertical: 12),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: .start,
         children: [
           Text(
             'Onyxia',
             style: NarwhalTextStyle(
               fontSize: 32,
-              fontWeight: FontWeight.bold,
+              fontWeight: .bold,
               color: ThemeHelper.neutral700(context),
             ),
           ),
           const Gap(16),
           Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: .start,
             spacing: 4,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 4),
+                padding: .only(left: 4),
                 child: Text(
                   'You are logged in as ${user.email}',
                   style: NarwhalTextStyle(
@@ -131,11 +131,11 @@ class _RightColumn extends ConsumerWidget {
           ),
           const Spacer(),
           Row(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: .end,
             children: [
               Column(
                 spacing: 6,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                crossAxisAlignment: .end,
                 children: [
                   OnyxiaButton(
                     label: 'New Vault',
@@ -189,16 +189,12 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
   Future<void> _waitForVaultInProvider(String id) {
     final completer = Completer<void>();
     late ProviderSubscription sub;
-    sub = ref.listenManual<AsyncValue<List<Vault>>>(
-      vaultsProvider,
-      (_, next) {
-        if ((next.value?.any((v) => v.id == id) ?? false) &&
-            !completer.isCompleted) {
-          completer.complete();
-        }
-      },
-      fireImmediately: true,
-    );
+    sub = ref.listenManual<AsyncValue<List<Vault>>>(vaultsProvider, (_, next) {
+      if ((next.value?.any((v) => v.id == id) ?? false) &&
+          !completer.isCompleted) {
+        completer.complete();
+      }
+    }, fireImmediately: true);
     return completer.future
         .timeout(const Duration(seconds: 5), onTimeout: () {})
         .whenComplete(sub.close);
@@ -211,8 +207,8 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
       height: 260,
       title: 'New Vault',
       content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: .center,
+        crossAxisAlignment: .start,
         spacing: 10,
         children: [
           Text(
@@ -231,7 +227,7 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
           ),
         ],
       ),
-      onCancelPressed: () => Navigator.of(context).pop(),
+      onCancelPressed: Navigator.of(context).pop,
       actionButtonText: 'Create',
       onActionPressed: _create,
     );

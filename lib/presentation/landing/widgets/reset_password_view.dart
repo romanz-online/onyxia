@@ -51,26 +51,27 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
   Widget build(BuildContext context) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        padding: .symmetric(horizontal: 40, vertical: 24),
         child: SizedBox(
           width: 320,
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: .min,
+            crossAxisAlignment:.stretch,
             children: [
               Text(
                 'Set a new password',
-                textAlign: TextAlign.center,
+                textAlign: .center,
                 style: NarwhalTextStyle(
                   fontSize: 20,
-                  fontWeight: FontWeight.w600,
+                  fontWeight: .w600,
                   color: ThemeHelper.neutral800(context),
                 ),
               ),
               const Gap(20),
               AutofillGroup(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  crossAxisAlignment: .stretch,
+                  spacing: 8,
                   children: [
                     TextField(
                       controller: _passwordController,
@@ -82,7 +83,6 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
                       ),
                       style: NarwhalTextStyle(fontSize: 13),
                     ),
-                    const Gap(8),
                     TextField(
                       controller: _confirmController,
                       obscureText: true,

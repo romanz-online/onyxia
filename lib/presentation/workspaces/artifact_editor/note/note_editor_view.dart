@@ -105,14 +105,12 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
 
     final noteState = ref.watch(selectedNoteStateProvider);
 
-    final item = ref
-        .watch(selectedNoteStateProvider.select((state) => state.value?.note));
+    final item = ref.watch(
+      selectedNoteStateProvider.select((state) => state.value?.note),
+    );
     if (item == null) {
       return const Center(
-        child: Text(
-          'No item selected',
-          style: NarwhalTextStyle(),
-        ),
+        child: Text('No item selected', style: NarwhalTextStyle()),
       );
     }
 
@@ -126,10 +124,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
         final controller = state.bardController;
         if (controller == null) {
           return const Center(
-            child: Text(
-              'Note not initialized',
-              style: NarwhalTextStyle(),
-            ),
+            child: Text('Note not initialized', style: NarwhalTextStyle()),
           );
         }
 
@@ -174,14 +169,12 @@ class _ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: .center,
         spacing: 16,
         children: [
           Text(
             'Error: $error',
-            style: NarwhalTextStyle(
-              color: ThemeHelper.errorColor(),
-            ),
+            style: NarwhalTextStyle(color: ThemeHelper.errorColor()),
           ),
           ElevatedButton(
             onPressed: onRetry,
@@ -259,8 +252,9 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
       if (!mounted || !_isGhostTyping) break;
       final controller = widget.controller;
       controller.text = controller.text + _kGhostLorem[i];
-      controller.selection =
-          TextSelection.collapsed(offset: controller.text.length);
+      controller.selection = TextSelection.collapsed(
+        offset: controller.text.length,
+      );
     }
     if (mounted && _isGhostTyping) {
       setState(() => _isGhostTyping = false);
@@ -287,25 +281,25 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: .all(8.0),
           child: LayoutBuilder(
             builder: (context, cardConstraints) {
-              WidgetsBinding.instance
-                  .addPostFrameCallback((_) => _updateEditorHeight());
+              WidgetsBinding.instance.addPostFrameCallback(
+                (_) => _updateEditorHeight(),
+              );
 
               return DropRegion(
                 key: _editorKey,
                 formats: Formats.standardFormats,
-                hitTestBehavior: HitTestBehavior.opaque,
+                hitTestBehavior: .opaque,
                 onDropOver: (event) {
                   widget.onDragOver(true);
-                  return event.session.allowedOperations.firstOrNull ??
-                      DropOperation.none;
+                  return event.session.allowedOperations.firstOrNull ?? .none;
                 },
                 onPerformDrop: widget.onImageDrop,
                 onDropLeave: (_) => widget.onDragOver(false),
                 child: Stack(
-                  clipBehavior: Clip.none,
+                  clipBehavior: .none,
                   children: [
                     _NoteEditorField(
                       controller: widget.controller,
@@ -358,25 +352,29 @@ class _NoteEditorField extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final horizontalMargin =
-            ((constraints.maxWidth - 800.0) / 2).clamp(0.0, double.infinity);
+        final horizontalMargin = ((constraints.maxWidth - 800.0) / 2).clamp(
+          0.0,
+          double.infinity,
+        );
         return CustomScrollView(
           controller: scrollController,
           slivers: [
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.only(
-                  left: (horizontalMargin - 5).clamp(0.0, double.infinity),
+                padding: .only(
+                  left: (horizontalMargin - 5).clamp(0.0, .infinity),
                   right: horizontalMargin,
                 ),
                 child: NoteTitleField(
-                    provider: provider, nextFocusNode: focusNode),
+                  provider: provider,
+                  nextFocusNode: focusNode,
+                ),
               ),
             ),
             SliverFillRemaining(
               hasScrollBody: false,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
+                padding: .symmetric(horizontal: horizontalMargin),
                 child: BardEditor(
                   controller: controller,
                   collab: collab,
@@ -417,7 +415,7 @@ class _DragOverlay extends StatelessWidget {
             style: NarwhalTextStyle(
               fontSize: 18,
               color: ThemeHelper.blue500(context),
-              fontWeight: FontWeight.w500,
+              fontWeight: .w500,
             ),
           ),
         ),

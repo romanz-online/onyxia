@@ -15,7 +15,7 @@ extension OffsetExtension on Offset {
 
   Offset normalized() {
     final magnitude = distance;
-    if (magnitude == 0) return Offset.zero;
+    if (magnitude == 0) return .zero;
     return Offset(dx / magnitude, dy / magnitude);
   }
 }

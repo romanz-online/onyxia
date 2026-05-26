@@ -18,9 +18,12 @@ class CanvasClipboardService {
     if (objects.isEmpty) return;
 
     try {
-      await Clipboard.setData(ClipboardData(
-        text: 'NCON:${jsonEncode(objects.map((obj) => obj.toMap()).toList())}',
-      ));
+      await Clipboard.setData(
+        ClipboardData(
+          text:
+              'NCON:${jsonEncode(objects.map((obj) => obj.toMap()).toList())}',
+        ),
+      );
     } catch (e) {
       return;
     }
@@ -46,11 +49,9 @@ class CanvasClipboardService {
           reader.readAsArrayBuffer(file);
           reader.onLoadEnd.listen((event) async {
             final bytes = (reader.result as JSArrayBuffer).toDart.asUint8List();
-            platformFiles.add(PlatformFile(
-              name: file.name,
-              size: file.size,
-              bytes: bytes,
-            ));
+            platformFiles.add(
+              PlatformFile(name: file.name, size: file.size, bytes: bytes),
+            );
 
             // Process after all files are read
             if (platformFiles.length == files.length) {
@@ -82,7 +83,7 @@ class CanvasClipboardService {
       '.heic',
       '.heif',
       '.ico',
-      '.svg'
+      '.svg',
     ];
     return imageExtensions.any((ext) => lowerPath.endsWith(ext));
   }
@@ -116,9 +117,10 @@ class CanvasClipboardService {
       }
 
       // fallback to text object
-      if (text.isNotEmpty) { 
-        final viewportCenter =
-            ref.read(canvasViewportProvider.notifier).getViewportCenter();
+      if (text.isNotEmpty) {
+        final viewportCenter = ref
+            .read(canvasViewportProvider.notifier)
+            .getViewportCenter();
 
         final newObj = CanvasObject(
           id: const Uuid().v4(),
@@ -126,7 +128,7 @@ class CanvasClipboardService {
           topLeft: viewportCenter,
           bottomRight: viewportCenter,
           createdAt: DateTime.now(),
-          color: Colors.transparent, 
+          color: Colors.transparent,
           content: text,
         );
 
@@ -135,11 +137,13 @@ class CanvasClipboardService {
         ref.read(canvasObjectsProvider.notifier).selectObject(newObj);
         CanvasInteractionService.openTextEditor(ref: ref);
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          final renderBox = newObj.textAreaKey.currentContext
-              ?.findRenderObject() as RenderBox?;
+          final renderBox =
+              newObj.textAreaKey.currentContext?.findRenderObject()
+                  as RenderBox?;
           if (renderBox != null && renderBox.hasSize) {
             final containerSize = renderBox.size;
-            newObj.bottomRight = newObj.topLeft +
+            newObj.bottomRight =
+                newObj.topLeft +
                 Offset(containerSize.width, containerSize.height);
           }
 
@@ -186,7 +190,7 @@ class CanvasClipboardService {
     } else {
       _lastPastedPosition = targetPosition;
       _consequentPastes = 0;
-      pasteTranslation = Offset.zero;
+      pasteTranslation = .zero;
     }
 
     // Calculate the initial offset difference
@@ -212,23 +216,31 @@ class CanvasClipboardService {
 
     // Calculate adjustments needed to keep all objects within canvas bounds
     final canvasBounds = ref.read(canvasBoundsProvider).bounds;
-    Offset adjustment = Offset.zero;
+    Offset adjustment = .zero;
 
     if (maxX > canvasBounds.right) {
-      adjustment =
-          Offset(adjustment.dx - (maxX - canvasBounds.right), adjustment.dy);
+      adjustment = Offset(
+        adjustment.dx - (maxX - canvasBounds.right),
+        adjustment.dy,
+      );
     }
     if (maxY > canvasBounds.bottom) {
-      adjustment =
-          Offset(adjustment.dx, adjustment.dy - (maxY - canvasBounds.bottom));
+      adjustment = Offset(
+        adjustment.dx,
+        adjustment.dy - (maxY - canvasBounds.bottom),
+      );
     }
     if (minX < canvasBounds.left) {
-      adjustment =
-          Offset(adjustment.dx + (canvasBounds.left - minX), adjustment.dy);
+      adjustment = Offset(
+        adjustment.dx + (canvasBounds.left - minX),
+        adjustment.dy,
+      );
     }
     if (minY < canvasBounds.top) {
-      adjustment =
-          Offset(adjustment.dx, adjustment.dy + (canvasBounds.top - minY));
+      adjustment = Offset(
+        adjustment.dx,
+        adjustment.dy + (canvasBounds.top - minY),
+      );
     }
 
     final adjustedOffset = initialOffsetDifference + adjustment;
@@ -243,10 +255,15 @@ class CanvasClipboardService {
 
       final canvasBoundsNotifier = ref.read(canvasBoundsProvider.notifier);
       newObj.topLeft = canvasBoundsNotifier.snap(
-          (newObj.topLeft + adjustedOffset)
-              .translate(pasteTranslation.dx, pasteTranslation.dy));
-      newObj.bottomRight = (newObj.bottomRight + adjustedOffset)
-          .translate(pasteTranslation.dx, pasteTranslation.dy);
+        (newObj.topLeft + adjustedOffset).translate(
+          pasteTranslation.dx,
+          pasteTranslation.dy,
+        ),
+      );
+      newObj.bottomRight = (newObj.bottomRight + adjustedOffset).translate(
+        pasteTranslation.dx,
+        pasteTranslation.dy,
+      );
 
       pastedObjects.add(newObj);
     }
@@ -255,10 +272,14 @@ class CanvasClipboardService {
       final newArrow = CanvasObject.fromJson(obj.toJson());
       newArrow.id = const Uuid().v4();
 
-      newArrow.topLeft = (newArrow.topLeft + adjustedOffset)
-          .translate(pasteTranslation.dx, pasteTranslation.dy);
-      newArrow.bottomRight = (newArrow.bottomRight + adjustedOffset)
-          .translate(pasteTranslation.dx, pasteTranslation.dy);
+      newArrow.topLeft = (newArrow.topLeft + adjustedOffset).translate(
+        pasteTranslation.dx,
+        pasteTranslation.dy,
+      );
+      newArrow.bottomRight = (newArrow.bottomRight + adjustedOffset).translate(
+        pasteTranslation.dx,
+        pasteTranslation.dy,
+      );
 
       if (idMapping.containsKey(obj.arrowProps.startObjectId)) {
         newArrow.arrowProps.startObjectId =
@@ -270,8 +291,12 @@ class CanvasClipboardService {
       }
 
       newArrow.arrowProps.points = newArrow.arrowProps.points
-          .map((keypoint) => (keypoint + adjustedOffset)
-              .translate(pasteTranslation.dx, pasteTranslation.dy))
+          .map(
+            (keypoint) => (keypoint + adjustedOffset).translate(
+              pasteTranslation.dx,
+              pasteTranslation.dy,
+            ),
+          )
           .toList();
 
       pastedObjects.add(newArrow);

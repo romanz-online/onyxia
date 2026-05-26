@@ -39,27 +39,18 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
     final name = _nameController.text.trim();
     if (name.isEmpty) return;
 
-    final userId = ref.read(currentUserProvider).value?.id ?? '';
-    final now = DateTime.now();
-    final newVault = Vault(
-      id: const Uuid().v4(),
-      createdBy: userId,
-      createdAt: now,
-      updatedAt: now,
-      name: name,
-    );
-
     setState(() {
       _importing = true;
       _done = 0;
     });
 
+    final newVault = Vault(name: name);
     await VaultsRepository().add([newVault]);
 
     await PortingService.importFiles(
       files: widget.files,
       vaultId: newVault.id,
-      userId: userId,
+      userId: ref.read(currentUserProvider).value?.id ?? '',
       onProgress: (done, _) {
         if (mounted) setState(() => _done = done);
       },
@@ -80,10 +71,7 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
         cancelButtonText: null,
         actionButtonText: 'Importing...',
         onActionPressed: null,
-        content: ImportProgressView(
-          done: _done,
-          total: widget.files.length,
-        ),
+        content: ImportProgressView(done: _done, total: widget.files.length),
       );
     }
 
@@ -92,8 +80,8 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
       height: 260,
       title: 'Import Vault',
       content: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: .center,
+        crossAxisAlignment: .start,
         spacing: 10,
         children: [
           Text(

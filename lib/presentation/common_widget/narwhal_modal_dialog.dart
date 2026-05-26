@@ -14,8 +14,10 @@ class NarwhalModalInputDecoration {
       fillColor: ThemeHelper.neutral100(context),
       filled: true,
       enabledBorder: OutlineInputBorder(
-        borderSide:
-            BorderSide(color: ThemeHelper.neutral400(context), width: 1),
+        borderSide: BorderSide(
+          color: ThemeHelper.neutral400(context),
+          width: 1,
+        ),
       ),
       focusedBorder: OutlineInputBorder(
         borderSide: BorderSide(color: ThemeHelper.blue500(context), width: 1),
@@ -67,38 +69,36 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
   Widget build(BuildContext context) {
     return Dialog(
       elevation: 4.0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: .circular(20)),
       child: Container(
         width: widget.width,
         height: widget.height,
         constraints: const BoxConstraints(minWidth: 300),
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(20),
+          borderRadius: .circular(20),
         ),
         child: Column(
           spacing: 20,
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              padding: .fromLTRB(20, 20, 20, 0),
               decoration: BoxDecoration(
                 color: ThemeHelper.neutral100(context),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                borderRadius: .only(
+                  topLeft: .circular(20),
+                  topRight: .circular(20),
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     widget.title,
                     style: NarwhalTextStyle(
                       fontSize: widget.hasLargeTitle ? 28 : 20,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: .w400,
                       color: ThemeHelper.neutral800(context),
                     ),
                   ),
@@ -109,23 +109,21 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
             // Content
             Expanded(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                padding: .fromLTRB(20, 0, 20, 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
-                    widget.content != null ? widget.content! : SizedBox(),
+                    widget.content != null ? widget.content! : const SizedBox(),
 
                     const Spacer(flex: 1),
 
                     // Action buttons
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: .spaceBetween,
                       children: [
                         // Left side actions
                         if (widget.additionalLeftActions != null)
-                          Row(
-                            children: widget.additionalLeftActions!,
-                          ),
+                          Row(children: widget.additionalLeftActions!),
                         if (widget.additionalLeftActions == null)
                           const SizedBox(), // Empty spacer when no left actions
                         // Right side actions
@@ -134,7 +132,8 @@ class _NarwhalModalDialogState extends ConsumerState<NarwhalModalDialog> {
                             if (widget.cancelButtonText != null) ...[
                               OnyxiaButton(
                                 label: widget.cancelButtonText!,
-                                onTap: widget.onCancelPressed ??
+                                onTap:
+                                    widget.onCancelPressed ??
                                     Navigator.of(context).pop,
                               ),
                               const Gap(20),

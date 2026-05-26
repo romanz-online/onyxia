@@ -104,13 +104,15 @@ class _AppShellState extends ConsumerState<AppShell> {
                   : _artifactsSidebarWidth.value;
               final boundaryX = MasterSidebar.width + artifactsW;
               final animate = _animateNextCollapseChange.value;
-              final duration =
-                  animate ? const Duration(milliseconds: 150) : Duration.zero;
+              final duration = animate
+                  ? const Duration(milliseconds: 150)
+                  : Duration.zero;
 
               return AnimatedPositioned(
                 duration: duration,
                 curve: Curves.easeInOut,
-                left: boundaryX -
+                left:
+                    boundaryX -
                     (ArtifactsSidebar.dividerStripWidth * 1.5).ceil(),
                 top: 0,
                 bottom: 0,
@@ -122,10 +124,11 @@ class _AppShellState extends ConsumerState<AppShell> {
                   onDragUpdate: (globalDx) {
                     final maxWidth =
                         MediaQuery.of(context).size.width - 46 - 300;
-                    _artifactsSidebarWidth.value = (globalDx -
-                            MasterSidebar.width +
-                            ArtifactsSidebar.dividerStripWidth)
-                        .clamp(ArtifactsSidebar.minWidth, maxWidth);
+                    _artifactsSidebarWidth.value =
+                        (globalDx -
+                                MasterSidebar.width +
+                                ArtifactsSidebar.dividerStripWidth)
+                            .clamp(ArtifactsSidebar.minWidth, maxWidth);
                     _isArtifactsSidebarCollapsed.value =
                         globalDx < ArtifactsSidebar.collapseThreshold;
                   },
@@ -165,7 +168,7 @@ class _ResizeDividerState extends State<_ResizeDivider> {
         return MouseRegion(
           cursor: SystemMouseCursors.resizeLeftRight,
           child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
+            behavior: .translucent,
             onHorizontalDragStart: (_) {
               widget.onDragStart();
               setState(() => _isDragging = true);

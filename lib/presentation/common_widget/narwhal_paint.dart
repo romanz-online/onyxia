@@ -24,13 +24,9 @@ class NarwhalPaint extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: backgroundColor ?? Colors.transparent,
-      type: MaterialType.canvas,
+      type: .canvas,
       child: painter != null
-          ? CustomPaint(
-              painter: painter,
-              size: size ?? Size.zero,
-              child: child,
-            )
+          ? CustomPaint(painter: painter, size: size ?? Size.zero, child: child)
           : child,
     );
   }
@@ -67,7 +63,7 @@ abstract class NarwhalPainter extends CustomPainter {
     return Paint()
       ..color = getThemeColor(colorProvider)
       ..strokeWidth = strokeWidth ?? 1.0
-      ..strokeCap = strokeCap ?? StrokeCap.butt
-      ..style = style ?? PaintingStyle.fill;
+      ..strokeCap = strokeCap ?? .butt
+      ..style = style ?? .fill;
   }
 }

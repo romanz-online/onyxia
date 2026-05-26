@@ -48,8 +48,12 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   ) {
     // Get actual screen viewport bounds
     final screenSize = MediaQuery.of(context).size;
-    final screenViewport =
-        Rect.fromLTWH(0, 0, screenSize.width, screenSize.height);
+    final screenViewport = Rect.fromLTWH(
+      0,
+      0,
+      screenSize.width,
+      screenSize.height,
+    );
 
     // Test in preference order: right-side first, then left-side
     final anchors = [
@@ -61,15 +65,23 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
     ];
 
     for (final anchor in anchors) {
-      final expandedRect =
-          _calculateExpandedRect(pinPosition, size, anchor, scale);
+      final expandedRect = _calculateExpandedRect(
+        pinPosition,
+        size,
+        anchor,
+        scale,
+      );
 
       // Convert canvas coordinates to screen coordinates
       final transform = widget.transformationController.value;
-      final screenTopLeft =
-          MatrixUtils.transformPoint(transform, expandedRect.topLeft);
-      final screenBottomRight =
-          MatrixUtils.transformPoint(transform, expandedRect.bottomRight);
+      final screenTopLeft = MatrixUtils.transformPoint(
+        transform,
+        expandedRect.topLeft,
+      );
+      final screenBottomRight = MatrixUtils.transformPoint(
+        transform,
+        expandedRect.bottomRight,
+      );
       final screenRect = Rect.fromPoints(screenTopLeft, screenBottomRight);
 
       // Check if widget fits in actual screen viewport
@@ -99,32 +111,32 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
     return switch (anchor) {
       // Expanded to right, pin at its bottom-left corner
       HorizontalAnchor.rightBottomLeft => Rect.fromLTWH(
-          pinPosition.dx + pinSize + spacing,
-          pinPosition.dy - scaledSize.height + pinSize, // Pin at bottom-left
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx + pinSize + spacing,
+        pinPosition.dy - scaledSize.height + pinSize, // Pin at bottom-left
+        scaledSize.width,
+        scaledSize.height,
+      ),
       // Expanded to right, pin at its top-left corner
       HorizontalAnchor.rightTopLeft => Rect.fromLTWH(
-          pinPosition.dx + pinSize + spacing,
-          pinPosition.dy, // Pin at top-left
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx + pinSize + spacing,
+        pinPosition.dy, // Pin at top-left
+        scaledSize.width,
+        scaledSize.height,
+      ),
       // Expanded to left, pin at its bottom-right corner
       HorizontalAnchor.leftBottomRight => Rect.fromLTWH(
-          pinPosition.dx - scaledSize.width - spacing,
-          pinPosition.dy - scaledSize.height + pinSize, // Pin at bottom-right
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx - scaledSize.width - spacing,
+        pinPosition.dy - scaledSize.height + pinSize, // Pin at bottom-right
+        scaledSize.width,
+        scaledSize.height,
+      ),
       // Expanded to left, pin at its top-right corner
       HorizontalAnchor.leftTopRight => Rect.fromLTWH(
-          pinPosition.dx - scaledSize.width - spacing,
-          pinPosition.dy, // Pin at top-right
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx - scaledSize.width - spacing,
+        pinPosition.dy, // Pin at top-right
+        scaledSize.width,
+        scaledSize.height,
+      ),
     };
   }
 
@@ -134,9 +146,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   void _navigateToArtifact(Artifact item) {
-    context.go(item.navigationUrl(
-      ref.read(selectedVaultProvider)?.id,
-    ));
+    context.go(item.navigationUrl(ref.read(selectedVaultProvider)?.id));
   }
 
   void _togglePinActionMenu({required bool isOpen}) {
@@ -190,9 +200,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       // Set flag to prevent auto re-entry into edit mode
       _saving = true;
     } else {
-      ref.read(artifactsProvider.notifier).updateItem(
-            item.copyWith(name: newTitle, content: newContent),
-          );
+      ref
+          .read(artifactsProvider.notifier)
+          .updateItem(item.copyWith(name: newTitle, content: newContent));
     }
 
     _exitEditMode(save: true);
@@ -227,19 +237,16 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   Widget _buildPinActionOverlay(VoidCallback closeOverlay, Artifact item) {
     return Material(
       elevation: 4,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: .circular(8),
       child: Container(
         width: 180,
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: ThemeHelper.neutral400(context),
-            width: 0.5,
-          ),
+          borderRadius: .circular(4),
+          border: .all(color: ThemeHelper.neutral400(context), width: 0.5),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             _buildActionMenuItem(
               title: 'View',
@@ -262,11 +269,8 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
     );
   }
 
-  Widget _buildMenuDivider(BuildContext context) => Divider(
-        height: 1,
-        thickness: 0,
-        color: ThemeHelper.neutral400(context),
-      );
+  Widget _buildMenuDivider(BuildContext context) =>
+      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral400(context));
 
   Widget _buildActionMenuItem({
     required String title,
@@ -285,9 +289,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
             ),
             onTap: onTap,
             dense: true,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 10,
-            ),
+            contentPadding: .symmetric(horizontal: 10),
           ),
         );
       },
@@ -296,24 +298,24 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
   Alignment _anchorToAlignment(HorizontalAnchor anchor) {
     return switch (anchor) {
-      HorizontalAnchor.rightBottomLeft => Alignment.bottomLeft,
-      HorizontalAnchor.rightTopLeft => Alignment.topLeft,
-      HorizontalAnchor.leftBottomRight => Alignment.bottomRight,
-      HorizontalAnchor.leftTopRight => Alignment.topRight,
+      HorizontalAnchor.rightBottomLeft => .bottomLeft,
+      HorizontalAnchor.rightTopLeft => .topLeft,
+      HorizontalAnchor.leftBottomRight => .bottomRight,
+      HorizontalAnchor.leftTopRight => .topRight,
     };
   }
 
   @override
   Widget build(BuildContext context) {
     try {
-      final double scale =
-          widget.transformationController.value.getMaxScaleOnAxis();
+      final double scale = widget.transformationController.value
+          .getMaxScaleOnAxis();
 
       final artifact =
           (ref.watch(artifactsProvider).value ?? const <Artifact>[]).firstWhere(
-        (req) => req.id == widget.pin.linkedArtifactId,
-        orElse: () => NoteArtifact(),
-      );
+            (req) => req.id == widget.pin.linkedArtifactId,
+            orElse: () => NoteArtifact(),
+          );
 
       // Auto-enter edit mode for new pins (but not right after saving)
       if (!_isEditing && _isNewPin && !_saving) {
@@ -349,7 +351,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
         width: _defaultSize.width,
         height: _defaultSize.height,
         child: Transform.scale(
-          alignment: Alignment.topLeft,
+          alignment: .topLeft,
           scale: 1 / scale,
           child: AnimatedBuilder(
             animation: _entranceAnimation,
@@ -360,36 +362,37 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
             ),
             child: MouseRegion(
               child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
+                behavior: .opaque,
                 child: Container(
                   width: _defaultSize.width,
                   height: _defaultSize.height,
                   decoration: BoxDecoration(
                     color: ThemeHelper.neutral100(context),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: borderColor, width: 1.5),
+                    borderRadius: .circular(8),
+                    border: .all(color: borderColor, width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: ThemeHelper.neutral900(context)
-                            .withValues(alpha: 0.3),
+                        color: ThemeHelper.neutral900(
+                          context,
+                        ).withValues(alpha: 0.3),
                         blurRadius: 4,
-                        offset: Offset(0, 0),
+                        offset: .zero,
                       ),
                     ],
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: .start,
                     children: [
                       // Header row with icon, title, and action buttons
                       Container(
-                        padding: EdgeInsets.only(
+                        padding: .only(
                           left: 12,
                           right: 12,
                           top: _isEditing ? 8 : 12,
                           bottom: 4,
                         ),
                         child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                          crossAxisAlignment: .center,
                           children: [
                             OnyxiaIconButton(
                               icon: LucideIcons.pencil,
@@ -404,29 +407,33 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       autofocus: true,
                                       style: NarwhalTextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.w500,
+                                        fontWeight: .w500,
                                       ),
                                       decoration: InputDecoration(
                                         hintText: 'Untitled',
-                                        hoverColor:
-                                            ThemeHelper.neutral100(context),
-                                        fillColor:
-                                            ThemeHelper.neutral100(context),
+                                        hoverColor: ThemeHelper.neutral100(
+                                          context,
+                                        ),
+                                        fillColor: ThemeHelper.neutral100(
+                                          context,
+                                        ),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color:
-                                                ThemeHelper.neutral400(context),
+                                            color: ThemeHelper.neutral400(
+                                              context,
+                                            ),
                                             width: 1,
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color:
-                                                ThemeHelper.neutral400(context),
+                                            color: ThemeHelper.neutral400(
+                                              context,
+                                            ),
                                             width: 1,
                                           ),
                                         ),
-                                        contentPadding: const EdgeInsets.only(
+                                        contentPadding: .only(
                                           left: 10,
                                           right: 10,
                                           bottom: 18,
@@ -436,7 +443,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       ),
                                     )
                                   : Padding(
-                                      padding: EdgeInsets.only(
+                                      padding: .only(
                                         left: 8,
                                         top: 4,
                                         bottom: 4,
@@ -447,12 +454,13 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                             : artifact.name,
                                         style: NarwhalTextStyle(
                                           fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                          color:
-                                              ThemeHelper.neutral900(context),
+                                          fontWeight: .w600,
+                                          color: ThemeHelper.neutral900(
+                                            context,
+                                          ),
                                         ),
                                         maxLines: 1,
-                                        overflow: TextOverflow.ellipsis,
+                                        overflow: .ellipsis,
                                       ),
                                     ),
                             ),
@@ -471,13 +479,16 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                               closingDelay: const Duration(milliseconds: 100),
                               builder: (context, closeOverlay) =>
                                   _buildPinActionOverlay(
-                                      closeOverlay, artifact),
+                                    closeOverlay,
+                                    artifact,
+                                  ),
                               child: OnyxiaIconButton(
                                 icon: LucideIcons.ellipsis,
                                 size: 32,
                                 isPressed: _isPinActionMenuOpen,
                                 onPressed: () => _togglePinActionMenu(
-                                    isOpen: !_isPinActionMenuOpen),
+                                  isOpen: !_isPinActionMenuOpen,
+                                ),
                               ),
                             ),
                             const Gap(6),
@@ -492,40 +503,37 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                       // Content area
                       Expanded(
                         child: Container(
-                          padding: const EdgeInsets.only(
-                            left: 12,
-                            right: 12,
-                            bottom: 12,
-                          ),
+                          padding: .only(left: 12, right: 12, bottom: 12),
                           child: _isEditing
                               ? Column(
                                   children: [
                                     Expanded(
                                       child: Container(
                                         decoration: BoxDecoration(
-                                          border: Border.all(
-                                            color:
-                                                ThemeHelper.neutral400(context),
+                                          border: .all(
+                                            color: ThemeHelper.neutral400(
+                                              context,
+                                            ),
                                             width: 1,
                                           ),
-                                          borderRadius:
-                                              BorderRadius.circular(4),
+                                          borderRadius: .circular(4),
                                         ),
-                                        padding: const EdgeInsets.all(8),
+                                        padding: .all(8),
                                         child: TextField(
                                           controller: _contentController!,
                                           maxLines: null,
                                           expands: true,
                                           style: NarwhalTextStyle(
                                             fontSize: 13,
-                                            color:
-                                                ThemeHelper.neutral900(context),
+                                            color: ThemeHelper.neutral900(
+                                              context,
+                                            ),
                                             height: 1.5,
                                           ),
                                           decoration: const InputDecoration(
                                             hintText: 'Start typing...',
-                                            border: InputBorder.none,
-                                            contentPadding: EdgeInsets.zero,
+                                            border: .none,
+                                            contentPadding: .zero,
                                             isDense: true,
                                           ),
                                         ),
@@ -533,7 +541,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                     ),
                                     const Gap(8),
                                     Row(
-                                      mainAxisAlignment: MainAxisAlignment.end,
+                                      mainAxisAlignment: .end,
                                       spacing: 8,
                                       children: [
                                         OnyxiaButton(
@@ -550,7 +558,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                   ],
                                 )
                               : Padding(
-                                  padding: EdgeInsets.only(left: 9, top: 13),
+                                  padding: .only(left: 9, top: 13),
                                   child: SingleChildScrollView(
                                     child: Text(
                                       artifact is NoteArtifact

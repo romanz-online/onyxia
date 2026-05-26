@@ -140,7 +140,8 @@ class _CanvasCommentPinExpandedState
                     _commentsScrollController.position.maxScrollExtent;
                 if (newMax > maxExtent) {
                   debugPrint(
-                      'ðŸ“œ Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
+                    'ðŸ“œ Retry scroll: newMax = ${newMax.toStringAsFixed(1)}',
+                  );
                   _commentsScrollController.animateTo(
                     newMax,
                     duration: const Duration(milliseconds: 200),
@@ -157,7 +158,8 @@ class _CanvasCommentPinExpandedState
                 final newMax =
                     _commentsScrollController.position.maxScrollExtent;
                 debugPrint(
-                    'ðŸ“œ Retry scroll: newMax = ${newMax.toStringAsFixed(1)}');
+                  'ðŸ“œ Retry scroll: newMax = ${newMax.toStringAsFixed(1)}',
+                );
                 _commentsScrollController.animateTo(
                   newMax,
                   duration: const Duration(milliseconds: 300),
@@ -173,17 +175,17 @@ class _CanvasCommentPinExpandedState
 
   Alignment _anchorToAlignment(HorizontalAnchor anchor) {
     return switch (anchor) {
-      HorizontalAnchor.rightBottomLeft => Alignment.bottomLeft,
-      HorizontalAnchor.rightTopLeft => Alignment.topLeft,
-      HorizontalAnchor.leftBottomRight => Alignment.bottomRight,
-      HorizontalAnchor.leftTopRight => Alignment.topRight,
+      HorizontalAnchor.rightBottomLeft => .bottomLeft,
+      HorizontalAnchor.rightTopLeft => .topLeft,
+      HorizontalAnchor.leftBottomRight => .bottomRight,
+      HorizontalAnchor.leftTopRight => .topRight,
     };
   }
 
   @override
   Widget build(BuildContext context) {
-    final double scale =
-        widget.transformationController.value.getMaxScaleOnAxis();
+    final double scale = widget.transformationController.value
+        .getMaxScaleOnAxis();
     final int commentCount = 1 + widget.comment.subComments.length;
     final double containerHeight = _estimateContentHeight(commentCount);
 
@@ -201,7 +203,8 @@ class _CanvasCommentPinExpandedState
       scale,
     );
 
-    final bool isUpwardAnchor = anchor == HorizontalAnchor.rightBottomLeft ||
+    final bool isUpwardAnchor =
+        anchor == HorizontalAnchor.rightBottomLeft ||
         anchor == HorizontalAnchor.leftBottomRight;
     final double positionedTop = isUpwardAnchor
         ? widget.position.dy + (1.0 / scale)
@@ -212,10 +215,10 @@ class _CanvasCommentPinExpandedState
       left: rect.left,
       width: rect.width * scale,
       child: Transform.scale(
-        alignment: Alignment.topLeft,
+        alignment: .topLeft,
         scale: 1 / scale,
         child: FractionalTranslation(
-          translation: isUpwardAnchor ? const Offset(0, -1) : Offset.zero,
+          translation: isUpwardAnchor ? const Offset(0, -1) : .zero,
           child: AnimatedBuilder(
             animation: _entranceAnimation,
             builder: (context, child) => Transform.scale(
@@ -226,7 +229,7 @@ class _CanvasCommentPinExpandedState
             child: MouseRegion(
               cursor: SystemMouseCursors.basic,
               child: GestureDetector(
-                behavior: HitTestBehavior.opaque,
+                behavior: .opaque,
                 child: Container(
                   width: _defaultWidth,
                   constraints: BoxConstraints(
@@ -235,8 +238,8 @@ class _CanvasCommentPinExpandedState
                   ),
                   decoration: BoxDecoration(
                     color: ThemeHelper.neutral100(context),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(
+                    borderRadius: .circular(20),
+                    border: .all(
                       color: ThemeHelper.neutral400(context),
                       width: 1.0,
                     ),
@@ -249,14 +252,11 @@ class _CanvasCommentPinExpandedState
                     ],
                   ),
                   child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: .min,
+                    crossAxisAlignment: .start,
                     children: [
                       _buildHeader(),
-                      Flexible(
-                        fit: FlexFit.loose,
-                        child: _buildCommentsList(),
-                      ),
+                      Flexible(fit: .loose, child: _buildCommentsList()),
                       _buildReplyInput(),
                     ],
                   ),
@@ -284,11 +284,11 @@ class _CanvasCommentPinExpandedState
     );
 
     // Test anchors in preference order
-    final anchors = [
-      HorizontalAnchor.rightBottomLeft, // Default: right side, bottom aligned
-      HorizontalAnchor.rightTopLeft, // Right side, top aligned
-      HorizontalAnchor.leftBottomRight, // Left side, bottom aligned
-      HorizontalAnchor.leftTopRight, // Left side, top aligned
+    final List<HorizontalAnchor> anchors = [
+      .rightBottomLeft, // Default: right side, bottom aligned
+      .rightTopLeft, // Right side, top aligned
+      .leftBottomRight, // Left side, bottom aligned
+      .leftTopRight, // Left side, top aligned
     ];
 
     for (final anchor in anchors) {
@@ -324,29 +324,29 @@ class _CanvasCommentPinExpandedState
 
     return switch (anchor) {
       HorizontalAnchor.rightBottomLeft => Rect.fromLTWH(
-          pinPosition.dx + scaledPinSize + scaledSpacing,
-          pinPosition.dy - scaledSize.height + scaledPinSize,
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx + scaledPinSize + scaledSpacing,
+        pinPosition.dy - scaledSize.height + scaledPinSize,
+        scaledSize.width,
+        scaledSize.height,
+      ),
       HorizontalAnchor.rightTopLeft => Rect.fromLTWH(
-          pinPosition.dx + scaledPinSize + scaledSpacing,
-          pinPosition.dy,
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx + scaledPinSize + scaledSpacing,
+        pinPosition.dy,
+        scaledSize.width,
+        scaledSize.height,
+      ),
       HorizontalAnchor.leftBottomRight => Rect.fromLTWH(
-          pinPosition.dx - scaledSize.width - scaledSpacing,
-          pinPosition.dy - scaledSize.height + scaledPinSize,
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx - scaledSize.width - scaledSpacing,
+        pinPosition.dy - scaledSize.height + scaledPinSize,
+        scaledSize.width,
+        scaledSize.height,
+      ),
       HorizontalAnchor.leftTopRight => Rect.fromLTWH(
-          pinPosition.dx - scaledSize.width - scaledSpacing,
-          pinPosition.dy,
-          scaledSize.width,
-          scaledSize.height,
-        ),
+        pinPosition.dx - scaledSize.width - scaledSpacing,
+        pinPosition.dy,
+        scaledSize.width,
+        scaledSize.height,
+      ),
     };
   }
 
@@ -354,8 +354,10 @@ class _CanvasCommentPinExpandedState
   Rect _transformRectToScreen(Rect canvasRect) {
     final transform = widget.transformationController.value;
     final topLeft = MatrixUtils.transformPoint(transform, canvasRect.topLeft);
-    final bottomRight =
-        MatrixUtils.transformPoint(transform, canvasRect.bottomRight);
+    final bottomRight = MatrixUtils.transformPoint(
+      transform,
+      canvasRect.bottomRight,
+    );
     return Rect.fromPoints(topLeft, bottomRight);
   }
 
@@ -365,7 +367,8 @@ class _CanvasCommentPinExpandedState
     const double commentHeight = 60;
     const double padding = 24;
 
-    final double contentHeight = headerHeight +
+    final double contentHeight =
+        headerHeight +
         replyInputHeight +
         (commentCount * commentHeight) +
         padding;
@@ -379,21 +382,16 @@ class _CanvasCommentPinExpandedState
     return Column(
       children: [
         Container(
-          padding: const EdgeInsets.only(
-            left: 12,
-            right: 12,
-            top: 8,
-            bottom: 8,
-          ),
+          padding: .only(left: 12, right: 12, top: 8, bottom: 8),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: .center,
             children: [
               Expanded(
                 child: Text(
                   'Comment',
                   style: NarwhalTextStyle(
                     fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                     color: ThemeHelper.neutral900(context),
                   ),
                 ),
@@ -420,10 +418,7 @@ class _CanvasCommentPinExpandedState
             ],
           ),
         ),
-        Container(
-          height: 1,
-          color: ThemeHelper.neutral400(context),
-        ),
+        Container(height: 1, color: ThemeHelper.neutral400(context)),
       ],
     );
   }
@@ -432,10 +427,10 @@ class _CanvasCommentPinExpandedState
     return SingleChildScrollView(
       controller: _commentsScrollController, // âœ… ADD: Attach controller
       child: Padding(
-        padding: const EdgeInsets.only(left: 12, right: 12, top: 12),
+        padding: .only(left: 12, right: 12, top: 12),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: .min,
+          crossAxisAlignment: .start,
           children: [
             _buildComment(
               commentId: widget.comment.id,
@@ -471,21 +466,18 @@ class _CanvasCommentPinExpandedState
         final user =
             ref.watch(vaultMemberUserByIdProvider)[createdBy] ?? User.initial();
         final timeAgo = createdAt != null
-            ? TimestampService.formatTimeAgo(
-                createdAt,
-                daysOnly: true,
-              )
+            ? TimestampService.formatTimeAgo(createdAt, daysOnly: true)
             : '';
 
         return Container(
-          padding: const EdgeInsets.only(bottom: 12),
+          padding: .only(bottom: 12),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
+            crossAxisAlignment: .baseline,
+            textBaseline: .alphabetic,
             children: [
               Expanded(
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     Row(
                       children: [
@@ -493,7 +485,7 @@ class _CanvasCommentPinExpandedState
                           user.name.isNotEmpty ? user.name : 'Unknown User',
                           style: NarwhalTextStyle(
                             fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                            fontWeight: .bold,
                             color: ThemeHelper.neutral900(context),
                           ),
                         ),
@@ -503,9 +495,10 @@ class _CanvasCommentPinExpandedState
                             timeAgo,
                             style: NarwhalTextStyle(
                               fontSize: 12,
-                              fontWeight: FontWeight.normal,
-                              color: ThemeHelper.neutral900(context)
-                                  .withValues(alpha: 0.7),
+                              fontWeight: .normal,
+                              color: ThemeHelper.neutral900(
+                                context,
+                              ).withValues(alpha: 0.7),
                             ),
                           ),
                       ],
@@ -518,12 +511,12 @@ class _CanvasCommentPinExpandedState
                 onClose: () => setState(() => _openCommentMenuId = null),
                 closingDelay: const Duration(milliseconds: 100),
                 anchor: const Aligned(
-                  follower: Alignment.topRight,
-                  target: Alignment.bottomRight,
+                  follower: .topRight,
+                  target: .bottomRight,
                   offset: Offset(0, 4),
                   backup: Aligned(
-                    follower: Alignment.topLeft,
-                    target: Alignment.bottomLeft,
+                    follower: .topLeft,
+                    target: .bottomLeft,
                     offset: Offset(0, 4),
                   ),
                 ),
@@ -537,8 +530,11 @@ class _CanvasCommentPinExpandedState
                   size: 28,
                   enabled: ref.read(currentUserProvider).value?.id == createdBy,
                   isPressed: _openCommentMenuId == commentId,
-                  onPressed: () => setState(() => _openCommentMenuId =
-                      _openCommentMenuId == commentId ? null : commentId),
+                  onPressed: () => setState(
+                    () => _openCommentMenuId = _openCommentMenuId == commentId
+                        ? null
+                        : commentId,
+                  ),
                 ),
               ),
             ],
@@ -550,7 +546,7 @@ class _CanvasCommentPinExpandedState
 
   Widget _buildReplyInput() {
     return Container(
-      padding: const EdgeInsets.all(10),
+      padding: .all(10),
       child: Stack(
         children: [
           Shortcuts(
@@ -561,22 +557,27 @@ class _CanvasCommentPinExpandedState
             },
             child: Actions(
               actions: <Type, Action<Intent>>{
-                NewLineIntent:
-                    CallbackAction<NewLineIntent>(onInvoke: (intent) {
-                  // Insert newline manually at cursor position
-                  final selection = _replyController.selection;
-                  _replyController.value = _replyController.value.copyWith(
-                    text: _replyController.text
-                        .replaceRange(selection.start, selection.end, '\n'),
-                    selection:
-                        TextSelection.collapsed(offset: selection.start + 1),
-                  );
-                  return null;
-                }),
-                SubmitIntent: CallbackAction<SubmitIntent>(onInvoke: (intent) {
-                  _submitReply();
-                  return null;
-                }),
+                NewLineIntent: CallbackAction<NewLineIntent>(
+                  onInvoke: (intent) {
+                    // Insert newline manually at cursor position
+                    final selection = _replyController.selection;
+                    _replyController.value = _replyController.value.copyWith(
+                      text: _replyController.text.replaceRange(
+                        selection.start,
+                        selection.end,
+                        '\n',
+                      ),
+                      selection: .collapsed(offset: selection.start + 1),
+                    );
+                    return null;
+                  },
+                ),
+                SubmitIntent: CallbackAction<SubmitIntent>(
+                  onInvoke: (intent) {
+                    _submitReply();
+                    return null;
+                  },
+                ),
               },
               child: TextField(
                 controller: _replyController,
@@ -585,25 +586,25 @@ class _CanvasCommentPinExpandedState
                   hintStyle: NarwhalTextStyle(
                     color: ThemeHelper.neutral500(context),
                     fontSize: 15,
-                    fontStyle: FontStyle.normal,
-                    fontWeight: FontWeight.w400,
+                    fontStyle: .normal,
+                    fontWeight: .w400,
                   ),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: .circular(6),
                     borderSide: BorderSide(
                       color: ThemeHelper.neutral400(context),
                       width: 1,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: .circular(6),
                     borderSide: BorderSide(
                       color: ThemeHelper.neutral500(context),
                       width: 1,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(6),
+                    borderRadius: .circular(6),
                     borderSide: BorderSide(
                       color: ThemeHelper.neutral400(context),
                       width: 1,
@@ -613,7 +614,7 @@ class _CanvasCommentPinExpandedState
                   filled: true,
                   hoverColor: ThemeHelper.neutral100(context),
                   isDense: true,
-                  contentPadding: const EdgeInsets.only(
+                  contentPadding: .only(
                     left: 10,
                     right: 38,
                     top: 12,
@@ -621,8 +622,8 @@ class _CanvasCommentPinExpandedState
                   ),
                 ),
                 maxLines: 1,
-                keyboardType: TextInputType.multiline,
-                textInputAction: TextInputAction.newline,
+                keyboardType: .multiline,
+                textInputAction: .newline,
               ),
             ),
           ),
@@ -644,19 +645,16 @@ class _CanvasCommentPinExpandedState
   Widget _buildCommentActionOverlay(VoidCallback closeOverlay) {
     return Material(
       elevation: 4,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: .circular(8),
       child: Container(
         width: 140,
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: ThemeHelper.neutral400(context),
-            width: 1,
-          ),
+          borderRadius: .circular(4),
+          border: .all(color: ThemeHelper.neutral400(context), width: 1),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             _buildActionMenuItem(
               title: 'Delete',
@@ -671,18 +669,16 @@ class _CanvasCommentPinExpandedState
     );
   }
 
-  Widget _buildMenuDivider(BuildContext context) => Divider(
-        height: 1,
-        thickness: 0,
-        color: ThemeHelper.neutral400(context),
-      );
+  Widget _buildMenuDivider(BuildContext context) =>
+      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral400(context));
 
   Widget _buildActionMenuItem({
     required String title,
     required VoidCallback onTap,
   }) {
-    final canvasStyle = NarwhalStyles.dropdownListTextStyle(context)
-        .copyWith(color: ThemeHelper.neutral900(context));
+    final TextStyle? canvasStyle = NarwhalStyles.dropdownListTextStyle(
+      context,
+    ).copyWith(color: ThemeHelper.neutral900(context));
     return HoverBuilder(
       builder: (context, isHovered) {
         return Container(
@@ -690,13 +686,10 @@ class _CanvasCommentPinExpandedState
               ? ThemeHelper.blue400(context).withValues(alpha: 0.5)
               : Colors.transparent,
           child: ListTile(
-            title: Text(
-              title,
-              style: canvasStyle,
-            ),
+            title: Text(title, style: canvasStyle),
             onTap: onTap,
             dense: true,
-            contentPadding: const EdgeInsets.symmetric(horizontal: 8),
+            contentPadding: .symmetric(horizontal: 8),
           ),
         );
       },
@@ -710,19 +703,16 @@ class _CanvasCommentPinExpandedState
   ) {
     return Material(
       elevation: 4,
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: .circular(8),
       child: Container(
         width: 120,
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(4),
-          border: Border.all(
-            color: ThemeHelper.neutral400(context),
-            width: 1,
-          ),
+          borderRadius: .circular(4),
+          border: .all(color: ThemeHelper.neutral400(context), width: 1),
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: [
             _buildActionMenuItem(
               title: 'Edit',
@@ -746,10 +736,7 @@ class _CanvasCommentPinExpandedState
   }
 
   void _editComment(String commentId) {
-    OnyxiaToast.show(
-      text: 'Edit - Unimplemented',
-      type: ToastType.info,
-    );
+    OnyxiaToast.show(text: 'Edit - Unimplemented', type: .info);
   }
 
   void _removeComment(String commentId, bool isSubComment) {
@@ -761,10 +748,7 @@ class _CanvasCommentPinExpandedState
           .deleteSubComment(widget.comment.id, commentId);
     } else {
       ref.read(commentsProvider.notifier).deleteComment(commentId: commentId);
-      OnyxiaToast.show(
-        text: 'Comment removed',
-        type: ToastType.info,
-      );
+      OnyxiaToast.show(text: 'Comment removed', type: .info);
     }
   }
 }

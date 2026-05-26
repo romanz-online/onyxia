@@ -18,7 +18,7 @@ class CanvasCursorOverlay extends ConsumerWidget {
 
     return MouseRegion(
       cursor: _cursorService.currentSystemCursor,
-      hitTestBehavior: HitTestBehavior.translucent,
+      hitTestBehavior: .translucent,
       child: child,
     );
   }

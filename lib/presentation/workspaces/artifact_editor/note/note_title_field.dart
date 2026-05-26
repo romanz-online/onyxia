@@ -79,30 +79,29 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
       controller: _overlayController,
       overlayChildBuilder: (context) => CompositedTransformFollower(
         link: _layerLink,
-        targetAnchor: Alignment.bottomCenter,
-        followerAnchor: Alignment.topCenter,
+        targetAnchor: .bottomCenter,
+        followerAnchor: .topCenter,
         offset: const Offset(0, 9),
         child: Align(
-          alignment: Alignment.topCenter,
+          alignment: .topCenter,
           child: IntrinsicWidth(
             child: IntrinsicHeight(
               child: SpeechBalloon(
-                nipLocation: NipLocation.top,
+                nipLocation: .top,
                 color: ThemeHelper.red500(context),
                 borderRadius: 6,
                 nipHeight: 8,
-                width: double.infinity,
-                height: double.infinity,
+                width: .infinity,
+                height: .infinity,
                 child: Center(
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+                    padding: .symmetric(vertical: 5, horizontal: 12),
                     child: Text(
                       _errorMessage ?? '',
                       style: NarwhalTextStyle(
                         fontSize: 14,
                         color: Colors.white,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: .w700,
                       ),
                     ),
                   ),
@@ -118,13 +117,14 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
           controller: _controller,
           focusNode: _focusNode,
           maxLines: null,
-          textInputAction: TextInputAction.unspecified,
+          textInputAction: .unspecified,
           onSubmitted: (_) => widget.nextFocusNode?.requestFocus(),
           onChanged: (value) {
             final msg = ItemTitleValidationService.errorMessage(
-                ref.read(artifactsProvider).value ?? const <Artifact>[],
-                value,
-                ref.read(_provider).value?.note?.id ?? '');
+              ref.read(artifactsProvider).value ?? const <Artifact>[],
+              value,
+              ref.read(_provider).value?.note?.id ?? '',
+            );
             setState(() => _errorMessage = msg);
             if (msg != null) {
               _overlayController.show();
@@ -134,7 +134,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
           },
           style: NarwhalTextStyle(
             fontSize: 24,
-            fontWeight: FontWeight.w700,
+            fontWeight: .w700,
             color: ThemeHelper.neutral700(context),
           ),
           decoration: InputDecoration(
@@ -143,12 +143,11 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             hintText: 'Untitled',
             hintStyle: NarwhalTextStyle(
               fontSize: 28,
-              fontWeight: FontWeight.w700,
+              fontWeight: .w700,
               color: ThemeHelper.neutral700(context).withValues(alpha: 0.4),
             ),
-            border: InputBorder.none,
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+            border: .none,
+            contentPadding: .symmetric(vertical: 4, horizontal: 0),
             isDense: true,
           ),
         ),

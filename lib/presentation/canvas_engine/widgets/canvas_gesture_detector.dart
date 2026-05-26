@@ -37,7 +37,7 @@ class CanvasGestureDetector extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       key: gestureKey,
-      behavior: behavior ?? HitTestBehavior.deferToChild,
+      behavior: behavior ?? .deferToChild,
       onTapDown: onTapDown ?? gestureRouter.getHandleTapDown(interactionContext),
       onTapUp: onTapUp ?? gestureRouter.getHandleTapUp(interactionContext),
       onPanStart: onPanStart ?? gestureRouter.getHandlePanStart(interactionContext),

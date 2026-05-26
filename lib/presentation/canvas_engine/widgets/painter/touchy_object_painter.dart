@@ -34,7 +34,7 @@ class TouchyObjectPainter {
       c,
       radius,
       paint,
-      hitTestBehavior: HitTestBehavior.opaque,
+      hitTestBehavior: .opaque,
       onTapDown: gestureRouter!.getHandleTapDown(interactionContext),
       onTapUp: gestureRouter!.getHandleTapUp(interactionContext),
       onPanDown: gestureRouter!.getHandlePanDown(interactionContext),
@@ -56,7 +56,7 @@ class TouchyObjectPainter {
     touchyCanvas.drawRect(
       rect,
       paint,
-      hitTestBehavior: HitTestBehavior.opaque,
+      hitTestBehavior: .opaque,
       onTapDown: gestureRouter!.getHandleTapDown(interactionContext),
       onTapUp: gestureRouter!.getHandleTapUp(interactionContext),
       onPanDown: gestureRouter!.getHandlePanDown(interactionContext),
@@ -78,7 +78,7 @@ class TouchyObjectPainter {
     touchyCanvas.drawRRect(
       rrect,
       paint,
-      hitTestBehavior: HitTestBehavior.opaque,
+      hitTestBehavior: .opaque,
       onTapDown: gestureRouter!.getHandleTapDown(interactionContext),
       onTapUp: gestureRouter!.getHandleTapUp(interactionContext),
       onPanDown: gestureRouter!.getHandlePanDown(interactionContext),
@@ -100,7 +100,7 @@ class TouchyObjectPainter {
     touchyCanvas.drawPath(
       path,
       paint,
-      hitTestBehavior: HitTestBehavior.opaque,
+      hitTestBehavior: .opaque,
       onTapDown: gestureRouter!.getHandleTapDown(interactionContext),
       onTapUp: gestureRouter!.getHandleTapUp(interactionContext),
       onPanDown: gestureRouter!.getHandlePanDown(interactionContext),
@@ -122,7 +122,7 @@ class TouchyObjectPainter {
     touchyCanvas.drawOval(
       oval,
       paint,
-      hitTestBehavior: HitTestBehavior.opaque,
+      hitTestBehavior: .opaque,
       onTapDown: gestureRouter!.getHandleTapDown(interactionContext),
       onTapUp: gestureRouter!.getHandleTapUp(interactionContext),
       onPanDown: gestureRouter!.getHandlePanDown(interactionContext),
@@ -145,7 +145,7 @@ class TouchyObjectPainter {
       p1,
       p2,
       paint,
-      hitTestBehavior: HitTestBehavior.opaque,
+      hitTestBehavior: .opaque,
       onTapDown: gestureRouter!.getHandleTapDown(interactionContext),
       onTapUp: gestureRouter!.getHandleTapUp(interactionContext),
       onPanDown: gestureRouter!.getHandlePanDown(interactionContext),

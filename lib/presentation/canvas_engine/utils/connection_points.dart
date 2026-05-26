@@ -1,17 +1,11 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:onyxia/data/models/artifacts/canvas/canvas_object.dart';
 
-enum ConnectionPoint {
-  top,
-  left,
-  right,
-  bottom,
-  none,
-}
+enum ConnectionPoint { top, left, right, bottom, none }
 
 extension ConnectionPointExtension on ConnectionPoint {
   Offset getOffset(CanvasObject object) {
-    if (object.id.isEmpty) return Offset.zero;
+    if (object.id.isEmpty) return .zero;
 
     switch (object.type) {
       case CanvasObjectType.rectangle:
@@ -56,10 +50,7 @@ extension ConnectionPointExtension on ConnectionPoint {
   }
 
   Offset _getMidpoint(Offset point1, Offset point2) {
-    return Offset(
-      (point1.dx + point2.dx) / 2,
-      (point1.dy + point2.dy) / 2,
-    );
+    return Offset((point1.dx + point2.dx) / 2, (point1.dy + point2.dy) / 2);
   }
 
   Offset _getRhombusOffset(Offset topLeft, Offset bottomRight) {
@@ -74,13 +65,13 @@ extension ConnectionPointExtension on ConnectionPoint {
 
     return switch (this) {
       ConnectionPoint.top => _getMidpoint(
-          topLeft,
-          Offset(bottomRight.dx, topLeft.dy),
-        ),
+        topLeft,
+        Offset(bottomRight.dx, topLeft.dy),
+      ),
       ConnectionPoint.bottom => _getMidpoint(
-          Offset(topLeft.dx, bottomRight.dy),
-          bottomRight,
-        ),
+        Offset(topLeft.dx, bottomRight.dy),
+        bottomRight,
+      ),
       ConnectionPoint.right => _getMidpoint(bR, tR),
       ConnectionPoint.left => _getMidpoint(bL, tL),
       ConnectionPoint.none => rect.center,
@@ -111,7 +102,11 @@ extension ConnectionPointExtension on ConnectionPoint {
     final center = rect.center;
     final roofHeight = rect.height * 0.4; // Roof is 40% of total height
     final houseRect = Rect.fromLTWH(
-        rect.left, rect.top + roofHeight, rect.width, rect.height - roofHeight);
+      rect.left,
+      rect.top + roofHeight,
+      rect.width,
+      rect.height - roofHeight,
+    );
 
     return switch (this) {
       ConnectionPoint.top => Offset(center.dx, rect.top), // Roof peak
@@ -127,13 +122,19 @@ extension ConnectionPointExtension on ConnectionPoint {
     final center = rect.center;
     final roofHeight = rect.height * 0.4; // Roof is 40% of total height
     final houseRect = Rect.fromLTWH(
-        rect.left, rect.top, rect.width, rect.height - roofHeight);
+      rect.left,
+      rect.top,
+      rect.width,
+      rect.height - roofHeight,
+    );
 
     return switch (this) {
       ConnectionPoint.top => Offset(houseRect.center.dx, houseRect.top),
       ConnectionPoint.right => Offset(houseRect.right, houseRect.center.dy),
-      ConnectionPoint.bottom =>
-        Offset(center.dx, rect.bottom), // Roof peak at bottom
+      ConnectionPoint.bottom => Offset(
+        center.dx,
+        rect.bottom,
+      ), // Roof peak at bottom
       ConnectionPoint.left => Offset(houseRect.left, houseRect.center.dy),
       ConnectionPoint.none => center,
     };

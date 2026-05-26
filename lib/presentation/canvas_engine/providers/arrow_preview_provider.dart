@@ -144,7 +144,7 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
     final arrowStartPos = createPoint.getOffset(sourceObject);
 
     // Determine direction based on create point
-    Offset direction = Offset.zero;
+    Offset direction = .zero;
     switch (createPoint) {
       case ConnectionPoint.top:
         direction = const Offset(0, -1);
@@ -185,25 +185,30 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
         return CanvasObject.initial();
     }
 
-    final ghostBottomRight = ghostTopLeft +
+    final ghostBottomRight =
+        ghostTopLeft +
         Offset(sourceObjDimensions.width, sourceObjDimensions.height);
 
     // Clone the source object with new position and styling
     return CanvasObject(
-      id: const Uuid().v4(), 
+      id: const Uuid().v4(),
       color: sourceObject.color.withValues(alpha: 0.5), // Ghost styling
       type: sourceObject.type,
       topLeft: ghostTopLeft,
       bottomRight: ghostBottomRight,
       stroke: sourceObject.stroke,
-      arrowProperties:
-          sourceObject.hasArrowProps ? sourceObject.arrowProps : null,
-      imageProperties:
-          sourceObject.hasImageProps ? sourceObject.imageProps : null,
-      brushProperties:
-          sourceObject.hasBrushProps ? sourceObject.brushProps : null,
-      artifactProperties:
-          sourceObject.hasArtifactProps ? sourceObject.artifactProps : null,
+      arrowProperties: sourceObject.hasArrowProps
+          ? sourceObject.arrowProps
+          : null,
+      imageProperties: sourceObject.hasImageProps
+          ? sourceObject.imageProps
+          : null,
+      brushProperties: sourceObject.hasBrushProps
+          ? sourceObject.brushProps
+          : null,
+      artifactProperties: sourceObject.hasArtifactProps
+          ? sourceObject.artifactProps
+          : null,
     );
   }
 
@@ -217,11 +222,11 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
     CanvasConfig canvasConfig,
   ) {
     final arrowObj = CanvasObject(
-      id: const Uuid().v4(), 
+      id: const Uuid().v4(),
       color: ThemeHelper.neutral500(context).withValues(alpha: 0.5),
       type: CanvasObjectType.arrow,
-      topLeft: Offset.zero,
-      bottomRight: Offset.zero,
+      topLeft: .zero,
+      bottomRight: .zero,
       stroke: StrokeType.solid,
       arrowProperties: ArrowProperties(
         points: [],
@@ -229,8 +234,8 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
         endObjectId: endObj.id,
         startPoint: startPoint,
         endPoint: endPoint,
-        startRelativeOffset: Offset.zero,
-        endRelativeOffset: Offset.zero,
+        startRelativeOffset: .zero,
+        endRelativeOffset: .zero,
         startTip: ArrowTip.none,
         endTip: ArrowTip.triangle,
         arrowType: canvasConfig.defaultArrowType,
@@ -275,36 +280,36 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
 
     final sourcePosition = createPoint.getOffset(sourceObject);
 
-    final searchDirection = switch (createPoint) {
+    final Offset searchDirection = switch (createPoint) {
       ConnectionPoint.top => const Offset(0, -1),
       ConnectionPoint.bottom => const Offset(0, 1),
       ConnectionPoint.left => const Offset(-1, 0),
       ConnectionPoint.right => const Offset(1, 0),
-      ConnectionPoint.none => Offset.zero,
+      ConnectionPoint.none => .zero,
     };
 
     // Priority order: opposite first, then perpendicular pair, never same-direction
     final targetPointPriority = switch (createPoint) {
       ConnectionPoint.top => [
-          ConnectionPoint.bottom,
-          ConnectionPoint.left,
-          ConnectionPoint.right
-        ],
+        ConnectionPoint.bottom,
+        ConnectionPoint.left,
+        ConnectionPoint.right,
+      ],
       ConnectionPoint.bottom => [
-          ConnectionPoint.top,
-          ConnectionPoint.left,
-          ConnectionPoint.right
-        ],
+        ConnectionPoint.top,
+        ConnectionPoint.left,
+        ConnectionPoint.right,
+      ],
       ConnectionPoint.left => [
-          ConnectionPoint.right,
-          ConnectionPoint.top,
-          ConnectionPoint.bottom
-        ],
+        ConnectionPoint.right,
+        ConnectionPoint.top,
+        ConnectionPoint.bottom,
+      ],
       ConnectionPoint.right => [
-          ConnectionPoint.left,
-          ConnectionPoint.top,
-          ConnectionPoint.bottom
-        ],
+        ConnectionPoint.left,
+        ConnectionPoint.top,
+        ConnectionPoint.bottom,
+      ],
       ConnectionPoint.none => <ConnectionPoint>[],
     };
 
@@ -329,12 +334,14 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
       final distToOpposite = directionToOpposite.distance;
       if (distToOpposite == 0) continue;
 
-      final dotProduct = directionToOpposite.dx * searchDirection.dx +
+      final dotProduct =
+          directionToOpposite.dx * searchDirection.dx +
           directionToOpposite.dy * searchDirection.dy;
       if (dotProduct <= 0) continue;
 
       final normalizedDir = directionToOpposite / distToOpposite;
-      final alignment = normalizedDir.dx * searchDirection.dx +
+      final alignment =
+          normalizedDir.dx * searchDirection.dx +
           normalizedDir.dy * searchDirection.dy;
       if (alignment <= 0.3) continue;
 
@@ -357,5 +364,5 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
 
 final arrowPreviewProvider =
     NotifierProvider.autoDispose<ArrowPreviewNotifier, ArrowPreview?>(
-  ArrowPreviewNotifier.new,
-);
+      ArrowPreviewNotifier.new,
+    );

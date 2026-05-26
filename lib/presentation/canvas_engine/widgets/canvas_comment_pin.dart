@@ -84,49 +84,52 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
   }
 
   void _initializeAnimations() {
-    _widthAnimation = Tween<double>(
-      begin: 36.0,
-      end: 276.0, // Fixed width for comment pins
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
-    ));
+    _widthAnimation =
+        Tween<double>(
+          begin: 36.0,
+          end: 276.0, // Fixed width for comment pins
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOutCubic,
+            reverseCurve: Curves.easeInOutCubic,
+          ),
+        );
 
-    _heightAnimation = Tween<double>(
-      begin: 36.0,
-      end: 70.0, // Will be updated dynamically
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
-    ));
+    _heightAnimation =
+        Tween<double>(
+          begin: 36.0,
+          end: 70.0, // Will be updated dynamically
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOutCubic,
+            reverseCurve: Curves.easeInOutCubic,
+          ),
+        );
 
-    _opacityAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
-    ));
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: const Interval(0.5, 1.0, curve: Curves.easeInOut),
+      ),
+    );
 
-    _paddingAnimation = Tween<double>(
-      begin: 3.5,
-      end: 8.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
-    ));
+    _paddingAnimation = Tween<double>(begin: 3.5, end: 8.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutCubic,
+        reverseCurve: Curves.easeInOutCubic,
+      ),
+    );
 
-    _shadowAnimation = Tween<double>(
-      begin: 1.0,
-      end: 3.0,
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
-    ));
+    _shadowAnimation = Tween<double>(begin: 1.0, end: 3.0).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOutCubic,
+        reverseCurve: Curves.easeInOutCubic,
+      ),
+    );
   }
 
   @override
@@ -162,7 +165,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
         text: widget.comment.text,
         style: NarwhalTextStyle(
           fontSize: 14,
-          fontWeight: FontWeight.w500,
+          fontWeight: .w500,
           color: ThemeHelper.neutral900(context),
         ),
       ),
@@ -176,9 +179,11 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
         20.0; // height for author name and timestamp row
     final double textPadding = 8.0 * 2; // text area top + bottom padding
     final double minHeight = 60.0; // minimum expanded height
-    final double textHeightBuffer =
-        textHeight > 20 ? textHeight * 0.2 : 0; // 10% buffer for multi-line
-    final double calculatedHeight = headerHeight +
+    final double textHeightBuffer = textHeight > 20
+        ? textHeight * 0.2
+        : 0; // 10% buffer for multi-line
+    final double calculatedHeight =
+        headerHeight +
         4.0 + // spacing between header and text (SizedBox(height: 4))
         textHeight +
         textPadding +
@@ -192,14 +197,17 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
   }
 
   void _updateHeightAnimation(String text, BuildContext context) {
-    _heightAnimation = Tween<double>(
-      begin: 36.0,
-      end: _calculateRequiredHeight(context),
-    ).animate(CurvedAnimation(
-      parent: _animationController,
-      curve: Curves.easeInOutCubic,
-      reverseCurve: Curves.easeInOutCubic,
-    ));
+    _heightAnimation =
+        Tween<double>(
+          begin: 36.0,
+          end: _calculateRequiredHeight(context),
+        ).animate(
+          CurvedAnimation(
+            parent: _animationController,
+            curve: Curves.easeInOutCubic,
+            reverseCurve: Curves.easeInOutCubic,
+          ),
+        );
   }
 
   void _handleHoverEnter() {
@@ -237,8 +245,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
   }
 
   Widget _buildEditableCommentInput() {
-    final double scale =
-        widget.transformationController.value.getMaxScaleOnAxis();
+    final double scale = widget.transformationController.value
+        .getMaxScaleOnAxis();
     final containerWidth = 360.0;
 
     // Update height after widget is rendered
@@ -248,7 +256,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       top: _position.dy - (_currentInputHeight / scale),
       left: _position.dx,
       child: Transform.scale(
-        alignment: Alignment.topLeft,
+        alignment: .topLeft,
         scale: 1 / scale,
         child: Builder(
           builder: (context) {
@@ -257,16 +265,13 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
               width: containerWidth,
               decoration: BoxDecoration(
                 color: ThemeHelper.neutral100(context),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(18),
-                  topRight: Radius.circular(18),
-                  bottomRight: Radius.circular(18),
-                  bottomLeft: Radius.circular(0),
+                borderRadius: .only(
+                  topLeft: .circular(18),
+                  topRight: .circular(18),
+                  bottomRight: .circular(18),
+                  bottomLeft: .circular(0),
                 ),
-                border: Border.all(
-                  color: ThemeHelper.blue500(context),
-                  width: 2,
-                ),
+                border: .all(color: ThemeHelper.blue500(context), width: 2),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.10),
@@ -275,38 +280,47 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                   ),
                 ],
               ),
-              padding: const EdgeInsets.all(8),
+              padding: .all(8),
               child: Stack(
                 children: [
                   Padding(
-                    padding: const EdgeInsets.only(left: 41),
+                    padding: .only(left: 41),
                     child: Shortcuts(
                       shortcuts: <LogicalKeySet, Intent>{
-                        LogicalKeySet(LogicalKeyboardKey.shift,
-                            LogicalKeyboardKey.enter): const NewLineIntent(),
+                        LogicalKeySet(
+                          LogicalKeyboardKey.shift,
+                          LogicalKeyboardKey.enter,
+                        ): const NewLineIntent(),
                         LogicalKeySet(LogicalKeyboardKey.enter):
                             const SubmitIntent(),
                       },
                       child: Actions(
                         actions: <Type, Action<Intent>>{
-                          NewLineIntent:
-                              CallbackAction<NewLineIntent>(onInvoke: (intent) {
-                            // Insert newline manually at cursor position
-                            final selection = _commentController.selection;
-                            _commentController.value =
-                                _commentController.value.copyWith(
-                              text: _commentController.text.replaceRange(
-                                  selection.start, selection.end, '\n'),
-                              selection: TextSelection.collapsed(
-                                  offset: selection.start + 1),
-                            );
-                            return null;
-                          }),
-                          SubmitIntent:
-                              CallbackAction<SubmitIntent>(onInvoke: (intent) {
-                            _saveComment();
-                            return null;
-                          }),
+                          NewLineIntent: CallbackAction<NewLineIntent>(
+                            onInvoke: (intent) {
+                              // Insert newline manually at cursor position
+                              final selection = _commentController.selection;
+                              _commentController.value = _commentController
+                                  .value
+                                  .copyWith(
+                                    text: _commentController.text.replaceRange(
+                                      selection.start,
+                                      selection.end,
+                                      '\n',
+                                    ),
+                                    selection: TextSelection.collapsed(
+                                      offset: selection.start + 1,
+                                    ),
+                                  );
+                              return null;
+                            },
+                          ),
+                          SubmitIntent: CallbackAction<SubmitIntent>(
+                            onInvoke: (intent) {
+                              _saveComment();
+                              return null;
+                            },
+                          ),
                         },
                         child: TextField(
                           controller: _commentController,
@@ -315,25 +329,25 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             hintStyle: NarwhalTextStyle(
                               color: ThemeHelper.neutral500(context),
                               fontSize: 15,
-                              fontStyle: FontStyle.normal,
-                              fontWeight: FontWeight.w400,
+                              fontStyle: .normal,
+                              fontWeight: .w400,
                             ),
                             border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: .circular(6),
                               borderSide: BorderSide(
                                 color: ThemeHelper.neutral400(context),
                                 width: 1,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: .circular(6),
                               borderSide: BorderSide(
                                 color: ThemeHelper.neutral500(context),
                                 width: 1,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(6),
+                              borderRadius: .circular(6),
                               borderSide: BorderSide(
                                 color: ThemeHelper.neutral400(context),
                                 width: 1,
@@ -343,7 +357,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             filled: true,
                             hoverColor: ThemeHelper.neutral100(context),
                             isDense: true,
-                            contentPadding: const EdgeInsets.only(
+                            contentPadding: .only(
                               left: 10,
                               right: 38,
                               top: 12,
@@ -383,8 +397,8 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       if (isTemporaryComment) return _buildEditableCommentInput();
 
       // Regular pin display logic
-      final double scale =
-          widget.transformationController.value.getMaxScaleOnAxis();
+      final double scale = widget.transformationController.value
+          .getMaxScaleOnAxis();
 
       if (_lastCommentText != widget.comment.text) {
         _lastCommentText = widget.comment.text;
@@ -413,7 +427,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
             width: widgetWidth * scale,
             height: widgetHeight * scale,
             child: Transform.scale(
-              alignment: Alignment.topLeft,
+              alignment: .topLeft,
               scale: 1 / scale,
               child: MouseRegion(
                 onEnter: (_) => _handleHoverEnter(),
@@ -428,16 +442,17 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                         width: _widthAnimation.value,
                         height: _heightAnimation.value,
                         decoration: BoxDecoration(
-                          border: Border.all(
-                            color:
-                                isSelected ? selectionColor : outerBorderColor,
+                          border: .all(
+                            color: isSelected
+                                ? selectionColor
+                                : outerBorderColor,
                             width: isSelected ? 1.5 : 1.0,
                           ),
-                          borderRadius: const BorderRadius.only(
-                            topLeft: Radius.circular(20),
-                            topRight: Radius.circular(20),
-                            bottomRight: Radius.circular(20),
-                            bottomLeft: Radius.circular(1),
+                          borderRadius: .only(
+                            topLeft: .circular(20),
+                            topRight: .circular(20),
+                            bottomRight: .circular(20),
+                            bottomLeft: .circular(1),
                           ),
                           color: backgroundColor,
                           boxShadow: [
@@ -449,8 +464,10 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                         ),
                         child: Builder(
                           builder: (context) {
-                            final user = ref.watch(vaultMemberUserByIdProvider)[
-                                    widget.comment.createdBy] ??
+                            final user =
+                                ref.watch(
+                                  vaultMemberUserByIdProvider,
+                                )[widget.comment.createdBy] ??
                                 User.initial();
                             final timeAgo = widget.comment.createdAt != null
                                 ? TimestampService.formatTimeAgo(
@@ -460,13 +477,13 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                 : '';
 
                             return Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                              crossAxisAlignment: .start,
                               children: [
                                 // Avatar (always visible, position unchanged)
                                 Padding(
-                                  padding: EdgeInsets.all(isSelected
-                                      ? 3.0
-                                      : _paddingAnimation.value),
+                                  padding: .all(
+                                    isSelected ? 3.0 : _paddingAnimation.value,
+                                  ),
                                   child: GestureDetector(
                                     onTap: _onTap,
                                     child: InitialsCircle(
@@ -481,7 +498,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                     child: Opacity(
                                       opacity: _opacityAnimation.value,
                                       child: Padding(
-                                        padding: const EdgeInsets.only(
+                                        padding: .only(
                                           right: 12,
                                           left: 4,
                                           top: 8,
@@ -493,8 +510,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                             physics:
                                                 NeverScrollableScrollPhysics(),
                                             child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              crossAxisAlignment: .start,
                                               children: [
                                                 // Header row: username and timestamp
                                                 Row(
@@ -505,15 +521,14 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                         user.name.isNotEmpty
                                                             ? user.name
                                                             : 'Unknown User',
-                                                        overflow:
-                                                            TextOverflow.fade,
+                                                        overflow: .fade,
                                                         style: NarwhalTextStyle(
                                                           fontSize: 12,
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          color: ThemeHelper
-                                                              .neutral900(
-                                                                  context),
+                                                          fontWeight: .bold,
+                                                          color:
+                                                              ThemeHelper.neutral900(
+                                                                context,
+                                                              ),
                                                         ),
                                                       ),
                                                     ),
@@ -521,19 +536,16 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                       Flexible(
                                                         child: Text(
                                                           timeAgo,
-                                                          overflow:
-                                                              TextOverflow.fade,
-                                                          style:
-                                                              NarwhalTextStyle(
+                                                          overflow: .fade,
+                                                          style: NarwhalTextStyle(
                                                             fontSize: 12,
-                                                            fontWeight:
-                                                                FontWeight
-                                                                    .normal,
-                                                            color: ThemeHelper
-                                                                    .neutral900(
-                                                                        context)
-                                                                .withValues(
-                                                                    alpha: 0.7),
+                                                            fontWeight: .normal,
+                                                            color:
+                                                                ThemeHelper.neutral900(
+                                                                  context,
+                                                                ).withValues(
+                                                                  alpha: 0.7,
+                                                                ),
                                                           ),
                                                         ),
                                                       ),
@@ -543,14 +555,15 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                 const Gap(4),
                                                 Text(
                                                   widget.comment.text,
-                                                  overflow: TextOverflow.fade,
+                                                  overflow: .fade,
                                                   softWrap: true,
                                                   style: NarwhalTextStyle(
                                                     fontSize: 14,
-                                                    fontWeight: FontWeight.w500,
+                                                    fontWeight: .w500,
                                                     color:
                                                         ThemeHelper.neutral900(
-                                                            context),
+                                                          context,
+                                                        ),
                                                   ),
                                                 ),
                                               ],

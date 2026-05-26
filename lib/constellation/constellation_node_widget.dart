@@ -19,15 +19,15 @@ class ConstellationNodeLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final labelColor = isHovered ? ThemeHelper.neutral700(context) : ThemeHelper.neutral600(context);
+    final labelColor = isHovered
+        ? ThemeHelper.neutral700(context)
+        : ThemeHelper.neutral600(context);
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: isHovered ? 8.0 : 0.0),
       duration: const Duration(milliseconds: 300),
-      builder: (context, dy, child) => Transform.translate(
-        offset: Offset(0, dy),
-        child: child,
-      ),
+      builder: (context, dy, child) =>
+          Transform.translate(offset: Offset(0, dy), child: child),
       child: IgnorePointer(
         child: Opacity(
           opacity: labelOpacity,
@@ -35,7 +35,7 @@ class ConstellationNodeLabel extends StatelessWidget {
             node.id,
             style: NarwhalTextStyle(fontSize: 11, color: labelColor),
             softWrap: false,
-            overflow: TextOverflow.visible,
+            overflow: .visible,
           ),
         ),
       ),

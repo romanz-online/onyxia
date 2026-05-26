@@ -29,18 +29,21 @@ class WikiLinkOverlay extends StatelessWidget {
 
     return Material(
       elevation: 8,
-      borderRadius: BorderRadius.circular(6),
+      borderRadius: .circular(6),
       color: Theme.of(context).colorScheme.surface,
       child: Container(
-        constraints:
-            const BoxConstraints(maxHeight: 200, minWidth: 200, maxWidth: 320),
+        constraints: const BoxConstraints(
+          maxHeight: 200,
+          minWidth: 200,
+          maxWidth: 320,
+        ),
         decoration: BoxDecoration(
-          border: Border.all(color: Theme.of(context).dividerColor),
-          borderRadius: BorderRadius.circular(6),
+          border: .all(color: Theme.of(context).dividerColor),
+          borderRadius: .circular(6),
         ),
         child: ListView.builder(
           shrinkWrap: true,
-          padding: const EdgeInsets.symmetric(vertical: 4),
+          padding: .symmetric(vertical: 4),
           itemCount: filteredTargets.length,
           itemBuilder: (context, index) {
             final target = filteredTargets[index];
@@ -49,19 +52,17 @@ class WikiLinkOverlay extends StatelessWidget {
             return InkWell(
               onTap: () => onSelected(target),
               child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                padding: .symmetric(horizontal: 12, vertical: 8),
                 color: isSelected
-                    ? Theme.of(context)
-                        .colorScheme
-                        .primary
-                        .withValues(alpha: 0.12)
+                    ? Theme.of(
+                        context,
+                      ).colorScheme.primary.withValues(alpha: 0.12)
                     : Colors.transparent,
                 child: Text(
                   target,
                   style: NarwhalTextStyle(
                     fontSize: 13,
-                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                    fontWeight: isSelected ? .w600 : .w400,
                     color: isSelected
                         ? Theme.of(context).colorScheme.primary
                         : Theme.of(context).colorScheme.onSurface,

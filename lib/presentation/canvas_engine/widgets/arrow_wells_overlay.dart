@@ -146,7 +146,7 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
         width: objSize.width + (extension * 2),
         height: objSize.height + (extension * 2),
         child: MouseRegion(
-          hitTestBehavior: HitTestBehavior.translucent,
+          hitTestBehavior: .translucent,
           onEnter: (_) =>
               setState(() => _hoveredObjectIds.add(canvasObject.id)),
           onExit: (_) =>
@@ -177,7 +177,7 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
         width: objSize.width + (margin * 2),
         height: objSize.height + (margin * 2),
         child: MouseRegion(
-          hitTestBehavior: HitTestBehavior.translucent,
+          hitTestBehavior: .translucent,
           onEnter: (event) =>
               _handleArrowToolHoverEnter(canvasObject, event, ref),
           onExit: (event) => _handleArrowToolHoverExit(canvasObject, ref),

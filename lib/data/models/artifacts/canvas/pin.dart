@@ -20,7 +20,7 @@ class Pin implements ExpandablePin {
     this.id = '',
     this.linkedArtifactId = '',
     this.canvasId = '',
-    this.position = Offset.zero,
+    this.position = .zero,
     this.pinnedObjectId,
     //
     this.createdAt,

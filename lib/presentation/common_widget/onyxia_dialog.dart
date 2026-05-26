@@ -25,12 +25,8 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
       elevation: 4,
       // TODO: there is a white fringe along the outer pixel edge of the dialog.
       // TODO: cont. Clip.antiAliasWithSaveLayer has helped with it a bit but it's still noticeable and ugly.
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-
-      // TODO: i want to do this:
-      /// This requires the 'dot-shorthands' language feature to be enabled.
-      /// Try updating your pubspec.yaml to set the minimum SDK constraint to 3.10.0 or higher, and running 'pub get'.
+      clipBehavior: .antiAliasWithSaveLayer,
+      shape: RoundedRectangleBorder(borderRadius: .circular(20)),
       child: Container(
         width: widget.width,
         height: widget.height,
@@ -41,22 +37,22 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
           children: [
             // Header
             Container(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+              padding: .fromLTRB(20, 20, 20, 0),
               decoration: BoxDecoration(
                 color: ThemeHelper.neutral100(context),
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20),
-                  topRight: Radius.circular(20),
+                borderRadius: .only(
+                  topLeft: .circular(20),
+                  topRight: .circular(20),
                 ),
               ),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     widget.title,
                     style: NarwhalTextStyle(
                       fontSize: 20,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: .w400,
                       color: ThemeHelper.neutral800(context),
                     ),
                   ),
@@ -67,9 +63,9 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
             // Content
             Expanded(
               child: Padding(
-                padding: EdgeInsets.fromLTRB(20, 0, 20, 20),
+                padding: .fromLTRB(20, 0, 20, 20),
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: .start,
                   children: [
                     widget.content != null ? widget.content! : const SizedBox(),
                   ],

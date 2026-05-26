@@ -30,7 +30,7 @@ class _HoverBuilderState extends State<HoverBuilder> {
         setState(() => _isHovered = false);
         widget.onHoverExit?.call();
       },
-      hitTestBehavior: HitTestBehavior.translucent,
+      hitTestBehavior: .translucent,
       child: widget.builder(context, _isHovered),
     );
   }

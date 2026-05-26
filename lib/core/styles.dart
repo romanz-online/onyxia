@@ -8,7 +8,7 @@ class NarwhalStyles {
   static modalTextFieldTitleStyle(BuildContext context) {
     return NarwhalTextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.w600,
+      fontWeight: .w600,
       color: ThemeHelper.neutral800(context),
     );
   }
@@ -16,7 +16,7 @@ class NarwhalStyles {
   static dropdownListTextStyle(BuildContext context) {
     return NarwhalTextStyle(
       fontSize: 15,
-      fontWeight: FontWeight.w400,
+      fontWeight: .w400,
       color: ThemeHelper.neutral900(context),
     );
   }

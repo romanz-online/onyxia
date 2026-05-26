@@ -163,12 +163,11 @@ Future<void> _addComment(
   WidgetRef ref,
   Offset position,
   CanvasObject? targetObject,
-) =>
-    CanvasInteractionService.createComment(
-      ref: ref,
-      position: position,
-      targetObject: targetObject,
-    );
+) => CanvasInteractionService.createComment(
+  ref: ref,
+  position: position,
+  targetObject: targetObject,
+);
 
 void _addArtifact(
   WidgetRef ref,
@@ -218,10 +217,7 @@ void _toggleSetting(WidgetRef ref, Setting setting) {
 
 void _copyDiagramLink() {
   Clipboard.setData(ClipboardData(text: web.window.location.href));
-  OnyxiaToast.show(
-    text: 'Link copied to clipboard',
-    type: ToastType.success,
-  );
+  OnyxiaToast.show(text: 'Link copied to clipboard', type: ToastType.success);
 }
 
 // ---------------------------------------------------------------------------
@@ -262,7 +258,7 @@ class _CanvasRightClickMenuState extends State<CanvasRightClickMenu> {
   OverlayEntry? _submenuOverlay;
   Timer? _openDelay;
   Timer? _closeDelay;
-  Offset _menuPosition = Offset.zero;
+  Offset _menuPosition = .zero;
 
   @override
   void dispose() {
@@ -398,7 +394,7 @@ class _CanvasRightClickMenuState extends State<CanvasRightClickMenu> {
       children: [
         Positioned.fill(
           child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
+            behavior: .translucent,
             onTap: widget.onClose,
             child: const SizedBox(),
           ),
@@ -486,22 +482,22 @@ class _MenuPanel extends StatelessWidget {
     return Material(
       elevation: 12,
       shadowColor: ThemeHelper.black(context).withValues(alpha: 0.15),
-      borderRadius: BorderRadius.circular(8),
+      borderRadius: .circular(8),
       child: Container(
         width: width,
         decoration: BoxDecoration(
           color: ThemeHelper.neutral100(context),
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
+          borderRadius: .circular(8),
+          border: .all(
             color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
             width: 1,
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
+          padding: .symmetric(vertical: 8),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisSize: .min,
+            crossAxisAlignment: .stretch,
             children: children,
           ),
         ),
@@ -517,7 +513,7 @@ class _MenuDivider extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       height: 1,
-      margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      margin: .symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
         color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
       ),
@@ -557,15 +553,15 @@ class _MenuRow extends StatelessWidget {
         onTap: onTap,
         child: Container(
           height: itemHeight,
-          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          margin: .symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
             color: highlighted
                 ? ThemeHelper.neutral300(context)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: .circular(6),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: .symmetric(horizontal: 12),
             child: Row(
               children: [
                 if (item.icon != null) ...[
@@ -577,7 +573,7 @@ class _MenuRow extends StatelessWidget {
                     item.label,
                     style: NarwhalTextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                       color: textColor,
                     ),
                   ),

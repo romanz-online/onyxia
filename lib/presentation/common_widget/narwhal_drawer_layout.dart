@@ -3,12 +3,22 @@ import 'package:onyxia/presentation/common_widget/narwhal_drawer.dart';
 import 'package:onyxia/helpers/theme_helper.dart';
 
 /// Callback function types for drawer events
-typedef OnDrawerDragStart = void Function(String drawerId, Offset position, Size size);
-typedef OnDrawerDragUpdate = void Function(String drawerId, Offset position, Size size);
-typedef OnDrawerDragEnd = void Function(String drawerId, Offset position, Size size);
-typedef OnDrawerModeChangeRequest = void Function(String drawerId, NarwhalDrawerMode mode, Offset position, Size size);
+typedef OnDrawerDragStart =
+    void Function(String drawerId, Offset position, Size size);
+typedef OnDrawerDragUpdate =
+    void Function(String drawerId, Offset position, Size size);
+typedef OnDrawerDragEnd =
+    void Function(String drawerId, Offset position, Size size);
+typedef OnDrawerModeChangeRequest =
+    void Function(
+      String drawerId,
+      NarwhalDrawerMode mode,
+      Offset position,
+      Size size,
+    );
 typedef OnDrawerWidthUpdate = void Function(String drawerId, double width);
-typedef OnDrawerVisibilityUpdate = void Function(String drawerId, bool isVisible);
+typedef OnDrawerVisibilityUpdate =
+    void Function(String drawerId, bool isVisible);
 
 /// InheritedWidget that provides drawer layout callbacks to descendant drawers
 class NarwhalDrawerLayoutProvider extends InheritedWidget {
@@ -22,7 +32,8 @@ class NarwhalDrawerLayoutProvider extends InheritedWidget {
   final OnDrawerVisibilityUpdate? onVisibilityUpdate;
 
   // Registration methods for drawer states
-  final void Function(String drawerId, NarwhalDrawerState state)? registerDrawer;
+  final void Function(String drawerId, NarwhalDrawerState state)?
+  registerDrawer;
   final void Function(String drawerId)? unregisterDrawer;
   final NarwhalDrawerState? Function(String drawerId)? getDrawerState;
 
@@ -187,8 +198,9 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
     // Enforce exclusive sidebar rule: only one drawer can be in left/right mode
     if (mode == NarwhalDrawerMode.left || mode == NarwhalDrawerMode.right) {
       // Find any other drawer currently in the same sidebar mode and move it to windowed
-      final conflictingDrawers =
-          _drawerModes.entries.where((entry) => entry.key != drawerId && entry.value == mode).toList();
+      final conflictingDrawers = _drawerModes.entries
+          .where((entry) => entry.key != drawerId && entry.value == mode)
+          .toList();
 
       for (final entry in conflictingDrawers) {
         final conflictingDrawerId = entry.key;
@@ -203,7 +215,8 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
         if (conflictingDrawerState != null) {
           final conflictingDrawer = widget.drawers.firstWhere(
             (d) => d.persistenceId == conflictingDrawerId,
-            orElse: () => throw StateError('Drawer $conflictingDrawerId not found'),
+            orElse: () =>
+                throw StateError('Drawer $conflictingDrawerId not found'),
           );
 
           // Position based on which side the drawer was previously on
@@ -219,13 +232,16 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
             case NarwhalDrawerMode.right:
               // Was on right side, position on right with margin
               newPosition = Offset(
-                MediaQuery.of(context).size.width - conflictingDrawer.defaultWindowSize.width - margin,
+                MediaQuery.of(context).size.width -
+                    conflictingDrawer.defaultWindowSize.width -
+                    margin,
                 margin,
               );
               break;
             case NarwhalDrawerMode.windowed:
               // Edge case: was already windowed, use default behavior
-              newPosition = conflictingDrawer.defaultPosition ?? const Offset(100, 100);
+              newPosition =
+                  conflictingDrawer.defaultPosition ?? const Offset(100, 100);
               break;
             case NarwhalDrawerMode.fullscreen:
               // Was fullscreen, move to windowed at top-left with margin
@@ -263,14 +279,18 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
   void _onDrawerDragUpdate(String drawerId, Offset position, Size size) {
     final screenSize = MediaQuery.of(context).size;
     final drawerAllowsFullscreen = widget.drawers
-        .firstWhere((d) => d.persistenceId == drawerId, orElse: () => widget.drawers.first)
+        .firstWhere(
+          (d) => d.persistenceId == drawerId,
+          orElse: () => widget.drawers.first,
+        )
         .allowFullscreen;
     final inTopZone = drawerAllowsFullscreen && _isInTopSnapZone(position);
 
     setState(() {
       _showTopSnapHint = inTopZone;
       _showLeftSnapHint = !inTopZone && _isInLeftSnapZone(position);
-      _showRightSnapHint = !inTopZone && _isInRightSnapZone(position, size, screenSize);
+      _showRightSnapHint =
+          !inTopZone && _isInRightSnapZone(position, size, screenSize);
     });
   }
 
@@ -278,7 +298,10 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
   void _onDrawerDragEnd(String drawerId, Offset position, Size size) {
     final screenSize = MediaQuery.of(context).size;
     final drawerAllowsFullscreen = widget.drawers
-        .firstWhere((d) => d.persistenceId == drawerId, orElse: () => widget.drawers.first)
+        .firstWhere(
+          (d) => d.persistenceId == drawerId,
+          orElse: () => widget.drawers.first,
+        )
         .allowFullscreen;
 
     setState(() {
@@ -298,7 +321,12 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
   }
 
   /// Handles mode change requests from drawers
-  void _onDrawerModeChangeRequest(String drawerId, NarwhalDrawerMode mode, Offset position, Size size) {
+  void _onDrawerModeChangeRequest(
+    String drawerId,
+    NarwhalDrawerMode mode,
+    Offset position,
+    Size size,
+  ) {
     final screenSize = MediaQuery.of(context).size;
     _transitionDrawerToSidebar(drawerId, mode, screenSize);
   }
@@ -339,7 +367,7 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
     return AnimatedContainer(
       duration: const Duration(milliseconds: 200),
       curve: Curves.linear,
-      margin: EdgeInsets.only(left: leftMargin, right: rightMargin),
+      margin: .only(left: leftMargin, right: rightMargin),
       child: widget.content,
     );
   }
@@ -364,13 +392,17 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
 
     drawerState.transitionToMode(
       NarwhalDrawerMode.fullscreen,
-      Offset.zero,
+      .zero,
       screenSize,
     );
   }
 
   /// Transitions a drawer to sidebar mode
-  void _transitionDrawerToSidebar(String drawerId, NarwhalDrawerMode mode, Size screenSize) {
+  void _transitionDrawerToSidebar(
+    String drawerId,
+    NarwhalDrawerMode mode,
+    Size screenSize,
+  ) {
     final drawerState = _registeredDrawers[drawerId];
     if (drawerState == null) return;
 
@@ -437,7 +469,7 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
       child: Container(
         decoration: BoxDecoration(
           color: ThemeHelper.blue400(context).withValues(alpha: 0.5),
-          border: Border.all(color: ThemeHelper.blue400(context), width: 1),
+          border: .all(color: ThemeHelper.blue400(context), width: 1),
         ),
       ),
     );

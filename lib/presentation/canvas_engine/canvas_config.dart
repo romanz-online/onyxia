@@ -1,10 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 import 'providers/tool_mode_provider.dart';
 
-enum ArtifactCanvasDisplay with NarwhalEnum {
-  pin,
-  object,
-}
+enum ArtifactCanvasDisplay with NarwhalEnum { pin, object }
 
 class CanvasConfig {
   final bool allowArtifactsOnBackground;
@@ -26,41 +23,41 @@ class CanvasConfig {
   });
 
   factory CanvasConfig.fromType(CanvasType type) => switch (type) {
-        CanvasType.whiteboard => CanvasConfig.whiteboard(),
-        CanvasType.markup => CanvasConfig.markup(),
-        CanvasType.flow => CanvasConfig.flow(),
-      };
+    .whiteboard => CanvasConfig.whiteboard(),
+    .markup => CanvasConfig.markup(),
+    .flow => CanvasConfig.flow(),
+  };
 
   factory CanvasConfig.whiteboard() {
     return const CanvasConfig(
       allowArtifactsOnBackground: false,
-      artifactDisplay: ArtifactCanvasDisplay.pin,
+      artifactDisplay: .pin,
       allowFileDrops: true,
-      canvasType: CanvasType.whiteboard,
-      defaultArrowType: ArrowType.segmented,
+      canvasType: .whiteboard,
+      defaultArrowType: .segmented,
       allowPasting: true,
       toolbar: [
-        ToolMode.pointer,
-        ToolMode.pan,
+        .pointer,
+        .pan,
         null,
-        ToolMode.rectangle,
-        ToolMode.diamond,
-        ToolMode.oblong,
-        ToolMode.circle,
-        ToolMode.rhombus,
-        ToolMode.trapezoid,
-        ToolMode.cylinder,
-        ToolMode.house,
-        ToolMode.reverseHouse,
-        ToolMode.arrow,
+        .rectangle,
+        .diamond,
+        .oblong,
+        .circle,
+        .rhombus,
+        .trapezoid,
+        .cylinder,
+        .house,
+        .reverseHouse,
+        .arrow,
         null,
-        ToolMode.image,
-        ToolMode.text,
+        .image,
+        .text,
         null,
-        ToolMode.brush,
+        .brush,
         null,
-        ToolMode.comment,
-        ToolMode.artifact,
+        .comment,
+        .artifact,
       ],
     );
   }
@@ -68,32 +65,24 @@ class CanvasConfig {
   factory CanvasConfig.markup() {
     return const CanvasConfig(
       allowArtifactsOnBackground: true,
-      artifactDisplay: ArtifactCanvasDisplay.pin,
+      artifactDisplay: .pin,
       allowFileDrops: false,
-      canvasType: CanvasType.markup,
-      defaultArrowType: ArrowType.curved,
+      canvasType: .markup,
+      defaultArrowType: .curved,
       allowPasting: false,
-      toolbar: [
-        ToolMode.pointer,
-        ToolMode.pan,
-        null,
-        ToolMode.comment,
-        ToolMode.artifact,
-      ],
+      toolbar: [.pointer, .pan, null, .comment, .artifact],
     );
   }
 
   factory CanvasConfig.flow() {
     return const CanvasConfig(
       allowArtifactsOnBackground: false,
-      artifactDisplay: ArtifactCanvasDisplay.object,
+      artifactDisplay: .object,
       allowFileDrops: true,
-      canvasType: CanvasType.flow,
-      defaultArrowType: ArrowType.curved,
+      canvasType: .flow,
+      defaultArrowType: .curved,
       allowPasting: false,
-      toolbar: [
-        ToolMode.pointer,
-      ],
+      toolbar: [.pointer],
     );
   }
 }

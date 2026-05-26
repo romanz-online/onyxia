@@ -39,7 +39,7 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
 
   // Viewport transform
   double _zoom = 1.0;
-  Offset _pan = Offset.zero;
+  Offset _pan = .zero;
 
   // Interaction state
   String? _dragNodeId;
@@ -128,14 +128,14 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
   Size? get _size => (context.findRenderObject() as RenderBox?)?.size;
 
   Offset _w2s(Offset world, Size size) => Offset(
-        size.width / 2 + (world.dx + _pan.dx) * _zoom,
-        size.height / 2 + (world.dy + _pan.dy) * _zoom,
-      );
+    size.width / 2 + (world.dx + _pan.dx) * _zoom,
+    size.height / 2 + (world.dy + _pan.dy) * _zoom,
+  );
 
   Offset _s2w(Offset screen, Size size) => Offset(
-        (screen.dx - size.width / 2) / _zoom - _pan.dx,
-        (screen.dy - size.height / 2) / _zoom - _pan.dy,
-      );
+    (screen.dx - size.width / 2) / _zoom - _pan.dx,
+    (screen.dy - size.height / 2) / _zoom - _pan.dy,
+  );
 
   double _nodeRadius(String id) {
     const base = 7.0;
@@ -185,7 +185,9 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
     _dragTotalMove = 0;
 
     final positions = _simulation.positions.value;
-    final hit = details.pointerCount == 1 ? _hitTest(localPos, size, positions) : null;
+    final hit = details.pointerCount == 1
+        ? _hitTest(localPos, size, positions)
+        : null;
 
     if (hit != null) {
       setState(() => _dragNodeId = hit);
@@ -242,8 +244,8 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
     _radii = {for (final id in _nodeData.keys) id: _nodeRadius(id)};
 
     return Material(
-      type: MaterialType.transparency,
-      clipBehavior: Clip.antiAlias,
+      type: .transparency,
+      clipBehavior: .antiAlias,
       child: ValueListenableBuilder<Map<String, Offset>>(
         valueListenable: _simulation.positions,
         builder: (context, worldPositions, _) {
@@ -251,7 +253,11 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
             onHover: (event) {
               final size = _size;
               if (size == null) return;
-              final hit = _hitTest(event.localPosition, size, _simulation.positions.value);
+              final hit = _hitTest(
+                event.localPosition,
+                size,
+                _simulation.positions.value,
+              );
               if (hit != _hoverNodeId) setState(() => _hoverNodeId = hit);
             },
             onExit: (_) {
@@ -266,10 +272,13 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
                 onPointerSignal: _onScrollZoom,
                 child: LayoutBuilder(
                   builder: (ctx, constraints) {
-                    final physicsIds = {for (final n in widget.physicsNodes) n.id};
+                    final physicsIds = {
+                      for (final n in widget.physicsNodes) n.id,
+                    };
                     final screenPos = {
                       for (final e in worldPositions.entries)
-                        if (physicsIds.contains(e.key)) e.key: _w2s(e.value, constraints.biggest),
+                        if (physicsIds.contains(e.key))
+                          e.key: _w2s(e.value, constraints.biggest),
                     };
                     return Stack(
                       clipBehavior: Clip.none,
@@ -307,8 +316,12 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
                                 node: _nodeData[entry.key]!,
                                 radius: _radii[entry.key]!,
                                 isHovered: _hoverNodeId == entry.key,
-                                labelOpacity:
-                                    _hoverNodeId == entry.key ? 1.0 : ((_zoom - 0.4) / (0.7 - 0.4)).clamp(0.0, 1.0),
+                                labelOpacity: _hoverNodeId == entry.key
+                                    ? 1.0
+                                    : ((_zoom - 0.4) / (0.7 - 0.4)).clamp(
+                                        0.0,
+                                        1.0,
+                                      ),
                               ),
                             ),
                       ],

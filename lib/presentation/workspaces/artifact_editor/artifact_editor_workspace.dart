@@ -12,15 +12,12 @@ class ArtifactWorkspace extends ConsumerStatefulWidget {
 }
 
 class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
-  Widget _buildEditorContent(Artifact artifact) {
-    return switch (artifact.type) {
-      ArtifactType.note => NoteEditorView(),
-      ArtifactType.canvas => CanvasEditorView(canvasId: artifact.id),
-      ArtifactType.folder => const SizedBox.shrink(),
-      ArtifactType.image =>
-        ImageEditorView(artifact: artifact as ImageArtifact),
-    };
-  }
+  Widget _buildEditorContent(Artifact artifact) => switch (artifact.type) {
+    .note => NoteEditorView(),
+    .canvas => CanvasEditorView(canvasId: artifact.id),
+    .folder => const SizedBox.shrink(),
+    .image => ImageEditorView(artifact: artifact as ImageArtifact),
+  };
 
   AppBar _buildAppBar(String title) {
     return AppBar(
@@ -72,22 +69,16 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
         color: ThemeHelper.neutral100(context),
         child: Center(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             spacing: 8,
             children: [
               Text(
                 'No item selected',
-                style: NarwhalTextStyle(
-                  fontStyle: FontStyle.normal,
-                  fontSize: 20,
-                ),
+                style: NarwhalTextStyle(fontStyle: .normal, fontSize: 20),
               ),
               Text(
                 'Select an item from the sidebar to view',
-                style: NarwhalTextStyle(
-                  fontStyle: FontStyle.normal,
-                  fontSize: 20,
-                ),
+                style: NarwhalTextStyle(fontStyle: .normal, fontSize: 20),
               ),
             ],
           ),

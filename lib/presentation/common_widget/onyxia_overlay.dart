@@ -1,10 +1,8 @@
 import 'package:onyxia/export.dart';
 
 class OnyxiaOverlay extends StatefulWidget {
-  final Widget Function(
-    BuildContext context,
-    VoidCallback closeOverlay,
-  ) builder;
+  final Widget Function(BuildContext context, VoidCallback closeOverlay)
+  builder;
   final Widget child;
   final bool isOpen;
   final VoidCallback? onClose;
@@ -19,13 +17,13 @@ class OnyxiaOverlay extends StatefulWidget {
     required this.isOpen,
     this.onClose,
     this.anchor = const Aligned(
-      follower: Alignment.topLeft,
-      target: Alignment.bottomLeft,
-      offset: Offset(0, 4),
+      follower: .topLeft,
+      target: .bottomLeft,
+      offset: const Offset(0, 4),
       backup: Aligned(
-        follower: Alignment.topRight,
-        target: Alignment.bottomRight,
-        offset: Offset(0, 4),
+        follower: .topRight,
+        target: .bottomRight,
+        offset: const Offset(0, 4),
       ),
     ),
     this.autoClose = true,
@@ -180,7 +178,7 @@ class _OutsideClickListenerState extends State<_OutsideClickListener> {
     return Positioned.fill(
       child: Listener(
         onPointerDown: _handlePointerDown,
-        behavior: HitTestBehavior.translucent,
+        behavior: .translucent,
         child: const SizedBox.expand(),
       ),
     );

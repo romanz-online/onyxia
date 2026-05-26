@@ -5,10 +5,7 @@ import '../providers/providers.dart';
 class Toolbar extends ConsumerStatefulWidget {
   final Function closeTextEditor;
 
-  const Toolbar({
-    super.key,
-    required this.closeTextEditor,
-  });
+  const Toolbar({super.key, required this.closeTextEditor});
 
   @override
   ConsumerState<Toolbar> createState() => ToolBarWidgetState();
@@ -20,40 +17,40 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
   // Comprehensive mapping of all tools to their icons
   static const Map<ToolMode, IconData> _toolIcons = {
     // Basic tools
-    ToolMode.pointer: LucideIcons.mousePointer,
-    ToolMode.pan: LucideIcons.move,
+    .pointer: LucideIcons.mousePointer,
+    .pan: LucideIcons.move,
 
     // Shape tools
-    ToolMode.rectangle: LucideIcons.square,
-    ToolMode.diamond: LucideIcons.diamond,
-    ToolMode.oblong: LucideIcons.rectangleHorizontal,
-    ToolMode.circle: LucideIcons.circle,
-    ToolMode.rhombus: LucideIcons.diamond,
-    ToolMode.trapezoid: LucideIcons.pentagon,
-    ToolMode.cylinder: LucideIcons.cylinder,
-    ToolMode.house: LucideIcons.house,
-    ToolMode.reverseHouse: LucideIcons.house,
+    .rectangle: LucideIcons.square,
+    .diamond: LucideIcons.diamond,
+    .oblong: LucideIcons.rectangleHorizontal,
+    .circle: LucideIcons.circle,
+    .rhombus: LucideIcons.diamond,
+    .trapezoid: LucideIcons.pentagon,
+    .cylinder: LucideIcons.cylinder,
+    .house: LucideIcons.house,
+    .reverseHouse: LucideIcons.house,
 
     // Other tools
-    ToolMode.arrow: LucideIcons.minus,
-    ToolMode.image: LucideIcons.image,
-    ToolMode.text: LucideIcons.type,
-    ToolMode.brush: LucideIcons.penTool,
-    ToolMode.comment: LucideIcons.messageSquare,
-    ToolMode.artifact: LucideIcons.fileText,
+    .arrow: LucideIcons.minus,
+    .image: LucideIcons.image,
+    .text: LucideIcons.type,
+    .brush: LucideIcons.penTool,
+    .comment: LucideIcons.messageSquare,
+    .artifact: LucideIcons.fileText,
   };
 
   // Get all shape tools in order
   static const List<ToolMode> _shapeTools = [
-    ToolMode.rectangle,
-    ToolMode.diamond,
-    ToolMode.oblong,
-    ToolMode.circle,
-    ToolMode.rhombus,
-    ToolMode.trapezoid,
-    ToolMode.cylinder,
-    ToolMode.house,
-    ToolMode.reverseHouse,
+    .rectangle,
+    .diamond,
+    .oblong,
+    .circle,
+    .rhombus,
+    .trapezoid,
+    .cylinder,
+    .house,
+    .reverseHouse,
   ];
 
   // --- Helper methods ---
@@ -67,8 +64,8 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
   BoxDecoration _getPanelDecoration() {
     return BoxDecoration(
       color: ThemeHelper.neutral100(context),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: ThemeHelper.neutral400(context), width: 1),
+      borderRadius: .circular(8),
+      border: .all(color: ThemeHelper.neutral400(context), width: 1),
       boxShadow: [
         BoxShadow(
           color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
@@ -82,8 +79,8 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
   BoxDecoration _getShapesSubMenuDecoration() {
     return BoxDecoration(
       color: ThemeHelper.neutral100(context),
-      borderRadius: BorderRadius.circular(8),
-      border: Border.all(color: ThemeHelper.neutral400(context), width: 1),
+      borderRadius: .circular(8),
+      border: .all(color: ThemeHelper.neutral400(context), width: 1),
       boxShadow: [
         BoxShadow(
           color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
@@ -156,12 +153,14 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
           toolButtons.add(const Gap(8));
         }
 
-        toolButtons.add(OnyxiaIconButton(
-          icon: LucideIcons.pentagon,
-          size: iconSize,
-          onPressed: _toggleShapesSubmenu,
-          isSelected: _isShapeTool(selectedTool),
-        ));
+        toolButtons.add(
+          OnyxiaIconButton(
+            icon: LucideIcons.pentagon,
+            size: iconSize,
+            onPressed: _toggleShapesSubmenu,
+            isSelected: _isShapeTool(selectedTool),
+          ),
+        );
         shapesButtonAdded = true;
         continue; // Skip individual shape tools
       }
@@ -180,16 +179,13 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
     return Positioned.fill(
       bottom: 16,
       child: Align(
-        alignment: Alignment.bottomCenter,
+        alignment: .bottomCenter,
         child: Container(
           height: 56.0,
           decoration: _getPanelDecoration(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: toolButtons,
-            ),
+            padding: .symmetric(horizontal: 10),
+            child: Row(mainAxisSize: .min, children: toolButtons),
           ),
         ),
       ),
@@ -197,28 +193,31 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
   }
 
   Widget _buildToolButton(
-      ToolMode tool, ToolMode selectedTool, double iconSize) {
+    ToolMode tool,
+    ToolMode selectedTool,
+    double iconSize,
+  ) {
     final icon = _toolIcons[tool];
     if (icon == null) return const SizedBox.shrink();
 
     // Handle special cases
     switch (tool) {
-      case ToolMode.artifact:
+      case .artifact:
         return OnyxiaIconButton(
           icon: icon,
           size: iconSize,
           onPressed: () {
-            if (selectedTool == ToolMode.artifact) {
+            if (selectedTool == .artifact) {
               // If artifact tool is already selected, hide tree drawer and switch to pointer
               ref
-                  .read(canvasSettingsProvider(Setting.showMinimap).notifier)
+                  .read(canvasSettingsProvider(.showMinimap).notifier)
                   .set(true);
-              _onToolSelected(ToolMode.pointer);
+              _onToolSelected(.pointer);
             } else {
               // If artifact tool is not selected, select it and show tree drawer
-              _onToolSelected(ToolMode.artifact);
+              _onToolSelected(.artifact);
               ref
-                  .read(canvasSettingsProvider(Setting.showMinimap).notifier)
+                  .read(canvasSettingsProvider(.showMinimap).notifier)
                   .set(false);
             }
           },
@@ -244,13 +243,13 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
     return Positioned.fill(
       bottom: 76,
       child: Align(
-        alignment: Alignment.bottomCenter,
+        alignment: .bottomCenter,
         child: Container(
           decoration: _getShapesSubMenuDecoration(),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+            padding: .symmetric(horizontal: 8, vertical: 12),
             child: Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: .min,
               children: [
                 for (int i = 0; i < availableShapeTools.length; i++) ...[
                   if (i > 0) const Gap(8),

@@ -18,7 +18,7 @@ class Comment implements ExpandablePin {
   Comment({
     required this.id,
     required this.text,
-    this.position = Offset.zero,
+    this.position = .zero,
     required this.subComments,
     this.pinnedObjectId,
     this.canvasId,

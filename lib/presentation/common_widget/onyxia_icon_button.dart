@@ -61,26 +61,20 @@ class OnyxiaIconButton extends StatelessWidget {
       child: OutlinedButton(
         onPressed: enabled ? onPressed : null,
         style: ButtonStyle(
-          padding: WidgetStateProperty.all(const EdgeInsets.all(3)),
-          backgroundColor:
-              WidgetStateProperty.resolveWith<Color>(getBackgroundColor),
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
-          side: WidgetStateProperty.all(BorderSide.none),
-          shape: WidgetStateProperty.all(
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8))),
-          mouseCursor: WidgetStateProperty.all(SystemMouseCursors.basic),
+          padding: .all(.all(3)),
+          backgroundColor: .resolveWith<Color>(getBackgroundColor),
+          overlayColor: .all(Colors.transparent),
+          side: .all(BorderSide.none),
+          shape: .all(RoundedRectangleBorder(borderRadius: .circular(8))),
+          mouseCursor: .all(SystemMouseCursors.basic),
         ),
         child: hasCaret
             ? Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: .min,
+                mainAxisAlignment: .center,
                 spacing: 2,
                 children: [
-                  Icon(
-                    icon,
-                    size: size - 4,
-                    color: iconColorFinal,
-                  ),
+                  Icon(icon, size: size - 4, color: iconColorFinal),
                   Icon(
                     (isSelected || isPressed)
                         ? LucideIcons.chevronUp
@@ -91,11 +85,7 @@ class OnyxiaIconButton extends StatelessWidget {
                 ],
               )
             : Center(
-                child: Icon(
-                  icon,
-                  size: size - 8,
-                  color: iconColorFinal,
-                ),
+                child: Icon(icon, size: size - 8, color: iconColorFinal),
               ),
       ),
     );
@@ -113,7 +103,7 @@ class OnyxiaIconButton extends StatelessWidget {
 
     if (badgeCount > 0) {
       child = Stack(
-        clipBehavior: Clip.none,
+        clipBehavior: .none,
         children: [
           child,
           Positioned(
@@ -125,14 +115,14 @@ class OnyxiaIconButton extends StatelessWidget {
                 height: 16,
                 decoration: BoxDecoration(
                   color: badgeColor ?? ThemeHelper.red(),
-                  shape: BoxShape.circle,
+                  shape: .circle,
                 ),
-                alignment: Alignment.center,
+                alignment: .center,
                 child: Text(
                   badgeCount > 9 ? '9+' : '$badgeCount',
                   style: const NarwhalTextStyle(
                     fontSize: 9,
-                    fontWeight: FontWeight.w700,
+                    fontWeight: .w700,
                     color: Colors.white,
                   ),
                 ),

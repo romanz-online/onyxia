@@ -59,9 +59,7 @@ class BackgroundState extends ConsumerState<Background>
   Widget build(BuildContext context) {
     if (_disposed) {
       // Return a simple container if disposed
-      return Container(
-        color: ThemeHelper.neutral200(context),
-      );
+      return Container(color: ThemeHelper.neutral200(context));
     }
 
     try {
@@ -72,9 +70,7 @@ class BackgroundState extends ConsumerState<Background>
       if (canvasBounds.isLoading) {
         return Container(
           color: ThemeHelper.neutral200(context),
-          child: Center(
-            child: OnyxiaLoadingIndicator(),
-          ),
+          child: Center(child: OnyxiaLoadingIndicator()),
         );
       }
 
@@ -86,9 +82,7 @@ class BackgroundState extends ConsumerState<Background>
           !canvasBounds.hasError) {
         return Container(
           color: ThemeHelper.neutral200(context),
-          child: Center(
-            child: OnyxiaLoadingIndicator(),
-          ),
+          child: Center(child: OnyxiaLoadingIndicator()),
         );
       }
 
@@ -125,16 +119,20 @@ class _CanvasBackgroundPainter extends NarwhalPainter {
     final Paint paint = createThemePaint(
       (context) => ThemeHelper.neutral500(context).withValues(alpha: 0.5),
       strokeWidth: 2.0,
-      strokeCap: StrokeCap.round,
+      strokeCap: .round,
     );
 
     final List<Offset> points = [];
-    for (double x = bounds.left;
-        x < bounds.right;
-        x += CanvasBounds.gridSpacing) {
-      for (double y = bounds.top;
-          y < bounds.bottom;
-          y += CanvasBounds.gridSpacing) {
+    for (
+      double x = bounds.left;
+      x < bounds.right;
+      x += CanvasBounds.gridSpacing
+    ) {
+      for (
+        double y = bounds.top;
+        y < bounds.bottom;
+        y += CanvasBounds.gridSpacing
+      ) {
         points.add(Offset(x, y));
       }
     }

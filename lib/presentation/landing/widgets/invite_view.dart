@@ -9,16 +9,16 @@ class InviteView extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Center(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+        padding: .symmetric(horizontal: 40, vertical: 24),
         child: Column(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           spacing: 16,
           children: [
             Text(
               'Onyxia',
               style: NarwhalTextStyle(
                 fontSize: 32,
-                fontWeight: FontWeight.bold,
+                fontWeight: .bold,
                 color: ThemeHelper.neutral700(context),
               ),
             ),
@@ -33,10 +33,10 @@ class InviteView extends ConsumerWidget {
                   titleText,
                   style: NarwhalTextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: .w600,
                     color: ThemeHelper.neutral800(context),
                   ),
-                  textAlign: TextAlign.center,
+                  textAlign: .center,
                 );
               },
             ),
@@ -46,7 +46,7 @@ class InviteView extends ConsumerWidget {
                 fontSize: 13,
                 color: ThemeHelper.neutral600(context),
               ),
-              textAlign: TextAlign.center,
+              textAlign: .center,
             ),
           ],
         ),

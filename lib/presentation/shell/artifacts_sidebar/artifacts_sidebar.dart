@@ -22,16 +22,13 @@ class ArtifactsSidebar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
-      animation: Listenable.merge([
-        width,
-        isCollapsed,
-        animateNextCollapseChange,
-      ]),
+      animation: .merge([width, isCollapsed, animateNextCollapseChange]),
       builder: (context, _) {
         final w = isCollapsed.value ? dividerStripWidth : width.value;
         final animate = animateNextCollapseChange.value;
-        final duration =
-            animate ? const Duration(milliseconds: 150) : Duration.zero;
+        final Duration duration = animate
+            ? const Duration(milliseconds: 150)
+            : .zero;
 
         return ClipRect(
           child: AnimatedContainer(
@@ -45,7 +42,7 @@ class ArtifactsSidebar extends StatelessWidget {
               }
             },
             child: OverflowBox(
-              alignment: Alignment.topLeft,
+              alignment: .topLeft,
               minWidth: w,
               maxWidth: w,
               child: SizedBox(
@@ -53,25 +50,20 @@ class ArtifactsSidebar extends StatelessWidget {
                 child: Column(
                   children: [
                     Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(right: dividerStripWidth),
+                      width: .infinity,
+                      padding: .only(right: dividerStripWidth),
                       child: const ArtifactsSidebarHeader(),
                     ),
                     Expanded(
                       child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.only(
-                          left: 6,
-                          top: 6,
-                          bottom: 6,
-                          right: 18,
-                        ),
+                        width: .infinity,
+                        padding: .only(left: 6, top: 6, bottom: 6, right: 18),
                         child: ArtifactsTreeView(),
                       ),
                     ),
                     Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.only(right: dividerStripWidth),
+                      width: .infinity,
+                      padding: .only(right: dividerStripWidth),
                       child: const ArtifactsSidebarFooter(),
                     ),
                   ],

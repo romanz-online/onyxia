@@ -8,18 +8,20 @@ class ImageEditorView extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final horizontalMargin =
-            ((constraints.maxWidth - 800.0) / 2).clamp(0.0, double.infinity);
+        final horizontalMargin = ((constraints.maxWidth - 800.0) / 2).clamp(
+          0.0,
+          double.infinity,
+        );
         return CustomScrollView(
           slivers: [
             SliverFillRemaining(
               hasScrollBody: false,
               child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: horizontalMargin),
+                padding: .symmetric(horizontal: horizontalMargin),
                 child: Center(
                   child: Image.network(
                     artifact.downloadUrl,
-                    fit: BoxFit.scaleDown,
+                    fit: .scaleDown,
                     loadingBuilder: (ctx, child, progress) =>
                         progress == null ? child : OnyxiaLoadingIndicator(),
                     errorBuilder: (ctx, err, _) => Text(

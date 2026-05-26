@@ -41,13 +41,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     CanvasObjectMenuOption.stroke,
   ];
 
-  static const imageOptions = [
-    CanvasObjectMenuOption.mediaSource,
-  ];
+  static const imageOptions = [CanvasObjectMenuOption.mediaSource];
 
-  static const textOptions = [
-    CanvasObjectMenuOption.textfield,
-  ];
+  static const textOptions = [CanvasObjectMenuOption.textfield];
 
   static const arrowOptions = [
     CanvasObjectMenuOption.color,
@@ -58,9 +54,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     CanvasObjectMenuOption.textfield,
   ];
 
-  static const brushOptions = [
-    CanvasObjectMenuOption.color,
-  ];
+  static const brushOptions = [CanvasObjectMenuOption.color];
 
   static const double menuSpacing = CanvasBounds.gridSpacing * 2.0;
   static const double borderWidth = 1.0;
@@ -76,8 +70,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   void _toggleMenuOption(CanvasObjectMenuOption option) {
     setState(() {
-      _activeMenuOption =
-          _activeMenuOption == option ? CanvasObjectMenuOption.none : option;
+      _activeMenuOption = _activeMenuOption == option
+          ? CanvasObjectMenuOption.none
+          : option;
     });
   }
 
@@ -101,8 +96,9 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       return const SizedBox.shrink();
     }
 
-    List<CanvasObjectMenuOption> menuOptions =
-        _getCommonMenuOptions(_selectedObjects);
+    List<CanvasObjectMenuOption> menuOptions = _getCommonMenuOptions(
+      _selectedObjects,
+    );
 
     if (!menuOptions.contains(_activeMenuOption)) {
       _closeSubmenu();
@@ -136,16 +132,22 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
     // Transform the object's positions from canvas coordinates to screen coordinates
     final objectCenterScreenPoint = MatrixUtils.transformPoint(
-        transform, Offset(objectCenterX, objectTopY));
+      transform,
+      Offset(objectCenterX, objectTopY),
+    );
     final objectBottomScreenPoint = MatrixUtils.transformPoint(
-        transform, Offset(objectCenterX, objectBottomY));
+      transform,
+      Offset(objectCenterX, objectBottomY),
+    );
 
     // targetY: desired bottom of main menu when placed above objects
-    final targetY = objectCenterScreenPoint.dy -
+    final targetY =
+        objectCenterScreenPoint.dy -
         (CanvasBounds.gridSpacing * scale) -
         menuSpacing;
     // belowTargetY: desired top of main menu when placed below objects
-    final belowTargetY = objectBottomScreenPoint.dy +
+    final belowTargetY =
+        objectBottomScreenPoint.dy +
         (CanvasBounds.gridSpacing * scale) +
         menuSpacing;
 
@@ -164,16 +166,17 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         CanvasObjectMenuOption.stroke => (_buildStrokePalette(), true),
         CanvasObjectMenuOption.shape => (_buildShapePalette(), true),
         CanvasObjectMenuOption.startArrowTip => (
-            _buildArrowTipPalette(tipOnRight: false),
-            true
-          ),
+          _buildArrowTipPalette(tipOnRight: false),
+          true,
+        ),
         CanvasObjectMenuOption.endArrowTip => (
-            _buildArrowTipPalette(tipOnRight: true),
-            true
-          ),
+          _buildArrowTipPalette(tipOnRight: true),
+          true,
+        ),
         CanvasObjectMenuOption.arrowType => (_buildArrowTypePalette(), true),
         _ => throw UnimplementedError(
-            'Submenu not implemented for $_activeMenuOption'),
+          'Submenu not implemented for $_activeMenuOption',
+        ),
       };
     }
 
@@ -217,7 +220,8 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       };
 
   List<CanvasObjectMenuOption> _getCommonMenuOptions(
-      List<CanvasObject> selectedObjects) {
+    List<CanvasObject> selectedObjects,
+  ) {
     if (selectedObjects.isEmpty) return [];
 
     final commonOptions = getObjectOptions(selectedObjects.first.type).toSet();
@@ -237,25 +241,31 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     for (final opt in options) {
       switch (opt) {
         case CanvasObjectMenuOption.mediaSource:
-          buttons.add(OnyxiaIconButton(
-            icon: LucideIcons.image,
-            onPressed: () async {
-              final selectedObjects =
-                  ref.read(canvasObjectsProvider).selectedObjects;
-              if (selectedObjects.isNotEmpty) {
-                final selectedObject = selectedObjects[0];
-                String? url = null;
-                if (selectedObject.isImage &&
-                    selectedObject.imageProps.imageUrl.isNotEmpty) {
-                  url = selectedObject.imageProps.imageUrl;
-                }
+          buttons.add(
+            OnyxiaIconButton(
+              icon: LucideIcons.image,
+              onPressed: () async {
+                final selectedObjects = ref
+                    .read(canvasObjectsProvider)
+                    .selectedObjects;
+                if (selectedObjects.isNotEmpty) {
+                  final selectedObject = selectedObjects[0];
+                  String? url = null;
+                  if (selectedObject.isImage &&
+                      selectedObject.imageProps.imageUrl.isNotEmpty) {
+                    url = selectedObject.imageProps.imageUrl;
+                  }
 
-                if (url != null)
-                  await launchUrl(Uri.parse(url), webOnlyWindowName: '_blank');
-              }
-            },
-            isSelected: false,
-          ));
+                  if (url != null)
+                    await launchUrl(
+                      Uri.parse(url),
+                      webOnlyWindowName: '_blank',
+                    );
+                }
+              },
+              isSelected: false,
+            ),
+          );
           break;
         case CanvasObjectMenuOption.shape:
           final isSelected = _activeMenuOption == opt;
@@ -269,37 +279,36 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
             CanvasObjectType.cylinder => LucideIcons.cylinder,
             CanvasObjectType.house => LucideIcons.house,
             CanvasObjectType.reverseHouse => LucideIcons.house,
-            _ => LucideIcons.square
+            _ => LucideIcons.square,
           };
 
-          buttons.add(OnyxiaIconButton(
-            icon: icon,
-            onPressed: () => _toggleMenuOption(opt),
-            isSelected: isSelected,
-            isPressed: isSelected,
-            hasCaret: true,
-          ));
+          buttons.add(
+            OnyxiaIconButton(
+              icon: icon,
+              onPressed: () => _toggleMenuOption(opt),
+              isSelected: isSelected,
+              isPressed: isSelected,
+              hasCaret: true,
+            ),
+          );
           buttons.add(_buildDivider());
           break;
         case CanvasObjectMenuOption.color:
           final isSelected = _activeMenuOption == opt;
           buttons.add(
             Stack(
-              alignment: Alignment.center,
+              alignment: .center,
               children: [
                 // Radial gradient shadow layer (beneath button)
                 Padding(
-                  padding: const EdgeInsets.only(right: 18),
+                  padding: .only(right: 18),
                   child: Container(
                     width: 24,
                     height: 24,
                     decoration: BoxDecoration(
-                      shape: BoxShape.circle,
+                      shape: .circle,
                       gradient: RadialGradient(
-                        colors: [
-                          Colors.black,
-                          Colors.transparent,
-                        ],
+                        colors: [Colors.black, Colors.transparent],
                       ),
                     ),
                   ),
@@ -321,69 +330,79 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
           break;
         case CanvasObjectMenuOption.stroke:
           final isSelected = _activeMenuOption == opt;
-          buttons.add(OnyxiaIconButton(
-            icon: LucideIcons.minus,
-            onPressed: () => _toggleMenuOption(opt),
-            isSelected: isSelected,
-            isPressed: isSelected,
-            hasCaret: true,
-          ));
+          buttons.add(
+            OnyxiaIconButton(
+              icon: LucideIcons.minus,
+              onPressed: () => _toggleMenuOption(opt),
+              isSelected: isSelected,
+              isPressed: isSelected,
+              hasCaret: true,
+            ),
+          );
           break;
         case CanvasObjectMenuOption.startArrowTip:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].arrowProps.startTip) {
-            ArrowTip.triangle => LucideIcons.arrowLeft,
-            ArrowTip.circle => LucideIcons.circle,
-            ArrowTip.none => LucideIcons.ban,
+            .triangle => LucideIcons.arrowLeft,
+            .circle => LucideIcons.circle,
+            .none => LucideIcons.ban,
           };
-          buttons.add(OnyxiaIconButton(
-            icon: icon,
-            onPressed: () => _toggleMenuOption(opt),
-            isSelected: isSelected,
-            hasCaret: true,
-          ));
+          buttons.add(
+            OnyxiaIconButton(
+              icon: icon,
+              onPressed: () => _toggleMenuOption(opt),
+              isSelected: isSelected,
+              hasCaret: true,
+            ),
+          );
           break;
         case CanvasObjectMenuOption.endArrowTip:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].arrowProps.endTip) {
-            ArrowTip.triangle => LucideIcons.arrowRight,
-            ArrowTip.circle => LucideIcons.circle,
-            ArrowTip.none => LucideIcons.ban,
+            .triangle => LucideIcons.arrowRight,
+            .circle => LucideIcons.circle,
+            .none => LucideIcons.ban,
           };
-          buttons.add(OnyxiaIconButton(
-            icon: icon,
-            onPressed: () => _toggleMenuOption(opt),
-            isSelected: isSelected,
-            hasCaret: true,
-          ));
+          buttons.add(
+            OnyxiaIconButton(
+              icon: icon,
+              onPressed: () => _toggleMenuOption(opt),
+              isSelected: isSelected,
+              hasCaret: true,
+            ),
+          );
           break;
         case CanvasObjectMenuOption.arrowType:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].arrowProps.arrowType) {
-            ArrowType.segmented => LucideIcons.cornerDownRight,
-            ArrowType.curved => LucideIcons.trendingUp,
+            .segmented => LucideIcons.cornerDownRight,
+            .curved => LucideIcons.trendingUp,
           };
-          buttons.add(OnyxiaIconButton(
-            icon: icon,
-            onPressed: () => _toggleMenuOption(opt),
-            isSelected: isSelected,
-            hasCaret: true,
-          ));
+          buttons.add(
+            OnyxiaIconButton(
+              icon: icon,
+              onPressed: () => _toggleMenuOption(opt),
+              isSelected: isSelected,
+              hasCaret: true,
+            ),
+          );
           break;
         case CanvasObjectMenuOption.textfield:
           final isSelected = ref.watch(canvasTextProvider.notifier).isEditing;
-          buttons.add(OnyxiaIconButton(
-            icon: LucideIcons.type,
-            onPressed: () {
-              if (isSelected) {
-                widget.closeTextEditor();
-                _closeSubmenu();
-              } else {
-                widget.openTextEditor();
-              }
-            },
-            isSelected: isSelected,
-          ));
+          buttons.add(
+            OnyxiaIconButton(
+              icon: LucideIcons.type,
+              onPressed: () {
+                if (isSelected) {
+                  widget.closeTextEditor();
+                  _closeSubmenu();
+                } else {
+                  widget.openTextEditor();
+                }
+              },
+              isSelected: isSelected,
+            ),
+          );
           break;
         case CanvasObjectMenuOption.none:
           break;
@@ -393,10 +412,10 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
   }
 
   Widget _buildDivider() => Container(
-        width: 0.5,
-        height: iconSize,
-        color: ThemeHelper.neutral400(context),
-      );
+    width: 0.5,
+    height: iconSize,
+    color: ThemeHelper.neutral400(context),
+  );
 
   // SUB-MENUS
 
@@ -422,17 +441,19 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
     return GridPalette(
       buttons: colorPalette
-          .map((color) => OnyxiaIconButton(
-                icon: LucideIcons.palette,
-                iconColor: color,
-                onPressed: () {
-                  for (final obj in _selectedObjects) {
-                    obj.color = color;
-                  }
-                  objectsNotifier.updateObjects(objects: _selectedObjects);
-                },
-                isSelected: _selectedObjects[0].color == color,
-              ))
+          .map(
+            (color) => OnyxiaIconButton(
+              icon: LucideIcons.palette,
+              iconColor: color,
+              onPressed: () {
+                for (final obj in _selectedObjects) {
+                  obj.color = color;
+                }
+                objectsNotifier.updateObjects(objects: _selectedObjects);
+              },
+              isSelected: _selectedObjects[0].color == color,
+            ),
+          )
           .toList(),
       rows: 2,
       context: context,
@@ -445,45 +466,41 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         icon: LucideIcons.ellipsis,
         onPressed: () {
           for (final obj in _selectedObjects) {
-            obj.stroke = StrokeType.dashed;
+            obj.stroke = .dashed;
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: _selectedObjects[0].stroke == StrokeType.dashed,
+        isSelected: _selectedObjects[0].stroke == .dashed,
       ),
       OnyxiaIconButton(
         icon: LucideIcons.minus,
         onPressed: () {
           for (final obj in _selectedObjects) {
-            obj.stroke = StrokeType.solid;
+            obj.stroke = .solid;
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: _selectedObjects[0].stroke == StrokeType.solid,
+        isSelected: _selectedObjects[0].stroke == .solid,
       ),
       OnyxiaIconButton(
         icon: LucideIcons.equal,
         onPressed: () {
           for (final obj in _selectedObjects) {
-            obj.stroke = StrokeType.thick;
+            obj.stroke = .thick;
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: _selectedObjects[0].stroke == StrokeType.thick,
+        isSelected: _selectedObjects[0].stroke == .thick,
       ),
     ];
 
-    return GridPalette(
-      buttons: buttons,
-      rows: 1,
-      context: context,
-    );
+    return GridPalette(buttons: buttons, rows: 1, context: context);
   }
 
   Widget _buildShapePalette() {
@@ -512,25 +529,23 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     };
 
     List<Widget> buttons = shapeOptions
-        .map((shapeType) => OnyxiaIconButton(
-              icon: shapeIcons[shapeType]!,
-              onPressed: () {
-                for (final obj in _selectedObjects) {
-                  obj.type = shapeType;
-                }
-                ref
-                    .read(canvasObjectsProvider.notifier)
-                    .updateObjects(objects: _selectedObjects);
-              },
-              isSelected: _selectedObjects[0].type == shapeType,
-            ))
+        .map(
+          (shapeType) => OnyxiaIconButton(
+            icon: shapeIcons[shapeType]!,
+            onPressed: () {
+              for (final obj in _selectedObjects) {
+                obj.type = shapeType;
+              }
+              ref
+                  .read(canvasObjectsProvider.notifier)
+                  .updateObjects(objects: _selectedObjects);
+            },
+            isSelected: _selectedObjects[0].type == shapeType,
+          ),
+        )
         .toList();
 
-    return GridPalette(
-      buttons: buttons,
-      rows: 2,
-      context: context,
-    );
+    return GridPalette(buttons: buttons, rows: 2, context: context);
   }
 
   Widget _buildArrowTipPalette({required tipOnRight}) {
@@ -594,11 +609,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       ),
     ];
 
-    return GridPalette(
-      buttons: buttons,
-      rows: 1,
-      context: context,
-    );
+    return GridPalette(buttons: buttons, rows: 1, context: context);
   }
 
   Widget _buildArrowTypePalette() {
@@ -634,11 +645,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
       ),
     ];
 
-    return GridPalette(
-      buttons: buttons,
-      rows: 1,
-      context: context,
-    );
+    return GridPalette(buttons: buttons, rows: 1, context: context);
   }
 }
 
@@ -676,33 +683,23 @@ class GridPalette extends StatelessWidget {
         final rowButtons = buttons.sublist(startIndex, endIndex);
         // Wrap each button in padding
         final wrappedButtons = rowButtons
-            .map((button) => Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: button,
-                ))
+            .map((button) => Padding(padding: .all(6), child: button))
             .toList();
-        rowWidgets.add(
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: wrappedButtons,
-          ),
-        );
+        rowWidgets.add(Row(mainAxisSize: .min, children: wrappedButtons));
       }
     }
 
     return Material(
       elevation: 2,
-      borderRadius:
-          BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
+      borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),
       color: ThemeHelper.neutral200(context),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(
+          border: .all(
             color: ThemeHelper.neutral400(context),
             width: CanvasObjectMenuState.borderWidth,
           ),
-          borderRadius:
-              BorderRadius.circular(CanvasObjectMenuState.buttonBorderRadius),
+          borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),
         ),
         child: AnimatedSize(
           duration: const Duration(milliseconds: 200),
@@ -711,10 +708,7 @@ class GridPalette extends StatelessWidget {
             child: Container(
               constraints: BoxConstraints(minHeight: 54),
               child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: rowWidgets,
-                ),
+                child: Column(mainAxisSize: .min, children: rowWidgets),
               ),
             ),
           ),
@@ -758,27 +752,39 @@ class _CanvasMenuLayoutDelegate extends MultiChildLayoutDelegate {
   @override
   void performLayout(Size size) {
     // 1. Main menu — measure first to get its actual size
-    final mmSize =
-        layoutChild(_CanvasMenuChild.mainMenu, const BoxConstraints());
+    final mmSize = layoutChild(
+      _CanvasMenuChild.mainMenu,
+      const BoxConstraints(),
+    );
     final double mmAboveTop = targetY - mmSize.height;
     final bool flipped = mmAboveTop < _margin;
-    final double mmY = (flipped ? belowTargetY : mmAboveTop)
-        .clamp(_margin, viewportHeight - mmSize.height - _margin);
-    final double mmX = (targetX - mmSize.width / 2)
-        .clamp(_margin, viewportWidth - mmSize.width - _margin);
+    final double mmY = (flipped ? belowTargetY : mmAboveTop).clamp(
+      _margin,
+      viewportHeight - mmSize.height - _margin,
+    );
+    final double mmX = (targetX - mmSize.width / 2).clamp(
+      _margin,
+      viewportWidth - mmSize.width - _margin,
+    );
     positionChild(_CanvasMenuChild.mainMenu, Offset(mmX, mmY));
 
     // 2. Submenu — positioned relative to measured main menu bounds
     if (hasChild(_CanvasMenuChild.submenu)) {
-      final smSize =
-          layoutChild(_CanvasMenuChild.submenu, const BoxConstraints());
+      final smSize = layoutChild(
+        _CanvasMenuChild.submenu,
+        const BoxConstraints(),
+      );
 
       // X: right-align to main menu's right edge, or center at targetX
       final double smX = submenuFloatRight
-          ? (mmX + mmSize.width - smSize.width)
-              .clamp(_margin, viewportWidth - smSize.width - _margin)
-          : (targetX - smSize.width / 2)
-              .clamp(_margin, viewportWidth - smSize.width - _margin);
+          ? (mmX + mmSize.width - smSize.width).clamp(
+              _margin,
+              viewportWidth - smSize.width - _margin,
+            )
+          : (targetX - smSize.width / 2).clamp(
+              _margin,
+              viewportWidth - smSize.width - _margin,
+            );
 
       // Y: above or below main menu
       final double mmBottom = mmY + mmSize.height;
@@ -795,7 +801,9 @@ class _CanvasMenuLayoutDelegate extends MultiChildLayoutDelegate {
       positionChild(
         _CanvasMenuChild.submenu,
         Offset(
-            smX, smY.clamp(_margin, viewportHeight - smSize.height - _margin)),
+          smX,
+          smY.clamp(_margin, viewportHeight - smSize.height - _margin),
+        ),
       );
     }
   }

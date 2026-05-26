@@ -42,24 +42,22 @@ class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
       content: Focus(
         focusNode: _popupFocusNode,
         onKeyEvent: (node, event) {
-          if (event is! KeyDownEvent) return KeyEventResult.ignored;
-          if (event.logicalKey != LogicalKeyboardKey.enter)
-            return KeyEventResult.ignored;
+          if (event is! KeyDownEvent) return .ignored;
+          if (event.logicalKey != .enter) return .ignored;
 
-          ref.read(vaultsProvider.notifier).renameVault(
-                widget.vaultId,
-                _vaultNameController.text,
-              );
+          ref
+              .read(vaultsProvider.notifier)
+              .renameVault(widget.vaultId, _vaultNameController.text);
           Navigator.of(context).pop();
-          return KeyEventResult.handled;
+          return .handled;
         },
         child: SizedBox(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: .center,
             spacing: 10,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: .spaceBetween,
                 children: [
                   Text(
                     'Vault Name',
@@ -79,15 +77,12 @@ class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
           ),
         ),
       ),
-      onCancelPressed: () {
-        Navigator.of(context).pop();
-      },
+      onCancelPressed: Navigator.of(context).pop,
       actionButtonText: 'Rename',
       onActionPressed: () {
-        ref.read(vaultsProvider.notifier).renameVault(
-              widget.vaultId,
-              _vaultNameController.text,
-            );
+        ref
+            .read(vaultsProvider.notifier)
+            .renameVault(widget.vaultId, _vaultNameController.text);
         Navigator.of(context).pop();
       },
     );

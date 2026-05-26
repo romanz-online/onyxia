@@ -99,10 +99,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     if (currentCanvas == null) {
       return Scaffold(
         body: Center(
-          child: Text(
-            'Canvas not found',
-            style: NarwhalTextStyle(),
-          ),
+          child: Text('Canvas not found', style: NarwhalTextStyle()),
         ),
       );
     }
@@ -111,11 +108,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final selectedTool = ref.watch(toolModeProvider);
     final objectText = ref.watch(canvasTextProvider);
     final canvasCommentsState = ref.watch(commentsProvider);
-    final showArtifacts =
-        ref.watch(canvasSettingsProvider(Setting.showArtifacts));
-    final showComments =
-        ref.watch(canvasSettingsProvider(Setting.showComments));
-    final showToolbar = ref.watch(canvasSettingsProvider(Setting.showToolbar));
+    final showArtifacts = ref.watch(canvasSettingsProvider(.showArtifacts));
+    final showComments = ref.watch(canvasSettingsProvider(.showComments));
+    final showToolbar = ref.watch(canvasSettingsProvider(.showToolbar));
     final arrowPreview = ref.watch(arrowPreviewProvider);
     final headlessState = ref.watch(headlessProvider);
     final pins = ref.watch(pinsProvider);
@@ -152,12 +147,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
               saveTextEditor: _debouncedTextSave,
             ),
             if (showToolbar)
-              if (currentCanvas.canvasType == CanvasType.flow)
+              if (currentCanvas.canvasType == .flow)
                 DragOffBar(
                   buttons: [
                     DragOffBarButton(
                       icon: LucideIcons.fileText,
-                      dragData: DragOffBarData(type: ArtifactType.note),
+                      dragData: DragOffBarData(type: .note),
                       dragFeedbackBuilder: () =>
                           _buildArtifactDragFeedback(context),
                     ),
@@ -203,7 +198,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           minScale: ref.read(canvasViewportProvider.notifier).minScale,
           maxScale: ref.read(canvasViewportProvider.notifier).maxScale,
           transformationController: viewportController,
-          boundaryMargin: EdgeInsets.all(0.0),
+          boundaryMargin: .zero,
           constrained: false,
           panEnabled: _gestureRouter.allowsViewportPanning,
           scaleEnabled: _gestureRouter.allowsViewportScaling,
@@ -228,19 +223,19 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                           size: canvasBounds.size,
                           child: CanvasTouchDetector(
                             gesturesToOverride: [
-                              GestureType.onTapDown,
-                              GestureType.onTapUp,
+                              .onTapDown,
+                              .onTapUp,
                               // onPanDown breaks things because it triggers at the same time as regular taps
                               // GestureType.onPanDown,
                               if (!_gestureRouter.allowsViewportPanning) ...[
                                 // if statement allows InteractiveViewer to handle viewport panning when needed
-                                GestureType.onPanStart,
-                                GestureType.onPanUpdate,
-                                GestureType.onPanEnd,
+                                .onPanStart,
+                                .onPanUpdate,
+                                .onPanEnd,
                               ],
-                              GestureType.onSecondaryTapDown,
-                              GestureType.onSecondaryTapUp,
-                              GestureType.onHover,
+                              .onSecondaryTapDown,
+                              .onSecondaryTapUp,
+                              .onHover,
                             ],
                             builder: (context) {
                               _canvasPainter = CanvasPainter(
@@ -249,16 +244,21 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                                 gestureRouter: _gestureRouter,
                                 objects: objects.objects,
                                 selectedObjects: objects.selectedObjects,
-                                draggedObjects:
-                                    ref.watch(draggedObjectsProvider),
-                                dragSelect:
-                                    ref.watch(dragSelectProvider).dragRect,
-                                arrowPrimedObjects:
-                                    ref.watch(arrowPrimedObjectsProvider),
-                                arrowToolPrimedData:
-                                    ref.watch(arrowToolPrimedObjectsProvider),
-                                textEditedObjId:
-                                    ref.watch(canvasTextProvider).editingObjId,
+                                draggedObjects: ref.watch(
+                                  draggedObjectsProvider,
+                                ),
+                                dragSelect: ref
+                                    .watch(dragSelectProvider)
+                                    .dragRect,
+                                arrowPrimedObjects: ref.watch(
+                                  arrowPrimedObjectsProvider,
+                                ),
+                                arrowToolPrimedData: ref.watch(
+                                  arrowToolPrimedObjectsProvider,
+                                ),
+                                textEditedObjId: ref
+                                    .watch(canvasTextProvider)
+                                    .editingObjId,
                                 arrowPreview: arrowPreview,
                               );
 
@@ -270,7 +270,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                           ),
                         ),
                       ),
-                      ...objects.objects.where((e) => !e.isArrow).map(
+                      ...objects.objects
+                          .where((e) => !e.isArrow)
+                          .map(
                             (obj) => CanvasObjectTextArea(
                               context: context,
                               canvasObject: obj,
@@ -279,7 +281,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                               onTextKeyPress: _debouncedTextSave,
                             ),
                           ),
-                      ...objects.objects.where((e) => e.isArrow).map(
+                      ...objects.objects
+                          .where((e) => e.isArrow)
+                          .map(
                             (obj) => CanvasArrowTextArea(
                               context: context,
                               canvasObject: obj,
@@ -304,27 +308,25 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                           transformationController: viewportController,
                         ),
                       if (showArtifacts)
-                        ...pins.pins.map(
-                          (pin) {
-                            CanvasObject? targetObject;
-                            if (pin.pinnedObjectId != null) {
-                              targetObject = objects.objects.firstWhereOrNull(
-                                (obj) => obj.id == pin.pinnedObjectId,
-                              );
-                            }
-
-                            return CanvasPin(
-                              pin: pin,
-                              canvasObject: targetObject,
-                              position: pin.getOffset(parent: targetObject),
-                              transformationController: viewportController,
-                              isExpanded: _isPinExpanded(pin.id),
-                              onTap: () => _isPinExpanded(pin.id)
-                                  ? _collapsePin()
-                                  : _expandPin(pin),
+                        ...pins.pins.map((pin) {
+                          CanvasObject? targetObject;
+                          if (pin.pinnedObjectId != null) {
+                            targetObject = objects.objects.firstWhereOrNull(
+                              (obj) => obj.id == pin.pinnedObjectId,
                             );
-                          },
-                        ),
+                          }
+
+                          return CanvasPin(
+                            pin: pin,
+                            canvasObject: targetObject,
+                            position: pin.getOffset(parent: targetObject),
+                            transformationController: viewportController,
+                            isExpanded: _isPinExpanded(pin.id),
+                            onTap: () => _isPinExpanded(pin.id)
+                                ? _collapsePin()
+                                : _expandPin(pin),
+                          );
+                        }),
                       if (showArtifacts)
                         _buildExpandedItem(
                           comments: comments,
@@ -337,19 +339,21 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                         onAcceptWithDetails: (details) {
                           final RenderBox renderBox =
                               context.findRenderObject() as RenderBox;
-                          final canvasPosition =
-                              renderBox.globalToLocal(details.offset);
+                          final canvasPosition = renderBox.globalToLocal(
+                            details.offset,
+                          );
 
                           final hitInteractionContext = _canvasPainter
                               ?.hitTestForDropEvent(canvasPosition);
-                          final hitObjectFill = hitInteractionContext
-                              is ObjectFillInteractionContext;
+                          final hitObjectFill =
+                              hitInteractionContext
+                                  is ObjectFillInteractionContext;
 
                           if (hitObjectFill ||
                               config.allowArtifactsOnBackground) {
                             // Hit an object - create pin on the object
                             switch (config.artifactDisplay) {
-                              case ArtifactCanvasDisplay.pin:
+                              case .pin:
                                 CanvasInteractionService.createPin(
                                   ref: ref,
                                   position: canvasPosition,
@@ -360,7 +364,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                                       : null,
                                 );
                                 break;
-                              case ArtifactCanvasDisplay.object:
+                              case .object:
                                 CanvasInteractionService.createArtifactObject(
                                   ref: ref,
                                   position: canvasPosition,
@@ -372,7 +376,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                             OnyxiaToast.show(
                               text:
                                   'Cannot drop item pins on whiteboard canvas.',
-                              type: ToastType.info,
+                              type: .info,
                             );
                           }
                         },
@@ -385,8 +389,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                         onAcceptWithDetails: (details) {
                           final RenderBox renderBox =
                               context.findRenderObject() as RenderBox;
-                          final canvasPosition =
-                              renderBox.globalToLocal(details.offset);
+                          final canvasPosition = renderBox.globalToLocal(
+                            details.offset,
+                          );
                           if (details.data is ImageDragData) {
                             CanvasInteractionService.insertImage(
                               ref: ref,
@@ -418,17 +423,14 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
       offset: Offset(-width / 2, -height / 2),
       child: Material(
         elevation: 4,
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: .circular(8),
         child: Container(
           width: width,
           height: height,
           decoration: BoxDecoration(
             color: ThemeHelper.neutral200(context),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: ThemeHelper.neutral400(context),
-              width: 1.5,
-            ),
+            borderRadius: .circular(8),
+            border: .all(color: ThemeHelper.neutral400(context), width: 1.5),
           ),
         ),
       ),
@@ -474,8 +476,8 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     if (comment != null) {
       CanvasObject? obj = comment.pinnedObjectId != null
           ? ref
-              .read(canvasObjectsProvider.notifier)
-              .getObjectById(comment.pinnedObjectId!)
+                .read(canvasObjectsProvider.notifier)
+                .getObjectById(comment.pinnedObjectId!)
           : null;
 
       return CanvasCommentPinExpanded(
@@ -498,25 +500,24 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     required List<Comment> comments,
     required List<CanvasObject> objects,
     required TransformationController transformationController,
-  }) =>
-      comments.map((comment) {
-        CanvasObject? targetObject;
-        if (comment.pinnedObjectId != null) {
-          targetObject = objects.firstWhereOrNull(
-            (obj) => obj.id == comment.pinnedObjectId,
-          );
-        }
+  }) => comments.map((comment) {
+    CanvasObject? targetObject;
+    if (comment.pinnedObjectId != null) {
+      targetObject = objects.firstWhereOrNull(
+        (obj) => obj.id == comment.pinnedObjectId,
+      );
+    }
 
-        return CanvasCommentPin(
-          transformationController: transformationController,
-          comment: comment,
-          canvasObject: targetObject,
-          position: comment.getOffset(parent: targetObject),
-          isExpanded: _isPinExpanded(comment.id),
-          onTap: () =>
-              _isPinExpanded(comment.id) ? _collapsePin() : _expandPin(comment),
-        );
-      }).toList();
+    return CanvasCommentPin(
+      transformationController: transformationController,
+      comment: comment,
+      canvasObject: targetObject,
+      position: comment.getOffset(parent: targetObject),
+      isExpanded: _isPinExpanded(comment.id),
+      onTap: () =>
+          _isPinExpanded(comment.id) ? _collapsePin() : _expandPin(comment),
+    );
+  }).toList();
 
   Widget _buildImageDropRegion(WidgetRef ref) {
     final config = ref.watch(canvasConfigProvider);
@@ -533,7 +534,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           Formats.bmp,
           Formats.webp,
         ],
-        hitTestBehavior: HitTestBehavior.translucent,
+        hitTestBehavior: .translucent,
         onDropOver: (event) {
           _isDragHovering.value = true;
           return event.session.allowedOperations.firstOrNull ??
@@ -550,20 +551,20 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
 
             return Container(
               color: ThemeHelper.blue400(context).withValues(alpha: 0.5),
-              padding: const EdgeInsets.all(16),
+              padding: .all(16),
               child: DottedBorder(
-                borderType: BorderType.RRect,
-                radius: const Radius.circular(8),
+                borderType: .RRect,
+                radius: .circular(8),
                 color: ThemeHelper.white(context).withValues(alpha: 0.7),
                 strokeWidth: 4,
                 dashPattern: const [8, 4],
                 child: Container(
                   decoration: BoxDecoration(
                     color: Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: .circular(8),
                   ),
-                  width: double.infinity,
-                  height: double.infinity,
+                  width: .infinity,
+                  height: .infinity,
                 ),
               ),
             );
@@ -588,15 +589,10 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
 
     final validFiles = (await Future.wait(
       event.session.items.map(_readDroppedItem),
-    ))
-        .whereType<PlatformFile>()
-        .toList();
+    )).whereType<PlatformFile>().toList();
 
     if (validFiles.isEmpty) {
-      OnyxiaToast.show(
-        text: 'No valid image files found',
-        type: ToastType.error,
-      );
+      OnyxiaToast.show(text: 'No valid image files found', type: .error);
       return;
     }
 

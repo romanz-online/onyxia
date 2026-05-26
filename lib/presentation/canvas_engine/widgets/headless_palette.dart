@@ -84,11 +84,13 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
     // Determine connection point based on arrow direction
     if (arrowDirection.dx.abs() > arrowDirection.dy.abs()) {
-      connectionPoint =
-          arrowDirection.dx > 0 ? ConnectionPoint.left : ConnectionPoint.right;
+      connectionPoint = arrowDirection.dx > 0
+          ? ConnectionPoint.left
+          : ConnectionPoint.right;
     } else {
-      connectionPoint =
-          arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
+      connectionPoint = arrowDirection.dy > 0
+          ? ConnectionPoint.top
+          : ConnectionPoint.bottom;
     }
 
     ghostObject.color = ThemeHelper.neutral100(context);
@@ -129,11 +131,13 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
     // Determine connection point based on arrow direction
     if (arrowDirection.dx.abs() > arrowDirection.dy.abs()) {
-      connectionPoint =
-          arrowDirection.dx > 0 ? ConnectionPoint.left : ConnectionPoint.right;
+      connectionPoint = arrowDirection.dx > 0
+          ? ConnectionPoint.left
+          : ConnectionPoint.right;
     } else {
-      connectionPoint =
-          arrowDirection.dy > 0 ? ConnectionPoint.top : ConnectionPoint.bottom;
+      connectionPoint = arrowDirection.dy > 0
+          ? ConnectionPoint.top
+          : ConnectionPoint.bottom;
     }
 
     ghostObject.color = Colors.transparent;
@@ -228,7 +232,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         // Full-screen gesture detector to detect clicks outside palette
         Positioned.fill(
           child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
+            behavior: .translucent,
             onTapDown: (details) {
               // Check if tap is outside the palette bounds
               final tapX = details.globalPosition.dx;
@@ -239,7 +243,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
               final paletteTop = y;
               final paletteBottom = y + menuHeight;
 
-              final isOutsidePalette = tapX < paletteLeft ||
+              final isOutsidePalette =
+                  tapX < paletteLeft ||
                   tapX > paletteRight ||
                   tapY < paletteTop ||
                   tapY > paletteBottom;
@@ -264,22 +269,22 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
           top: y,
           child: Material(
             elevation: 8,
-            borderRadius: BorderRadius.circular(buttonBorderRadius),
+            borderRadius: .circular(buttonBorderRadius),
             color: ThemeHelper.neutral100(context),
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(
+                border: .all(
                   color: ThemeHelper.neutral400(context),
                   width: borderWidth,
                 ),
-                borderRadius: BorderRadius.circular(buttonBorderRadius),
+                borderRadius: .circular(buttonBorderRadius),
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,
+                mainAxisSize: .min,
                 children: [
                   // Shapes palette
                   Container(
-                    padding: const EdgeInsets.all(menuPadding),
+                    padding: .all(menuPadding),
                     child: _buildShapesPalette(),
                   ),
                   // Add section for shapes
@@ -287,23 +292,24 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                     height: addSectionSize.height,
                     width: addSectionSize.width,
                     decoration: BoxDecoration(
-                      color: ThemeHelper.neutral600(context)
-                          .withValues(alpha: 0.05),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(buttonBorderRadius),
-                        bottomRight: Radius.circular(buttonBorderRadius),
+                      color: ThemeHelper.neutral600(
+                        context,
+                      ).withValues(alpha: 0.05),
+                      borderRadius: .only(
+                        bottomLeft: .circular(buttonBorderRadius),
+                        bottomRight: .circular(buttonBorderRadius),
                       ),
                     ),
                     child: Center(
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisAlignment: .center,
                         children: [
                           if (paletteState.hoveredShapeType != null) ...[
                             Text(
                               'Add',
                               style: NarwhalTextStyle(
                                 fontSize: 14,
-                                fontWeight: FontWeight.w600,
+                                fontWeight: .w600,
                               ),
                             ),
                             const Gap(4),
@@ -337,8 +343,9 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     // Calculate arrow direction for basic positioning offset
     final direction =
         arrowKeypoints.last - arrowKeypoints[arrowKeypoints.length - 2];
-    double offsetX =
-        direction.dx > 0 ? -50 : 50; // Simple offset, no fixed calculations
+    double offsetX = direction.dx > 0
+        ? -50
+        : 50; // Simple offset, no fixed calculations
     double offsetY = direction.dy > 0 ? -50 : 50;
 
     final desiredX = lastKeypoint.dx + offsetX;
@@ -353,7 +360,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         // Full-screen gesture detector to detect clicks outside palette
         Positioned.fill(
           child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
+            behavior: .translucent,
             onTapDown: (details) {
               // Close palette when clicking outside (simplified logic)
               final paletteState = ref.read(headlessProvider);
@@ -371,27 +378,32 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         // Notes palette with right-click menu styling
         Positioned(
           left: desiredX.clamp(
-              viewportMargin, screenSize.width - 250 - viewportMargin),
+            viewportMargin,
+            screenSize.width - 250 - viewportMargin,
+          ),
           top: desiredY.clamp(
-              viewportMargin, screenSize.height - 300 - viewportMargin),
+            viewportMargin,
+            screenSize.height - 300 - viewportMargin,
+          ),
           child: IntrinsicHeight(
             child: IntrinsicWidth(
               child: Material(
                 elevation: 12,
                 shadowColor: ThemeHelper.black(context).withValues(alpha: 0.15),
-                borderRadius: BorderRadius.circular(8),
+                borderRadius: .circular(8),
                 child: Container(
                   decoration: BoxDecoration(
                     color: ThemeHelper.neutral100(context),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: ThemeHelper.neutral500(context)
-                          .withValues(alpha: 0.2),
+                    borderRadius: .circular(8),
+                    border: .all(
+                      color: ThemeHelper.neutral500(
+                        context,
+                      ).withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    padding: .symmetric(vertical: 8),
                     child: _buildNotesPalette(paletteState),
                   ),
                 ),
@@ -406,14 +418,14 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
   Widget _buildNotesPalette(HeadlessState paletteState) {
     if (!paletteState.hasChildren) {
       return Container(
-        padding: const EdgeInsets.all(16),
+        padding: .all(16),
         child: Text(
           'No child notes available',
           style: NarwhalTextStyle(
             fontSize: 14,
             color: ThemeHelper.neutral500(context),
           ),
-          textAlign: TextAlign.center,
+          textAlign: .center,
         ),
       );
     }
@@ -427,8 +439,8 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
       ),
       child: SingleChildScrollView(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: .min,
+          crossAxisAlignment: .stretch,
           children: paletteState.children!
               .map((item) => _buildMenuItem(item))
               .toList(),
@@ -450,15 +462,15 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         onTap: () => _onItemSelected(item),
         child: Container(
           height: 40,
-          margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          margin: .symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
             color: isHovered
                 ? ThemeHelper.neutral300(context)
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(6),
+            borderRadius: .circular(6),
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8.0),
+            padding: .symmetric(horizontal: 12, vertical: 8.0),
             child: Row(
               children: [
                 Icon(
@@ -472,11 +484,11 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                     itemTitle,
                     style: NarwhalTextStyle(
                       fontSize: 14,
-                      fontWeight: FontWeight.w500,
+                      fontWeight: .w500,
                       color: ThemeHelper.neutral700(context),
                     ),
                     maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                    overflow: .ellipsis,
                   ),
                 ),
               ],
@@ -489,17 +501,17 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
   Widget _buildShapesPalette() {
     return Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: .min,
       children: [
         Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: shapeOptions
               .sublist(0, 5)
               .map((shapeType) => _buildShapeButton(shapeType: shapeType))
               .toList(),
         ),
         Row(
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: .min,
           children: shapeOptions
               .sublist(5)
               .map((shapeType) => _buildShapeButton(shapeType: shapeType))
@@ -511,7 +523,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
 
   Widget _buildShapeButton({required CanvasObjectType shapeType}) {
     return Container(
-      margin: const EdgeInsets.all(menuPadding),
+      margin: .all(menuPadding),
       child: MouseRegion(
         onEnter: (_) => ref
             .read(headlessProvider.notifier)

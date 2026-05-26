@@ -81,8 +81,8 @@ class CanvasObject {
     this.color = Colors.transparent,
     this.type = CanvasObjectType.rectangle,
     this.stroke = StrokeType.solid,
-    this.topLeft = Offset.zero,
-    this.bottomRight = Offset.zero,
+    this.topLeft = .zero,
+    this.bottomRight = .zero,
     this.content = '',
     ArrowProperties? arrowProperties,
     ImageProperties? imageProperties,
@@ -154,8 +154,8 @@ class CanvasObject {
       color: Colors.transparent,
       type: CanvasObjectType.rectangle,
       stroke: StrokeType.solid,
-      topLeft: Offset.zero,
-      bottomRight: Offset.zero,
+      topLeft: .zero,
+      bottomRight: .zero,
     );
   }
 
@@ -247,22 +247,22 @@ class CanvasObject {
         color = Colors.transparent;
       }
 
-      Offset topLeft = Offset.zero;
+      Offset topLeft = .zero;
       try {
         if (payload['top_left'] != null) {
           topLeft = OffsetExtension.fromMap(payload['top_left']);
         }
       } catch (e) {
-        topLeft = Offset.zero;
+        topLeft = .zero;
       }
 
-      Offset bottomRight = Offset.zero;
+      Offset bottomRight = .zero;
       try {
         if (payload['bottom_right'] != null) {
           bottomRight = OffsetExtension.fromMap(payload['bottom_right']);
         }
       } catch (e) {
-        bottomRight = Offset.zero;
+        bottomRight = .zero;
       }
 
       final String content =
@@ -503,7 +503,7 @@ class CanvasObject {
   /// Returns the nearest ConnectionPoint and the nearest Offset position
   /// on the corresponding edge.
   (ConnectionPoint, Offset) findNearestBoundOffset(Offset position) {
-    if (isArrow || isBrush) return (ConnectionPoint.none, Offset.zero);
+    if (isArrow || isBrush) return (ConnectionPoint.none, .zero);
 
     switch (type) {
       case CanvasObjectType.rectangle:
@@ -1746,7 +1746,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
     return (startObj == null || arrowProps.startPoint == ConnectionPoint.none)
         ? arrowProps.startAbsoluteOffset!
         : arrowProps.startPoint.getOffset(startObj) +
-            (arrowProps.startRelativeOffset ?? Offset.zero);
+            (arrowProps.startRelativeOffset ?? .zero);
   }
 
   Offset getEndOffset(WidgetRef ref, {CanvasObject? endObject}) {
@@ -1754,7 +1754,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
     return (endObj == null || arrowProps.endPoint == ConnectionPoint.none)
         ? arrowProps.endAbsoluteOffset!
         : arrowProps.endPoint.getOffset(endObj) +
-            (arrowProps.endRelativeOffset ?? Offset.zero);
+            (arrowProps.endRelativeOffset ?? .zero);
   }
 
   /// Updates the arrow's topLeft and bottomRight values based on its points
@@ -1832,7 +1832,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 
       if (arrowProps.endRelativeOffset!.distance <=
           CanvasBounds.gridSpacing * 2) {
-        arrowProps.endRelativeOffset = Offset.zero;
+        arrowProps.endRelativeOffset = .zero;
       }
     }
 
@@ -1866,7 +1866,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 
       if (arrowProps.startRelativeOffset!.distance <=
           CanvasBounds.gridSpacing * 2) {
-        arrowProps.startRelativeOffset = Offset.zero;
+        arrowProps.startRelativeOffset = .zero;
       }
     }
 
@@ -1962,7 +1962,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
     if (arrowProps.startObjectId == anchor.id) {
       // moving object is the start object
       updatedKeypoints[0] = arrowProps.startPoint.getOffset(anchor) +
-          (arrowProps.startRelativeOffset ?? Offset.zero);
+          (arrowProps.startRelativeOffset ?? .zero);
       bool isHorizontal = arrowProps.startPoint == ConnectionPoint.left ||
           arrowProps.startPoint == ConnectionPoint.right;
 
@@ -1997,7 +1997,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
       // moving object is the end object
       updatedKeypoints[updatedKeypoints.length - 1] =
           arrowProps.endPoint.getOffset(anchor) +
-              (arrowProps.endRelativeOffset ?? Offset.zero);
+              (arrowProps.endRelativeOffset ?? .zero);
       bool isHorizontal = arrowProps.endPoint == ConnectionPoint.left ||
           arrowProps.endPoint == ConnectionPoint.right;
 
@@ -2068,7 +2068,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 
   /// Calculate the position along the arrow path based on textPosition (0.0 to 1.0)
   Offset getTextOffset() {
-    if (arrowProps.points.isEmpty) return Offset.zero;
+    if (arrowProps.points.isEmpty) return .zero;
 
     if (arrowProps.arrowType == ArrowType.curved) {
       return curveOffset(arrowProps.textPosition);
@@ -2103,7 +2103,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
         final remainingDistance = targetDistance - accumulatedDistance;
         final t = segmentLength > 0 ? remainingDistance / segmentLength : 0.0;
 
-        return Offset.lerp(arrowProps.points[i], arrowProps.points[i + 1], t) ??
+        return .lerp(arrowProps.points[i], arrowProps.points[i + 1], t) ??
             arrowProps.points[i];
       }
 
@@ -2115,7 +2115,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   }
 
   Offset curveOffset(double t) {
-    if (arrowProps.points.isEmpty) return Offset.zero;
+    if (arrowProps.points.isEmpty) return .zero;
 
     final direction = arrowProps.points.last - arrowProps.points[0];
     final distance = direction.distance;

@@ -25,7 +25,7 @@ class LandingOverlay extends ConsumerStatefulWidget {
 
   const LandingOverlay({
     super.key,
-    this.initialMode = LandingMode.signIn,
+    this.initialMode = .signIn,
     this.inviteToken,
     this.inviteDestPath,
   });
@@ -64,7 +64,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       });
     });
 
-    if (widget.initialMode == LandingMode.invite) {
+    if (widget.initialMode == .invite) {
       final destVaultId = _extractVaultId(widget.inviteDestPath ?? '');
       if (destVaultId != null) {
         _inviteVaultFuture = VaultsRepository().get(destVaultId);
@@ -106,8 +106,12 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     if (token == null || _acceptInFlight) return;
     _acceptInFlight = true;
     try {
-      final vaultId = await Supabase.instance.client
-          .rpc('accept_vault_invitation', params: {'p_token': token}) as String;
+      final vaultId =
+          await Supabase.instance.client.rpc(
+                'accept_vault_invitation',
+                params: {'p_token': token},
+              )
+              as String;
       if (!mounted) return;
       GoRouter.of(context).go('/vault/$vaultId');
     } on PostgrestException catch (e) {
@@ -121,8 +125,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     final user = ref.watch(currentUserProvider).value ?? User.initial();
 
     // Invite-mode: kick the accept RPC on the sign-out→sign-in transition.
-    if (widget.initialMode == LandingMode.invite &&
-        widget.inviteToken != null) {
+    if (widget.initialMode == .invite && widget.inviteToken != null) {
       ref.listen<AsyncValue<User>>(currentUserProvider, (prev, next) {
         final wasLogged = prev?.value?.isLogged ?? false;
         final nowLogged = next.value?.isLogged ?? false;
@@ -134,18 +137,15 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       left: _position.dx,
       top: _position.dy,
       child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
+        behavior: .opaque,
         onPanUpdate: _onPanUpdate,
         child: Container(
           width: _width,
           height: _height,
           decoration: BoxDecoration(
             color: ThemeHelper.neutral100(context),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(
-              color: ThemeHelper.neutral300(context),
-              width: 2,
-            ),
+            borderRadius: .circular(8),
+            border: .all(color: ThemeHelper.neutral300(context), width: 2),
             boxShadow: [
               BoxShadow(
                 color: ThemeHelper.neutral900(context).withValues(alpha: 0.15),
@@ -154,7 +154,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
             ],
           ),
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: .circular(8),
             child: _buildShell(context, user),
           ),
         ),
@@ -170,9 +170,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     return Stack(
       children: [
         Positioned.fill(child: screen),
-        LandingBackButton(
-          onPressed: () => _setMode(LandingMode.signIn),
-        ),
+        LandingBackButton(onPressed: () => _setMode(LandingMode.signIn)),
       ],
     );
   }
@@ -210,15 +208,18 @@ Exception _humanizeInvitationError(PostgrestException e) {
   final msg = e.message;
   if (msg.contains('invitation_not_found')) {
     return Exception(
-        'This invitation has already been used or does not exist.');
+      'This invitation has already been used or does not exist.',
+    );
   }
   if (msg.contains('invitation_expired')) {
     return Exception(
-        'This invitation has expired. Ask the vault owner for a new one.');
+      'This invitation has expired. Ask the vault owner for a new one.',
+    );
   }
   if (msg.contains('invitation_email_mismatch')) {
     return Exception(
-        'This invitation was sent to a different email than the one you signed in with.');
+      'This invitation was sent to a different email than the one you signed in with.',
+    );
   }
   if (msg.contains('unauthenticated')) {
     return Exception('You need to be signed in to accept an invitation.');
