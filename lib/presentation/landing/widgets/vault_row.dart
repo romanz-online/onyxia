@@ -79,7 +79,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                           vault.name,
                           maxLines: 1,
                           overflow: .ellipsis,
-                          style: NarwhalTextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             fontWeight: .w600,
                             color: ThemeHelper.neutral900(context),

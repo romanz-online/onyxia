@@ -107,7 +107,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         loading: () => Expanded(child: Center(child: OnyxiaLoadingIndicator())),
         error: (e, _) => Text(
           'Failed to load members: $e',
-          style: NarwhalTextStyle(color: ThemeHelper.red600(context)),
+          style: TextStyle(color: ThemeHelper.red600(context)),
         ),
         data: (entries) => _buildContent(entries),
       ),
@@ -120,7 +120,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
       children: [
         Text(
           'Invite by email',
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: .w600,
             color: ThemeHelper.neutral700(context),
@@ -132,14 +132,10 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           spacing: 8,
           children: [
             Expanded(
-              child: TextField(
+              child: OnyxiaTextFormField(
                 controller: _emailController,
                 enabled: !_isSending,
-                decoration: NarwhalModalInputDecoration.create(
-                  context,
-                  hintText: 'invite@example.com',
-                ),
-                style: NarwhalTextStyle(),
+                hintText: 'invite@example.com',
                 keyboardType: TextInputType.emailAddress,
                 onSubmitted: (_) {
                   if (_isValidEmail) _onSendInvite();
@@ -168,7 +164,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
               children: [
                 Text(
                   'Invite link for $_generatedLinkEmail',
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     fontWeight: .w600,
                     color: ThemeHelper.neutral700(context),
@@ -181,7 +177,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                     Expanded(
                       child: SelectableText(
                         _generatedLink!,
-                        style: NarwhalTextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           color: ThemeHelper.neutral800(context),
                         ),
@@ -204,7 +200,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         const Gap(16),
         Text(
           'Members (${entries.length})',
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 13,
             fontWeight: .w600,
             color: ThemeHelper.neutral700(context),
@@ -248,7 +244,7 @@ class _MemberRow extends StatelessWidget {
               children: [
                 Text(
                   name,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: .w500,
                     color: ThemeHelper.neutral900(context),
@@ -259,7 +255,7 @@ class _MemberRow extends StatelessWidget {
                 if (email.isNotEmpty)
                   Text(
                     email,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: ThemeHelper.neutral700(context),
                     ),
@@ -271,7 +267,7 @@ class _MemberRow extends StatelessWidget {
           ),
           Text(
             member.role.label,
-            style: NarwhalTextStyle(
+            style: TextStyle(
               fontSize: 12,
               fontWeight: .w500,
               color: ThemeHelper.neutral700(context),

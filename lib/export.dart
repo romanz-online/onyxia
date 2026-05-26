@@ -1,8 +1,5 @@
 ﻿export 'package:onyxia/presentation/app.dart';
 
-export 'package:onyxia/core/colors.dart';
-export 'package:onyxia/core/styles.dart';
-
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_view.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_context_menu.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_sidebar.dart';
@@ -24,7 +21,7 @@ export 'package:onyxia/presentation/common_widget/onyxia_menu.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_overlay.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_toast.dart';
 export 'package:onyxia/global_error_handler.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_modal_input_decoration.dart';
+export 'package:onyxia/presentation/common_widget/onyxia_text_form_field.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_dialog.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/vault_settings_button.dart';
 export 'package:onyxia/presentation/shell/vault_members_dialog.dart';
@@ -32,7 +29,6 @@ export 'package:onyxia/presentation/common_widget/navigation_url_builder.dart';
 export 'package:onyxia/presentation/common_widget/navigation_context_menu.dart';
 export 'package:onyxia/presentation/common_widget/drag_select_painter.dart';
 export 'package:onyxia/presentation/common_widget/narwhal_paint.dart';
-export 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_icon_button.dart';
 export 'package:onyxia/presentation/common_widget/initials_circle.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_button.dart';

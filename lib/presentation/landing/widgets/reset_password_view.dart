@@ -56,12 +56,12 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
           width: 320,
           child: Column(
             mainAxisSize: .min,
-            crossAxisAlignment:.stretch,
+            crossAxisAlignment: .stretch,
             children: [
               Text(
                 'Set a new password',
                 textAlign: .center,
-                style: NarwhalTextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: .w600,
                   color: ThemeHelper.neutral800(context),
@@ -73,25 +73,19 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
                   crossAxisAlignment: .stretch,
                   spacing: 8,
                   children: [
-                    TextField(
+                    OnyxiaTextFormField(
                       controller: _passwordController,
                       obscureText: true,
                       autofillHints: const [AutofillHints.newPassword],
-                      decoration: NarwhalModalInputDecoration.create(
-                        context,
-                        hintText: 'New password',
-                      ),
-                      style: NarwhalTextStyle(fontSize: 13),
+                      hintText: 'New password',
+                      fontSize: 13,
                     ),
-                    TextField(
+                    OnyxiaTextFormField(
                       controller: _confirmController,
                       obscureText: true,
                       autofillHints: const [AutofillHints.newPassword],
-                      decoration: NarwhalModalInputDecoration.create(
-                        context,
-                        hintText: 'Confirm new password',
-                      ),
-                      style: NarwhalTextStyle(fontSize: 13),
+                      hintText: 'Confirm new password',
+                      fontSize: 13,
                       onSubmitted: (_) => _submit(),
                     ),
                   ],
@@ -101,7 +95,7 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
                 const Gap(8),
                 Text(
                   _errorMessage!,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 12,
                     color: ThemeHelper.red600(context),
                   ),

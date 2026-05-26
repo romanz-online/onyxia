@@ -33,7 +33,7 @@ class ConstellationNodeLabel extends StatelessWidget {
           opacity: labelOpacity,
           child: Text(
             node.id,
-            style: NarwhalTextStyle(fontSize: 11, color: labelColor),
+            style: TextStyle(fontSize: 11, color: labelColor),
             softWrap: false,
             overflow: .visible,
           ),

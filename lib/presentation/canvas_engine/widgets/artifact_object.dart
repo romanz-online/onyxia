@@ -148,7 +148,7 @@ class ArtifactObject extends ConsumerWidget {
     if (item.type == ArtifactType.note) {
       return Text(
         item is NoteArtifact ? item.content : '',
-        style: NarwhalTextStyle(
+        style: TextStyle(
           color: ThemeHelper.neutral500(context),
           fontSize: 12,
           height: 1.4,

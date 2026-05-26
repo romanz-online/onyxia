@@ -61,16 +61,16 @@ class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
             children: [
               Text(
                 'Vault Name',
-                style: NarwhalStyles.modalTextFieldTitleStyle(context),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: .w600,
+                  color: ThemeHelper.neutral800(context),
+                ),
               ),
-              TextFormField(
+              OnyxiaTextFormField(
                 maxLength: 50,
                 controller: _vaultNameController,
-                decoration: NarwhalModalInputDecoration.create(
-                  context,
-                  hintText: widget.vaultName,
-                ),
-                style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+                hintText: widget.vaultName,
               ),
               const Spacer(),
               Row(

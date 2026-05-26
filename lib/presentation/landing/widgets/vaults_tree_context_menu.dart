@@ -10,7 +10,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.externalLink,
       child: Text(
         'Open in New Tab',
-        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral900(context)),
       ),
       onTap: () => NavigationContextMenu.openInNewTab(
         NavigationUrlBuilder.buildGraphUrl(vault.id),
@@ -20,7 +20,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.link,
       child: Text(
         'Copy Link',
-        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral900(context)),
       ),
       onTap: () => NavigationContextMenu.copyLinkToClipboard(
         NavigationUrlBuilder.buildGraphUrl(vault.id),
@@ -31,7 +31,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.pencil,
       child: Text(
         'Rename Vault',
-        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral900(context)),
       ),
       onTap: () {
         showDialog(
@@ -45,7 +45,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.trash2,
       child: Text(
         'Delete Vault',
-        style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral900(context)),
       ),
       onTap: () => _confirmRemove(context, vault),
     ),
@@ -68,7 +68,7 @@ void _confirmRemove(BuildContext context, Vault vault) async {
           children: [
             Text(
               'This is permanent.',
-              style: NarwhalTextStyle(
+              style: TextStyle(
                 fontSize: 20,
                 color: ThemeHelper.neutral900(ctx),
               ),

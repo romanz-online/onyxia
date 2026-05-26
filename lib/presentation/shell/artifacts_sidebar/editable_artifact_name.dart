@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart'; 
+﻿import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
 final renameArtifactIdProvider =
@@ -126,7 +126,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                     padding: .symmetric(vertical: 5, horizontal: 12),
                     child: Text(
                       _errorMessage ?? '',
-                      style: NarwhalTextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         color: Colors.white,
                         fontWeight: .w700,
@@ -155,7 +155,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                         child: TextField(
                           controller: _controller,
                           focusNode: _focusNode,
-                          style: NarwhalTextStyle(
+                          style: TextStyle(
                             fontSize: 14,
                             fontWeight: .normal,
                             color: ThemeHelper.neutral700(context),
@@ -195,7 +195,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
               child: widget.trailingExtension == null
                   ? Text(
                       widget.item.name,
-                      style: NarwhalTextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: .normal,
                         color: ThemeHelper.neutral700(context),
@@ -212,7 +212,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                         Flexible(
                           child: Text(
                             _baseName,
-                            style: NarwhalTextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: .normal,
                               color: ThemeHelper.neutral700(context),
@@ -224,7 +224,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                         ),
                         Text(
                           widget.trailingExtension!,
-                          style: NarwhalTextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: .normal,
                             color: ThemeHelper.neutral500(context),

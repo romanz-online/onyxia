@@ -27,7 +27,7 @@ class OnyxiaButton extends StatelessWidget {
                   label,
                   maxLines: 1,
                   overflow: .ellipsis,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: .w600,
                     color: ThemeHelper.neutral700(context),

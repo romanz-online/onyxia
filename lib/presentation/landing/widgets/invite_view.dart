@@ -16,7 +16,7 @@ class InviteView extends ConsumerWidget {
           children: [
             Text(
               'Onyxia',
-              style: NarwhalTextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: .bold,
                 color: ThemeHelper.neutral700(context),
@@ -31,7 +31,7 @@ class InviteView extends ConsumerWidget {
                     : "You've been invited to a vault.";
                 return Text(
                   titleText,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 18,
                     fontWeight: .w600,
                     color: ThemeHelper.neutral800(context),
@@ -42,7 +42,7 @@ class InviteView extends ConsumerWidget {
             ),
             Text(
               'Invitations expire 14 days after being sent.',
-              style: NarwhalTextStyle(
+              style: TextStyle(
                 fontSize: 13,
                 color: ThemeHelper.neutral600(context),
               ),

@@ -54,7 +54,7 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
                   children: [
                     Text(
                       widget.title,
-                      style: NarwhalTextStyle(
+                      style: TextStyle(
                         fontSize: 20,
                         fontWeight: .w400,
                         color: ThemeHelper.neutral800(context),

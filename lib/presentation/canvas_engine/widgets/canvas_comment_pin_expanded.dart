@@ -389,7 +389,7 @@ class _CanvasCommentPinExpandedState
               Expanded(
                 child: Text(
                   'Comment',
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 14,
                     fontWeight: .w600,
                     color: ThemeHelper.neutral900(context),
@@ -483,7 +483,7 @@ class _CanvasCommentPinExpandedState
                       children: [
                         Text(
                           user.name.isNotEmpty ? user.name : 'Unknown User',
-                          style: NarwhalTextStyle(
+                          style: TextStyle(
                             fontSize: 12,
                             fontWeight: .bold,
                             color: ThemeHelper.neutral900(context),
@@ -493,7 +493,7 @@ class _CanvasCommentPinExpandedState
                         if (timeAgo.isNotEmpty)
                           Text(
                             timeAgo,
-                            style: NarwhalTextStyle(
+                            style: TextStyle(
                               fontSize: 12,
                               fontWeight: .normal,
                               color: ThemeHelper.neutral900(
@@ -583,7 +583,7 @@ class _CanvasCommentPinExpandedState
                 controller: _replyController,
                 decoration: InputDecoration(
                   hintText: 'Enter Reply',
-                  hintStyle: NarwhalTextStyle(
+                  hintStyle: TextStyle(
                     color: ThemeHelper.neutral500(context),
                     fontSize: 15,
                     fontStyle: .normal,
@@ -676,9 +676,11 @@ class _CanvasCommentPinExpandedState
     required String title,
     required VoidCallback onTap,
   }) {
-    final TextStyle? canvasStyle = NarwhalStyles.dropdownListTextStyle(
-      context,
-    ).copyWith(color: ThemeHelper.neutral900(context));
+    final TextStyle? canvasStyle = TextStyle(
+      fontSize: 15,
+      fontWeight: .w400,
+      color: ThemeHelper.neutral900(context),
+    );
     return HoverBuilder(
       builder: (context, isHovered) {
         return Container(

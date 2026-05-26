@@ -64,12 +64,6 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
 
 ## UI Widget Conventions
 
-### Text Styling - CRITICAL RULE
-
-- **ALWAYS** use `NarwhalTextStyle(...)` instead of Flutter's native `TextStyle(...)`
-- **NEVER** write `style: TextStyle(...)` anywhere in the codebase
-- `NarwhalTextStyle` accepts the same parameters as `TextStyle` and ensures design-system-consistent typography
-
 ### Icons - CRITICAL RULE
 
 - **ALWAYS** use icons from the `lucide_icons_flutter` package: `Icon(LucideIcons.xxx, ...)`

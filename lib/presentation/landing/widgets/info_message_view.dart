@@ -25,7 +25,7 @@ class InfoMessageView extends StatelessWidget {
               Text(
                 title,
                 textAlign: .center,
-                style: NarwhalTextStyle(
+                style: TextStyle(
                   fontSize: 20,
                   fontWeight: .w600,
                   color: ThemeHelper.neutral800(context),
@@ -34,7 +34,7 @@ class InfoMessageView extends StatelessWidget {
               Text(
                 message,
                 textAlign: .center,
-                style: NarwhalTextStyle(
+                style: TextStyle(
                   fontSize: 13,
                   color: ThemeHelper.neutral700(context),
                 ),

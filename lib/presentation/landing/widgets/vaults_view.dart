@@ -45,7 +45,7 @@ class _VaultListColumn extends StatelessWidget {
                 ? Center(
                     child: Text(
                       'No vaults',
-                      style: NarwhalTextStyle(
+                      style: TextStyle(
                         fontSize: 13,
                         color: ThemeHelper.neutral500(context),
                       ),
@@ -69,10 +69,7 @@ class _RightColumn extends ConsumerWidget {
   const _RightColumn({required this.user});
 
   void _showNewVaultDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => _NewVaultDialog(),
-    );
+    showDialog(context: context, builder: (_) => _NewVaultDialog());
   }
 
   Future<void> _showImportVaultDialog(
@@ -100,7 +97,7 @@ class _RightColumn extends ConsumerWidget {
         children: [
           Text(
             'Onyxia',
-            style: NarwhalTextStyle(
+            style: TextStyle(
               fontSize: 32,
               fontWeight: .bold,
               color: ThemeHelper.neutral700(context),
@@ -115,7 +112,7 @@ class _RightColumn extends ConsumerWidget {
                 padding: .only(left: 4),
                 child: Text(
                   'You are logged in as ${user.email}',
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     color: ThemeHelper.neutral500(context),
                   ),
@@ -211,20 +208,17 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
                 children: [
                   Text(
                     'Vault Name',
-                    style: NarwhalStyles.modalTextFieldTitleStyle(context),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: .w600,
+                      color: ThemeHelper.neutral800(context),
+                    ),
                   ),
-                  // TODO: make OnyxiaTextFormField with default narwhaltextstyle and decoration and delete NarwhalModalInputDecoration
-                  TextFormField(
+                  OnyxiaTextFormField(
                     maxLength: 50,
                     controller: _nameController,
                     autofocus: true,
-                    decoration: NarwhalModalInputDecoration.create(
-                      context,
-                      hintText: 'Enter vault name',
-                    ),
-                    style: NarwhalTextStyle(
-                      color: ThemeHelper.neutral900(context),
-                    ),
+                    hintText: 'Enter vault name',
                   ),
                   const Spacer(),
                   Row(

@@ -101,7 +101,7 @@ class OnyxiaIconButton extends StatelessWidget {
       child = Tooltip(
         message: tooltip!,
         waitDuration: const Duration(milliseconds: 500),
-        textStyle: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+        textStyle: TextStyle(color: ThemeHelper.neutral900(context)),
         child: child,
       );
     }
@@ -125,7 +125,7 @@ class OnyxiaIconButton extends StatelessWidget {
                 alignment: .center,
                 child: Text(
                   badgeCount > 9 ? '9+' : '$badgeCount',
-                  style: const NarwhalTextStyle(
+                  style: const TextStyle(
                     fontSize: 9,
                     fontWeight: .w700,
                     color: Colors.white,

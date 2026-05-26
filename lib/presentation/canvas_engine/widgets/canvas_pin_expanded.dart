@@ -285,7 +285,11 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
           child: ListTile(
             title: Text(
               title,
-              style: NarwhalStyles.dropdownListTextStyle(context),
+              style: TextStyle(
+                fontSize: 15,
+                fontWeight: .w400,
+                color: ThemeHelper.neutral900(context),
+              ),
             ),
             onTap: onTap,
             dense: true,
@@ -405,7 +409,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                   ? TextField(
                                       controller: _titleController,
                                       autofocus: true,
-                                      style: NarwhalTextStyle(
+                                      style: TextStyle(
                                         fontSize: 16,
                                         fontWeight: .w500,
                                       ),
@@ -452,7 +456,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                         artifact.name.isEmpty
                                             ? 'Untitled'
                                             : artifact.name,
-                                        style: NarwhalTextStyle(
+                                        style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: .w600,
                                           color: ThemeHelper.neutral900(
@@ -523,7 +527,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                           controller: _contentController!,
                                           maxLines: null,
                                           expands: true,
-                                          style: NarwhalTextStyle(
+                                          style: TextStyle(
                                             fontSize: 13,
                                             color: ThemeHelper.neutral900(
                                               context,
@@ -564,7 +568,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       artifact is NoteArtifact
                                           ? artifact.content
                                           : '',
-                                      style: NarwhalTextStyle(
+                                      style: TextStyle(
                                         fontSize: 13,
                                         color: ThemeHelper.neutral900(context),
                                         height: 1.5,

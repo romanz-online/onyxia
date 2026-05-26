@@ -108,7 +108,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
     final TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: text,
-        style: NarwhalTextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: .w500,
           color: ThemeHelper.neutral900(context),
@@ -276,7 +276,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                                       effectiveNote.name.isNotEmpty
                                           ? effectiveNote.name
                                           : 'Untitled',
-                                      style: NarwhalTextStyle(
+                                      style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: .w500,
                                         color: ThemeHelper.neutral900(context),

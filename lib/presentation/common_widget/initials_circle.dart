@@ -28,7 +28,7 @@ class InitialsCircle extends StatelessWidget {
                     .take(2)
                     .map((p) => p[0].toUpperCase())
                     .join(),
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: size * 0.38,
             fontWeight: .w500,
             color: ThemeHelper.neutral100(context),

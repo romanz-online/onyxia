@@ -571,7 +571,7 @@ class _MenuRow extends StatelessWidget {
                 Expanded(
                   child: Text(
                     item.label,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: .w500,
                       color: textColor,

@@ -98,7 +98,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
                     padding: .symmetric(vertical: 5, horizontal: 12),
                     child: Text(
                       _errorMessage ?? '',
-                      style: NarwhalTextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         color: Colors.white,
                         fontWeight: .w700,
@@ -132,7 +132,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
               _overlayController.hide();
             }
           },
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 24,
             fontWeight: .w700,
             color: ThemeHelper.neutral700(context),
@@ -141,7 +141,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             fillColor: Colors.transparent,
             hoverColor: Colors.transparent,
             hintText: 'Untitled',
-            hintStyle: NarwhalTextStyle(
+            hintStyle: TextStyle(
               fontSize: 28,
               fontWeight: .w700,
               color: ThemeHelper.neutral700(context).withValues(alpha: 0.4),

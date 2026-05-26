@@ -163,7 +163,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
     final TextPainter textPainter = TextPainter(
       text: TextSpan(
         text: widget.comment.text,
-        style: NarwhalTextStyle(
+        style: TextStyle(
           fontSize: 14,
           fontWeight: .w500,
           color: ThemeHelper.neutral900(context),
@@ -326,7 +326,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                           controller: _commentController,
                           decoration: InputDecoration(
                             hintText: 'Add Comment',
-                            hintStyle: NarwhalTextStyle(
+                            hintStyle: TextStyle(
                               color: ThemeHelper.neutral500(context),
                               fontSize: 15,
                               fontStyle: .normal,
@@ -522,7 +522,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                             ? user.name
                                                             : 'Unknown User',
                                                         overflow: .fade,
-                                                        style: NarwhalTextStyle(
+                                                        style: TextStyle(
                                                           fontSize: 12,
                                                           fontWeight: .bold,
                                                           color:
@@ -537,7 +537,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                         child: Text(
                                                           timeAgo,
                                                           overflow: .fade,
-                                                          style: NarwhalTextStyle(
+                                                          style: TextStyle(
                                                             fontSize: 12,
                                                             fontWeight: .normal,
                                                             color:
@@ -557,7 +557,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                   widget.comment.text,
                                                   overflow: .fade,
                                                   softWrap: true,
-                                                  style: NarwhalTextStyle(
+                                                  style: TextStyle(
                                                     fontSize: 14,
                                                     fontWeight: .w500,
                                                     color:

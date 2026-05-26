@@ -109,9 +109,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       selectedNoteStateProvider.select((state) => state.value?.note),
     );
     if (item == null) {
-      return const Center(
-        child: Text('No item selected', style: NarwhalTextStyle()),
-      );
+      return const Center(child: Text('No item selected'));
     }
 
     return noteState.when(
@@ -123,9 +121,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       data: (state) {
         final controller = state.bardController;
         if (controller == null) {
-          return const Center(
-            child: Text('Note not initialized', style: NarwhalTextStyle()),
-          );
+          return const Center(child: Text('Note not initialized'));
         }
 
         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -174,12 +170,9 @@ class _ErrorView extends StatelessWidget {
         children: [
           Text(
             'Error: $error',
-            style: NarwhalTextStyle(color: ThemeHelper.errorColor()),
+            style: TextStyle(color: ThemeHelper.errorColor()),
           ),
-          ElevatedButton(
-            onPressed: onRetry,
-            child: const Text('Retry', style: NarwhalTextStyle()),
-          ),
+          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
     );
@@ -378,9 +371,7 @@ class _NoteEditorField extends ConsumerWidget {
                 child: BardEditor(
                   controller: controller,
                   collab: collab,
-                  style: NarwhalTextStyle(
-                    color: ThemeHelper.neutral900(context),
-                  ),
+                  style: TextStyle(color: ThemeHelper.neutral900(context)),
                   autofocus: true,
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
@@ -412,7 +403,7 @@ class _DragOverlay extends StatelessWidget {
         child: Center(
           child: Text(
             'Drop image here',
-            style: NarwhalTextStyle(
+            style: TextStyle(
               fontSize: 18,
               color: ThemeHelper.blue500(context),
               fontWeight: .w500,

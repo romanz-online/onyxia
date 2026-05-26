@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
 
 // TODO: there's an exception that pops up with this widget
 
@@ -60,7 +59,7 @@ class WikiLinkOverlay extends StatelessWidget {
                     : Colors.transparent,
                 child: Text(
                   target,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 13,
                     fontWeight: isSelected ? .w600 : .w400,
                     color: isSelected

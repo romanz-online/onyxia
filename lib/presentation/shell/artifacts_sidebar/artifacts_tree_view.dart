@@ -116,10 +116,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (async.hasError)
       return Center(
-        child: Text(
-          'Error loading items. Please refresh the page.',
-          style: NarwhalTextStyle(),
-        ),
+        child: Text('Error loading items. Please refresh the page.'),
       );
 
     if (!async.hasValue) return Center(child: OnyxiaLoadingIndicator());
@@ -292,7 +289,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       }
       items.add(
         ContextMenuItem(
-          child: Text(opt.label, style: NarwhalTextStyle()),
+          child: Text(opt.label),
           onTap: () {
             opt.callback(ref, node, selectedIds);
             if (opt.clearSelectionAfter) treeController.deselectAll();

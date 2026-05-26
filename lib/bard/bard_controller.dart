@@ -1,6 +1,5 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
-import 'package:onyxia/presentation/common_widget/narwhal_text_style.dart';
 import 'markdown_parser.dart';
 import 'markdown_span.dart';
 
@@ -126,7 +125,7 @@ class BardController extends TextEditingController {
           _buildSpanTree(before, parseMarkdown(before), -1, style),
         TextSpan(
           text: composing,
-          style: (style ?? const NarwhalTextStyle()).copyWith(
+          style: (style ?? const TextStyle()).copyWith(
             decoration: TextDecoration.underline,
             backgroundColor: Colors.transparent,
           ),
@@ -224,7 +223,7 @@ class BardController extends TextEditingController {
             activeLines,
           ).copyWith(color: _kMarkerDimColor);
         } else {
-          intervalStyle = const NarwhalTextStyle(
+          intervalStyle = const TextStyle(
             fontSize: _kHiddenFontSize,
             color: Color(0x00000000),
           );
@@ -241,7 +240,7 @@ class BardController extends TextEditingController {
             activeLines,
           ).copyWith(color: _kMarkerDimColor);
         } else {
-          intervalStyle = const NarwhalTextStyle(
+          intervalStyle = const TextStyle(
             fontSize: _kHiddenFontSize,
             color: Color(0x00000000),
           );
@@ -261,7 +260,7 @@ class BardController extends TextEditingController {
     return TextSpan(style: baseStyle, children: children);
   }
 
-  NarwhalTextStyle _buildContentStyle(
+  TextStyle _buildContentStyle(
     TextStyle? baseStyle,
     List<MarkdownSpan> contentSpans,
     List<LineSpan> lineSpans,
@@ -270,7 +269,7 @@ class BardController extends TextEditingController {
     FontWeight? fontWeight = baseStyle?.fontWeight;
     FontStyle? fontStyle = baseStyle?.fontStyle;
     Color? color = baseStyle?.color;
-    final fontFamily = baseStyle?.fontFamily ?? 'Segoe UI';
+    final fontFamily = baseStyle?.fontFamily ?? 'Inter';
     final decorations = <TextDecoration>[];
 
     if (baseStyle?.decoration != null &&
@@ -318,7 +317,7 @@ class BardController extends TextEditingController {
         ? decorations.first
         : TextDecoration.combine(decorations);
 
-    return NarwhalTextStyle(
+    return TextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight,
       fontStyle: fontStyle ?? .normal,

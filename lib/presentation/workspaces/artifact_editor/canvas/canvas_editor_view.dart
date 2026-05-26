@@ -97,11 +97,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     }
 
     if (currentCanvas == null) {
-      return Scaffold(
-        body: Center(
-          child: Text('Canvas not found', style: NarwhalTextStyle()),
-        ),
-      );
+      return Scaffold(body: Center(child: Text('Canvas not found')));
     }
 
     final objects = ref.watch(canvasObjectsProvider);

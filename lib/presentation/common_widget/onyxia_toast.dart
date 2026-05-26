@@ -474,7 +474,7 @@ class _ToastWidget extends StatelessWidget {
               Flexible(
                 child: Text(
                   text!,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     color: _getTextColor(context),
                     fontSize: 14,
                     fontWeight: .w500,
@@ -543,7 +543,7 @@ class _ProgressToastContent extends StatelessWidget {
                 Flexible(
                   child: Text(
                     label,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       color: ThemeHelper.neutral200(context),
                       fontSize: 14,
                       fontWeight: .w500,
@@ -553,7 +553,7 @@ class _ProgressToastContent extends StatelessWidget {
                 ),
                 Text(
                   '$percent%',
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     color: ThemeHelper.neutral400(context),
                     fontSize: 12,
                     fontWeight: .w400,

@@ -66,37 +66,28 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
       children: [
-        TextField(
+        OnyxiaTextFormField(
           controller: _emailController,
           keyboardType: .emailAddress,
           autofillHints: const [AutofillHints.email],
-          decoration: NarwhalModalInputDecoration.create(
-            context,
-            hintText: 'Email',
-          ),
-          style: NarwhalTextStyle(fontSize: 13),
+          hintText: 'Email',
+          fontSize: 13,
           onSubmitted: (_) => _submit(),
         ),
         const Gap(8),
-        TextField(
+        OnyxiaTextFormField(
           controller: _passwordController,
           obscureText: true,
           autofillHints: const [AutofillHints.password],
-          decoration: NarwhalModalInputDecoration.create(
-            context,
-            hintText: 'Password',
-          ),
-          style: NarwhalTextStyle(fontSize: 13),
+          hintText: 'Password',
+          fontSize: 13,
           onSubmitted: (_) => _submit(),
         ),
         if (_errorMessage != null) ...[
           const Gap(8),
           Text(
             _errorMessage!,
-            style: NarwhalTextStyle(
-              fontSize: 12,
-              color: ThemeHelper.red600(context),
-            ),
+            style: TextStyle(fontSize: 12, color: ThemeHelper.red600(context)),
           ),
         ],
         const Gap(12),

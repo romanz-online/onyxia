@@ -506,7 +506,7 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer>
       child: Row(
         mainAxisAlignment: .spaceBetween,
         children: [
-          Text(widget.title, style: NarwhalTextStyle(fontSize: 17)),
+          Text(widget.title, style: TextStyle(fontSize: 17)),
           Container(key: _buttonsKey, child: buildHeader(context, ref)),
         ],
       ),

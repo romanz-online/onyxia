@@ -30,7 +30,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
       title: Center(
         child: Text(
           title,
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: ThemeHelper.neutral900(context),
           ),
@@ -48,7 +48,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
         return Center(
           child: Text(
             'Error: ${noteAsyncState.error}',
-            style: NarwhalTextStyle(color: ThemeHelper.neutral700(context)),
+            style: TextStyle(color: ThemeHelper.neutral700(context)),
           ),
         );
       }
@@ -74,11 +74,11 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
             children: [
               Text(
                 'No item selected',
-                style: NarwhalTextStyle(fontStyle: .normal, fontSize: 20),
+                style: TextStyle(fontStyle: .normal, fontSize: 20),
               ),
               Text(
                 'Select an item from the sidebar to view',
-                style: NarwhalTextStyle(fontStyle: .normal, fontSize: 20),
+                style: TextStyle(fontStyle: .normal, fontSize: 20),
               ),
             ],
           ),

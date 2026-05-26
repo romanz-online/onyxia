@@ -1,5 +1,73 @@
 import 'package:onyxia/export.dart';
 
+class NarwhalColors {
+  NarwhalColors._();
+
+  static const neutral900 = Color(0xFF1C1C1E);
+  static const neutral800 = Color(0xFF28282C);
+  static const neutral700 = Color(0xFF394648);
+  static const neutral600 = Color(0xFF536560);
+  static const neutral500 = Color(0xFF909699);
+  static const neutral400 = Color(0xFFCFD8DC);
+  static const neutral300 = Color(0xFFECEFF1);
+  static const neutral200 = Color(0xFFF7F9F9);
+  static const neutral100 = Color(0xFFFFFFFF);
+
+  static const blue = Color(0xFF2196F3);
+  static const blue800 = Color(0xFF344F80);
+  static const blue700 = Color(0xFF007CB4);
+  static const blue600 = Color(0xFF699DFF);
+  static const blue500 = Color(0xFF2EBEFF);
+  static const blue400 = Color(0xFF8CDBFF);
+  static const blue300 = Color(0xFFC8DBFF);
+  static const blue200 = Color(0xFFE1F5FE);
+  static const blue100 = Color(0xFFE6F8FF);
+
+  static const green = Color(0xFF4CAF50);
+  static const green900 = Color(0xFF1B5E20);
+  static const green800 = Color(0xFF2E7D32);
+  static const green700 = Color(0xFF388E3C);
+  static const green600 = Color(0xFF43A047);
+  static const green500 = Color(0xFF285C3F);
+  static const green400 = Color(0xFF009142);
+  static const green300 = Color(0xFF55C184);
+  static const green200 = Color(0xFFA9E4C3);
+  static const green100 = Color(0xFFD4F7E4);
+
+  static const orange = Color(0xFFFF9800);
+  static const orange800 = Color(0xFFEF6C00);
+  static const orange700 = Color(0xFFF57C00);
+  static const orange600 = Color(0xFFFB8C00);
+  static const orange500 = Color(0xFFFF9800);
+  static const orange400 = Color(0xFFFFA726);
+  static const orange300 = Color(0xFFFFB74D);
+  static const orange200 = Color(0xFFFFCC80);
+  static const orange100 = Color(0xFFFBC492);
+
+  static const red = Color(0xFFF44336);
+  static const red900 = Color(0xFFB71C1C);
+  static const red800 = Color(0xFFC62828);
+  static const red700 = Color(0xFFD32F2F);
+  static const red600 = Color(0xFFE53935);
+  static const red500 = Color(0xFFF44336);
+  static const red400 = Color(0xFFEF5350);
+  static const red300 = Color(0xFFB55252);
+  static const red200 = Color(0xFFF26D6F);
+  static const red100 = Color(0xFFF8ADAE);
+
+  static const purple = Color(0xFF9C27B0);
+  static const purple600 = Color(0xFF8E24AA);
+  static const purple500 = Color(0xFF9C27B0);
+  static const purple400 = Color(0xFF8E24AA);
+  static const purple300 = Color(0xFFBA68C8);
+  static const purple200 = Color(0xFFC97DC7);
+  static const purple100 = Color(0xFFE3C0E1);
+
+  static const yellow = Color(0xFFFFEB3B);
+  static const amber = Color(0xFFFFC107);
+  static const error = Color(0xFFE53935);
+}
+
 /// A helper class for getting theme-aware colors.
 class ThemeHelper {
   ThemeHelper._();
@@ -76,162 +144,6 @@ class ThemeHelper {
   static Color purple100(BuildContext context) => NarwhalColors.purple600;
 
   static const IconButtonThemeHelper iconButton = IconButtonThemeHelper();
-}
-
-class ButtonPropertyTheme {
-  final Color Function(BuildContext) _defaultColor;
-  final Color Function(BuildContext) _hoveredColor;
-  final Color Function(BuildContext) _pressedColor;
-  final Color Function(BuildContext) _disabledColor;
-
-  const ButtonPropertyTheme({
-    required Color Function(BuildContext) defaultColor,
-    required Color Function(BuildContext) hoveredColor,
-    required Color Function(BuildContext) pressedColor,
-    required Color Function(BuildContext) disabledColor,
-  }) : _defaultColor = defaultColor,
-       _hoveredColor = hoveredColor,
-       _pressedColor = pressedColor,
-       _disabledColor = disabledColor;
-
-  Color defaultColor(BuildContext context) => _defaultColor(context);
-  Color hovered(BuildContext context) => _hoveredColor(context);
-  Color pressed(BuildContext context) => _pressedColor(context);
-  Color disabled(BuildContext context) => _disabledColor(context);
-}
-
-class ButtonTypeTheme {
-  final ButtonPropertyTheme background;
-  final ButtonPropertyTheme border;
-  final ButtonPropertyTheme text;
-  final ButtonPropertyTheme icon;
-
-  const ButtonTypeTheme({
-    required this.background,
-    required this.border,
-    required this.text,
-    required this.icon,
-  });
-}
-
-class ButtonThemeHelper {
-  const ButtonThemeHelper();
-
-  static Color _mainColor(BuildContext context) => ThemeHelper.blue700(context);
-
-  static Color _accentColor(BuildContext context) =>
-      ThemeHelper.neutral100(context);
-
-  static Color _accentSecondaryColor(BuildContext context) =>
-      ThemeHelper.neutral800(context);
-
-  static Color _none(BuildContext context) => Colors.transparent;
-
-  static Color _brighten(Color color) => Color.lerp(color, Colors.white, 0.2)!;
-
-  static Color _darken(Color color) => Color.lerp(color, Colors.black, 0.2)!;
-
-  static Color _disabledColor(BuildContext context) =>
-      ThemeHelper.neutral400(context);
-
-  ButtonTypeTheme get primary => ButtonTypeTheme(
-    background: ButtonPropertyTheme(
-      defaultColor: _mainColor,
-      hoveredColor: (context) => _brighten(_mainColor(context)),
-      pressedColor: (context) => _darken(_mainColor(context)),
-      disabledColor: _disabledColor,
-    ),
-    border: ButtonPropertyTheme(
-      defaultColor: _none,
-      hoveredColor: _none,
-      pressedColor: _none,
-      disabledColor: _none,
-    ),
-    text: ButtonPropertyTheme(
-      defaultColor: _accentColor,
-      hoveredColor: _accentColor,
-      pressedColor: _accentColor,
-      disabledColor: _accentColor,
-    ),
-    icon: ButtonPropertyTheme(
-      defaultColor: _accentColor,
-      hoveredColor: _accentColor,
-      pressedColor: _accentColor,
-      disabledColor: _accentColor,
-    ),
-  );
-
-  ButtonTypeTheme get secondary => ButtonTypeTheme(
-    background: ButtonPropertyTheme(
-      defaultColor: _none,
-      hoveredColor: ThemeHelper.blue100,
-      pressedColor: ThemeHelper.blue400,
-      disabledColor: _none,
-    ),
-    border: ButtonPropertyTheme(
-      defaultColor: _mainColor,
-      hoveredColor: (context) => _brighten(_mainColor(context)),
-      pressedColor: (context) => _darken(_mainColor(context)),
-      disabledColor: _disabledColor,
-    ),
-    text: ButtonPropertyTheme(
-      defaultColor: _accentSecondaryColor,
-      hoveredColor: _accentSecondaryColor,
-      pressedColor: _accentSecondaryColor,
-      disabledColor: _disabledColor,
-    ),
-    icon: ButtonPropertyTheme(
-      defaultColor: _accentSecondaryColor,
-      hoveredColor: _accentSecondaryColor,
-      pressedColor: _accentSecondaryColor,
-      disabledColor: _disabledColor,
-    ),
-  );
-
-  ButtonTypeTheme get light => ButtonTypeTheme(
-    background: ButtonPropertyTheme(
-      defaultColor: _none,
-      hoveredColor: (context) => ThemeHelper.neutral300(context),
-      pressedColor: (context) => ThemeHelper.neutral400(context),
-      disabledColor: _none,
-    ),
-    border: ButtonPropertyTheme(
-      defaultColor: _none,
-      hoveredColor: _none,
-      pressedColor: _none,
-      disabledColor: _none,
-    ),
-    text: ButtonPropertyTheme(
-      defaultColor: _mainColor,
-      hoveredColor: _mainColor,
-      pressedColor: _mainColor,
-      disabledColor: _disabledColor,
-    ),
-    icon: ButtonPropertyTheme(
-      defaultColor: _accentSecondaryColor,
-      hoveredColor: _accentSecondaryColor,
-      pressedColor: _accentSecondaryColor,
-      disabledColor: _disabledColor,
-    ),
-  );
-}
-
-class SubSectionButtonThemeHelper {
-  const SubSectionButtonThemeHelper();
-
-  Color defaultBackgroundColor(BuildContext context) =>
-      ThemeHelper.neutral200(context);
-
-  Color hoveredBackgroundColor(BuildContext context) =>
-      ThemeHelper.neutral300(context);
-
-  Color selectedBackgroundColor(BuildContext context) =>
-      ThemeHelper.blue400(context).withValues(alpha: 0.5);
-
-  Color pressedBackgroundColor(BuildContext context) =>
-      ThemeHelper.neutral400(context);
-
-  Color textColor(BuildContext context) => Colors.white;
 }
 
 class IconButtonThemeHelper {

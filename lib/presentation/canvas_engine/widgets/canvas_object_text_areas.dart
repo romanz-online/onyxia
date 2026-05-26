@@ -84,7 +84,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
             child: Center(
               child: Text(
                 isHovered ? 'Add Text' : '',
-                style: NarwhalTextStyle(
+                style: TextStyle(
                   fontSize: 17,
                   color: ThemeHelper.neutral500(context).withValues(alpha: 0.6),
                   fontWeight: .w500,
@@ -128,7 +128,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
                     focusNode: ref.watch(canvasTextProvider).focusNode,
                     autofocus: true,
                     maxLines: null,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       color: ThemeHelper.neutral900(context),
                       fontSize: 16,
                     ),
@@ -195,7 +195,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
               child: Center(
                 child: Text(
                   canvasObject.content,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     color: ThemeHelper.neutral900(context),
                     fontSize: 16,
                   ),
@@ -225,7 +225,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
               focusNode: ref.watch(canvasTextProvider).focusNode,
               autofocus: true,
               maxLines: null,
-              style: NarwhalTextStyle(
+              style: TextStyle(
                 color: ThemeHelper.neutral900(context),
                 fontSize: 16,
               ),
@@ -296,7 +296,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
             child: IntrinsicHeight(
               child: Text(
                 canvasObject.content,
-                style: NarwhalTextStyle(
+                style: TextStyle(
                   color: ThemeHelper.neutral900(context),
                   fontSize: 16,
                 ),
@@ -389,7 +389,7 @@ class CanvasArrowTextArea extends ConsumerWidget {
                     focusNode: ref.watch(canvasTextProvider).focusNode,
                     autofocus: true,
                     maxLines: null,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       color: ThemeHelper.neutral900(context),
                       fontSize: 16,
                     ),
@@ -463,7 +463,7 @@ class CanvasArrowTextArea extends ConsumerWidget {
                     ),
                     child: Text(
                       canvasObject.content,
-                      style: NarwhalTextStyle(
+                      style: TextStyle(
                         color: ThemeHelper.neutral900(context),
                         fontSize: 16,
                       ),

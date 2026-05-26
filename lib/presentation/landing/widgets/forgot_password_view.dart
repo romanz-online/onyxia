@@ -62,29 +62,26 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                 Text(
                   'Reset password',
                   textAlign: .center,
-                  style: NarwhalTextStyle(
+                  style: TextStyle(
                     fontSize: 20,
                     fontWeight: .w600,
                     color: ThemeHelper.neutral800(context),
                   ),
                 ),
                 const Gap(20),
-                TextField(
+                OnyxiaTextFormField(
                   controller: _emailController,
                   keyboardType: .emailAddress,
                   autofillHints: const [AutofillHints.email],
-                  decoration: NarwhalModalInputDecoration.create(
-                    context,
-                    hintText: 'Email',
-                  ),
-                  style: NarwhalTextStyle(fontSize: 13),
+                  hintText: 'Email',
+                  fontSize: 13,
                   onSubmitted: (_) => _submit(),
                 ),
                 if (_errorMessage != null) ...[
                   const Gap(8),
                   Text(
                     _errorMessage!,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       fontSize: 12,
                       color: ThemeHelper.red600(context),
                     ),

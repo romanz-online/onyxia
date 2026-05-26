@@ -94,22 +94,21 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
           children: [
             Text(
               'Vault Name',
-              style: NarwhalStyles.modalTextFieldTitleStyle(context),
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: .w600,
+                color: ThemeHelper.neutral800(context),
+              ),
             ),
-            TextFormField(
+            OnyxiaTextFormField(
               maxLength: 50,
               controller: _nameController,
               autofocus: true,
-              decoration: NarwhalModalInputDecoration.create(
-                context,
-                hintText: 'Enter vault name',
-              ),
-
-              style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+              hintText: 'Enter vault name',
             ),
             Text(
               'Importing ${widget.files.length} files from folder.',
-              style: NarwhalTextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 color: ThemeHelper.neutral500(context),
               ),
@@ -150,7 +149,7 @@ class ImportProgressView extends StatelessWidget {
       children: [
         Text(
           'Importing $done / $total files',
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: ThemeHelper.neutral700(context),
           ),
@@ -165,7 +164,7 @@ class ImportProgressView extends StatelessWidget {
         ),
         Text(
           "Please don't close this window until the import is complete.",
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 12,
             color: ThemeHelper.neutral500(context),
           ),

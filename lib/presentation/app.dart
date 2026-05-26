@@ -28,6 +28,7 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
 
   ThemeData _buildTheme() {
     return ThemeData(
+      fontFamily: 'Inter',
       colorScheme: ColorScheme.fromSeed(seedColor: ThemeHelper.accentColor()),
       scaffoldBackgroundColor: ThemeHelper.neutral100(context),
       cardColor: ThemeHelper.neutral100(context),
@@ -45,60 +46,18 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
       textTheme:
           const TextTheme(
             // Small scale (10px)
-            labelSmall: TextStyle(
-              fontSize: 10,
-              fontWeight: .w400,
-              fontFamily: 'Segoe UI',
-            ),
-            bodySmall: TextStyle(
-              fontSize: 10,
-              fontWeight: .w600,
-              fontFamily: 'Segoe UI',
-            ),
-            titleSmall: TextStyle(
-              fontSize: 10,
-              fontWeight: .w700,
-              fontFamily: 'Segoe UI',
-            ),
+            labelSmall: TextStyle(fontSize: 10, fontWeight: .w400),
+            bodySmall: TextStyle(fontSize: 10, fontWeight: .w600),
+            titleSmall: TextStyle(fontSize: 10, fontWeight: .w700),
             // Medium scale (12px)
-            labelMedium: TextStyle(
-              fontSize: 12,
-              fontWeight: .w300,
-              fontFamily: 'Segoe UI',
-            ),
-            bodyMedium: TextStyle(
-              fontSize: 12,
-              fontWeight: .w400,
-              fontFamily: 'Segoe UI',
-            ),
-            titleMedium: TextStyle(
-              fontSize: 12,
-              fontWeight: .w600,
-              fontFamily: 'Segoe UI',
-            ),
-            headlineSmall: TextStyle(
-              fontSize: 12,
-              fontWeight: .w700,
-              fontFamily: 'Segoe UI',
-            ),
-            displaySmall: TextStyle(
-              fontSize: 12,
-              fontWeight: .w400,
-              fontStyle: .italic,
-              fontFamily: 'Segoe UI',
-            ),
+            labelMedium: TextStyle(fontSize: 12, fontWeight: .w300),
+            bodyMedium: TextStyle(fontSize: 12, fontWeight: .w400),
+            titleMedium: TextStyle(fontSize: 12, fontWeight: .w600),
+            headlineSmall: TextStyle(fontSize: 12, fontWeight: .w700),
+            displaySmall: TextStyle(fontSize: 12, fontWeight: .w400),
             // Large scale (16px)
-            labelLarge: TextStyle(
-              fontSize: 16,
-              fontWeight: .w300,
-              fontFamily: 'Segoe UI',
-            ),
-            bodyLarge: TextStyle(
-              fontSize: 16,
-              fontWeight: .w400,
-              fontStyle: .italic,
-              fontFamily: 'Segoe UI',
-            ),
+            labelLarge: TextStyle(fontSize: 16, fontWeight: .w300),
+            bodyLarge: TextStyle(fontSize: 16, fontWeight: .w400),
           ).apply(
             bodyColor: ThemeHelper.neutral300(context),
             displayColor: ThemeHelper.neutral300(context),

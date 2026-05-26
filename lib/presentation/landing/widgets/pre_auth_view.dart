@@ -16,7 +16,7 @@ class PreAuthView extends StatelessWidget {
           children: [
             Text(
               'Onyxia',
-              style: NarwhalTextStyle(
+              style: TextStyle(
                 fontSize: 32,
                 fontWeight: .bold,
                 color: ThemeHelper.neutral700(context),

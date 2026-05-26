@@ -50,7 +50,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
         OnyxiaMenuItem(
           child: Text(
             'Members',
-            style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+            style: TextStyle(color: ThemeHelper.neutral900(context)),
           ),
           onTap: () => showDialog(
             context: context,

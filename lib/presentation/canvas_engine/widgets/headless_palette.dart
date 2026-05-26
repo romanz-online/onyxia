@@ -307,10 +307,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                           if (paletteState.hoveredShapeType != null) ...[
                             Text(
                               'Add',
-                              style: NarwhalTextStyle(
-                                fontSize: 14,
-                                fontWeight: .w600,
-                              ),
+                              style: TextStyle(fontSize: 14, fontWeight: .w600),
                             ),
                             const Gap(4),
                             Icon(
@@ -421,7 +418,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         padding: .all(16),
         child: Text(
           'No child notes available',
-          style: NarwhalTextStyle(
+          style: TextStyle(
             fontSize: 14,
             color: ThemeHelper.neutral500(context),
           ),
@@ -482,7 +479,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                 Expanded(
                   child: Text(
                     itemTitle,
-                    style: NarwhalTextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       fontWeight: .w500,
                       color: ThemeHelper.neutral700(context),

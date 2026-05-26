@@ -27,7 +27,7 @@ class ArtifactsSidebar extends ConsumerWidget {
         final w = isCollapsed.value ? dividerStripWidth : width.value;
         final animate = animateNextCollapseChange.value;
         final Duration duration = animate
-            ? const Duration(milliseconds: 150)
+            ? const Duration(milliseconds: 300)
             : .zero;
 
         return ClipRect(

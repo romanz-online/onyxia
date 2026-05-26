@@ -26,9 +26,7 @@ class ImageEditorView extends StatelessWidget {
                         progress == null ? child : OnyxiaLoadingIndicator(),
                     errorBuilder: (ctx, err, _) => Text(
                       'Failed to load image',
-                      style: NarwhalTextStyle(
-                        color: ThemeHelper.neutral700(ctx),
-                      ),
+                      style: TextStyle(color: ThemeHelper.neutral700(ctx)),
                     ),
                   ),
                 ),
