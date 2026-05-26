@@ -6,6 +6,8 @@ class ThemeHelper {
 
   // TODO: remove unnecessary BuildContext arguments
 
+  // TODO: fix the inverted naming
+
   static Color accentColor() => orange();
   static Color errorColor() => NarwhalColors.error;
 
