@@ -36,11 +36,8 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       onTap: () {
         showDialog(
           context: context,
-          barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
-          builder: (_) => RenameVaultDialog(
-            vaultName: vault.name,
-            vaultId: vault.id,
-          ),
+          builder: (_) =>
+              RenameVaultDialog(vaultName: vault.name, vaultId: vault.id),
         );
       },
     ),
@@ -61,22 +58,39 @@ void _confirmRemove(BuildContext context, Vault vault) async {
 
   final confirm = await showDialog<bool>(
     context: context,
-    barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
-    builder: (_) => NarwhalModalDialog(
+    builder: (ctx) => OnyxiaDialog(
       width: 600,
       height: 200,
       title: 'Delete $vaultName?',
-      hasLargeTitle: true,
-      content: Text(
-        'This is permanent.',
-        style: NarwhalTextStyle(
-          fontSize: 20,
-          color: ThemeHelper.neutral900(context),
+      content: Expanded(
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Text(
+              'This is permanent.',
+              style: NarwhalTextStyle(
+                fontSize: 20,
+                color: ThemeHelper.neutral900(ctx),
+              ),
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: .end,
+              children: [
+                OnyxiaButton(
+                  label: 'Cancel',
+                  onTap: () => Navigator.of(ctx).pop(false),
+                ),
+                const Gap(20),
+                OnyxiaButton(
+                  label: 'Delete Vault',
+                  onTap: () => Navigator.of(ctx).pop(true),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      onCancelPressed: () => Navigator.of(context).pop(false),
-      actionButtonText: 'Delete Vault',
-      onActionPressed: () => Navigator.of(context).pop(true),
     ),
   );
 

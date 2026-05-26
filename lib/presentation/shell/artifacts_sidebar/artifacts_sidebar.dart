@@ -1,6 +1,6 @@
 import 'package:onyxia/export.dart';
 
-class ArtifactsSidebar extends StatelessWidget {
+class ArtifactsSidebar extends ConsumerWidget {
   static const double minWidth = 170;
   // Width of the always-present divider strip. When collapsed the artifacts
   // column shrinks to this strip so the divider (which now lives in AppShell)
@@ -20,7 +20,7 @@ class ArtifactsSidebar extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return AnimatedBuilder(
       animation: .merge([width, isCollapsed, animateNextCollapseChange]),
       builder: (context, _) {

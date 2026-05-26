@@ -71,7 +71,6 @@ class _RightColumn extends ConsumerWidget {
   void _showNewVaultDialog(BuildContext context) {
     showDialog(
       context: context,
-      barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
       builder: (_) => _NewVaultDialog(),
     );
   }
@@ -85,7 +84,6 @@ class _RightColumn extends ConsumerWidget {
 
     showDialog(
       context: context,
-      barrierColor: ThemeHelper.neutral900(context).withValues(alpha: 0.5),
       builder: (_) => ImportVaultDialog(
         files: files,
         onComplete: (vault) => context.go('/vault/${vault.id}/graph'),
@@ -164,6 +162,7 @@ class _NewVaultDialog extends ConsumerStatefulWidget {
 
 class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
   final TextEditingController _nameController = TextEditingController();
+  bool _creating = false;
 
   @override
   void dispose() {
@@ -171,19 +170,16 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
     super.dispose();
   }
 
-  // TODO: when redesigning NarwhalModalDialog, use it here and add a loading state here while the async methods run
   void _create() async {
     final name = _nameController.text.trim();
-    if (name.isEmpty) return;
+    if (name.isEmpty || _creating) return;
+    setState(() => _creating = true);
     final newVault = Vault(name: name);
-    await VaultsRepository().add([newVault]).then((_) async {
-      await _waitForVaultInProvider(newVault.id).then((_) {
-        if (mounted) {
-          Navigator.of(context).pop();
-          navigatorKey.currentContext?.go('/vault/${newVault.id}/graph');
-        }
-      });
-    });
+    await VaultsRepository().add([newVault]);
+    await _waitForVaultInProvider(newVault.id);
+    if (!mounted) return;
+    Navigator.of(context).pop();
+    navigatorKey.currentContext?.go('/vault/${newVault.id}/graph');
   }
 
   Future<void> _waitForVaultInProvider(String id) {
@@ -202,34 +198,49 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return NarwhalModalDialog(
+    return OnyxiaDialog(
       width: 600,
       height: 260,
-      title: 'New Vault',
-      content: Column(
-        mainAxisAlignment: .center,
-        crossAxisAlignment: .start,
-        spacing: 10,
-        children: [
-          Text(
-            'Vault Name',
-            style: NarwhalStyles.modalTextFieldTitleStyle(context),
-          ),
-          TextFormField(
-            maxLength: 50,
-            controller: _nameController,
-            autofocus: true,
-            decoration: NarwhalModalInputDecoration.create(
-              context,
-              hintText: 'Enter vault name',
-            ),
-            style: NarwhalTextStyle(),
-          ),
-        ],
+      title: _creating ? 'Creating Vault...' : 'New Vault',
+      content: Expanded(
+        child: _creating
+            ? Center(child: OnyxiaLoadingIndicator())
+            : Column(
+                crossAxisAlignment: .start,
+                spacing: 10,
+                children: [
+                  Text(
+                    'Vault Name',
+                    style: NarwhalStyles.modalTextFieldTitleStyle(context),
+                  ),
+                  // TODO: make OnyxiaTextFormField with default narwhaltextstyle and decoration and delete NarwhalModalInputDecoration
+                  TextFormField(
+                    maxLength: 50,
+                    controller: _nameController,
+                    autofocus: true,
+                    decoration: NarwhalModalInputDecoration.create(
+                      context,
+                      hintText: 'Enter vault name',
+                    ),
+                    style: NarwhalTextStyle(
+                      color: ThemeHelper.neutral900(context),
+                    ),
+                  ),
+                  const Spacer(),
+                  Row(
+                    mainAxisAlignment: .end,
+                    children: [
+                      OnyxiaButton(
+                        label: 'Cancel',
+                        onTap: Navigator.of(context).pop,
+                      ),
+                      const Gap(20),
+                      OnyxiaButton(label: 'Create', onTap: _create),
+                    ],
+                  ),
+                ],
+              ),
       ),
-      onCancelPressed: Navigator.of(context).pop,
-      actionButtonText: 'Create',
-      onActionPressed: _create,
     );
   }
 }

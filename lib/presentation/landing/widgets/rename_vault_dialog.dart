@@ -31,60 +31,63 @@ class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
     super.dispose();
   }
 
+  void _rename() {
+    ref
+        .read(vaultsProvider.notifier)
+        .renameVault(widget.vaultId, _vaultNameController.text);
+    Navigator.of(context).pop();
+  }
+
   @override
   Widget build(BuildContext context) {
     _vaultNameController.text = widget.vaultName;
 
-    return NarwhalModalDialog(
+    return OnyxiaDialog(
       width: 600,
       height: 260,
       title: 'Rename Vault',
-      content: Focus(
-        focusNode: _popupFocusNode,
-        onKeyEvent: (node, event) {
-          if (event is! KeyDownEvent) return .ignored;
-          if (event.logicalKey != .enter) return .ignored;
-
-          ref
-              .read(vaultsProvider.notifier)
-              .renameVault(widget.vaultId, _vaultNameController.text);
-          Navigator.of(context).pop();
-          return .handled;
-        },
-        child: SizedBox(
+      content: Expanded(
+        child: Focus(
+          focusNode: _popupFocusNode,
+          onKeyEvent: (node, event) {
+            if (event is! KeyDownEvent) return .ignored;
+            if (event.logicalKey != .enter) return .ignored;
+            _rename();
+            return .handled;
+          },
           child: Column(
-            mainAxisAlignment: .center,
+            crossAxisAlignment: .start,
             spacing: 10,
             children: [
-              Row(
-                mainAxisAlignment: .spaceBetween,
-                children: [
-                  Text(
-                    'Vault Name',
-                    style: NarwhalStyles.modalTextFieldTitleStyle(context),
-                  ),
-                ],
+              Text(
+                'Vault Name',
+                style: NarwhalStyles.modalTextFieldTitleStyle(context),
               ),
               TextFormField(
                 maxLength: 50,
                 controller: _vaultNameController,
                 decoration: NarwhalModalInputDecoration.create(
                   context,
-                  hintText: 'Rename this Vault',
+                  hintText: widget.vaultName,
                 ),
+                style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: .end,
+                children: [
+                  OnyxiaButton(
+                    label: 'Cancel',
+                    onTap: Navigator.of(context).pop,
+                  ),
+                  const Gap(20),
+                  OnyxiaButton(label: 'Rename', onTap: _rename),
+                ],
               ),
             ],
           ),
         ),
       ),
-      onCancelPressed: Navigator.of(context).pop,
-      actionButtonText: 'Rename',
-      onActionPressed: () {
-        ref
-            .read(vaultsProvider.notifier)
-            .renameVault(widget.vaultId, _vaultNameController.text);
-        Navigator.of(context).pop();
-      },
     );
   }
 }

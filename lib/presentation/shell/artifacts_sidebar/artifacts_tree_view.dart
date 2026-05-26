@@ -131,6 +131,10 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     // TODO: cont. but a workaround would be that if the user clicks the sidebar background (missing a node) then it deselects;
     // TODO: cont. this is the tree's behavior anyway, it's just being mimicked this way
 
+    // TODO: clicking a selected artifact should deselect it
+
+    // TODO: theme brightness or something is messing up the tree context menu and making it white
+
     return SuperTreeView<Artifact>(
       controller: treeController,
       expansionSlotSize: 20,

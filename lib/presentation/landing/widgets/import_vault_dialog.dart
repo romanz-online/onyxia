@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/landing/widgets/import_progress_view.dart';
 import 'package:web/web.dart' as web;
 
 class ImportVaultDialog extends ConsumerStatefulWidget {
@@ -64,52 +63,114 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
   @override
   Widget build(BuildContext context) {
     if (_importing) {
-      return NarwhalModalDialog(
+      return OnyxiaDialog(
         width: 600,
         height: 260,
         title: 'Importing Vault',
-        cancelButtonText: null,
-        actionButtonText: 'Importing...',
-        onActionPressed: null,
-        content: ImportProgressView(done: _done, total: widget.files.length),
+        content: Expanded(
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              ImportProgressView(done: _done, total: widget.files.length),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: .end,
+                children: [OnyxiaButton(label: 'Importing...', onTap: null)],
+              ),
+            ],
+          ),
+        ),
       );
     }
 
-    return NarwhalModalDialog(
+    return OnyxiaDialog(
       width: 600,
       height: 260,
       title: 'Import Vault',
-      content: Column(
-        mainAxisAlignment: .center,
-        crossAxisAlignment: .start,
-        spacing: 10,
-        children: [
-          Text(
-            'Vault Name',
-            style: NarwhalStyles.modalTextFieldTitleStyle(context),
-          ),
-          TextFormField(
-            maxLength: 50,
-            controller: _nameController,
-            autofocus: true,
-            decoration: NarwhalModalInputDecoration.create(
-              context,
-              hintText: 'Enter vault name',
+      content: Expanded(
+        child: Column(
+          crossAxisAlignment: .start,
+          spacing: 10,
+          children: [
+            Text(
+              'Vault Name',
+              style: NarwhalStyles.modalTextFieldTitleStyle(context),
             ),
-            style: NarwhalTextStyle(),
-          ),
-          Text(
-            'Importing ${widget.files.length} files from folder.',
-            style: NarwhalTextStyle(
-              fontSize: 12,
-              color: ThemeHelper.neutral500(context),
+            TextFormField(
+              maxLength: 50,
+              controller: _nameController,
+              autofocus: true,
+              decoration: NarwhalModalInputDecoration.create(
+                context,
+                hintText: 'Enter vault name',
+              ),
+
+              style: NarwhalTextStyle(color: ThemeHelper.neutral900(context)),
             ),
-          ),
-        ],
+            Text(
+              'Importing ${widget.files.length} files from folder.',
+              style: NarwhalTextStyle(
+                fontSize: 12,
+                color: ThemeHelper.neutral500(context),
+              ),
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: .end,
+              children: [
+                OnyxiaButton(label: 'Cancel', onTap: Navigator.of(context).pop),
+                const Gap(20),
+                OnyxiaButton(label: 'Import', onTap: _startImport),
+              ],
+            ),
+          ],
+        ),
       ),
-      onCancelPressed: () => Navigator.of(context).pop(),
-      actionButtonText: 'Import',
-      onActionPressed: _startImport,
+    );
+  }
+}
+
+class ImportProgressView extends StatelessWidget {
+  final int done;
+  final int total;
+
+  const ImportProgressView({
+    super.key,
+    required this.done,
+    required this.total,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final value = total == 0 ? null : done / total;
+    return Column(
+      mainAxisAlignment: .center,
+      crossAxisAlignment: .stretch,
+      spacing: 12,
+      children: [
+        Text(
+          'Importing $done / $total files',
+          style: NarwhalTextStyle(
+            fontSize: 14,
+            color: ThemeHelper.neutral700(context),
+          ),
+        ),
+        LinearProgressIndicator(
+          value: value,
+          minHeight: 6,
+          backgroundColor: ThemeHelper.neutral200(context),
+          valueColor: AlwaysStoppedAnimation<Color>(
+            ThemeHelper.blue500(context),
+          ),
+        ),
+        Text(
+          "Please don't close this window until the import is complete.",
+          style: NarwhalTextStyle(
+            fontSize: 12,
+            color: ThemeHelper.neutral500(context),
+          ),
+        ),
+      ],
     );
   }
 }
