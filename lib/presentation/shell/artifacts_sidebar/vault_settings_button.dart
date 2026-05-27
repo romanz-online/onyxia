@@ -48,6 +48,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
       closeOverlay: closeOverlay,
       items: [
         OnyxiaMenuItem(
+          icon: LucideIcons.users,
           child: Text(
             'Members',
             style: TextStyle(color: ThemeHelper.neutral900(context)),
@@ -56,6 +57,14 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
             context: context,
             builder: (_) => const VaultMembersDialog(),
           ),
+        ),
+        OnyxiaMenuItem(
+          icon: LucideIcons.logOut,
+          child: Text(
+            'Manage Vaults',
+            style: TextStyle(color: ThemeHelper.neutral900(context)),
+          ),
+          onTap: () => context.go(Routes.home),
         ),
       ],
     );
