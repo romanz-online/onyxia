@@ -29,6 +29,13 @@ class OnyxiaTooltip extends StatefulWidget {
 
 class _OnyxiaTooltipState extends State<OnyxiaTooltip>
     with SingleTickerProviderStateMixin {
+  // Global cooldown: once any tooltip has been shown and dismissed, the next
+  // tooltip to be triggered within this window skips its wait and shows
+  // immediately. Mimics Windows/Material "subsequent tooltips show without
+  // delay" behavior for users sweeping across a row of buttons.
+  static DateTime? _lastShownTooltipHiddenAt;
+  static const _cooldownWindow = Duration(milliseconds: 1000);
+
   bool _open = false;
   Timer? _showTimer;
   late final AnimationController _scale;
@@ -40,7 +47,7 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
   void initState() {
     super.initState();
     _scale = AnimationController(
-      duration: const Duration(milliseconds: 250),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
     _scaleAnim = Tween<double>(
@@ -58,7 +65,14 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
 
   void _scheduleShow() {
     _showTimer?.cancel();
-    _showTimer = Timer(widget.waitDuration, _show);
+    final last = _lastShownTooltipHiddenAt;
+    final inCooldown =
+        last != null && DateTime.now().difference(last) < _cooldownWindow;
+    if (inCooldown) {
+      _show();
+    } else {
+      _showTimer = Timer(widget.waitDuration, _show);
+    }
   }
 
   void _show() {
@@ -73,6 +87,7 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
   void _hide() {
     _showTimer?.cancel();
     if (!_open) return;
+    _lastShownTooltipHiddenAt = DateTime.now();
     setState(() => _open = false);
     _scale.reset();
   }
