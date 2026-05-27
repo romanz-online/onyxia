@@ -133,6 +133,8 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       });
     }
 
+    // TODO: this widget should be resizeable
+
     return Positioned(
       left: _position.dx,
       top: _position.dy,
