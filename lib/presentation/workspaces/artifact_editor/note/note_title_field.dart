@@ -2,10 +2,9 @@
 import 'package:speech_balloon/speech_balloon.dart';
 
 class NoteTitleField extends ConsumerStatefulWidget {
-  final NoteStateProvider? provider;
   final FocusNode? nextFocusNode;
 
-  const NoteTitleField({super.key, this.provider, this.nextFocusNode});
+  const NoteTitleField({super.key, this.nextFocusNode});
 
   @override
   ConsumerState<NoteTitleField> createState() => _NoteTitleFieldState();
@@ -21,9 +20,6 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
 
   String? _titleOnFocusGain;
 
-  NoteStateProvider get _provider =>
-      widget.provider ?? selectedNoteStateProvider;
-
   @override
   void initState() {
     super.initState();
@@ -31,15 +27,23 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
     _focusNode = FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final initialItem = ref.read(_provider).value?.note;
-      _controller.text = initialItem?.name ?? '';
+      final noteAsyncState = ref.watch(selectedNoteStateProvider);
+      final rawSelectedItem = ref.watch(selectedArtifactProvider);
+      final Artifact? selectedItem =
+          rawSelectedItem ?? noteAsyncState.value?.note;
+      // TODO: controller text doesn't update when i change the noteartifact's name via the tree
+      _controller.text = selectedItem?.name ?? '';
 
       _focusNode.addListener(() async {
         if (_focusNode.hasFocus) {
-          _titleOnFocusGain = ref.read(_provider).value?.note?.name;
+          _titleOnFocusGain = ref
+              .read(selectedNoteStateProvider)
+              .value
+              ?.note
+              ?.name;
           return;
         }
-        final note = ref.read(_provider).value?.note;
+        final note = ref.read(selectedNoteStateProvider).value?.note;
         if (note == null) return;
         final error = await ref
             .read(artifactsProvider.notifier)
@@ -53,7 +57,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
       });
 
       _itemListener = ref.listenManual(
-        _provider.select((state) => state.value?.note),
+        selectedNoteStateProvider.select((state) => state.value?.note),
         (prev, next) {
           if (!_focusNode.hasFocus &&
               next != null &&
@@ -123,7 +127,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             final msg = ItemTitleValidationService.errorMessage(
               ref.read(artifactsProvider).value ?? const <Artifact>[],
               value,
-              ref.read(_provider).value?.note?.id ?? '',
+              ref.read(selectedNoteStateProvider).value?.note?.id ?? '',
             );
             setState(() => _errorMessage = msg);
             if (msg != null) {

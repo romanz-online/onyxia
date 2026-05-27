@@ -39,4 +39,17 @@ class ArtifactSnapshotsRepository
         .maybeSingle();
     return row == null ? null : ArtifactSnapshot.fromMap(row);
   }
+
+  /// Inserts or replaces the snapshot for an artifact in a single round-trip.
+  /// The table is keyed on `artifact_id`, so an upsert is the only safe way to
+  /// overwrite an existing snapshot (a plain insert would conflict).
+  Future<void> upsert(ArtifactSnapshot snap) async {
+    if (vaultId == null || vaultId!.isEmpty) {
+      throw ArgumentError('Invalid vaultId: $vaultId');
+    }
+    await Supabase.instance.client.from(tableName).upsert(
+      {...snap.toMap(), 'vault_id': vaultId},
+      onConflict: 'artifact_id',
+    );
+  }
 }

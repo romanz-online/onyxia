@@ -10,6 +10,11 @@ class OnyxiaIconButton extends StatelessWidget {
   final double size;
   final Color? iconColor;
   final String? tooltip;
+
+  /// Side of the button the tooltip appears on. Null = auto-pick based on
+  /// viewport room. Pass explicitly for buttons near a viewport edge
+  /// (e.g. left-edge sidebar buttons want `right`).
+  final OnyxiaTooltipDirection? tooltipDirection;
   final int badgeCount;
   final Color? badgeColor;
 
@@ -24,6 +29,7 @@ class OnyxiaIconButton extends StatelessWidget {
     this.size = 28,
     this.iconColor,
     this.tooltip,
+    this.tooltipDirection,
     this.badgeCount = 0,
     this.badgeColor,
   });
@@ -93,11 +99,9 @@ class OnyxiaIconButton extends StatelessWidget {
     Widget child = button;
 
     if (tooltip != null) {
-      // TODO: tooltips now have a white background because of the material theme change away from brightness.dark tooltips in general should be reworked slightly. their positions need refining, they should have a small ease-in-ease-out animation, they should be a bit styled (background, etc.) look into packages, maybe use flutter_portal + speech_balloon and have the alignment change which direction the speech balloon tip comes from
-      child = Tooltip(
+      child = OnyxiaTooltip(
         message: tooltip!,
-        waitDuration: const Duration(milliseconds: 500),
-        textStyle: TextStyle(color: ThemeHelper.neutral900(context)),
+        direction: tooltipDirection,
         child: child,
       );
     }

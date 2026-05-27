@@ -142,7 +142,6 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
             showHoverContainer: _showHoverContainer,
             hoverPosition: _hoverPosition,
             isDragOver: _isDragOver,
-            provider: selectedNoteStateProvider,
             onDragOver: (over) => setState(() => _isDragOver = over),
             onImageDrop: _handleImageDrop,
             onTapDown: (details) {
@@ -188,7 +187,6 @@ class _NoteEditorContent extends StatefulWidget {
   final bool showHoverContainer;
   final Offset? hoverPosition;
   final bool isDragOver;
-  final NoteStateProvider provider;
   final void Function(bool) onDragOver;
   final Future<void> Function(PerformDropEvent) onImageDrop;
   final void Function(TapDownDetails) onTapDown;
@@ -202,7 +200,6 @@ class _NoteEditorContent extends StatefulWidget {
     required this.showHoverContainer,
     required this.hoverPosition,
     required this.isDragOver,
-    required this.provider,
     required this.onDragOver,
     required this.onImageDrop,
     required this.onTapDown,
@@ -299,7 +296,6 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
                       collab: widget.collab,
                       focusNode: widget.focusNode,
                       scrollController: widget.scrollController,
-                      provider: widget.provider,
                       onTapDown: widget.onTapDown,
                     ),
                     _DragOverlay(isDragOver: widget.isDragOver),
@@ -310,6 +306,7 @@ class _NoteEditorContentState extends State<_NoteEditorContent> {
                         icon: LucideIcons.ghost,
                         isSelected: _isGhostTyping,
                         tooltip: 'Ghost-type lorem ipsum (debug)',
+                        tooltipDirection: .left,
                         onPressed: _toggleGhostType,
                       ),
                     ),
@@ -329,7 +326,6 @@ class _NoteEditorField extends ConsumerWidget {
   final BardCollabConfig? collab;
   final FocusNode focusNode;
   final ScrollController scrollController;
-  final NoteStateProvider provider;
   final void Function(TapDownDetails) onTapDown;
 
   const _NoteEditorField({
@@ -337,7 +333,6 @@ class _NoteEditorField extends ConsumerWidget {
     required this.collab,
     required this.focusNode,
     required this.scrollController,
-    required this.provider,
     required this.onTapDown,
   });
 
@@ -358,10 +353,7 @@ class _NoteEditorField extends ConsumerWidget {
                   left: (horizontalMargin - 5).clamp(0.0, .infinity),
                   right: horizontalMargin,
                 ),
-                child: NoteTitleField(
-                  provider: provider,
-                  nextFocusNode: focusNode,
-                ),
+                child: NoteTitleField(nextFocusNode: focusNode),
               ),
             ),
             SliverFillRemaining(

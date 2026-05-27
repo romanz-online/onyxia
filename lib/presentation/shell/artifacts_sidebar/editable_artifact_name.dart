@@ -1,6 +1,8 @@
 ﻿import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
+// TODO: i'm pretty sure the super tree is preventing me from doing various things in the text editor here, like pressing space to add a space or pressing enter to submit or esc to undo the change and leave editing mode
+
 final renameArtifactIdProvider =
     NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
       RenameArtifactIdNotifier.new,
@@ -141,7 +143,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
       ),
       child: _isEditing
           ? Transform.translate(
-              offset: const Offset(-4, -2),
+              offset: const Offset(-4, -1),
               child: Row(
                 children: [
                   Expanded(
@@ -192,9 +194,14 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
             )
           : GestureDetector(
               onDoubleTap: startEditing,
-              child: widget.trailingExtension == null
-                  ? Text(
-                      widget.item.name,
+              child: Row(
+                mainAxisSize: .min,
+                mainAxisAlignment: .spaceBetween,
+                spacing: 8,
+                children: [
+                  Flexible(
+                    child: Text(
+                      _baseName,
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: .normal,
@@ -203,37 +210,21 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       ),
                       overflow: .ellipsis,
                       maxLines: 1,
-                    )
-                  : Row(
-                      mainAxisSize: .min,
-                      mainAxisAlignment: .spaceBetween,
-                      spacing: 8,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            _baseName,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: .normal,
-                              color: ThemeHelper.neutral700(context),
-                              letterSpacing: 0.5,
-                            ),
-                            overflow: .ellipsis,
-                            maxLines: 1,
-                          ),
-                        ),
-                        Text(
-                          widget.trailingExtension!,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: .normal,
-                            color: ThemeHelper.neutral500(context),
-                            letterSpacing: 0.5,
-                          ),
-                          maxLines: 1,
-                        ),
-                      ],
                     ),
+                  ),
+                  if (widget.trailingExtension != null)
+                    Text(
+                      widget.trailingExtension!,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: .normal,
+                        color: ThemeHelper.neutral500(context),
+                        letterSpacing: 0.5,
+                      ),
+                      maxLines: 1,
+                    ),
+                ],
+              ),
             ),
     );
   }

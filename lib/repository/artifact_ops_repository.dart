@@ -80,6 +80,23 @@ class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
     return controller.stream;
   }
 
+  /// Highest `op_seq` recorded for [artifactId], or null if no ops exist.
+  /// Used by snapshot-rebuild flows to cap a replacement snapshot's
+  /// `max_op_seq` so the load path skips superseded ops.
+  Future<int?> maxSeqFor(String artifactId) async {
+    if (vaultId == null || vaultId!.isEmpty) {
+      throw ArgumentError('Invalid vaultId: $vaultId');
+    }
+    final row = await Supabase.instance.client
+        .from(tableName)
+        .select('op_seq')
+        .eq('artifact_id', artifactId)
+        .order('op_seq', ascending: false)
+        .limit(1)
+        .maybeSingle();
+    return row == null ? null : row['op_seq'] as int?;
+  }
+
   /// Appends a single CRDT op. Server assigns `op_seq`, `created_at`, and
   /// `user_id` (via `DEFAULT auth.uid()`).
   Future<void> append(String artifactId, Uint8List opBytes) async {

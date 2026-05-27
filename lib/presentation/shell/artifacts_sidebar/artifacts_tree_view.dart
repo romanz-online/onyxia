@@ -125,8 +125,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     // TODO: it's also possible to deselect all nodes through the tree widget but that won't deselect the currently-selected artifact. Wiring this requires an on-selection-change callback in vendored super_tree, which CLAUDE.md keeps out of scope. but a workaround would be that if the user clicks the sidebar background (missing a node) then it deselects; this is the tree's behavior anyway, it's just being mimicked this way cont. but more realistically i probably need to dig into the vendor code and expose several signals to properly sync things up
 
-    // TODO: clicking a selected artifact should deselect it
-
     // TODO: theme brightness or something is messing up the tree context menu and making it white
 
     return SuperTreeView<Artifact>(
@@ -208,6 +206,19 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     final item = ref.read(artifactsProvider.notifier).getItemById(id);
     // don't select folders, just let the tree open them
     if (item == null || item.type == .folder) return;
+
+    // tapping the already-selected artifact deselects it by navigating
+    // back to the vault root, which clears the `selectedId` route param
+    final currentlySelected = ref.read(selectedArtifactProvider);
+    if (currentlySelected?.id == item.id) {
+      final vaultId = ref.read(selectedVaultProvider)?.id;
+      if (vaultId != null) {
+        treeController.deselectAll();
+        context.go('/vault/$vaultId');
+        return;
+      }
+    }
+
     _selectItem(item);
   }
 

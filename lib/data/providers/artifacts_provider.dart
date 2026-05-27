@@ -1,3 +1,4 @@
+import 'package:crdt_lf/crdt_lf.dart';
 import 'package:onyxia/bard/markdown_parser.dart';
 import 'package:onyxia/bard/markdown_span.dart';
 import 'package:onyxia/export.dart';
@@ -118,9 +119,10 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   /// Renames [item] to [newName]. Validates first; on rejection returns the
   /// error message and performs no writes. On success writes the renamed
   /// item, rewrites `[[oldName]]` wiki-links in every note's content
-  /// (including the renamed item's own content), and navigates the URL if
-  /// the user is currently viewing this item. Returns `null` on success or
-  /// no-op (empty / unchanged name).
+  /// (including the renamed item's own content), rebuilds the CRDT snapshot
+  /// for every note whose content was rewritten so the change survives load,
+  /// and navigates the URL if the user is currently viewing this item.
+  /// Returns `null` on success or no-op (empty / unchanged name).
   Future<String?> renameItem(Artifact item, String newName) async {
     final cleaned = ItemTitleValidationService.correctTitle(newName.trim());
     if (cleaned.isEmpty || cleaned == item.name) return null;
@@ -132,6 +134,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     final renamed = item.copyWith(name: cleaned);
 
     final batch = <Artifact>[];
+    final rewrittenNotes = <NoteArtifact>[];
     for (final a in _items) {
       Artifact updated = a.id == item.id ? renamed : a;
       if (updated is NoteArtifact) {
@@ -142,6 +145,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         );
         if (rewritten != updated.content) {
           updated = updated.copyWith(content: rewritten);
+          rewrittenNotes.add(updated);
         }
       }
       if (updated != a) batch.add(updated);
@@ -161,7 +165,43 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
 
     await _repository.update(batch);
 
+    // BardEditor hydrates from artifact_snapshots + artifact_ops, not from
+    // NoteArtifact.content. Without rebuilding the snapshot, the new content
+    // is silently overwritten on next load by replaying the pre-rename ops.
+    if (rewrittenNotes.isNotEmpty && _vaultId != null) {
+      await _rebuildSnapshotsForRewrittenNotes(rewrittenNotes, _vaultId!);
+      // Force the open editor (if any) to re-hydrate from the new snapshot.
+      ref.invalidate(selectedNoteStateProvider);
+    }
+
     return null;
+  }
+
+  /// For each note whose `content` was just rewritten, replaces its CRDT
+  /// snapshot with one built from the new content and caps `max_op_seq` so the
+  /// load path skips the now-superseded ops. Mirrors the pattern in
+  /// `porting_service._importMarkdown`.
+  Future<void> _rebuildSnapshotsForRewrittenNotes(
+    List<NoteArtifact> notes,
+    String vaultId,
+  ) async {
+    final snapsRepo = ArtifactSnapshotsRepository(vaultId: vaultId);
+    final opsRepo = ArtifactOpsRepository(vaultId: vaultId);
+    for (final note in notes) {
+      final maxSeq = await opsRepo.maxSeqFor(note.id);
+      final doc = CRDTDocument(peerId: PeerId.generate());
+      if (note.content.isNotEmpty) {
+        CRDTFugueTextHandler(doc, BardCodec.handlerKey).insert(0, note.content);
+      }
+      final snap = doc.takeSnapshot(pruneHistory: false);
+      await snapsRepo.upsert(ArtifactSnapshot(
+        artifactId: note.id,
+        vaultId: vaultId,
+        snapshotBytes: BardCodec.encodeSnapshot(snap),
+        versionVector: snap.versionVector.toJson(),
+        maxOpSeq: maxSeq,
+      ));
+    }
   }
 }
 

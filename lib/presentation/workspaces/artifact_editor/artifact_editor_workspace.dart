@@ -2,8 +2,6 @@
 import 'note/note_editor_view.dart';
 import 'image/image_editor_view.dart';
 
-// TODO: renaming an artifact now correctly updates the URL but doesn't immediately update the loaded title text and links to that artifact aren't getting updated
-
 class ArtifactWorkspace extends ConsumerStatefulWidget {
   const ArtifactWorkspace({super.key});
 
@@ -62,7 +60,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
     final noteAsyncState = ref.watch(selectedNoteStateProvider);
     final rawSelectedItem = ref.watch(selectedArtifactProvider);
     final Artifact? selectedItem =
-        noteAsyncState.value?.note ?? rawSelectedItem;
+        rawSelectedItem ?? noteAsyncState.value?.note;
 
     if (selectedItem == null) {
       return Container(
@@ -74,11 +72,19 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
             children: [
               Text(
                 'No item selected',
-                style: TextStyle(fontStyle: .normal, fontSize: 20),
+                style: TextStyle(
+                  fontStyle: .normal,
+                  fontSize: 20,
+                  color: ThemeHelper.neutral800(context),
+                ),
               ),
               Text(
                 'Select an item from the sidebar to view',
-                style: TextStyle(fontStyle: .normal, fontSize: 20),
+                style: TextStyle(
+                  fontStyle: .normal,
+                  fontSize: 20,
+                  color: ThemeHelper.neutral800(context),
+                ),
               ),
             ],
           ),
