@@ -1,6 +1,8 @@
 import 'package:onyxia/export.dart';
 import 'package:web/web.dart' as web;
 
+// TODO: this shouldn't be a "widget" it should probably be a service or helper that provides shared URL logic
+
 /// Context menu for navigation elements that provides web-like functionality
 /// including "Open in New Tab" and "Copy Link" options
 class NavigationContextMenu {
