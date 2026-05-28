@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-// TODO: there's an exception that pops up with this widget
-
 // TODO: this widget's visibility behavior isn't correct. it should not be popping up when the user passively moves their selection over an existing link
 
 // TODO: not here but clicking a link when not selecting any of its text (so the brackets are hidden) should actually direct the user to the linked item

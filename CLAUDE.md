@@ -103,7 +103,6 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
 - **NEVER** call `Overlay.of(context).insert(OverlayEntry(...))` directly in app code
 - **NEVER** position floating UI with `Builder` + `findRenderObject().localToGlobal(...)` math — pass an `Aligned` anchor to `OnyxiaOverlay` instead. For cursor-anchored menus (e.g. right-click), capture `details.localPosition` and feed it into the anchor's `offset`
 - **For menu surfaces** use `OnyxiaMenu` + `OnyxiaMenuItem` from [lib/presentation/common_widget/onyxia_menu.dart](lib/presentation/common_widget/onyxia_menu.dart) rather than rebuilding Material/ListView/InkWell trees by hand. `OnyxiaMenuItem` takes `icon` + `child` + `onTap`; use `OnyxiaMenuItem.divider()` for separators
-- **EXCEPTION**: vendored packages under `lib/vendor/` (e.g. `super_tree`'s `ContextMenuOverlay`) are out of scope to refactor, but app code calling into vendored overlays should be migrated to `OnyxiaOverlay` + `OnyxiaMenu`
 
 ---
 
