@@ -174,6 +174,7 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
     final balloon = AnimatedBuilder(
       animation: _scaleAnim,
       builder: (context, child) => Transform(
+        // TODO: instead of bouncing out from a specific direction, this should have a slight opacity animation to fade in and enlarge altogether in all directions instead of just one
         transform: _scaleMatrix(_resolvedDirection, _scaleAnim.value),
         alignment: _scaleOriginFor(_resolvedDirection),
         child: child,
