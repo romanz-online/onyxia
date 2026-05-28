@@ -44,4 +44,5 @@ class ThemeHelper {
   static Color foreground2() => const Color(0xFF909699);
   static Color accent() => const Color(0xFFFF9800);
   static Color error() => const Color(0xFFF44336);
+  // old error was #F44336
 }
