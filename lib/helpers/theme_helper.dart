@@ -39,8 +39,6 @@ class NarwhalColors {
 class ThemeHelper {
   ThemeHelper._();
 
-  // TODO: come up with a handful of colors that i can reliably reuse everywhere, probably no more than 10 but realistically closer to 6, which will be much more easy to swap out
-
   // TODO: create a better, more cohesive color palette based around charcoal/embers called "onyxia" (drop the narwhal theme entirely). best i've found so far is #222831 #393E46 #B55400/#FF7700 #EEEEEE as a base and it needs some shade variants defined in a cohesive theme template that i can reuse for other themes easily WITHOUT relying on the materal them stupidity
 
   // TODO: switch to using themed: https://pub.dev/packages/themed and let users switch between them on the fly. use "slumber" as a second theme, #051622 #1BA098 #DEB992

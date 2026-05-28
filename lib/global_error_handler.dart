@@ -39,7 +39,7 @@ class GlobalErrorHandler {
     // a build/layout/paint that's already failing.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (navigatorKey.currentState?.overlay == null) return;
-      OnyxiaToast.show(text: message, type: ToastType.error);
+      OnyxiaToast.error(text: message);
     });
   }
 

@@ -35,12 +35,12 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
     if (!_isValidEmail || _isSending) return;
     final vault = ref.read(selectedVaultProvider);
     if (vault == null) {
-      OnyxiaToast.show(text: 'No vault selected.', type: ToastType.error);
+      OnyxiaToast.error(text: 'No vault selected.');
       return;
     }
     final me = ref.read(currentUserProvider).value;
     if (me == null) {
-      OnyxiaToast.show(text: 'Not signed in.', type: ToastType.error);
+      OnyxiaToast.error(text: 'Not signed in.');
       return;
     }
     final email = _email.trim().toLowerCase();
@@ -64,10 +64,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           ])
           .then((_) {
             if (!mounted) return;
-            OnyxiaToast.show(
-              text: '${existing.email} added to vault.',
-              type: ToastType.success,
-            );
+            OnyxiaToast.show(text: '${existing.email} added to vault.');
             _emailController.clear();
             setState(() {
               _isSending = false;
@@ -188,7 +185,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                       label: 'Copy',
                       onTap: () {
                         Clipboard.setData(ClipboardData(text: _generatedLink!));
-                        OnyxiaToast.show(text: 'Link copied.', type: .success);
+                        OnyxiaToast.show(text: 'Link copied.');
                       },
                     ),
                   ],

@@ -39,7 +39,7 @@ class MasterSidebar extends ConsumerWidget {
                       ? LucideIcons.panelLeftOpen
                       : LucideIcons.panelLeftClose,
                   tooltip: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
-                  tooltipDirection: OnyxiaTooltipDirection.right,
+                  tooltipDirection: .right,
                   onPressed: () {
                     animateNextCollapseChange.value = true;
                     isArtifactsSidebarCollapsed.value = !collapsed;
@@ -51,7 +51,7 @@ class MasterSidebar extends ConsumerWidget {
               OnyxiaIconButton(
                 icon: LucideIcons.share2,
                 tooltip: 'Open graph',
-                tooltipDirection: OnyxiaTooltipDirection.right,
+                tooltipDirection: .right,
                 onPressed: () {
                   if (vaultId.isEmpty) return;
                   context.go('/vault/$vaultId/${Routes.graph}');

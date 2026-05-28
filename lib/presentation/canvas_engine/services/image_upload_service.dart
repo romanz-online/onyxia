@@ -59,16 +59,10 @@ class CanvasImageUploadService {
         objectsNotifier.clearSelectedObjects();
         objectsNotifier.selectObject(newObj);
 
-        OnyxiaToast.show(
-          text: 'Image added to canvas',
-          type: ToastType.success,
-        );
+        OnyxiaToast.show(text: 'Image added to canvas');
       } catch (e) {
         debugPrint('Error processing image ${file.name}: $e');
-        OnyxiaToast.show(
-          text: 'Failed to add image: ${file.name} - $e',
-          type: ToastType.error,
-        );
+        OnyxiaToast.error(text: 'Failed to add image: ${file.name} - $e');
       }
     }
   }

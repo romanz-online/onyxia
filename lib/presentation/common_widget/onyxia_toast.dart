@@ -1,8 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
-enum ToastType { success, warning, error, info }
-
 class _ToastEntry {
   final String id;
   final OverlayEntry overlayEntry;
@@ -28,10 +26,40 @@ class OnyxiaToast {
   static String show({
     String? text,
     Widget? child,
-    ToastType type = .info,
     Alignment position = .topRight,
     Duration? duration,
     double margin = 16.0,
+  }) => _showInternal(
+    text: text,
+    child: child,
+    position: position,
+    duration: duration,
+    margin: margin,
+    isError: false,
+  );
+
+  static String error({
+    String? text,
+    Widget? child,
+    Alignment position = .topRight,
+    Duration? duration,
+    double margin = 16.0,
+  }) => _showInternal(
+    text: text,
+    child: child,
+    position: position,
+    duration: duration,
+    margin: margin,
+    isError: true,
+  );
+
+  static String _showInternal({
+    String? text,
+    Widget? child,
+    required Alignment position,
+    Duration? duration,
+    required double margin,
+    required bool isError,
   }) {
     assert(
       text != null || child != null,
@@ -42,15 +70,10 @@ class OnyxiaToast {
       'Cannot provide both text and child',
     );
 
-    // Errors stay longer so users can read them; other types use 3 s default.
     final effectiveDuration =
-        duration ??
-        (type == .error
-            ? const Duration(seconds: 10)
-            : const Duration(seconds: 3));
+        duration ?? Duration(seconds: isError ? 10 : 5);
 
-    // Always log errors to the console so they can be reviewed after dismissal.
-    if (type == .error && text != null) {
+    if (isError && text != null) {
       debugPrint('[Toast Error] $text');
     }
 
@@ -68,7 +91,7 @@ class OnyxiaToast {
         key: stateKey,
         toastId: toastId,
         text: text,
-        type: type,
+        isError: isError,
         position: position,
         margin: margin,
         positionStream: _positionControllers[position]!.stream,
@@ -121,7 +144,6 @@ class OnyxiaToast {
     final progress = ValueNotifier<double>(0.0);
     final id = show(
       child: _ProgressToastContent(label: label, progress: progress),
-      type: .info,
       duration: const Duration(days: 365),
       position: position,
     );
@@ -217,7 +239,7 @@ class _ToastStackOverlay extends StatefulWidget {
   final String toastId;
   final String? text;
   final Widget? child;
-  final ToastType type;
+  final bool isError;
   final Alignment position;
   final double margin;
   final Stream<void> positionStream;
@@ -227,7 +249,7 @@ class _ToastStackOverlay extends StatefulWidget {
     required this.toastId,
     this.text,
     this.child,
-    required this.type,
+    required this.isError,
     required this.position,
     required this.margin,
     required this.positionStream,
@@ -430,7 +452,7 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
                           ),
                           child: _ToastWidget(
                             text: widget.text,
-                            type: widget.type,
+                            isError: widget.isError,
                             child: widget.child,
                           ),
                         ),
@@ -450,72 +472,32 @@ class _ToastStackOverlayState extends State<_ToastStackOverlay>
 class _ToastWidget extends StatelessWidget {
   final String? text;
   final Widget? child;
-  final ToastType type;
+  final bool isError;
 
-  const _ToastWidget({this.text, this.child, required this.type});
+  const _ToastWidget({this.text, this.child, required this.isError});
 
   @override
   Widget build(BuildContext context) {
     return Material(
       elevation: 8,
       borderRadius: .circular(8),
-      color: _getBackgroundColor(context),
+      color: isError ? ThemeHelper.error() : ThemeHelper.background2(),
       child: Container(
-        constraints: const BoxConstraints(minHeight: 48, maxWidth: 400),
+        constraints: const BoxConstraints(maxWidth: 400),
         padding: .symmetric(horizontal: 16, vertical: 12),
-        child: Row(
-          mainAxisSize: child != null ? .max : .min,
-          spacing: 12,
-          children: [
-            Icon(_getIcon(), color: _getIconColor(context), size: 20),
-            if (child != null)
-              Expanded(child: child!)
-            else
-              Flexible(
-                child: Text(
-                  text!,
-                  style: TextStyle(
-                    color: _getTextColor(context),
-                    fontSize: 14,
-                    fontWeight: .w500,
-                  ),
-                ),
+        child:
+            child ??
+            Text(
+              text!,
+              style: TextStyle(
+                color: ThemeHelper.foreground1(),
+                fontSize: 14,
+                fontWeight: .w500,
               ),
-          ],
-        ),
+            ),
       ),
     );
   }
-
-  // TODO: simplify this. don't need all of these colors except for error
-
-  Color _getBackgroundColor(BuildContext context) => switch (type) {
-    .success => NarwhalColors.green900,
-    .warning => NarwhalColors.amber,
-    .error => ThemeHelper.error(),
-    .info => ThemeHelper.foreground2(),
-  };
-
-  Color _getTextColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.foreground1(),
-    .warning => ThemeHelper.foreground1(),
-    .error => ThemeHelper.background1(),
-    .info => ThemeHelper.background2(),
-  };
-
-  Color _getIconColor(BuildContext context) => switch (type) {
-    .success => NarwhalColors.green300,
-    .warning => ThemeHelper.foreground1(),
-    .error => ThemeHelper.background1(),
-    .info => ThemeHelper.accent(),
-  };
-
-  IconData _getIcon() => switch (type) {
-    .success => LucideIcons.circleCheck,
-    .warning => LucideIcons.triangleAlert,
-    .error => LucideIcons.circleX,
-    .info => LucideIcons.info,
-  };
 }
 
 /// Content widget used inside upload progress toasts.

@@ -170,7 +170,7 @@ class _CanvasBackgroundPainter extends NarwhalPainter {
         // Nothing to paint during loading
       } else if (canvasBounds.hasError) {
         // Draw error state - fallback to dot grid
-        OnyxiaToast.show(type: ToastType.error, text: 'Error loading image');
+        OnyxiaToast.error(text: 'Error loading image');
       } else {
         // Draw the dot grid for whiteboard canvases
         // Use the new instance method that leverages NarwhalPainter

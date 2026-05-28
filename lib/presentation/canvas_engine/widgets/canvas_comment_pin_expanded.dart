@@ -108,10 +108,7 @@ class _CanvasCommentPinExpandedState
     try {
       widget.onDeleteComment?.call();
     } catch (e) {
-      OnyxiaToast.show(
-        text: 'Failed to delete comment thread',
-        type: ToastType.error,
-      );
+      OnyxiaToast.error(text: 'Failed to delete comment thread');
     }
   }
 
@@ -737,7 +734,7 @@ class _CanvasCommentPinExpandedState
   }
 
   void _editComment(String commentId) {
-    OnyxiaToast.show(text: 'Edit - Unimplemented', type: .info);
+    OnyxiaToast.show(text: 'Edit - Unimplemented');
   }
 
   void _removeComment(String commentId, bool isSubComment) {
@@ -749,7 +746,7 @@ class _CanvasCommentPinExpandedState
           .deleteSubComment(widget.comment.id, commentId);
     } else {
       ref.read(commentsProvider.notifier).deleteComment(commentId: commentId);
-      OnyxiaToast.show(text: 'Comment removed', type: .info);
+      OnyxiaToast.show(text: 'Comment removed');
     }
   }
 }
