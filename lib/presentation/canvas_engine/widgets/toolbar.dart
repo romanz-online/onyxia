@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import '../providers/providers.dart';
 
@@ -63,12 +63,12 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
 
   BoxDecoration _getPanelDecoration() {
     return BoxDecoration(
-      color: ThemeHelper.neutral100(context),
+      color: ThemeHelper.neutral900(context),
       borderRadius: .circular(8),
-      border: .all(color: ThemeHelper.neutral400(context), width: 1),
+      border: .all(color: ThemeHelper.neutral600(context), width: 1),
       boxShadow: [
         BoxShadow(
-          color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
+          color: ThemeHelper.neutral100(context).withValues(alpha: 0.1),
           blurRadius: 3,
           offset: const Offset(0, 1),
         ),
@@ -78,12 +78,12 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
 
   BoxDecoration _getShapesSubMenuDecoration() {
     return BoxDecoration(
-      color: ThemeHelper.neutral100(context),
+      color: ThemeHelper.neutral900(context),
       borderRadius: .circular(8),
-      border: .all(color: ThemeHelper.neutral400(context), width: 1),
+      border: .all(color: ThemeHelper.neutral600(context), width: 1),
       boxShadow: [
         BoxShadow(
-          color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
+          color: ThemeHelper.neutral100(context).withValues(alpha: 0.1),
           blurRadius: 3,
           offset: const Offset(0, 1),
         ),
@@ -95,7 +95,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
     return Container(
       width: 1,
       height: 24,
-      color: ThemeHelper.neutral300(context),
+      color: ThemeHelper.neutral700(context),
     );
   }
 
@@ -209,9 +209,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
           onPressed: () {
             if (selectedTool == .artifact) {
               // If artifact tool is already selected, hide tree drawer and switch to pointer
-              ref
-                  .read(canvasSettingsProvider(.showMinimap).notifier)
-                  .set(true);
+              ref.read(canvasSettingsProvider(.showMinimap).notifier).set(true);
               _onToolSelected(.pointer);
             } else {
               // If artifact tool is not selected, select it and show tree drawer

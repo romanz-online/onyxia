@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -17,20 +17,24 @@ class ImageToolBehavior extends CanvasToolGestureHandler {
 
   @override
   void Function(
-          TapDownDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onTapDown => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ArrowToolWellInteraction():
-              case ArrowWellInteraction():
-              case ArrowTextInteraction():
-              case ObjectResizeInteraction():
-              case ArrowResizeInteraction():
-              case ArrowMoveInteraction():
-              case ObjectFillInteractionContext():
-                ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-                break;
-              case BackgroundInteraction():
-                break;
-            }
-          };
+    TapDownDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onTapDown => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ArrowToolWellInteraction():
+      case ArrowWellInteraction():
+      case ArrowTextInteraction():
+      case ObjectResizeInteraction():
+      case ArrowResizeInteraction():
+      case ArrowMoveInteraction():
+      case ObjectFillInteractionContext():
+        ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+        break;
+      case BackgroundInteraction():
+        break;
+    }
+  };
 }

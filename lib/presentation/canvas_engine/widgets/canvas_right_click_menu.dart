@@ -481,12 +481,12 @@ class _MenuPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 12,
-      shadowColor: ThemeHelper.black(context).withValues(alpha: 0.15),
+      shadowColor: ThemeHelper.white(context).withValues(alpha: 0.15),
       borderRadius: .circular(8),
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral100(context),
+          color: ThemeHelper.neutral900(context),
           borderRadius: .circular(8),
           border: .all(
             color: ThemeHelper.neutral500(context).withValues(alpha: 0.2),
@@ -543,7 +543,7 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = item.enabled
-        ? ThemeHelper.neutral700(context)
+        ? ThemeHelper.neutral300(context)
         : ThemeHelper.neutral500(context);
 
     return MouseRegion(
@@ -556,7 +556,7 @@ class _MenuRow extends StatelessWidget {
           margin: .symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
             color: highlighted
-                ? ThemeHelper.neutral300(context)
+                ? ThemeHelper.neutral700(context)
                 : Colors.transparent,
             borderRadius: .circular(6),
           ),

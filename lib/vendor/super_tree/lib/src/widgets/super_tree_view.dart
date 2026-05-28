@@ -117,7 +117,11 @@ class SuperTreeView<T> extends StatefulWidget {
   /// node; the caller is responsible for opening (and styling) the menu
   /// surface and for managing [TreeController.setContextMenuNodeId] for
   /// hover-while-open styling.
-  final void Function(BuildContext context, Offset globalPosition, TreeNode<T> node)?
+  final void Function(
+    BuildContext context,
+    Offset globalPosition,
+    TreeNode<T> node,
+  )?
   onNodeContextMenuRequested;
 
   /// Optional function called when right-clicking (desktop) or long-pressing (mobile) the tree background.

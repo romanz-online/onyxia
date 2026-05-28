@@ -71,8 +71,10 @@ extension _WikiOverlay on _BardEditorState {
           query: _wikiQueryStart >= 0
               ? _controller.text.substring(
                   _wikiQueryStart + 2,
-                  _controller.selection.baseOffset
-                      .clamp(0, _controller.text.length),
+                  _controller.selection.baseOffset.clamp(
+                    0,
+                    _controller.text.length,
+                  ),
                 )
               : '',
           filteredTargets: _filteredTargets,
@@ -92,8 +94,10 @@ extension _WikiOverlay on _BardEditorState {
         .where((s) => s.type == MarkdownFormatType.wikiLink)
         .firstOrNull;
     if (wikiSpan == null) return;
-    final title =
-        _controller.text.substring(wikiSpan.contentStart, wikiSpan.contentEnd);
+    final title = _controller.text.substring(
+      wikiSpan.contentStart,
+      wikiSpan.contentEnd,
+    );
     widget.onWikiLinkTapped?.call(title);
   }
 
@@ -104,7 +108,9 @@ extension _WikiOverlay on _BardEditorState {
 
     // Replace [[query with [[target]]
     final newText =
-        text.substring(0, _wikiQueryStart) + '[[$target]]' + text.substring(cursor);
+        text.substring(0, _wikiQueryStart) +
+        '[[$target]]' +
+        text.substring(cursor);
     final newCursor = _wikiQueryStart + target.length + 4; // [[ + target + ]]
     _controller.value = TextEditingValue(
       text: newText,

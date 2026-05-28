@@ -1,6 +1,7 @@
 import 'package:onyxia/export.dart';
 
-class VaultInvitationsRepository extends BaseSupabaseRepository<VaultInvitation> {
+class VaultInvitationsRepository
+    extends BaseSupabaseRepository<VaultInvitation> {
   VaultInvitationsRepository({required super.vaultId});
 
   @override
@@ -13,8 +14,7 @@ class VaultInvitationsRepository extends BaseSupabaseRepository<VaultInvitation>
   List<String> get primaryKeyFields => const ['token'];
 
   @override
-  Map<String, dynamic> keyFilter(VaultInvitation item) =>
-      {'token': item.token};
+  Map<String, dynamic> keyFilter(VaultInvitation item) => {'token': item.token};
 
   @override
   VaultInvitation fromMap(Map<String, dynamic> map) =>

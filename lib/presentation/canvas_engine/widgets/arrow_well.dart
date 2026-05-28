@@ -127,8 +127,8 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
     const double wellSize = 8.0;
     const double enlargedScale = 3.0;
     final IconData displayIcon = arrowIcon;
-    final Color primaryColor = ThemeHelper.blue500(context);
-    final Color secondaryColor = ThemeHelper.neutral100(context);
+    final Color primaryColor = ThemeHelper.blue400(context);
+    final Color secondaryColor = ThemeHelper.neutral900(context);
 
     final isVisible = _shouldBeVisible;
     final opacity = isVisible ? 1.0 : 0.0;
@@ -145,9 +145,7 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
             opacity: opacity,
             child: MouseRegion(
               // necessary for it to be translucent because this allows the gesture to pass through to the canvas painter
-              hitTestBehavior: isVisible
-                  ? .translucent
-                  : .deferToChild,
+              hitTestBehavior: isVisible ? .translucent : .deferToChild,
               onEnter: isVisible ? (_) => _setAreaHovered(true) : null,
               onExit: isVisible ? (_) => _setAreaHovered(false) : null,
               child: AnimatedScale(

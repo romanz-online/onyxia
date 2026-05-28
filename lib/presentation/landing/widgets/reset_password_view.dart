@@ -64,7 +64,7 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: .w600,
-                  color: ThemeHelper.neutral800(context),
+                  color: ThemeHelper.neutral200(context),
                 ),
               ),
               const Gap(20),
@@ -97,7 +97,7 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
                   _errorMessage!,
                   style: TextStyle(
                     fontSize: 12,
-                    color: ThemeHelper.red600(context),
+                    color: ThemeHelper.red400(context),
                   ),
                 ),
               ],

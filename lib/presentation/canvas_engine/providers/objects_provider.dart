@@ -1,18 +1,21 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import 'pins_provider.dart';
 import 'dart:async';
 
 final canvasConfigProvider = Provider.autoDispose<CanvasConfig>((ref) {
-  final type = ref.watch(selectedArtifactProvider
-      .select((a) => a is CanvasArtifact ? a.canvasType : null));
+  final type = ref.watch(
+    selectedArtifactProvider.select(
+      (a) => a is CanvasArtifact ? a.canvasType : null,
+    ),
+  );
   return type == null ? CanvasConfig.flow() : CanvasConfig.fromType(type);
 });
 
 final canvasObjectsProvider =
     NotifierProvider.autoDispose<ObjectsNotifier, CanvasObjects>(
-  ObjectsNotifier.new,
-);
+      ObjectsNotifier.new,
+    );
 
 class ObjectsNotifier extends Notifier<CanvasObjects> {
   late CanvasObjectsRepository repository;
@@ -23,13 +26,11 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   @override
   CanvasObjects build() {
     // Use .select() to only rebuild when the ID changes, not on every canvas metadata update
-    canvasId = ref.watch(selectedArtifactProvider
-        .select((a) => a is CanvasArtifact ? a.id : ''));
-    vaultId = ref.watch(selectedVaultProvider)?.id;
-    repository = CanvasObjectsRepository(
-      vaultId: vaultId,
-      canvasId: canvasId,
+    canvasId = ref.watch(
+      selectedArtifactProvider.select((a) => a is CanvasArtifact ? a.id : ''),
     );
+    vaultId = ref.watch(selectedVaultProvider)?.id;
+    repository = CanvasObjectsRepository(vaultId: vaultId, canvasId: canvasId);
 
     ref.onDispose(_cancelSubscriptions);
 
@@ -134,10 +135,12 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
 
   void deleteObject(CanvasObject object) {
     final connectedArrows = state.objects
-        .where((o) =>
-            o.isArrow &&
-            (o.arrowProps.startObjectId == object.id ||
-                o.arrowProps.endObjectId == object.id))
+        .where(
+          (o) =>
+              o.isArrow &&
+              (o.arrowProps.startObjectId == object.id ||
+                  o.arrowProps.endObjectId == object.id),
+        )
         .toList();
 
     final objectsToDelete = [object, ...connectedArrows];
@@ -168,11 +171,15 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
     if (objects.isEmpty) return;
 
     final connectedArrows = state.objects
-        .where((o) =>
-            o.isArrow &&
-            (objects.any((obj) =>
-                o.arrowProps.startObjectId == obj.id ||
-                o.arrowProps.endObjectId == obj.id)))
+        .where(
+          (o) =>
+              o.isArrow &&
+              (objects.any(
+                (obj) =>
+                    o.arrowProps.startObjectId == obj.id ||
+                    o.arrowProps.endObjectId == obj.id,
+              )),
+        )
         .toList();
 
     final allObjectsToDelete = [...objects, ...connectedArrows];
@@ -180,8 +187,9 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
 
     state = state.copyWith(
       selectedObjects: [],
-      objects:
-          state.objects.where((o) => !allDeletedIds.contains(o.id)).toList(),
+      objects: state.objects
+          .where((o) => !allDeletedIds.contains(o.id))
+          .toList(),
     );
 
     repository.deleteMultiple(allObjectsToDelete);
@@ -205,14 +213,13 @@ class ObjectsNotifier extends Notifier<CanvasObjects> {
   void deselectObject(CanvasObject object) {
     if (!state.selectedObjects.contains(object)) return;
     state = state.copyWith(
-      selectedObjects:
-          state.selectedObjects.where((obj) => obj != object).toList(),
+      selectedObjects: state.selectedObjects
+          .where((obj) => obj != object)
+          .toList(),
     );
   }
 
   void clearSelectedObjects() {
-    state = state.copyWith(
-      selectedObjects: [],
-    );
+    state = state.copyWith(selectedObjects: []);
   }
 }

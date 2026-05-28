@@ -13,12 +13,13 @@ abstract class Shape {
     Paint? paint,
     Map<GestureType, Function>? gestureCallbackMap,
     HitTestBehavior? hitTestBehavior,
-  })  : paint = paint ??
-            (Paint()
-              ..strokeWidth = ShapeConstant.floatPrecision
-              ..style = PaintingStyle.fill),
-        gestureCallbackMap = gestureCallbackMap ?? {},
-        hitTestBehavior = hitTestBehavior ?? HitTestBehavior.opaque {
+  }) : paint =
+           paint ??
+           (Paint()
+             ..strokeWidth = ShapeConstant.floatPrecision
+             ..style = PaintingStyle.fill),
+       gestureCallbackMap = gestureCallbackMap ?? {},
+       hitTestBehavior = hitTestBehavior ?? HitTestBehavior.opaque {
     if (this.paint.strokeWidth == 0) {
       this.paint.strokeWidth = ShapeConstant.floatPrecision;
     }
@@ -28,7 +29,8 @@ abstract class Shape {
 
   Function getCallbackFromGesture(Gesture gesture) {
     if (gestureCallbackMap.containsKey(gesture.gestureType)) {
-      return () => gestureCallbackMap[gesture.gestureType]?.call(gesture.gestureDetail);
+      return () =>
+          gestureCallbackMap[gesture.gestureType]?.call(gesture.gestureDetail);
     } else {
       return () {};
     }

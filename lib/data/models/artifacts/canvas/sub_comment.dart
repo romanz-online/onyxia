@@ -29,13 +29,13 @@ class SubComment {
   }
 
   SubComment.fromMap(Map<String, dynamic> map)
-      : id = map['id'] ?? '',
-        content = map['content'] ?? '',
-        //
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'] ?? '',
-        updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';
+    : id = map['id'] ?? '',
+      content = map['content'] ?? '',
+      //
+      createdAt = TimestampService.fromMap(map['created_at']),
+      createdBy = map['created_by'] ?? '',
+      updatedAt = TimestampService.fromMap(map['updated_at']),
+      updatedBy = map['updated_by'] ?? '';
 
   String timeAgo() => TimestampService.formatTimeAgo(createdAt);
 

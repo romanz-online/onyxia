@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class NoteArtifact extends Artifact {
   final String content;
@@ -39,10 +39,9 @@ class NoteArtifact extends Artifact {
   }
 
   NoteArtifact.fromMap(super.map)
-      : content =
-            ((map['body'] as Map<String, dynamic>?)?['content'] as String?) ??
-                '',
-        super.fromMap();
+    : content =
+          ((map['body'] as Map<String, dynamic>?)?['content'] as String?) ?? '',
+      super.fromMap();
 
   @override
   String toString() {

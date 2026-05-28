@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/objects_provider.dart';
 import '../providers/viewport_provider.dart';
 
@@ -27,8 +27,9 @@ class CanvasImageUploadService {
         }
 
         final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
-        final viewportCenter =
-            ref.read(canvasViewportProvider.notifier).getViewportCenter();
+        final viewportCenter = ref
+            .read(canvasViewportProvider.notifier)
+            .getViewportCenter();
 
         if (!context.mounted) return;
 

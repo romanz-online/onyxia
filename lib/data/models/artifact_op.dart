@@ -30,11 +30,11 @@ class ArtifactOp {
   }
 
   ArtifactOp.fromMap(Map<String, dynamic> map)
-      : id = map['id'] as String,
-        artifactId = map['artifact_id'] as String,
-        vaultId = map['vault_id'] as String,
-        userId = map['user_id'] as String,
-        opBytes = base64Decode(map['op_bytes'] as String),
-        opSeq = map['op_seq'] as int?,
-        createdAt = TimestampService.fromMap(map['created_at']);
+    : id = map['id'] as String,
+      artifactId = map['artifact_id'] as String,
+      vaultId = map['vault_id'] as String,
+      userId = map['user_id'] as String,
+      opBytes = base64Decode(map['op_bytes'] as String),
+      opSeq = map['op_seq'] as int?,
+      createdAt = TimestampService.fromMap(map['created_at']);
 }

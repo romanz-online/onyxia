@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class FolderArtifact extends Artifact {
   FolderArtifact({
@@ -20,11 +20,7 @@ class FolderArtifact extends Artifact {
   Map<String, dynamic> toMapSub() => {};
 
   @override
-  FolderArtifact copyWith({
-    String? id,
-    String? name,
-    String? parentFolderId,
-  }) {
+  FolderArtifact copyWith({String? id, String? name, String? parentFolderId}) {
     return FolderArtifact(
       id: id ?? this.id,
       name: name ?? this.name,

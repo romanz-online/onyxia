@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'note/note_editor_view.dart';
 import 'image/image_editor_view.dart';
 
@@ -20,8 +20,8 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   AppBar _buildAppBar(String title) {
     return AppBar(
       automaticallyImplyLeading: false,
-      backgroundColor: ThemeHelper.neutral100(context),
-      surfaceTintColor: ThemeHelper.neutral100(context),
+      backgroundColor: ThemeHelper.neutral900(context),
+      surfaceTintColor: ThemeHelper.neutral900(context),
       elevation: 0,
       centerTitle: false,
       toolbarHeight: 32,
@@ -30,7 +30,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
           title,
           style: TextStyle(
             fontSize: 14,
-            color: ThemeHelper.neutral900(context),
+            color: ThemeHelper.neutral100(context),
           ),
         ),
       ),
@@ -46,7 +46,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
         return Center(
           child: Text(
             'Error: ${noteAsyncState.error}',
-            style: TextStyle(color: ThemeHelper.neutral700(context)),
+            style: TextStyle(color: ThemeHelper.neutral300(context)),
           ),
         );
       }
@@ -64,7 +64,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
 
     if (selectedItem == null) {
       return Container(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         child: Center(
           child: Column(
             mainAxisAlignment: .center,
@@ -76,7 +76,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                   fontStyle: .normal,
                   fontSize: 20,
                   // TODO: not here specifically but this and a lot of other pieces of text and icons (the master sidebar, the artifacts header, the artifact names in the tree view, the settings button) should be slightly dimmer at neutral500 (the same color the trailing extension text uses) instead of being this bright, which should be somewhat reserved for the editor, selected artifact in the tree, onyxiamenu items and a few other things
-                  color: ThemeHelper.neutral800(context),
+                  color: ThemeHelper.neutral200(context),
                 ),
               ),
               // TODO: this should have an inline-text hyperlink button to create a new untitled note
@@ -85,7 +85,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                 style: TextStyle(
                   fontStyle: .normal,
                   fontSize: 20,
-                  color: ThemeHelper.neutral800(context),
+                  color: ThemeHelper.neutral200(context),
                 ),
               ),
             ],
@@ -101,7 +101,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
             preferredSize: Size.fromHeight(32),
             child: _buildAppBar(selectedItem.name),
           ),
-          backgroundColor: ThemeHelper.neutral100(context),
+          backgroundColor: ThemeHelper.neutral900(context),
           body: SizedBox.expand(
             child: _buildBody(selectedItem, noteAsyncState),
           ),

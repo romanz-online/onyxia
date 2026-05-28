@@ -4,21 +4,22 @@ import 'package:super_tree/src/models/tree_node.dart';
 import 'icon_provider.dart';
 
 /// Defines an interface for providing icons to a FileSystemSuperTree.
-/// By passing the whole [TreeNode], consumers have access to the data, 
+/// By passing the whole [TreeNode], consumers have access to the data,
 /// as well as the node's expansion state, selected state, and depth.
-abstract class FileSystemIconProvider extends SuperTreeIconProvider<FileSystemItem> {
+abstract class FileSystemIconProvider
+    extends SuperTreeIconProvider<FileSystemItem> {
   final Map<String, IconData> fileExtensionMap;
   final Map<String, Color> fileExtensionColors;
 
   FileSystemIconProvider({
     Map<String, IconData>? customExtensionMap,
     Map<String, Color>? customExtensionColors,
-  })  : fileExtensionMap = customExtensionMap == null
-            ? defaultExtensionMap
-            : {...defaultExtensionMap, ...customExtensionMap},
-        fileExtensionColors = customExtensionColors == null
-            ? defaultExtensionColors
-            : {...defaultExtensionColors, ...customExtensionColors};
+  }) : fileExtensionMap = customExtensionMap == null
+           ? defaultExtensionMap
+           : {...defaultExtensionMap, ...customExtensionMap},
+       fileExtensionColors = customExtensionColors == null
+           ? defaultExtensionColors
+           : {...defaultExtensionColors, ...customExtensionColors};
 
   static const Map<String, IconData> defaultExtensionMap = {
     // Code / Text
@@ -119,7 +120,7 @@ class MaterialFileSystemIconProvider extends FileSystemIconProvider {
   final IconData folderIcon;
   final IconData folderExpandedIcon;
   final Color folderColor;
-  
+
   final IconData defaultFileIcon;
   final Color defaultFileColor;
 
@@ -145,7 +146,7 @@ class MaterialFileSystemIconProvider extends FileSystemIconProvider {
 
     final name = node.data.name.toLowerCase();
     String? matchedExtension;
-    
+
     for (final ext in fileExtensionMap.keys) {
       if (name.endsWith(ext)) {
         matchedExtension = ext;
@@ -161,10 +162,6 @@ class MaterialFileSystemIconProvider extends FileSystemIconProvider {
       );
     }
 
-    return Icon(
-      defaultFileIcon,
-      color: defaultFileColor,
-      size: 18,
-    );
+    return Icon(defaultFileIcon, color: defaultFileColor, size: 18);
   }
 }

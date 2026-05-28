@@ -21,7 +21,7 @@ class ShapeHandler {
     } else {
       _shapeStack.add(shape);
       _registeredGestures.addAll(shape.registeredGestures);
-      
+
       // Store shape-to-context mapping if context is provided
       if (interactionContext != null) {
         _shapeToContextMap[shape] = interactionContext;
@@ -43,7 +43,10 @@ class ShapeHandler {
   ///
   /// Looking at above diagram , given the stack position 3 , this function returns all ClipShapes that are pushed before 3 into the clip stack.
   List<ClipShape> _getClipShapesBelowPosition(int position) {
-    return clipItems.where((element) => element.position <= position).map((e) => e.clipShape).toList();
+    return clipItems
+        .where((element) => element.position <= position)
+        .map((e) => e.clipShape)
+        .toList();
   }
 
   ///returns [true] if point lies inside all the clipShapes
@@ -55,13 +58,17 @@ class ShapeHandler {
   }
 
   Offset _getActualOffsetFromScrollController(
-      Offset touchPoint, ScrollController? controller, AxisDirection direction) {
+    Offset touchPoint,
+    ScrollController? controller,
+    AxisDirection direction,
+  ) {
     if (controller == null) {
       return touchPoint;
     }
 
     final scrollPosition = controller.position;
-    final actualScrollPixels = direction == AxisDirection.left || direction == AxisDirection.up
+    final actualScrollPixels =
+        direction == AxisDirection.left || direction == AxisDirection.up
         ? scrollPosition.maxScrollExtent - scrollPosition.pixels
         : scrollPosition.pixels;
 
@@ -80,7 +87,8 @@ class ShapeHandler {
         continue;
       }
       if (shape.isInside(point)) {
-        if (_isPointInsideClipShapes(_getClipShapesBelowPosition(i), point) == false) {
+        if (_isPointInsideClipShapes(_getClipShapesBelowPosition(i), point) ==
+            false) {
           if (shape.hitTestBehavior == HitTestBehavior.opaque) {
             return selectedShapes;
           }
@@ -101,7 +109,10 @@ class ShapeHandler {
     AxisDirection direction = AxisDirection.down,
   }) async {
     var touchPoint = _getActualOffsetFromScrollController(
-        TouchCanvasUtil.getPointFromGestureDetail(gesture.gestureDetail), scrollController, direction);
+      TouchCanvasUtil.getPointFromGestureDetail(gesture.gestureDetail),
+      scrollController,
+      direction,
+    );
     if (!_registeredGestures.contains(gesture.gestureType)) return;
 
     // Handle hover events specially for enter/exit logic
@@ -120,7 +131,10 @@ class ShapeHandler {
     }
   }
 
-  Future<void> _handleHoverEvent(Offset touchPoint, Gesture hoverGesture) async {
+  Future<void> _handleHoverEvent(
+    Offset touchPoint,
+    Gesture hoverGesture,
+  ) async {
     var currentTouchedShapes = getTouchedShapes(touchPoint);
     var newHovered = currentTouchedShapes.toSet();
 

@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_comment_pin_expanded.dart';
 
@@ -146,7 +146,12 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   void _navigateToArtifact(Artifact item) {
-    context.go(item.navigationUrl(ref.read(selectedVaultProvider)?.id));
+    context.go(
+      UrlHelper.artifactPath(
+        vaultId: ref.read(selectedVaultProvider)?.id,
+        name: item.name,
+      ),
+    );
   }
 
   void _togglePinActionMenu({required bool isOpen}) {
@@ -241,9 +246,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       child: Container(
         width: 180,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral100(context),
+          color: ThemeHelper.neutral900(context),
           borderRadius: .circular(4),
-          border: .all(color: ThemeHelper.neutral400(context), width: 0.5),
+          border: .all(color: ThemeHelper.neutral600(context), width: 0.5),
         ),
         child: Column(
           mainAxisSize: .min,
@@ -270,7 +275,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   Widget _buildMenuDivider(BuildContext context) =>
-      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral400(context));
+      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral600(context));
 
   Widget _buildActionMenuItem({
     required String title,
@@ -280,7 +285,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       builder: (context, isHovered) {
         return Container(
           color: isHovered
-              ? ThemeHelper.blue400(context).withValues(alpha: 0.5)
+              ? ThemeHelper.blue500(context).withValues(alpha: 0.5)
               : Colors.transparent,
           child: ListTile(
             title: Text(
@@ -288,7 +293,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: .w400,
-                color: ThemeHelper.neutral900(context),
+                color: ThemeHelper.neutral100(context),
               ),
             ),
             onTap: onTap,
@@ -347,7 +352,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
         scale,
       );
 
-      final Color borderColor = ThemeHelper.blue500(context);
+      final Color borderColor = ThemeHelper.blue400(context);
 
       return Positioned(
         left: expandedRect.left,
@@ -371,12 +376,12 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                   width: _defaultSize.width,
                   height: _defaultSize.height,
                   decoration: BoxDecoration(
-                    color: ThemeHelper.neutral100(context),
+                    color: ThemeHelper.neutral900(context),
                     borderRadius: .circular(8),
                     border: .all(color: borderColor, width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: ThemeHelper.neutral900(
+                        color: ThemeHelper.neutral100(
                           context,
                         ).withValues(alpha: 0.3),
                         blurRadius: 4,
@@ -415,15 +420,15 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       ),
                                       decoration: InputDecoration(
                                         hintText: 'Untitled',
-                                        hoverColor: ThemeHelper.neutral100(
+                                        hoverColor: ThemeHelper.neutral900(
                                           context,
                                         ),
-                                        fillColor: ThemeHelper.neutral100(
+                                        fillColor: ThemeHelper.neutral900(
                                           context,
                                         ),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color: ThemeHelper.neutral400(
+                                            color: ThemeHelper.neutral600(
                                               context,
                                             ),
                                             width: 1,
@@ -431,7 +436,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color: ThemeHelper.neutral400(
+                                            color: ThemeHelper.neutral600(
                                               context,
                                             ),
                                             width: 1,
@@ -459,7 +464,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: .w600,
-                                          color: ThemeHelper.neutral900(
+                                          color: ThemeHelper.neutral100(
                                             context,
                                           ),
                                         ),
@@ -515,7 +520,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       child: Container(
                                         decoration: BoxDecoration(
                                           border: .all(
-                                            color: ThemeHelper.neutral400(
+                                            color: ThemeHelper.neutral600(
                                               context,
                                             ),
                                             width: 1,
@@ -529,7 +534,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                           expands: true,
                                           style: TextStyle(
                                             fontSize: 13,
-                                            color: ThemeHelper.neutral900(
+                                            color: ThemeHelper.neutral100(
                                               context,
                                             ),
                                             height: 1.5,
@@ -570,7 +575,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                           : '',
                                       style: TextStyle(
                                         fontSize: 13,
-                                        color: ThemeHelper.neutral900(context),
+                                        color: ThemeHelper.neutral100(context),
                                         height: 1.5,
                                       ),
                                     ),

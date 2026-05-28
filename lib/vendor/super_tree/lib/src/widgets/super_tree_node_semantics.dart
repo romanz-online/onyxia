@@ -19,7 +19,8 @@ class SuperTreeNodeSemantics<T> extends StatelessWidget {
   final Widget child;
 
   String _resolveNodeName() {
-    final String rawName = labelProvider?.call(node.data) ?? node.data.toString();
+    final String rawName =
+        labelProvider?.call(node.data) ?? node.data.toString();
     final String normalized = rawName.trim();
     if (normalized.isEmpty) {
       return 'Unnamed node';

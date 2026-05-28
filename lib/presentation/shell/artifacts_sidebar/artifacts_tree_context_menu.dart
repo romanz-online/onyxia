@@ -59,13 +59,19 @@ void _handleOpenInNewTab(
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> _,
-) => NavigationContextMenu.openInNewTab(
-  node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
+) => UrlHelper.openInNewTab(
+  UrlHelper.artifactPath(
+    vaultId: ref.read(selectedVaultProvider)?.id,
+    name: node.data.name,
+  ),
 );
 
 void _handleCopyLink(WidgetRef ref, TreeNode<Artifact> node, Set<String> _) =>
-    NavigationContextMenu.copyLinkToClipboard(
-      node.data.navigationUrl(ref.read(selectedVaultProvider)?.id),
+    UrlHelper.copyLinkToClipboard(
+      UrlHelper.artifactPath(
+        vaultId: ref.read(selectedVaultProvider)?.id,
+        name: node.data.name,
+      ),
     );
 
 void _handleRemove(

@@ -488,23 +488,23 @@ class _ToastWidget extends StatelessWidget {
   }
 
   Color _getBackgroundColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.green100(context),
+    .success => ThemeHelper.green900(context),
     .warning => ThemeHelper.amber(),
     .error => ThemeHelper.errorColor(),
-    .info => ThemeHelper.neutral600(context),
+    .info => ThemeHelper.neutral400(context),
   };
 
   Color _getTextColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.neutral700(context),
-    .warning => ThemeHelper.neutral900(context),
-    .error => ThemeHelper.white(context),
-    .info => ThemeHelper.neutral200(context),
+    .success => ThemeHelper.neutral300(context),
+    .warning => ThemeHelper.neutral100(context),
+    .error => ThemeHelper.black(context),
+    .info => ThemeHelper.neutral800(context),
   };
 
   Color _getIconColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.green700(context),
-    .warning => ThemeHelper.neutral900(context),
-    .error => ThemeHelper.white(context),
+    .success => ThemeHelper.green300(context),
+    .warning => ThemeHelper.neutral100(context),
+    .error => ThemeHelper.black(context),
     .info => ThemeHelper.accentColor(),
   };
 
@@ -544,7 +544,7 @@ class _ProgressToastContent extends StatelessWidget {
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: ThemeHelper.neutral200(context),
+                      color: ThemeHelper.neutral800(context),
                       fontSize: 14,
                       fontWeight: .w500,
                     ),
@@ -554,7 +554,7 @@ class _ProgressToastContent extends StatelessWidget {
                 Text(
                   '$percent%',
                   style: TextStyle(
-                    color: ThemeHelper.neutral400(context),
+                    color: ThemeHelper.neutral600(context),
                     fontSize: 12,
                     fontWeight: .w400,
                   ),

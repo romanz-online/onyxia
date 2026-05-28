@@ -28,9 +28,7 @@ class ArrowWellInteraction extends CanvasInteractionContext {
 class ArrowTextInteraction extends CanvasInteractionContext {
   final CanvasObject targetObject;
 
-  const ArrowTextInteraction({
-    required this.targetObject,
-  });
+  const ArrowTextInteraction({required this.targetObject});
 }
 
 /// Represents interaction with a canvas object resize handle
@@ -56,11 +54,7 @@ class ArrowResizeInteraction extends CanvasInteractionContext {
 }
 
 /// Enum for specifying which arrow endpoint to move
-enum ArrowMoveType {
-  start,
-  end,
-  none,
-}
+enum ArrowMoveType { start, end, none }
 
 /// Represents interaction with an arrow move handle (start or end)
 class ArrowMoveInteraction extends CanvasInteractionContext {
@@ -97,5 +91,6 @@ class ObjectFillInteractionContext extends CanvasInteractionContext {
   });
 
   @override
-  String toString() => 'ObjectInteractionContext(objectId: ${targetObject.id}, shapeType: $shapeType)';
+  String toString() =>
+      'ObjectInteractionContext(objectId: ${targetObject.id}, shapeType: $shapeType)';
 }

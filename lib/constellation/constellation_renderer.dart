@@ -139,7 +139,7 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
 
   double _nodeRadius(String id) {
     const base = 7.0;
-    const maxMult = 3.0;
+    const maxMult = 1.85;
     final d = _degree[id] ?? 0;
     return base * math.min(1 + d * 0.035, maxMult);
   }

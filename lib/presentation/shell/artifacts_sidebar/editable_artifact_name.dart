@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
 final renameArtifactIdProvider =
@@ -156,7 +156,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       link: _layerLink,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: ThemeHelper.neutral200(context),
+                          color: ThemeHelper.neutral800(context),
                           borderRadius: .circular(4),
                         ),
                         child: Shortcuts(
@@ -193,7 +193,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: .normal,
-                                color: ThemeHelper.neutral700(context),
+                                color: ThemeHelper.neutral300(context),
                               ),
                               decoration: InputDecoration(
                                 border: .none,
@@ -241,7 +241,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: .normal,
-                        color: ThemeHelper.neutral700(context),
+                        color: ThemeHelper.neutral300(context),
                         letterSpacing: 0.5,
                       ),
                       overflow: .ellipsis,

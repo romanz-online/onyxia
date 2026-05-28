@@ -8,10 +8,8 @@ import 'package:super_tree/src/models/tree_node.dart';
 /// [primaryNode] identifies the node where the drag gesture originated,
 /// while [nodes] can include a batch selection when multi-node dragging is used.
 class TreeDragPayload<T> {
-  TreeDragPayload({
-    required this.primaryNode,
-    required List<TreeNode<T>> nodes,
-  }) : nodes = List<TreeNode<T>>.unmodifiable(nodes);
+  TreeDragPayload({required this.primaryNode, required List<TreeNode<T>> nodes})
+    : nodes = List<TreeNode<T>>.unmodifiable(nodes);
 
   final TreeNode<T> primaryNode;
   final List<TreeNode<T>> nodes;
@@ -45,11 +43,14 @@ class TreeDragAndDropWrapper<T> extends StatefulWidget {
     List<TreeNode<T>>? dragNodes,
     required this.onDrop,
   }) : dragNodes = List<TreeNode<T>>.unmodifiable(
-         dragNodes == null || dragNodes.isEmpty ? <TreeNode<T>>[node] : dragNodes,
+         dragNodes == null || dragNodes.isEmpty
+             ? <TreeNode<T>>[node]
+             : dragNodes,
        );
 
   @override
-  State<TreeDragAndDropWrapper<T>> createState() => _TreeDragAndDropWrapperState<T>();
+  State<TreeDragAndDropWrapper<T>> createState() =>
+      _TreeDragAndDropWrapperState<T>();
 }
 
 class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
@@ -76,7 +77,8 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
       return;
     }
 
-    final RenderObject? scrollRenderObject = scrollable.context.findRenderObject();
+    final RenderObject? scrollRenderObject = scrollable.context
+        .findRenderObject();
     if (scrollRenderObject is! RenderBox) {
       return;
     }
@@ -89,11 +91,12 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
 
     double delta = 0;
     if (distanceToTop < edgeThreshold) {
-      final double ratio = ((edgeThreshold - distanceToTop) / edgeThreshold).clamp(0.0, 1.0);
+      final double ratio = ((edgeThreshold - distanceToTop) / edgeThreshold)
+          .clamp(0.0, 1.0);
       delta = -maxStep * ratio;
     } else if (distanceToBottom < edgeThreshold) {
-      final double ratio =
-          ((edgeThreshold - distanceToBottom) / edgeThreshold).clamp(0.0, 1.0);
+      final double ratio = ((edgeThreshold - distanceToBottom) / edgeThreshold)
+          .clamp(0.0, 1.0);
       delta = maxStep * ratio;
     }
 
@@ -133,7 +136,10 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
     final double edgeBand = _edgeBandFractionForTarget();
     final double topBoundary = height * edgeBand;
     final double bottomBoundary = height * (1 - edgeBand);
-    final double hysteresisPx = widget.config.dropPositionHysteresisPx.clamp(0.0, height / 2);
+    final double hysteresisPx = widget.config.dropPositionHysteresisPx.clamp(
+      0.0,
+      height / 2,
+    );
 
     if (_currentHoverPosition != null) {
       switch (_currentHoverPosition!) {
@@ -165,8 +171,13 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
     return NodeDropPosition.inside;
   }
 
-  NodeDropPosition? _resolveDropPosition(TreeDragPayload<T> payload, Offset globalOffset) {
-    final NodeDropPosition rawPosition = _calculateRawDropPosition(globalOffset);
+  NodeDropPosition? _resolveDropPosition(
+    TreeDragPayload<T> payload,
+    Offset globalOffset,
+  ) {
+    final NodeDropPosition rawPosition = _calculateRawDropPosition(
+      globalOffset,
+    );
     if (_isValidDrop(payload, rawPosition)) {
       return rawPosition;
     }
@@ -217,12 +228,17 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
       }
       if (payload.isBatch) {
         if (!targetData.canAcceptDropMany(
-          payload.nodes.map((TreeNode<T> node) => node.data).toList(growable: false),
+          payload.nodes
+              .map((TreeNode<T> node) => node.data)
+              .toList(growable: false),
           position,
         )) {
           return false;
         }
-      } else if (!targetData.canAcceptDrop(payload.primaryNode.data, position)) {
+      } else if (!targetData.canAcceptDrop(
+        payload.primaryNode.data,
+        position,
+      )) {
         return false;
       }
     }
@@ -230,12 +246,20 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
     // Let optional logic-level guards override defaults.
     if (payload.isBatch) {
       if (widget.config.canAcceptDropMany != null) {
-        return widget.config.canAcceptDropMany!(payload.nodes, widget.node, position);
+        return widget.config.canAcceptDropMany!(
+          payload.nodes,
+          widget.node,
+          position,
+        );
       }
 
       if (widget.config.canAcceptDrop != null) {
         for (final TreeNode<T> draggedNode in payload.nodes) {
-          if (!widget.config.canAcceptDrop!(draggedNode, widget.node, position)) {
+          if (!widget.config.canAcceptDrop!(
+            draggedNode,
+            widget.node,
+            position,
+          )) {
             return false;
           }
         }
@@ -245,7 +269,11 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
     }
 
     if (widget.config.canAcceptDrop != null) {
-      return widget.config.canAcceptDrop!(payload.primaryNode, widget.node, position);
+      return widget.config.canAcceptDrop!(
+        payload.primaryNode,
+        widget.node,
+        position,
+      );
     }
 
     return true;
@@ -322,12 +350,16 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
                     )) {
                       validatedPosition = null;
                     }
-                  } else if (!targetData.canAcceptDrop(draggedNode.data, currentPosition)) {
+                  } else if (!targetData.canAcceptDrop(
+                    draggedNode.data,
+                    currentPosition,
+                  )) {
                     validatedPosition = null;
                   }
                 }
 
-                if (validatedPosition != null && widget.config.canAcceptDrop != null) {
+                if (validatedPosition != null &&
+                    widget.config.canAcceptDrop != null) {
                   final NodeDropPosition currentPosition = validatedPosition;
                   if (payload.isBatch) {
                     if (widget.config.canAcceptDropMany != null) {
@@ -389,7 +421,10 @@ class _TreeDragAndDropWrapperState<T> extends State<TreeDragAndDropWrapper<T>> {
                     child: Opacity(
                       opacity: 0.8,
                       // Constrain width so it matches the general tree view visually
-                      child: SizedBox(width: constraints.maxWidth, child: widget.child),
+                      child: SizedBox(
+                        width: constraints.maxWidth,
+                        child: widget.child,
+                      ),
                     ),
                   ),
                   childWhenDragging: Opacity(opacity: 0.3, child: widget.child),
@@ -434,7 +469,11 @@ class _DropIndictorPainter extends CustomPainter {
         canvas.drawLine(const Offset(0, 0), Offset(size.width, 0), paint);
         break;
       case NodeDropPosition.below:
-        canvas.drawLine(Offset(0, size.height), Offset(size.width, size.height), paint);
+        canvas.drawLine(
+          Offset(0, size.height),
+          Offset(size.width, size.height),
+          paint,
+        );
         break;
       case NodeDropPosition.inside:
         paint.style = PaintingStyle.stroke;

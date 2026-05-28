@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 final _forbidden = RegExp(r'[*"\\/<>:|?]');
 
@@ -7,7 +7,10 @@ class ItemTitleValidationService {
       text.replaceAll(_forbidden, '').replaceAll(RegExp(r'[\r\n]'), '');
 
   static String? errorMessage(
-      List<Artifact> existing, String value, String excludeId) {
+    List<Artifact> existing,
+    String value,
+    String excludeId,
+  ) {
     if (_forbidden.hasMatch(value)) {
       return 'Title cannot contain any of these characters: * " / \\ < > : | ?';
     }

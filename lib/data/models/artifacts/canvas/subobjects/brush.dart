@@ -25,7 +25,8 @@ class BrushProperties {
       try {
         if (map['points'] != null) {
           points = List<Offset>.from(
-              map['points'].map((x) => OffsetExtension.fromMap(x)));
+            map['points'].map((x) => OffsetExtension.fromMap(x)),
+          );
         }
       } catch (e) {
         points = <Offset>[];

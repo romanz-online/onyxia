@@ -1,6 +1,13 @@
 enum MarkdownFormatType { bold, italic, strikethrough, wikiLink }
 
-enum LineFormatType { bulletList, numberedList, heading1, heading2, heading3, blockquote }
+enum LineFormatType {
+  bulletList,
+  numberedList,
+  heading1,
+  heading2,
+  heading3,
+  blockquote,
+}
 
 class MarkdownSpan {
   const MarkdownSpan({
@@ -20,23 +27,32 @@ class MarkdownSpan {
   final bool isExplicitlyClosed;
 
   int get openMarkerLen => contentStart - markerStartOpen;
-  int get closeMarkerLen => isExplicitlyClosed ? markerEndClose - contentEnd : 0;
+  int get closeMarkerLen =>
+      isExplicitlyClosed ? markerEndClose - contentEnd : 0;
 
-  bool containsOffset(int offset) => offset >= markerStartOpen && offset <= markerEndClose;
+  bool containsOffset(int offset) =>
+      offset >= markerStartOpen && offset <= markerEndClose;
 
-  bool fullyContainsRange(int start, int end) => markerStartOpen <= start && end <= markerEndClose;
+  bool fullyContainsRange(int start, int end) =>
+      markerStartOpen <= start && end <= markerEndClose;
 
-  bool offsetInOpenMarker(int offset) => offset >= markerStartOpen && offset < contentStart;
+  bool offsetInOpenMarker(int offset) =>
+      offset >= markerStartOpen && offset < contentStart;
 
-  bool offsetInCloseMarker(int offset) => isExplicitlyClosed && offset >= contentEnd && offset < markerEndClose;
+  bool offsetInCloseMarker(int offset) =>
+      isExplicitlyClosed && offset >= contentEnd && offset < markerEndClose;
 
-  bool offsetIsMarker(int offset) => offsetInOpenMarker(offset) || offsetInCloseMarker(offset);
+  bool offsetIsMarker(int offset) =>
+      offsetInOpenMarker(offset) || offsetInCloseMarker(offset);
 
-  bool intervalIsOpenMarker(int start, int end) => start >= markerStartOpen && end <= contentStart;
+  bool intervalIsOpenMarker(int start, int end) =>
+      start >= markerStartOpen && end <= contentStart;
 
-  bool intervalIsCloseMarker(int start, int end) => isExplicitlyClosed && start >= contentEnd && end <= markerEndClose;
+  bool intervalIsCloseMarker(int start, int end) =>
+      isExplicitlyClosed && start >= contentEnd && end <= markerEndClose;
 
-  bool intervalIsContent(int start, int end) => start >= contentStart && end <= contentEnd;
+  bool intervalIsContent(int start, int end) =>
+      start >= contentStart && end <= contentEnd;
 }
 
 class LineSpan {
@@ -54,9 +70,11 @@ class LineSpan {
 
   bool containsOffset(int offset) => offset >= lineStart && offset <= lineEnd;
 
-  bool intervalIsPrefix(int start, int end) => start >= lineStart && end <= markerEnd;
+  bool intervalIsPrefix(int start, int end) =>
+      start >= lineStart && end <= markerEnd;
 
-  bool intervalIsContent(int start, int end) => start >= markerEnd && end <= lineEnd;
+  bool intervalIsContent(int start, int end) =>
+      start >= markerEnd && end <= lineEnd;
 }
 
 class MarkdownParseResult {

@@ -30,28 +30,30 @@ class ImageArtifact extends Artifact {
     //
     String? storagePath,
     String? mimeType,
-  }) =>
-      ImageArtifact(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        parentFolderId: parentFolderId ?? this.parentFolderId,
-        //
-        storagePath: storagePath ?? this.storagePath,
-        mimeType: mimeType ?? this.mimeType,
-      );
+  }) => ImageArtifact(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    parentFolderId: parentFolderId ?? this.parentFolderId,
+    //
+    storagePath: storagePath ?? this.storagePath,
+    mimeType: mimeType ?? this.mimeType,
+  );
 
   @override
-  Map<String, dynamic> toMapSub() =>
-      {'storage_path': storagePath, 'mime_type': mimeType};
+  Map<String, dynamic> toMapSub() => {
+    'storage_path': storagePath,
+    'mime_type': mimeType,
+  };
 
   ImageArtifact.fromMap(super.map)
-      : storagePath = ((map['body'] as Map<String, dynamic>?)?['storage_path']
-                as String?) ??
-            '',
-        mimeType =
-            ((map['body'] as Map<String, dynamic>?)?['mime_type'] as String?) ??
-                'image/png',
-        super.fromMap();
+    : storagePath =
+          ((map['body'] as Map<String, dynamic>?)?['storage_path']
+              as String?) ??
+          '',
+      mimeType =
+          ((map['body'] as Map<String, dynamic>?)?['mime_type'] as String?) ??
+          'image/png',
+      super.fromMap();
 
   @override
   bool operator ==(Object other) =>

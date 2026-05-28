@@ -5,13 +5,15 @@ import 'package:onyxia/export.dart';
 /// or if no vault is selected.
 final currentUserRoleProvider = Provider<UserRole?>((ref) {
   final userId = ref.watch(currentUserProvider.select((u) => u.value?.id));
-  final members = ref
-      .watch(vaultMembersProvider.select((async) => async.asData?.value ?? []));
+  final members = ref.watch(
+    vaultMembersProvider.select((async) => async.asData?.value ?? []),
+  );
   return members.firstWhereOrNull((m) => m.userId == userId)?.role;
 });
 
-final currentUserProvider =
-    StreamNotifierProvider<CurrentUserNotifier, User>(CurrentUserNotifier.new);
+final currentUserProvider = StreamNotifierProvider<CurrentUserNotifier, User>(
+  CurrentUserNotifier.new,
+);
 
 class CurrentUserNotifier extends StreamNotifier<User> {
   final _repository = AuthRepository();
@@ -31,14 +33,12 @@ class CurrentUserNotifier extends StreamNotifier<User> {
   Future<void> signUpWithEmail({
     required String email,
     required String password,
-  }) async =>
-      _repository.signUpWithEmail(email: email, password: password);
+  }) async => _repository.signUpWithEmail(email: email, password: password);
 
   Future<void> signInWithEmail({
     required String email,
     required String password,
-  }) async =>
-      _repository.signInWithEmail(email: email, password: password);
+  }) async => _repository.signInWithEmail(email: email, password: password);
 
   Future<void> sendPasswordResetEmail(String email) async =>
       _repository.sendPasswordResetEmail(email);

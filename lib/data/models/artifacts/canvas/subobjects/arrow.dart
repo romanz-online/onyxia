@@ -1,16 +1,9 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/canvas_engine/providers/providers.dart';
 
-enum ArrowTip with NarwhalEnum {
-  triangle,
-  circle,
-  none,
-}
+enum ArrowTip with NarwhalEnum { triangle, circle, none }
 
-enum ArrowType with NarwhalEnum {
-  segmented,
-  curved,
-}
+enum ArrowType with NarwhalEnum { segmented, curved }
 
 final minSegmentLength = CanvasBounds.gridSpacing * 2;
 
@@ -50,10 +43,7 @@ class ArrowProperties {
   });
 
   factory ArrowProperties.initial() {
-    return ArrowProperties(
-      points: [],
-      arrowType: ArrowType.segmented,
-    );
+    return ArrowProperties(points: [], arrowType: ArrowType.segmented);
   }
 
   @override
@@ -102,7 +92,8 @@ class ArrowProperties {
       try {
         if (map['points'] != null) {
           points = List<Offset>.from(
-              map['points'].map((x) => OffsetExtension.fromMap(x)));
+            map['points'].map((x) => OffsetExtension.fromMap(x)),
+          );
         }
       } catch (e) {
         points = <Offset>[];
@@ -131,7 +122,8 @@ class ArrowProperties {
       try {
         if (map['start_connection_point'] != null) {
           startPoint = ConnectionPointTypeExtension.fromString(
-              map['start_connection_point']);
+            map['start_connection_point'],
+          );
         }
       } catch (e) {
         startPoint = ConnectionPoint.none;
@@ -141,7 +133,8 @@ class ArrowProperties {
       try {
         if (map['end_connection_point'] != null) {
           endPoint = ConnectionPointTypeExtension.fromString(
-              map['end_connection_point']);
+            map['end_connection_point'],
+          );
         }
       } catch (e) {
         endPoint = ConnectionPoint.none;
@@ -160,8 +153,9 @@ class ArrowProperties {
       Offset? startRelativeOffset;
       try {
         if (map['start_relative_offset'] != null) {
-          startRelativeOffset =
-              OffsetExtension.fromMap(map['start_relative_offset']);
+          startRelativeOffset = OffsetExtension.fromMap(
+            map['start_relative_offset'],
+          );
         }
       } catch (e) {
         startRelativeOffset = null;
@@ -170,8 +164,9 @@ class ArrowProperties {
       Offset? startAbsoluteOffset;
       try {
         if (map['start_absolute_offset'] != null) {
-          startAbsoluteOffset =
-              OffsetExtension.fromMap(map['start_absolute_offset']);
+          startAbsoluteOffset = OffsetExtension.fromMap(
+            map['start_absolute_offset'],
+          );
         }
       } catch (e) {
         startAbsoluteOffset = null;
@@ -180,8 +175,9 @@ class ArrowProperties {
       Offset? endRelativeOffset;
       try {
         if (map['end_relative_offset'] != null) {
-          endRelativeOffset =
-              OffsetExtension.fromMap(map['end_relative_offset']);
+          endRelativeOffset = OffsetExtension.fromMap(
+            map['end_relative_offset'],
+          );
         }
       } catch (e) {
         endRelativeOffset = null;
@@ -190,8 +186,9 @@ class ArrowProperties {
       Offset? endAbsoluteOffset;
       try {
         if (map['end_absolute_offset'] != null) {
-          endAbsoluteOffset =
-              OffsetExtension.fromMap(map['end_absolute_offset']);
+          endAbsoluteOffset = OffsetExtension.fromMap(
+            map['end_absolute_offset'],
+          );
         }
       } catch (e) {
         endAbsoluteOffset = null;

@@ -33,7 +33,10 @@ class SuperTreeNodeList<T> extends StatelessWidget {
             itemCount: nodes.length,
             separatorBuilder: separatorBuilder!,
             itemBuilder: (BuildContext context, int index) {
-              return Padding(padding: const EdgeInsets.only(bottom: 3), child: itemBuilder(nodes[index]));
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 3),
+                child: itemBuilder(nodes[index]),
+              );
             },
           );
         }
@@ -43,7 +46,10 @@ class SuperTreeNodeList<T> extends StatelessWidget {
           physics: physics,
           itemCount: nodes.length,
           itemBuilder: (BuildContext context, int index) {
-            return Padding(padding: const EdgeInsets.only(bottom: 3), child: itemBuilder(nodes[index]));
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 3),
+              child: itemBuilder(nodes[index]),
+            );
           },
         );
       },

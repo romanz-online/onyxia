@@ -31,8 +31,8 @@ enum ToolMode {
 
 final toolModeProvider =
     NotifierProvider.autoDispose<ToolModeNotifier, ToolMode>(
-  ToolModeNotifier.new,
-);
+      ToolModeNotifier.new,
+    );
 
 class ToolModeNotifier extends Notifier<ToolMode> {
   @override

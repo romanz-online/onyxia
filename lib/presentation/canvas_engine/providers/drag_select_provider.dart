@@ -5,21 +5,13 @@ import 'objects_provider.dart';
 
 @immutable
 class DragSelectState {
-  const DragSelectState({
-    this.dragRect,
-    this.anchor,
-    this.isActive = false,
-  });
+  const DragSelectState({this.dragRect, this.anchor, this.isActive = false});
 
   final Rect? dragRect;
   final Offset? anchor;
   final bool isActive;
 
-  DragSelectState copyWith({
-    Rect? dragRect,
-    Offset? anchor,
-    bool? isActive,
-  }) {
+  DragSelectState copyWith({Rect? dragRect, Offset? anchor, bool? isActive}) {
     return DragSelectState(
       dragRect: dragRect ?? this.dragRect,
       anchor: anchor ?? this.anchor,
@@ -67,12 +59,19 @@ class DragSelectNotifier extends Notifier<DragSelectState> {
     );
     state = state.copyWith(dragRect: newDragRect);
 
-    ref.read(canvasObjectsProvider.notifier).selectObjects(ref
-        .read(canvasObjectsProvider)
-        .objects
-        .where((e) =>
-            newDragRect.overlaps(Rect.fromPoints(e.topLeft, e.bottomRight)))
-        .toList());
+    ref
+        .read(canvasObjectsProvider.notifier)
+        .selectObjects(
+          ref
+              .read(canvasObjectsProvider)
+              .objects
+              .where(
+                (e) => newDragRect.overlaps(
+                  Rect.fromPoints(e.topLeft, e.bottomRight),
+                ),
+              )
+              .toList(),
+        );
   }
 
   void endDragSelect() {
@@ -83,5 +82,5 @@ class DragSelectNotifier extends Notifier<DragSelectState> {
 /// Provider for drag selection functionality
 final dragSelectProvider =
     NotifierProvider.autoDispose<DragSelectNotifier, DragSelectState>(
-  DragSelectNotifier.new,
-);
+      DragSelectNotifier.new,
+    );

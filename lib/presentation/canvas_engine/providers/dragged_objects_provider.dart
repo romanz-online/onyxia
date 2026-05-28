@@ -36,7 +36,7 @@ class DraggedObjectsNotifier extends Notifier<List<CanvasObject>> {
   bool get hasDraggedObjects => state.isNotEmpty;
 }
 
-final draggedObjectsProvider = NotifierProvider.autoDispose<
-    DraggedObjectsNotifier, List<CanvasObject>>(
-  DraggedObjectsNotifier.new,
-);
+final draggedObjectsProvider =
+    NotifierProvider.autoDispose<DraggedObjectsNotifier, List<CanvasObject>>(
+      DraggedObjectsNotifier.new,
+    );

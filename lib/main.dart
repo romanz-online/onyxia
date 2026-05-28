@@ -11,8 +11,10 @@ void main() async {
 
   await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
 
-  runApp(ProviderScope(
-    observers: const [GlobalProviderObserver()],
-    child: const NarwhalApp(),
-  ));
+  runApp(
+    ProviderScope(
+      observers: const [GlobalProviderObserver()],
+      child: const NarwhalApp(),
+    ),
+  );
 }

@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class CanvasPin extends ConsumerStatefulWidget {
   final Pin pin;
@@ -111,7 +111,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
         style: TextStyle(
           fontSize: 14,
           fontWeight: .w500,
-          color: ThemeHelper.neutral900(context),
+          color: ThemeHelper.neutral100(context),
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -196,9 +196,9 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
         });
       }
 
-      final Color backgroundColor = ThemeHelper.neutral100(context);
-      final Color outerBorderColor = ThemeHelper.neutral400(context);
-      final Color selectionColor = ThemeHelper.blue500(context);
+      final Color backgroundColor = ThemeHelper.neutral900(context);
+      final Color outerBorderColor = ThemeHelper.neutral600(context);
+      final Color selectionColor = ThemeHelper.blue400(context);
 
       return AnimatedBuilder(
         animation: _animationController,
@@ -279,7 +279,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: .w500,
-                                        color: ThemeHelper.neutral900(context),
+                                        color: ThemeHelper.neutral100(context),
                                       ),
                                       maxLines: 1,
                                       overflow: .ellipsis,

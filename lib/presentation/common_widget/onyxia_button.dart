@@ -17,7 +17,7 @@ class OnyxiaButton extends StatelessWidget {
               padding: .all(5),
               decoration: BoxDecoration(
                 color: isHovered
-                    ? ThemeHelper.neutral200(context)
+                    ? ThemeHelper.neutral800(context)
                     : Colors.transparent,
                 borderRadius: .circular(4),
               ),
@@ -30,7 +30,7 @@ class OnyxiaButton extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 13,
                     fontWeight: .w600,
-                    color: ThemeHelper.neutral700(context),
+                    color: ThemeHelper.neutral300(context),
                   ),
                 ),
               ),

@@ -20,8 +20,8 @@ class ConstellationNodeLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final labelColor = isHovered
-        ? ThemeHelper.neutral700(context)
-        : ThemeHelper.neutral600(context);
+        ? ThemeHelper.neutral300(context)
+        : ThemeHelper.neutral400(context);
 
     return TweenAnimationBuilder<double>(
       tween: Tween(begin: 0.0, end: isHovered ? 8.0 : 0.0),

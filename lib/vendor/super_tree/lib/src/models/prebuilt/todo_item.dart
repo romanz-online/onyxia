@@ -4,7 +4,7 @@ import 'package:super_tree/src/models/super_tree_data.dart';
 class TodoItem with SuperTreeData {
   String title;
   bool isCompleted;
-  
+
   TodoItem(this.title, {this.isCompleted = false});
 
   /// Allows todos to have sub-todos.

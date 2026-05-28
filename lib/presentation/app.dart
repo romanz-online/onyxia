@@ -30,19 +30,19 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
     return ThemeData(
       fontFamily: 'Inter',
       colorScheme: ColorScheme.fromSeed(seedColor: ThemeHelper.accentColor()),
-      scaffoldBackgroundColor: ThemeHelper.neutral100(context),
-      cardColor: ThemeHelper.neutral100(context),
-      dividerColor: ThemeHelper.neutral400(context),
-      canvasColor: ThemeHelper.neutral800(context),
+      scaffoldBackgroundColor: ThemeHelper.neutral900(context),
+      cardColor: ThemeHelper.neutral900(context),
+      dividerColor: ThemeHelper.neutral600(context),
+      canvasColor: ThemeHelper.neutral200(context),
       primaryColor: ThemeHelper.accentColor(),
       useMaterial3: true,
       appBarTheme: AppBarTheme(
-        backgroundColor: ThemeHelper.neutral100(context),
-        foregroundColor: ThemeHelper.neutral300(context),
+        backgroundColor: ThemeHelper.neutral900(context),
+        foregroundColor: ThemeHelper.neutral700(context),
         elevation: 0,
-        iconTheme: IconThemeData(color: ThemeHelper.neutral800(context)),
+        iconTheme: IconThemeData(color: ThemeHelper.neutral200(context)),
       ),
-      iconTheme: IconThemeData(color: ThemeHelper.neutral800(context)),
+      iconTheme: IconThemeData(color: ThemeHelper.neutral200(context)),
       textTheme:
           const TextTheme(
             // Small scale (10px)
@@ -59,25 +59,25 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
             labelLarge: TextStyle(fontSize: 16, fontWeight: .w300),
             bodyLarge: TextStyle(fontSize: 16, fontWeight: .w400),
           ).apply(
-            bodyColor: ThemeHelper.neutral300(context),
-            displayColor: ThemeHelper.neutral300(context),
+            bodyColor: ThemeHelper.neutral700(context),
+            displayColor: ThemeHelper.neutral700(context),
           ),
       inputDecorationTheme: InputDecorationTheme(
-        fillColor: ThemeHelper.neutral300(context),
+        fillColor: ThemeHelper.neutral700(context),
         filled: true,
         border: OutlineInputBorder(
-          borderSide: BorderSide(color: ThemeHelper.neutral400(context)),
+          borderSide: BorderSide(color: ThemeHelper.neutral600(context)),
         ),
       ),
       tooltipTheme: TooltipThemeData(
         waitDuration: Duration(milliseconds: 800),
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral700(context),
+          color: ThemeHelper.neutral300(context),
           borderRadius: .circular(4),
         ),
       ),
       popupMenuTheme: PopupMenuThemeData(
-        color: ThemeHelper.neutral800(context),
+        color: ThemeHelper.neutral200(context),
       ),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {

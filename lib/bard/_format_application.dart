@@ -9,16 +9,19 @@ extension _Format on _BardEditorState {
 
     if (selection.isCollapsed) {
       final cursor = selection.baseOffset;
-      final existingSpans =
-          _controller.spansAt(cursor).where((s) => s.type == type).toList();
+      final existingSpans = _controller
+          .spansAt(cursor)
+          .where((s) => s.type == type)
+          .toList();
 
       if (existingSpans.isNotEmpty) {
         final span = existingSpans.first;
         if (cursor == span.contentStart) {
           return; // S5b: cursor at first content position — do nothing
         } else if (cursor == span.contentEnd) {
-          _controller.selection =
-              TextSelection.collapsed(offset: span.markerEndClose); // S6: jump
+          _controller.selection = TextSelection.collapsed(
+            offset: span.markerEndClose,
+          ); // S6: jump
         } else {
           _removeSpanMarkers(span); // S5a: remove markers
         }
@@ -59,8 +62,7 @@ extension _Format on _BardEditorState {
     final ml = marker.length;
 
     final leftBound = cursor == 0 || _isWordBoundary(text[cursor - 1]);
-    final rightBound =
-        cursor >= text.length || _isWordBoundary(text[cursor]);
+    final rightBound = cursor >= text.length || _isWordBoundary(text[cursor]);
 
     if (leftBound && rightBound) {
       // S1: both sides boundary — insert empty pair, cursor between markers
@@ -71,7 +73,8 @@ extension _Format on _BardEditorState {
       while (ws > 0 && !_isWordBoundary(text[ws - 1])) {
         ws--;
       }
-      final newText = text.substring(0, ws) +
+      final newText =
+          text.substring(0, ws) +
           marker +
           text.substring(ws, cursor) +
           marker +
@@ -86,7 +89,8 @@ extension _Format on _BardEditorState {
       while (we < text.length && !_isWordBoundary(text[we])) {
         we++;
       }
-      final newText = text.substring(0, cursor) +
+      final newText =
+          text.substring(0, cursor) +
           marker +
           text.substring(cursor, we) +
           marker +
@@ -106,7 +110,8 @@ extension _Format on _BardEditorState {
         we++;
       }
       final rel = cursor - ws;
-      final newText = text.substring(0, ws) +
+      final newText =
+          text.substring(0, ws) +
           marker +
           text.substring(ws, we) +
           marker +
@@ -118,8 +123,12 @@ extension _Format on _BardEditorState {
     }
   }
 
-  void _applyS7(int selStart, int selEnd, String marker,
-      List<MarkdownSpan> partialSpans) {
+  void _applyS7(
+    int selStart,
+    int selEnd,
+    String marker,
+    List<MarkdownSpan> partialSpans,
+  ) {
     // Collect marker byte-ranges that lie fully within [selStart, selEnd)
     final ranges = <(int, int)>[];
     for (final span in partialSpans) {
@@ -153,17 +162,15 @@ extension _Format on _BardEditorState {
 
     // Re-wrap adjusted [start, end) with marker
     final ml = marker.length;
-    final newText = text.substring(0, start) +
+    final newText =
+        text.substring(0, start) +
         marker +
         text.substring(start, end) +
         marker +
         text.substring(end);
     _controller.value = TextEditingValue(
       text: newText,
-      selection: TextSelection(
-        baseOffset: start + ml,
-        extentOffset: end + ml,
-      ),
+      selection: TextSelection(baseOffset: start + ml, extentOffset: end + ml),
     );
   }
 
@@ -182,7 +189,8 @@ extension _Format on _BardEditorState {
 
   void _insertMarkerPair(int selStart, int selEnd, String marker) {
     final text = _controller.text;
-    final newText = text.substring(0, selStart) +
+    final newText =
+        text.substring(0, selStart) +
         marker +
         text.substring(selStart, selEnd) +
         marker +
@@ -202,17 +210,22 @@ extension _Format on _BardEditorState {
     final text = _controller.text;
     final selection = _controller.selection;
 
-    final newText = text.substring(0, span.markerStartOpen) +
+    final newText =
+        text.substring(0, span.markerStartOpen) +
         text.substring(span.contentStart, span.contentEnd) +
         text.substring(span.markerEndClose);
 
     _controller.value = TextEditingValue(
       text: newText,
       selection: TextSelection(
-        baseOffset:
-            _adjustOffset(selection.baseOffset, span).clamp(0, newText.length),
-        extentOffset: _adjustOffset(selection.extentOffset, span)
-            .clamp(0, newText.length),
+        baseOffset: _adjustOffset(
+          selection.baseOffset,
+          span,
+        ).clamp(0, newText.length),
+        extentOffset: _adjustOffset(
+          selection.extentOffset,
+          span,
+        ).clamp(0, newText.length),
       ),
     );
   }

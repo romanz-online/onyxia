@@ -4,17 +4,16 @@ import 'package:super_tree/src/models/tree_filtering.dart';
 import 'package:super_tree/src/models/tree_node.dart';
 
 /// Optional callback to provide custom expansion behavior during search.
-typedef TreeSearchExpansionStrategy<T> = void Function(
-  TreeController<T> controller,
-  Set<String> matchedNodeIds,
-);
+typedef TreeSearchExpansionStrategy<T> =
+    void Function(TreeController<T> controller, Set<String> matchedNodeIds);
 
 /// Optional callback to provide custom search matching behavior.
-typedef TreeSearchMatcher<T> = TreeFuzzyMatchResult? Function(
-  String query,
-  TreeNode<T> node,
-  String candidate,
-);
+typedef TreeSearchMatcher<T> =
+    TreeFuzzyMatchResult? Function(
+      String query,
+      TreeNode<T> node,
+      String candidate,
+    );
 
 /// Coordinates query filtering and expansion behavior for a [TreeController].
 class TreeSearchController<T> extends ChangeNotifier {
@@ -65,7 +64,8 @@ class TreeSearchController<T> extends ChangeNotifier {
     _applyExpansion(computation.matchedNodeIds);
 
     treeController.applyFilter(
-      predicate: (TreeNode<T> node) => computation.matchedNodeIds.contains(node.id),
+      predicate: (TreeNode<T> node) =>
+          computation.matchedNodeIds.contains(node.id),
       matchedIndicesByNodeId: computation.matchedIndicesByNodeId,
     );
 
@@ -96,11 +96,7 @@ class TreeSearchController<T> extends ChangeNotifier {
   }
 
   TreeNodeQueryMatcher<T> _buildNodeMatcher() {
-    return (
-      String query,
-      TreeNode<T> node,
-      String candidate,
-    ) {
+    return (String query, TreeNode<T> node, String candidate) {
       if (searchMatcher != null) {
         return searchMatcher!(query, node, candidate);
       }
@@ -119,7 +115,9 @@ class TreeSearchController<T> extends ChangeNotifier {
         final TreeFuzzyMatchResult? match = matcher(query, node, label);
         if (match != null) {
           matchedNodeIds.add(node.id);
-          matchedIndicesByNodeId[node.id] = List<int>.from(match.matchedIndices);
+          matchedIndicesByNodeId[node.id] = List<int>.from(
+            match.matchedIndices,
+          );
         }
       }
 

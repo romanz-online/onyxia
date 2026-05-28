@@ -25,30 +25,46 @@ class Arc extends Shape {
   late Line _originToArcEndLine;
   late Offset _arcEndPoint;
 
-  Arc(this.rect, this.startAngle, this.sweepAngle, this.useCenter,
-      {Paint? paint,
-      Map<GestureType, Function>? gestureMap,
-      HitTestBehavior? hitTestBehavior,
-      PaintingStyle? paintStyleForTouch})
-      : super(hitTestBehavior: hitTestBehavior, paint: paint, gestureCallbackMap: gestureMap) {
+  Arc(
+    this.rect,
+    this.startAngle,
+    this.sweepAngle,
+    this.useCenter, {
+    Paint? paint,
+    Map<GestureType, Function>? gestureMap,
+    HitTestBehavior? hitTestBehavior,
+    PaintingStyle? paintStyleForTouch,
+  }) : super(
+         hitTestBehavior: hitTestBehavior,
+         paint: paint,
+         gestureCallbackMap: gestureMap,
+       ) {
     _oval = Oval(rect, paint: paint);
 
     if (sweepAngle < 0) {
-//      if sweep angle is negative , make the endangle as the start angle and make sweep angle positive
+      //      if sweep angle is negative , make the endangle as the start angle and make sweep angle positive
       startAngle = startAngle + sweepAngle;
       sweepAngle = sweepAngle.abs();
     }
 
     var cosStartAngle = cos(startAngle);
-    var startPointPhi = atan2(_oval.a * sin(startAngle), _oval.b * cosStartAngle);
+    var startPointPhi = atan2(
+      _oval.a * sin(startAngle),
+      _oval.b * cosStartAngle,
+    );
 
     var endAngle = startAngle + sweepAngle;
     var cosEndAngle = cos(endAngle);
     var endPointPhi = atan2(_oval.a * sin(endAngle), _oval.b * cosEndAngle);
 
-    _arcStartPoint =
-        Offset(rect.center.dx + _oval.a * cos(startPointPhi), rect.center.dy + _oval.b * sin(startPointPhi));
-    _arcEndPoint = Offset(rect.center.dx + _oval.a * cos(endPointPhi), rect.center.dy + _oval.b * sin(endPointPhi));
+    _arcStartPoint = Offset(
+      rect.center.dx + _oval.a * cos(startPointPhi),
+      rect.center.dy + _oval.b * sin(startPointPhi),
+    );
+    _arcEndPoint = Offset(
+      rect.center.dx + _oval.a * cos(endPointPhi),
+      rect.center.dy + _oval.b * sin(endPointPhi),
+    );
 
     _chordLine = Line(_arcStartPoint, _arcEndPoint, paint: paint);
     _originToArcStartLine = Line(rect.center, _arcStartPoint, paint: paint);
@@ -59,7 +75,9 @@ class Arc extends Shape {
   bool isInside(Offset p) {
     if (useCenter) {
       if (paint.style == PaintingStyle.stroke) {
-        return (_oval.isOnTheOval(p) && (_isBetweenArcStartAndEndLines(p) || sweepAngle.abs() >= 2 * pi)) ||
+        return (_oval.isOnTheOval(p) &&
+                (_isBetweenArcStartAndEndLines(p) ||
+                    sweepAngle.abs() >= 2 * pi)) ||
             (_originToArcStartLine.isInside(p)) ||
             (_originToArcEndLine.isInside(p));
       } else {
@@ -81,7 +99,9 @@ class Arc extends Shape {
 
   /// Does [not] consider the [paint.strokeWidth] of the lines.
   bool _isBetweenArcStartAndEndLines(Offset p) {
-    var startLineSideValue = _originToArcStartLine.getPointLyingOnSideTestValue(p);
+    var startLineSideValue = _originToArcStartLine.getPointLyingOnSideTestValue(
+      p,
+    );
     var endLineSideValue = _originToArcEndLine.getPointLyingOnSideTestValue(p);
     var threshold = ShapeConstant.floatPrecision;
     if (sweepAngle <= pi) {

@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/constellation/constellation_simulation.dart';
 import 'package:onyxia/constellation/constellation_renderer.dart';
@@ -7,7 +7,7 @@ import 'package:onyxia/constellation/constellation_renderer.dart';
 
 const _defaultForces = {
   'repelStrength': 1000,
-  'linkDistance': 300,
+  'linkDistance': 180,
   'linkStrength': 1,
   'centerStrength': 0.1,
 };
@@ -59,7 +59,12 @@ class _ConstellationState extends ConsumerState<Constellation> {
     final item = (ref.read(artifactsProvider).value ?? const <Artifact>[])
         .firstWhereOrNull((e) => e.name == nodeId);
     if (item == null) return;
-    context.go(item.navigationUrl(ref.read(selectedVaultProvider)?.id ?? ''));
+    context.go(
+      UrlHelper.artifactPath(
+        vaultId: ref.read(selectedVaultProvider)?.id,
+        name: item.name,
+      ),
+    );
   }
 
   @override

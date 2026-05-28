@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class ArtifactObject extends ConsumerWidget {
   final CanvasObject canvasObject;
@@ -49,9 +49,9 @@ class ArtifactObject extends ConsumerWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         borderRadius: .circular(8),
-        border: .all(color: ThemeHelper.neutral400(context), width: 1),
+        border: .all(color: ThemeHelper.neutral600(context), width: 1),
       ),
       child: const Center(child: Icon(LucideIcons.square, size: 24)),
     );
@@ -67,16 +67,16 @@ class ArtifactObject extends ConsumerWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         borderRadius: .circular(8),
-        border: .all(color: ThemeHelper.neutral400(context), width: 1),
+        border: .all(color: ThemeHelper.neutral600(context), width: 1),
       ),
       padding: .symmetric(horizontal: 12, vertical: 8),
       child: Center(
         child: Text(
           item.name.isEmpty ? 'Untitled' : item.name,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ThemeHelper.neutral700(context),
+            color: ThemeHelper.neutral300(context),
             fontWeight: .w500,
           ),
           overflow: .ellipsis,
@@ -97,9 +97,9 @@ class ArtifactObject extends ConsumerWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         borderRadius: .circular(8),
-        border: .all(color: ThemeHelper.neutral400(context), width: 1),
+        border: .all(color: ThemeHelper.neutral600(context), width: 1),
       ),
       child: Column(
         crossAxisAlignment: .stretch,
@@ -108,7 +108,7 @@ class ArtifactObject extends ConsumerWidget {
           Container(
             padding: .symmetric(horizontal: 12, vertical: 8),
             decoration: BoxDecoration(
-              color: ThemeHelper.neutral200(context),
+              color: ThemeHelper.neutral800(context),
               borderRadius: .only(
                 topLeft: .circular(7),
                 topRight: .circular(7),
@@ -117,7 +117,7 @@ class ArtifactObject extends ConsumerWidget {
             child: Text(
               item.name.isEmpty ? 'Untitled' : item.name,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ThemeHelper.neutral700(context),
+                color: ThemeHelper.neutral300(context),
                 fontWeight: .w600,
               ),
               overflow: .ellipsis,
@@ -129,7 +129,7 @@ class ArtifactObject extends ConsumerWidget {
           Divider(
             height: 1,
             thickness: 1,
-            color: ThemeHelper.neutral400(context),
+            color: ThemeHelper.neutral600(context),
           ),
 
           // Content area
@@ -188,9 +188,9 @@ class ArtifactObject extends ConsumerWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         borderRadius: .circular(8),
-        border: .all(color: ThemeHelper.neutral400(context), width: 1),
+        border: .all(color: ThemeHelper.neutral600(context), width: 1),
       ),
       child: Center(child: OnyxiaLoadingIndicator()),
     );
@@ -201,7 +201,7 @@ class ArtifactObject extends ConsumerWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         borderRadius: .circular(8),
         border: .all(color: Colors.red.withValues(alpha: 0.5), width: 1),
       ),

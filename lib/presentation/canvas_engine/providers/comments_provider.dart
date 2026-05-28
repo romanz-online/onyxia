@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:async';
 
 class CommentsState {
@@ -39,8 +39,8 @@ class CommentsState {
 
 final commentsProvider =
     NotifierProvider.autoDispose<CommentsNotifier, CommentsState>(
-  CommentsNotifier.new,
-);
+      CommentsNotifier.new,
+    );
 
 class CommentsNotifier extends Notifier<CommentsState> {
   late CommentsRepository _repository;
@@ -50,25 +50,29 @@ class CommentsNotifier extends Notifier<CommentsState> {
 
   @override
   CommentsState build() {
-    _canvasId = ref.watch(selectedArtifactProvider
-        .select((a) => a is CanvasArtifact ? a.id : ''));
+    _canvasId = ref.watch(
+      selectedArtifactProvider.select((a) => a is CanvasArtifact ? a.id : ''),
+    );
     _vaultId = ref.watch(selectedVaultProvider)?.id;
     _user = ref.watch(currentUserProvider).value ?? User.initial();
-    _repository = CommentsRepository(
-      vaultId: _vaultId,
-      canvasId: _canvasId,
-    );
+    _repository = CommentsRepository(vaultId: _vaultId, canvasId: _canvasId);
 
     if (_canvasId.isNotEmpty && _vaultId != null) {
-      final sub = _repository.getStream().listen((comments) {
-        final sortedComments = List<Comment>.from(comments);
-        sortedComments.sort((a, b) => (a.createdAt ??
-                DateTime.fromMillisecondsSinceEpoch(0))
-            .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
-        state = state.copyWith(comments: sortedComments);
-      }, onError: (error) {
-        debugPrint('Error watching comments: $error');
-      });
+      final sub = _repository.getStream().listen(
+        (comments) {
+          final sortedComments = List<Comment>.from(comments);
+          sortedComments.sort(
+            (a, b) => (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+                .compareTo(
+                  b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0),
+                ),
+          );
+          state = state.copyWith(comments: sortedComments);
+        },
+        onError: (error) {
+          debugPrint('Error watching comments: $error');
+        },
+      );
       ref.onDispose(sub.cancel);
     }
 
@@ -117,7 +121,7 @@ class CommentsNotifier extends Notifier<CommentsState> {
     state = state.copyWith(
       comments: [
         for (final comment in state.comments)
-          if (comment.id == newComment.id) newComment else comment
+          if (comment.id == newComment.id) newComment else comment,
       ],
     );
   }
@@ -155,17 +159,16 @@ class CommentsNotifier extends Notifier<CommentsState> {
       return subComment;
     }).toList();
 
-    final updatedComment = comment.copyWith(
-      subComments: updatedSubComments,
-    );
+    final updatedComment = comment.copyWith(subComments: updatedSubComments);
 
     await _repository.update([updatedComment.copyWith(canvasId: _canvasId)]);
   }
 
   Future<void> deleteSubComment(String commentId, String subCommentId) async {
     final comment = state.comments.firstWhere((c) => c.id == commentId);
-    final updatedSubComments =
-        comment.subComments.where((sub) => sub.id != subCommentId).toList();
+    final updatedSubComments = comment.subComments
+        .where((sub) => sub.id != subCommentId)
+        .toList();
 
     final updatedComment = comment.copyWith(subComments: updatedSubComments);
 
@@ -179,24 +182,22 @@ class CommentsNotifier extends Notifier<CommentsState> {
           if (comment.id == commentId)
             comment.copyWith(position: comment.position + delta)
           else
-            comment
+            comment,
       ],
     );
   }
 
   int getCommentIndex(Comment comment) {
     final sortedComments = List<Comment>.from(state.comments);
-    sortedComments.sort((a, b) =>
-        (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
-            .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)));
+    sortedComments.sort(
+      (a, b) => (a.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+          .compareTo(b.createdAt ?? DateTime.fromMillisecondsSinceEpoch(0)),
+    );
     return sortedComments.indexOf(comment) + 1;
   }
 
   void clearEditIntent() {
-    state = state.copyWith(
-      shouldEditOnOpen: false,
-      editingSubCommentId: null,
-    );
+    state = state.copyWith(shouldEditOnOpen: false, editingSubCommentId: null);
   }
 
   void createTemporaryComment({
@@ -215,10 +216,7 @@ class CommentsNotifier extends Notifier<CommentsState> {
       canvasId: _canvasId,
     );
 
-    state = state.copyWith(
-      temporaryComment: tempComment,
-      objectId: objectId,
-    );
+    state = state.copyWith(temporaryComment: tempComment, objectId: objectId);
   }
 
   Future<void> saveTemporaryComment(String text) async {

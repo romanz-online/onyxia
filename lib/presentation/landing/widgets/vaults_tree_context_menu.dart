@@ -10,28 +10,25 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.externalLink,
       child: Text(
         'Open in New Tab',
-        style: TextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral100(context)),
       ),
-      onTap: () => NavigationContextMenu.openInNewTab(
-        NavigationUrlBuilder.buildGraphUrl(vault.id),
-      ),
+      onTap: () => UrlHelper.openInNewTab(UrlHelper.vaultGraphPath(vault.id)),
     ),
     OnyxiaMenuItem(
       icon: LucideIcons.link,
       child: Text(
         'Copy Link',
-        style: TextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral100(context)),
       ),
-      onTap: () => NavigationContextMenu.copyLinkToClipboard(
-        NavigationUrlBuilder.buildGraphUrl(vault.id),
-      ),
+      onTap: () =>
+          UrlHelper.copyLinkToClipboard(UrlHelper.vaultGraphPath(vault.id)),
     ),
     const OnyxiaMenuItem.divider(),
     OnyxiaMenuItem(
       icon: LucideIcons.pencil,
       child: Text(
         'Rename Vault',
-        style: TextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral100(context)),
       ),
       onTap: () {
         showDialog(
@@ -45,7 +42,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.trash2,
       child: Text(
         'Delete Vault',
-        style: TextStyle(color: ThemeHelper.neutral900(context)),
+        style: TextStyle(color: ThemeHelper.neutral100(context)),
       ),
       onTap: () => _confirmRemove(context, vault),
     ),
@@ -70,7 +67,7 @@ void _confirmRemove(BuildContext context, Vault vault) async {
               'This is permanent.',
               style: TextStyle(
                 fontSize: 20,
-                color: ThemeHelper.neutral900(ctx),
+                color: ThemeHelper.neutral100(ctx),
               ),
             ),
             const Spacer(),

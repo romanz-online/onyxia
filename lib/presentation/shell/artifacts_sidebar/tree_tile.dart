@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class TreeTile extends ConsumerWidget {
   const TreeTile({super.key, required this.node, this.isDragging = false});
@@ -23,7 +23,7 @@ class TreeTile extends ConsumerWidget {
           ? BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: ThemeHelper.black(context).withValues(alpha: 0.2),
+                  color: ThemeHelper.white(context).withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius: 3,
                   offset: const Offset(0, 2),

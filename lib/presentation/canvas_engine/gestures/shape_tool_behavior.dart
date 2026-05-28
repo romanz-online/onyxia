@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 import 'canvas_gesture_state.dart';
@@ -11,22 +11,24 @@ import '../services/services.dart';
 class ShapeToolBehavior extends CanvasToolGestureHandler {
   final CanvasObjectType shapeType;
 
-  const ShapeToolBehavior(
-      {required super.canvasConfig, required this.shapeType});
+  const ShapeToolBehavior({
+    required super.canvasConfig,
+    required this.shapeType,
+  });
 
   @override
   ToolMode get toolMode => switch (shapeType) {
-        CanvasObjectType.rectangle => ToolMode.rectangle,
-        CanvasObjectType.diamond => ToolMode.diamond,
-        CanvasObjectType.oblong => ToolMode.oblong,
-        CanvasObjectType.circle => ToolMode.circle,
-        CanvasObjectType.rhombus => ToolMode.rhombus,
-        CanvasObjectType.trapezoid => ToolMode.trapezoid,
-        CanvasObjectType.cylinder => ToolMode.cylinder,
-        CanvasObjectType.house => ToolMode.house,
-        CanvasObjectType.reverseHouse => ToolMode.reverseHouse,
-        _ => ToolMode.rectangle,
-      };
+    CanvasObjectType.rectangle => ToolMode.rectangle,
+    CanvasObjectType.diamond => ToolMode.diamond,
+    CanvasObjectType.oblong => ToolMode.oblong,
+    CanvasObjectType.circle => ToolMode.circle,
+    CanvasObjectType.rhombus => ToolMode.rhombus,
+    CanvasObjectType.trapezoid => ToolMode.trapezoid,
+    CanvasObjectType.cylinder => ToolMode.cylinder,
+    CanvasObjectType.house => ToolMode.house,
+    CanvasObjectType.reverseHouse => ToolMode.reverseHouse,
+    _ => ToolMode.rectangle,
+  };
 
   @override
   bool get allowsViewportPanning => false;
@@ -36,116 +38,123 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
 
   @override
   void Function(
-          TapUpDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onTapUp => (details, ref, buildContext, interactionContext) {
-            if (interactionContext is ArrowWellInteraction ||
-                interactionContext is ObjectFillInteractionContext) {
-              return;
-            }
+    TapUpDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onTapUp => (details, ref, buildContext, interactionContext) {
+    if (interactionContext is ArrowWellInteraction ||
+        interactionContext is ObjectFillInteractionContext) {
+      return;
+    }
 
-            const double spacing = CanvasBounds.gridSpacing;
-            Offset topLeft =
-                details.localPosition.translate(spacing * -5, spacing * -5);
-            Offset bottomRight =
-                details.localPosition.translate(spacing * 5, spacing * 5);
-            if (ref.read(canvasSettingsProvider(Setting.snapToGrid))) {
-              topLeft = ref.read(canvasBoundsProvider.notifier).snap(topLeft);
-              bottomRight =
-                  ref.read(canvasBoundsProvider.notifier).snap(bottomRight);
-            }
+    const double spacing = CanvasBounds.gridSpacing;
+    Offset topLeft = details.localPosition.translate(
+      spacing * -5,
+      spacing * -5,
+    );
+    Offset bottomRight = details.localPosition.translate(
+      spacing * 5,
+      spacing * 5,
+    );
+    if (ref.read(canvasSettingsProvider(Setting.snapToGrid))) {
+      topLeft = ref.read(canvasBoundsProvider.notifier).snap(topLeft);
+      bottomRight = ref.read(canvasBoundsProvider.notifier).snap(bottomRight);
+    }
 
-            final newObject = CanvasObject.initial().copyWith(
-              id: const Uuid().v4(),
-              color: ThemeHelper.neutral100(buildContext),
-              type: shapeType,
-              topLeft: topLeft,
-              bottomRight: bottomRight,
-            );
+    final newObject = CanvasObject.initial().copyWith(
+      id: const Uuid().v4(),
+      color: ThemeHelper.neutral900(buildContext),
+      type: shapeType,
+      topLeft: topLeft,
+      bottomRight: bottomRight,
+    );
 
-            ref.read(canvasObjectsProvider.notifier).addObject(newObject);
-            ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-            ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
-            print(7);
-            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-            CanvasInteractionService.openTextEditor(ref: ref);
-          };
-
-  @override
-  void Function(
-          DragStartDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onPanStart => (details, ref, buildContext, interactionContext) {
-            if (interactionContext is ArrowWellInteraction ||
-                interactionContext is ObjectFillInteractionContext) {
-              return;
-            }
-
-            const double spacing = CanvasBounds.gridSpacing;
-            Offset topLeft = details.localPosition;
-            Offset bottomRight =
-                details.localPosition.translate(spacing, spacing);
-            if (ref.read(canvasSettingsProvider(Setting.snapToGrid))) {
-              topLeft = ref.read(canvasBoundsProvider.notifier).snap(topLeft);
-              bottomRight =
-                  ref.read(canvasBoundsProvider.notifier).snap(bottomRight);
-            }
-
-            final newObject = CanvasObject.initial().copyWith(
-              id: const Uuid().v4(),
-              color: ThemeHelper.neutral100(buildContext),
-              type: shapeType,
-              topLeft: topLeft,
-              bottomRight: bottomRight,
-            );
-
-            ref.read(canvasObjectsProvider.notifier).addObject(newObject);
-            ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-            ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
-            ref
-                .read(canvasGestureStateProvider.notifier)
-                .setActiveObject(newObject);
-          };
+    ref.read(canvasObjectsProvider.notifier).addObject(newObject);
+    ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+    ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
+    print(7);
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    CanvasInteractionService.openTextEditor(ref: ref);
+  };
 
   @override
   void Function(
-          DragUpdateDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onPanUpdate => (details, ref, buildContext, interactionContext) {
-            final activeObject =
-                ref.read(canvasGestureStateProvider).activeObject;
-            if (activeObject == null) return;
+    DragStartDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onPanStart => (details, ref, buildContext, interactionContext) {
+    if (interactionContext is ArrowWellInteraction ||
+        interactionContext is ObjectFillInteractionContext) {
+      return;
+    }
 
-            final position =
-                ref.read(canvasSettingsProvider(Setting.snapToGrid))
-                    ? ref
-                        .read(canvasBoundsProvider.notifier)
-                        .snap(details.localPosition)
-                    : details.localPosition;
+    const double spacing = CanvasBounds.gridSpacing;
+    Offset topLeft = details.localPosition;
+    Offset bottomRight = details.localPosition.translate(spacing, spacing);
+    if (ref.read(canvasSettingsProvider(Setting.snapToGrid))) {
+      topLeft = ref.read(canvasBoundsProvider.notifier).snap(topLeft);
+      bottomRight = ref.read(canvasBoundsProvider.notifier).snap(bottomRight);
+    }
 
-            activeObject.bottomRight = Offset(
-              math.max(activeObject.topLeft.dx + 10, position.dx),
-              math.max(activeObject.topLeft.dy + 10, position.dy),
-            );
+    final newObject = CanvasObject.initial().copyWith(
+      id: const Uuid().v4(),
+      color: ThemeHelper.neutral900(buildContext),
+      type: shapeType,
+      topLeft: topLeft,
+      bottomRight: bottomRight,
+    );
 
-            ref
-                .read(canvasObjectsProvider.notifier)
-                .updateObjectState(activeObject);
-            ref
-                .read(canvasGestureStateProvider.notifier)
-                .setActiveObject(activeObject);
-          };
+    ref.read(canvasObjectsProvider.notifier).addObject(newObject);
+    ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+    ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
+    ref.read(canvasGestureStateProvider.notifier).setActiveObject(newObject);
+  };
 
   @override
-  void Function(DragEndDetails, WidgetRef, BuildContext,
-      CanvasInteractionContext)? get onPanEnd => (details, ref, buildContext,
-          interactionContext) {
-        final activeObject = ref.read(canvasGestureStateProvider).activeObject;
+  void Function(
+    DragUpdateDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onPanUpdate => (details, ref, buildContext, interactionContext) {
+    final activeObject = ref.read(canvasGestureStateProvider).activeObject;
+    if (activeObject == null) return;
 
-        if (activeObject != null) {
-          ref.read(canvasObjectsProvider.notifier).updateObject(activeObject);
-          ref.read(canvasObjectsProvider.notifier).selectObject(activeObject);
-          ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-          CanvasInteractionService.openTextEditor(ref: ref);
-        }
+    final position = ref.read(canvasSettingsProvider(Setting.snapToGrid))
+        ? ref.read(canvasBoundsProvider.notifier).snap(details.localPosition)
+        : details.localPosition;
 
-        ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-      };
+    activeObject.bottomRight = Offset(
+      math.max(activeObject.topLeft.dx + 10, position.dx),
+      math.max(activeObject.topLeft.dy + 10, position.dy),
+    );
+
+    ref.read(canvasObjectsProvider.notifier).updateObjectState(activeObject);
+    ref.read(canvasGestureStateProvider.notifier).setActiveObject(activeObject);
+  };
+
+  @override
+  void Function(
+    DragEndDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onPanEnd => (details, ref, buildContext, interactionContext) {
+    final activeObject = ref.read(canvasGestureStateProvider).activeObject;
+
+    if (activeObject != null) {
+      ref.read(canvasObjectsProvider.notifier).updateObject(activeObject);
+      ref.read(canvasObjectsProvider.notifier).selectObject(activeObject);
+      ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+      CanvasInteractionService.openTextEditor(ref: ref);
+    }
+
+    ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
+  };
 }

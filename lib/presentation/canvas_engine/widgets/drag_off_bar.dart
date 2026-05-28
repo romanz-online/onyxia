@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 /// Data class to carry information during drag operations
 class DragOffBarData {
@@ -37,12 +37,12 @@ class DragOffBar extends StatelessWidget {
 
   BoxDecoration _getPanelDecoration(BuildContext context) {
     return BoxDecoration(
-      color: ThemeHelper.neutral100(context),
+      color: ThemeHelper.neutral900(context),
       borderRadius: .circular(8),
-      border: .all(color: ThemeHelper.neutral400(context), width: 1),
+      border: .all(color: ThemeHelper.neutral600(context), width: 1),
       boxShadow: [
         BoxShadow(
-          color: ThemeHelper.neutral900(context).withValues(alpha: 0.1),
+          color: ThemeHelper.neutral100(context).withValues(alpha: 0.1),
           blurRadius: 3,
           offset: const Offset(0, 1),
         ),
@@ -51,7 +51,7 @@ class DragOffBar extends StatelessWidget {
   }
 
   Widget _buildSeparator(BuildContext context) =>
-      Container(width: 1, height: 24, color: ThemeHelper.neutral300(context));
+      Container(width: 1, height: 24, color: ThemeHelper.neutral700(context));
 
   Widget _buildDefaultDragFeedback(
     BuildContext context,
@@ -64,9 +64,9 @@ class DragOffBar extends StatelessWidget {
         width: defaultArtifactObjectDimensions.width,
         height: defaultArtifactObjectDimensions.height,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral100(context),
+          color: ThemeHelper.neutral900(context),
           borderRadius: .circular(8),
-          border: .all(color: ThemeHelper.neutral300(context), width: 2),
+          border: .all(color: ThemeHelper.neutral700(context), width: 2),
         ),
         child: Center(
           child: Icon(

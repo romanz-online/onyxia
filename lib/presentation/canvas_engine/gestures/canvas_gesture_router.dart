@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import '../providers/providers.dart';
 import '../services/services.dart';
@@ -36,23 +36,41 @@ class CanvasGestureRouter {
       ToolMode.pointer: PointerToolBehavior(canvasConfig: canvasConfig),
       ToolMode.pan: PanToolBehavior(canvasConfig: canvasConfig),
       ToolMode.rectangle: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.rectangle),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.rectangle,
+      ),
       ToolMode.diamond: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.diamond),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.diamond,
+      ),
       ToolMode.oblong: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.oblong),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.oblong,
+      ),
       ToolMode.circle: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.circle),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.circle,
+      ),
       ToolMode.rhombus: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.rhombus),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.rhombus,
+      ),
       ToolMode.trapezoid: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.trapezoid),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.trapezoid,
+      ),
       ToolMode.cylinder: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.cylinder),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.cylinder,
+      ),
       ToolMode.house: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.house),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.house,
+      ),
       ToolMode.reverseHouse: ShapeToolBehavior(
-          canvasConfig: canvasConfig, shapeType: CanvasObjectType.reverseHouse),
+        canvasConfig: canvasConfig,
+        shapeType: CanvasObjectType.reverseHouse,
+      ),
       ToolMode.text: TextToolBehavior(canvasConfig: canvasConfig),
       ToolMode.image: ImageToolBehavior(canvasConfig: canvasConfig),
       ToolMode.brush: BrushToolBehavior(canvasConfig: canvasConfig),
@@ -64,7 +82,8 @@ class CanvasGestureRouter {
 
   /// Route tap down gesture with canvas interaction context
   void Function(TapDownDetails)? getHandleTapDown(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onTapDown;
     return handler != null
         ? (details) => handler(details, ref, context, interactionContext)
@@ -74,19 +93,23 @@ class CanvasGestureRouter {
   /// Route tap up gesture with canvas interaction context
   /// If dragging was in progress (storedInteractionContext exists), triggers onPanEnd instead
   void Function(TapUpDetails)? getHandleTapUp(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     return (details) {
-      final storedContext =
-          ref.read(canvasGestureStateProvider).interactionContext;
+      final storedContext = ref
+          .read(canvasGestureStateProvider)
+          .interactionContext;
       if (storedContext != null) {
         // There was dragging - use getHandlePanEnd instead
         final panEndHandler = getHandlePanEnd();
         if (panEndHandler != null) {
-          panEndHandler(DragEndDetails(
-            globalPosition: details.globalPosition,
-            localPosition: details.localPosition,
-            velocity: Velocity.zero,
-          ));
+          panEndHandler(
+            DragEndDetails(
+              globalPosition: details.globalPosition,
+              localPosition: details.localPosition,
+              velocity: Velocity.zero,
+            ),
+          );
         }
       } else {
         // Normal tap - use normal onTapUp
@@ -99,15 +122,17 @@ class CanvasGestureRouter {
   }
 
   void Function(DragDownDetails)? getHandlePanDown(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onPanStart;
     // convert DragDownDetails to DragStartDetails -- they're basically the same thing
     return handler != null
         ? (details) {
             handler(
               DragStartDetails(
-                  globalPosition: details.globalPosition,
-                  localPosition: details.localPosition),
+                globalPosition: details.globalPosition,
+                localPosition: details.localPosition,
+              ),
               ref,
               context,
               interactionContext,
@@ -118,7 +143,8 @@ class CanvasGestureRouter {
 
   /// Route pan start gesture with canvas interaction context
   void Function(DragStartDetails)? getHandlePanStart(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onPanStart;
     return handler != null
         ? (details) {
@@ -136,8 +162,9 @@ class CanvasGestureRouter {
     final handler = _getCurrentHandler().onPanUpdate;
     return handler != null
         ? (details) {
-            final storedContext =
-                ref.read(canvasGestureStateProvider).interactionContext;
+            final storedContext = ref
+                .read(canvasGestureStateProvider)
+                .interactionContext;
             if (storedContext != null) {
               handler(details, ref, context, storedContext);
             }
@@ -150,8 +177,9 @@ class CanvasGestureRouter {
     final handler = _getCurrentHandler().onPanEnd;
     return handler != null
         ? (details) {
-            final storedContext =
-                ref.read(canvasGestureStateProvider).interactionContext;
+            final storedContext = ref
+                .read(canvasGestureStateProvider)
+                .interactionContext;
             if (storedContext != null) {
               handler(details, ref, context, storedContext);
               ref.read(canvasGestureStateProvider.notifier).clearContext();
@@ -162,7 +190,8 @@ class CanvasGestureRouter {
 
   /// Route secondary tap down with canvas interaction context
   void Function(TapDownDetails)? getHandleSecondaryTapDown(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onSecondaryTapDown;
     return handler != null
         ? (details) => handler(details, ref, context, interactionContext)
@@ -171,7 +200,8 @@ class CanvasGestureRouter {
 
   /// Route secondary tap up gesture with canvas interaction context
   void Function(TapUpDetails)? getHandleSecondaryTapUp(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onSecondaryTapUp;
     return handler != null
         ? (details) => handler(details, ref, context, interactionContext)
@@ -180,7 +210,8 @@ class CanvasGestureRouter {
 
   /// Route hover gesture with canvas interaction context
   void Function(PointerHoverEvent)? getHandleHover(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onHover;
     return handler != null
         ? (event) => handler(event, ref, context, interactionContext)
@@ -189,7 +220,8 @@ class CanvasGestureRouter {
 
   /// Route enter gesture with canvas interaction context
   void Function(PointerEnterEvent)? getHandleEnter(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onEnter;
     return handler != null
         ? (event) => handler(event, ref, context, interactionContext)
@@ -198,7 +230,8 @@ class CanvasGestureRouter {
 
   /// Route exit gesture with canvas interaction context
   void Function(PointerExitEvent)? getHandleExit(
-      CanvasInteractionContext interactionContext) {
+    CanvasInteractionContext interactionContext,
+  ) {
     final handler = _getCurrentHandler().onExit;
     return handler != null
         ? (event) => handler(event, ref, context, interactionContext)

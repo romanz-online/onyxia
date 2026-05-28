@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:async';
 
 final pinsProvider = NotifierProvider.autoDispose<PinsNotifier, Pins>(
@@ -13,13 +13,11 @@ class PinsNotifier extends Notifier<Pins> {
 
   @override
   Pins build() {
-    canvasId = ref.watch(selectedArtifactProvider
-        .select((a) => a is CanvasArtifact ? a.id : ''));
-    vaultId = ref.watch(selectedVaultProvider)?.id;
-    repository = PinsRepository(
-      vaultId: vaultId,
-      canvasId: canvasId,
+    canvasId = ref.watch(
+      selectedArtifactProvider.select((a) => a is CanvasArtifact ? a.id : ''),
     );
+    vaultId = ref.watch(selectedVaultProvider)?.id;
+    repository = PinsRepository(vaultId: vaultId, canvasId: canvasId);
 
     if (canvasId.isNotEmpty && vaultId != null) {
       _subscription = repository.getStream().listen((remotePins) async {

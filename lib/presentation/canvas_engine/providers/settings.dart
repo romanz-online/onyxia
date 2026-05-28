@@ -10,8 +10,8 @@ enum Setting {
 
 final canvasSettingsProvider =
     NotifierProvider.family<CanvasSettingNotifier, bool, Setting>(
-  CanvasSettingNotifier.new,
-);
+      CanvasSettingNotifier.new,
+    );
 
 class CanvasSettingNotifier extends Notifier<bool> {
   CanvasSettingNotifier(this.setting);
@@ -19,13 +19,13 @@ class CanvasSettingNotifier extends Notifier<bool> {
 
   @override
   bool build() => switch (setting) {
-        // Default values
-        Setting.showComments => true,
-        Setting.showArtifacts => true,
-        Setting.snapToGrid => true,
-        Setting.showMinimap => true,
-        Setting.showToolbar => true,
-      };
+    // Default values
+    Setting.showComments => true,
+    Setting.showArtifacts => true,
+    Setting.snapToGrid => true,
+    Setting.showMinimap => true,
+    Setting.showToolbar => true,
+  };
 
   void set(bool value) => state = value;
 

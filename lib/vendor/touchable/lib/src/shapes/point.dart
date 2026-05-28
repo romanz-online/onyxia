@@ -11,12 +11,18 @@ class Point extends Shape {
 
   final List<Offset> points;
 
-  Point(this.pointMode, this.points,
-      {Map<GestureType, Function>? gestureMap,
-      Paint? paint,
-      HitTestBehavior? hitTestBehavior,
-      PaintingStyle? paintStyleForTouch})
-      : super(hitTestBehavior: hitTestBehavior, paint: paint ?? Paint(), gestureCallbackMap: gestureMap ?? {});
+  Point(
+    this.pointMode,
+    this.points, {
+    Map<GestureType, Function>? gestureMap,
+    Paint? paint,
+    HitTestBehavior? hitTestBehavior,
+    PaintingStyle? paintStyleForTouch,
+  }) : super(
+         hitTestBehavior: hitTestBehavior,
+         paint: paint ?? Paint(),
+         gestureCallbackMap: gestureMap ?? {},
+       );
 
   @override
   bool isInside(Offset p) {
@@ -50,7 +56,11 @@ class Point extends Shape {
     if (paint.strokeCap == StrokeCap.round) {
       return Circle(center: point, radius: extraWidth).isInside(queryPoint);
     } else {
-      return Rect.fromCenter(center: point, width: extraWidth * 2, height: extraWidth * 2).contains(queryPoint);
+      return Rect.fromCenter(
+        center: point,
+        width: extraWidth * 2,
+        height: extraWidth * 2,
+      ).contains(queryPoint);
     }
   }
 }
@@ -98,7 +108,10 @@ class PolygonUtil {
     if (n < 3) {
       return false;
     } //when polygon has less than 3 edge, it is not polygon
-    Line exline = Line(p, Offset(9999, p.dy)); //create a point at infinity, y is same as point p
+    Line exline = Line(
+      p,
+      Offset(9999, p.dy),
+    ); //create a point at infinity, y is same as point p
     int count = 0;
     int i = 0;
     do {

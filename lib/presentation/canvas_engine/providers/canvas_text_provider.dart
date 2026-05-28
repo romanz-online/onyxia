@@ -69,5 +69,5 @@ class CanvasTextNotifier extends Notifier<CanvasTextState> {
 
 final canvasTextProvider =
     NotifierProvider.autoDispose<CanvasTextNotifier, CanvasTextState>(
-  CanvasTextNotifier.new,
-);
+      CanvasTextNotifier.new,
+    );

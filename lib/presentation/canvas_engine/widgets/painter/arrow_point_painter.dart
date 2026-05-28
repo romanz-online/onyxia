@@ -25,13 +25,13 @@ class ArrowPointPainter {
     );
 
     final borderPaint = Paint()
-      ..color = ThemeHelper.blue500(context)
+      ..color = ThemeHelper.blue400(context)
       ..style = .fill;
 
     painter.drawCircle(center, circleSize / 2, borderPaint);
 
     final fillPaint = Paint()
-      ..color = ThemeHelper.neutral100(context)
+      ..color = ThemeHelper.neutral900(context)
       ..style = .fill;
 
     painter.drawCircle(center, circleSize / 2 - borderSize, fillPaint);

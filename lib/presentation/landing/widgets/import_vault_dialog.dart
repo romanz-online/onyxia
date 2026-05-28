@@ -97,7 +97,7 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: .w600,
-                color: ThemeHelper.neutral800(context),
+                color: ThemeHelper.neutral200(context),
               ),
             ),
             OnyxiaTextFormField(
@@ -151,15 +151,15 @@ class ImportProgressView extends StatelessWidget {
           'Importing $done / $total files',
           style: TextStyle(
             fontSize: 14,
-            color: ThemeHelper.neutral700(context),
+            color: ThemeHelper.neutral300(context),
           ),
         ),
         LinearProgressIndicator(
           value: value,
           minHeight: 6,
-          backgroundColor: ThemeHelper.neutral200(context),
+          backgroundColor: ThemeHelper.neutral800(context),
           valueColor: AlwaysStoppedAnimation<Color>(
-            ThemeHelper.blue500(context),
+            ThemeHelper.blue400(context),
           ),
         ),
         Text(

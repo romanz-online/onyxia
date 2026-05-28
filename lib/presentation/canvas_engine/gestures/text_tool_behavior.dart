@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -18,25 +18,27 @@ class TextToolBehavior extends CanvasToolGestureHandler {
 
   @override
   void Function(
-          TapUpDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onTapUp => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ObjectFillInteractionContext(:final targetObject):
-                ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
-                ref
-                    .read(canvasObjectsProvider.notifier)
-                    .selectObject(targetObject);
-                CanvasInteractionService.openTextEditor(ref: ref);
-                break;
-              case BackgroundInteraction():
-                _createTextObject(details.localPosition, ref);
-                break;
-              case _:
-                return;
-            }
+    TapUpDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onTapUp => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ObjectFillInteractionContext(:final targetObject):
+        ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
+        ref.read(canvasObjectsProvider.notifier).selectObject(targetObject);
+        CanvasInteractionService.openTextEditor(ref: ref);
+        break;
+      case BackgroundInteraction():
+        _createTextObject(details.localPosition, ref);
+        break;
+      case _:
+        return;
+    }
 
-            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-          };
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+  };
 
   void _createTextObject(Offset tapPosition, WidgetRef ref) {
     const double width = CanvasBounds.gridSpacing * 7;

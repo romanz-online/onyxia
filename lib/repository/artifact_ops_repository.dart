@@ -26,10 +26,7 @@ class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
 
   /// One-shot fetch of ops for a given artifact. Pass [sinceSeq] to skip ops
   /// already covered by a snapshot.
-  Future<List<Uint8List>> opBytesFor(
-    String artifactId, {
-    int? sinceSeq,
-  }) async {
+  Future<List<Uint8List>> opBytesFor(String artifactId, {int? sinceSeq}) async {
     final ops = await query(
       field: 'artifact_id',
       isEqualTo: artifactId,
@@ -55,23 +52,25 @@ class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
     late final StreamController<Uint8List> controller;
     controller = StreamController<Uint8List>(
       onListen: () {
-        channel = Supabase.instance.client
-            .channel('artifact_ops:$artifactId')
-            .onPostgresChanges(
-          event: PostgresChangeEvent.insert,
-          schema: 'public',
-          table: tableName,
-          filter: PostgresChangeFilter(
-            type: PostgresChangeFilterType.eq,
-            column: 'artifact_id',
-            value: artifactId,
-          ),
-          callback: (payload) {
-            final encoded = payload.newRecord['op_bytes'] as String?;
-            if (encoded == null) return;
-            controller.add(base64Decode(encoded));
-          },
-        )..subscribe();
+        channel =
+            Supabase.instance.client
+                .channel('artifact_ops:$artifactId')
+                .onPostgresChanges(
+                  event: PostgresChangeEvent.insert,
+                  schema: 'public',
+                  table: tableName,
+                  filter: PostgresChangeFilter(
+                    type: PostgresChangeFilterType.eq,
+                    column: 'artifact_id',
+                    value: artifactId,
+                  ),
+                  callback: (payload) {
+                    final encoded = payload.newRecord['op_bytes'] as String?;
+                    if (encoded == null) return;
+                    controller.add(base64Decode(encoded));
+                  },
+                )
+              ..subscribe();
       },
       onCancel: () async {
         await Supabase.instance.client.removeChannel(channel);

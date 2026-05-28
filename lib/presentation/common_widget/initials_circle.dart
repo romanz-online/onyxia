@@ -30,7 +30,7 @@ class InitialsCircle extends StatelessWidget {
           style: TextStyle(
             fontSize: size * 0.38,
             fontWeight: .w500,
-            color: ThemeHelper.neutral100(context),
+            color: ThemeHelper.neutral900(context),
           ),
         ),
       ),

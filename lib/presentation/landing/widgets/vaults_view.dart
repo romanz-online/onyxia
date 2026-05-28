@@ -19,7 +19,7 @@ class VaultsView extends ConsumerWidget {
           width: leftColumnWidth,
           child: _VaultListColumn(vaults: vaults),
         ),
-        VerticalDivider(width: 2, color: ThemeHelper.neutral300(context)),
+        VerticalDivider(width: 2, color: ThemeHelper.neutral700(context)),
         Expanded(child: _RightColumn(user: user)),
       ],
     );
@@ -34,7 +34,7 @@ class _VaultListColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ThemeHelper.neutral200(context),
+      color: ThemeHelper.neutral800(context),
       padding: .fromLTRB(12, 12, 12, 6),
       child: Column(
         crossAxisAlignment: .start,
@@ -100,7 +100,7 @@ class _RightColumn extends ConsumerWidget {
             style: TextStyle(
               fontSize: 32,
               fontWeight: .bold,
-              color: ThemeHelper.neutral700(context),
+              color: ThemeHelper.neutral300(context),
             ),
           ),
           const Gap(16),
@@ -211,7 +211,7 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: .w600,
-                      color: ThemeHelper.neutral800(context),
+                      color: ThemeHelper.neutral200(context),
                     ),
                   ),
                   OnyxiaTextFormField(

@@ -14,10 +14,11 @@ class ArrowPrimedObjectsNotifier extends Notifier<List<CanvasObject>> {
   }
 }
 
-final arrowPrimedObjectsProvider = NotifierProvider.autoDispose<
-    ArrowPrimedObjectsNotifier, List<CanvasObject>>(
-  ArrowPrimedObjectsNotifier.new,
-);
+final arrowPrimedObjectsProvider =
+    NotifierProvider.autoDispose<
+      ArrowPrimedObjectsNotifier,
+      List<CanvasObject>
+    >(ArrowPrimedObjectsNotifier.new);
 
 /// Data for a single primed object in arrow tool mode
 class ArrowToolPrimedData {
@@ -43,7 +44,7 @@ class ArrowToolPrimedData {
       ConnectionPoint.top,
       ConnectionPoint.left,
       ConnectionPoint.right,
-      ConnectionPoint.bottom
+      ConnectionPoint.bottom,
     ];
 
     Offset? closestSnapPoint;
@@ -81,8 +82,7 @@ class ArrowToolPrimedData {
       relativeOffset.hashCode;
 }
 
-class ArrowToolPrimedObjectsNotifier
-    extends Notifier<ArrowToolPrimedData?> {
+class ArrowToolPrimedObjectsNotifier extends Notifier<ArrowToolPrimedData?> {
   @override
   ArrowToolPrimedData? build() => null;
 
@@ -116,7 +116,8 @@ class ArrowToolPrimedObjectsNotifier
   }
 }
 
-final arrowToolPrimedObjectsProvider = NotifierProvider.autoDispose<
-    ArrowToolPrimedObjectsNotifier, ArrowToolPrimedData?>(
-  ArrowToolPrimedObjectsNotifier.new,
-);
+final arrowToolPrimedObjectsProvider =
+    NotifierProvider.autoDispose<
+      ArrowToolPrimedObjectsNotifier,
+      ArrowToolPrimedData?
+    >(ArrowToolPrimedObjectsNotifier.new);

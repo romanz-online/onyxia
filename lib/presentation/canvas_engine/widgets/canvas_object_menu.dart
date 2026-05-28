@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -414,27 +414,27 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
   Widget _buildDivider() => Container(
     width: 0.5,
     height: iconSize,
-    color: ThemeHelper.neutral400(context),
+    color: ThemeHelper.neutral600(context),
   );
 
   // SUB-MENUS
 
   Widget _buildColorPalette() {
     final List<Color> colorPalette = [
-      ThemeHelper.neutral900(context),
-      ThemeHelper.neutral400(context),
-      ThemeHelper.red200(context),
-      ThemeHelper.orange200(context),
-      ThemeHelper.green300(context),
-      ThemeHelper.blue600(context),
-      ThemeHelper.purple200(context),
       ThemeHelper.neutral100(context),
-      ThemeHelper.neutral500(context),
-      ThemeHelper.red100(context),
-      ThemeHelper.orange100(context),
-      ThemeHelper.green200(context),
+      ThemeHelper.neutral600(context),
+      ThemeHelper.red800(context),
+      ThemeHelper.orange700(context),
+      ThemeHelper.green700(context),
       ThemeHelper.blue300(context),
-      ThemeHelper.purple100(context),
+      ThemeHelper.purple500(context),
+      ThemeHelper.neutral900(context),
+      ThemeHelper.neutral500(context),
+      ThemeHelper.red900(context),
+      ThemeHelper.orange800(context),
+      ThemeHelper.green800(context),
+      ThemeHelper.blue600(context),
+      ThemeHelper.purple600(context),
     ];
 
     final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
@@ -692,11 +692,11 @@ class GridPalette extends StatelessWidget {
     return Material(
       elevation: 2,
       borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),
-      color: ThemeHelper.neutral200(context),
+      color: ThemeHelper.neutral800(context),
       child: Container(
         decoration: BoxDecoration(
           border: .all(
-            color: ThemeHelper.neutral400(context),
+            color: ThemeHelper.neutral600(context),
             width: CanvasObjectMenuState.borderWidth,
           ),
           borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),

@@ -64,7 +64,11 @@ class TouchyCanvas {
     _shapeHandler.addShape(ClipRRectShape(rrect));
   }
 
-  void clipRect(Rect rect, {ClipOp clipOp = ClipOp.intersect, bool doAntiAlias = true}) {
+  void clipRect(
+    Rect rect, {
+    ClipOp clipOp = ClipOp.intersect,
+    bool doAntiAlias = true,
+  }) {
     _canvas.clipRect(rect, clipOp: clipOp, doAntiAlias: doAntiAlias);
     _shapeHandler.addShape(ClipRectShape(rect, clipOp: clipOp));
   }
@@ -96,32 +100,34 @@ class TouchyCanvas {
   }) {
     _canvas.drawCircle(c, radius, paint);
     _shapeHandler.addShape(
-        Circle(
-            center: c,
-            radius: radius,
-            paint: paint,
-            hitTestBehavior: hitTestBehavior,
-            gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-              onTapDown: onTapDown,
-              onTapUp: onTapUp,
-              onLongPressStart: onLongPressStart,
-              onLongPressEnd: onLongPressEnd,
-              onLongPressMoveUpdate: onLongPressMoveUpdate,
-              onForcePressStart: onForcePressStart,
-              onForcePressEnd: onForcePressEnd,
-              onForcePressPeak: onForcePressPeak,
-              onForcePressUpdate: onForcePressUpdate,
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              onPanDown: onPanDown,
-              onSecondaryTapDown: onSecondaryTapDown,
-              onSecondaryTapUp: onSecondaryTapUp,
-              onHover: onHover,
-              onEnter: onEnter,
-              onExit: onExit,
-            )),
-        interactionContext);
+      Circle(
+        center: c,
+        radius: radius,
+        paint: paint,
+        hitTestBehavior: hitTestBehavior,
+        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+          onTapDown: onTapDown,
+          onTapUp: onTapUp,
+          onLongPressStart: onLongPressStart,
+          onLongPressEnd: onLongPressEnd,
+          onLongPressMoveUpdate: onLongPressMoveUpdate,
+          onForcePressStart: onForcePressStart,
+          onForcePressEnd: onForcePressEnd,
+          onForcePressPeak: onForcePressPeak,
+          onForcePressUpdate: onForcePressUpdate,
+          onPanStart: onPanStart,
+          onPanUpdate: onPanUpdate,
+          onPanEnd: onPanEnd,
+          onPanDown: onPanDown,
+          onSecondaryTapDown: onSecondaryTapDown,
+          onSecondaryTapUp: onSecondaryTapUp,
+          onHover: onHover,
+          onEnter: onEnter,
+          onExit: onExit,
+        ),
+      ),
+      interactionContext,
+    );
   }
 
   void drawLine(
@@ -152,30 +158,34 @@ class TouchyCanvas {
   }) {
     _canvas.drawLine(p1, p2, paint);
     _shapeHandler.addShape(
-        Line(p1, p2,
-            paint: paint,
-            hitTestBehavior: hitTestBehavior,
-            gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-              onTapDown: onTapDown,
-              onTapUp: onTapUp,
-              onLongPressStart: onLongPressStart,
-              onLongPressEnd: onLongPressEnd,
-              onLongPressMoveUpdate: onLongPressMoveUpdate,
-              onForcePressStart: onForcePressStart,
-              onForcePressEnd: onForcePressEnd,
-              onForcePressPeak: onForcePressPeak,
-              onForcePressUpdate: onForcePressUpdate,
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              onPanDown: onPanDown,
-              onSecondaryTapDown: onSecondaryTapDown,
-              onSecondaryTapUp: onSecondaryTapUp,
-              onHover: onHover,
-              onEnter: onEnter,
-              onExit: onExit,
-            )),
-        interactionContext);
+      Line(
+        p1,
+        p2,
+        paint: paint,
+        hitTestBehavior: hitTestBehavior,
+        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+          onTapDown: onTapDown,
+          onTapUp: onTapUp,
+          onLongPressStart: onLongPressStart,
+          onLongPressEnd: onLongPressEnd,
+          onLongPressMoveUpdate: onLongPressMoveUpdate,
+          onForcePressStart: onForcePressStart,
+          onForcePressEnd: onForcePressEnd,
+          onForcePressPeak: onForcePressPeak,
+          onForcePressUpdate: onForcePressUpdate,
+          onPanStart: onPanStart,
+          onPanUpdate: onPanUpdate,
+          onPanEnd: onPanEnd,
+          onPanDown: onPanDown,
+          onSecondaryTapDown: onSecondaryTapDown,
+          onSecondaryTapUp: onSecondaryTapUp,
+          onHover: onHover,
+          onEnter: onEnter,
+          onExit: onExit,
+        ),
+      ),
+      interactionContext,
+    );
   }
 
   void drawOval(
@@ -205,30 +215,33 @@ class TouchyCanvas {
   }) {
     _canvas.drawOval(rect, paint);
     _shapeHandler.addShape(
-        Oval(rect,
-            paint: paint,
-            hitTestBehavior: hitTestBehavior,
-            gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-              onTapDown: onTapDown,
-              onTapUp: onTapUp,
-              onLongPressStart: onLongPressStart,
-              onLongPressEnd: onLongPressEnd,
-              onLongPressMoveUpdate: onLongPressMoveUpdate,
-              onForcePressStart: onForcePressStart,
-              onForcePressEnd: onForcePressEnd,
-              onForcePressPeak: onForcePressPeak,
-              onForcePressUpdate: onForcePressUpdate,
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              onPanDown: onPanDown,
-              onSecondaryTapDown: onSecondaryTapDown,
-              onSecondaryTapUp: onSecondaryTapUp,
-              onHover: onHover,
-              onEnter: onEnter,
-              onExit: onExit,
-            )),
-        interactionContext);
+      Oval(
+        rect,
+        paint: paint,
+        hitTestBehavior: hitTestBehavior,
+        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+          onTapDown: onTapDown,
+          onTapUp: onTapUp,
+          onLongPressStart: onLongPressStart,
+          onLongPressEnd: onLongPressEnd,
+          onLongPressMoveUpdate: onLongPressMoveUpdate,
+          onForcePressStart: onForcePressStart,
+          onForcePressEnd: onForcePressEnd,
+          onForcePressPeak: onForcePressPeak,
+          onForcePressUpdate: onForcePressUpdate,
+          onPanStart: onPanStart,
+          onPanUpdate: onPanUpdate,
+          onPanEnd: onPanEnd,
+          onPanDown: onPanDown,
+          onSecondaryTapDown: onSecondaryTapDown,
+          onSecondaryTapUp: onSecondaryTapUp,
+          onHover: onHover,
+          onEnter: onEnter,
+          onExit: onExit,
+        ),
+      ),
+      interactionContext,
+    );
   }
 
   void drawParagraph(Paragraph paragraph, Offset offset) {
@@ -264,30 +277,33 @@ class TouchyCanvas {
   }) {
     _canvas.drawPath(path, paint);
     _shapeHandler.addShape(
-        PathShape(path,
-            paint: paint,
-            hitTestBehavior: hitTestBehavior,
-            gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-              onTapDown: onTapDown,
-              onTapUp: onTapUp,
-              onLongPressStart: onLongPressStart,
-              onLongPressEnd: onLongPressEnd,
-              onLongPressMoveUpdate: onLongPressMoveUpdate,
-              onForcePressStart: onForcePressStart,
-              onForcePressEnd: onForcePressEnd,
-              onForcePressPeak: onForcePressPeak,
-              onForcePressUpdate: onForcePressUpdate,
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              onPanDown: onPanDown,
-              onSecondaryTapDown: onSecondaryTapDown,
-              onSecondaryTapUp: onSecondaryTapUp,
-              onHover: onHover,
-              onEnter: onEnter,
-              onExit: onExit,
-            )),
-        interactionContext);
+      PathShape(
+        path,
+        paint: paint,
+        hitTestBehavior: hitTestBehavior,
+        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+          onTapDown: onTapDown,
+          onTapUp: onTapUp,
+          onLongPressStart: onLongPressStart,
+          onLongPressEnd: onLongPressEnd,
+          onLongPressMoveUpdate: onLongPressMoveUpdate,
+          onForcePressStart: onForcePressStart,
+          onForcePressEnd: onForcePressEnd,
+          onForcePressPeak: onForcePressPeak,
+          onForcePressUpdate: onForcePressUpdate,
+          onPanStart: onPanStart,
+          onPanUpdate: onPanUpdate,
+          onPanEnd: onPanEnd,
+          onPanDown: onPanDown,
+          onSecondaryTapDown: onSecondaryTapDown,
+          onSecondaryTapUp: onSecondaryTapUp,
+          onHover: onHover,
+          onEnter: onEnter,
+          onExit: onExit,
+        ),
+      ),
+      interactionContext,
+    );
   }
 
   void drawPoints(
@@ -316,7 +332,10 @@ class TouchyCanvas {
     PointerExitEventListener? onExit,
   }) {
     _canvas.drawPoints(pointMode, points, paint);
-    _shapeHandler.addShape(Point(pointMode, points,
+    _shapeHandler.addShape(
+      Point(
+        pointMode,
+        points,
         paint: paint,
         hitTestBehavior: hitTestBehavior,
         gestureMap: TouchCanvasUtil.getGestureCallbackMap(
@@ -338,7 +357,9 @@ class TouchyCanvas {
           onHover: onHover,
           onEnter: onEnter,
           onExit: onExit,
-        )));
+        ),
+      ),
+    );
   }
 
   void drawRRect(
@@ -368,30 +389,33 @@ class TouchyCanvas {
   }) {
     _canvas.drawRRect(rrect, paint);
     _shapeHandler.addShape(
-        RoundedRectangle(rrect,
-            paint: paint,
-            hitTestBehavior: hitTestBehavior,
-            gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-              onTapDown: onTapDown,
-              onTapUp: onTapUp,
-              onLongPressStart: onLongPressStart,
-              onLongPressEnd: onLongPressEnd,
-              onLongPressMoveUpdate: onLongPressMoveUpdate,
-              onForcePressStart: onForcePressStart,
-              onForcePressEnd: onForcePressEnd,
-              onForcePressPeak: onForcePressPeak,
-              onForcePressUpdate: onForcePressUpdate,
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              onPanDown: onPanDown,
-              onSecondaryTapDown: onSecondaryTapDown,
-              onSecondaryTapUp: onSecondaryTapUp,
-              onHover: onHover,
-              onEnter: onEnter,
-              onExit: onExit,
-            )),
-        interactionContext);
+      RoundedRectangle(
+        rrect,
+        paint: paint,
+        hitTestBehavior: hitTestBehavior,
+        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+          onTapDown: onTapDown,
+          onTapUp: onTapUp,
+          onLongPressStart: onLongPressStart,
+          onLongPressEnd: onLongPressEnd,
+          onLongPressMoveUpdate: onLongPressMoveUpdate,
+          onForcePressStart: onForcePressStart,
+          onForcePressEnd: onForcePressEnd,
+          onForcePressPeak: onForcePressPeak,
+          onForcePressUpdate: onForcePressUpdate,
+          onPanStart: onPanStart,
+          onPanUpdate: onPanUpdate,
+          onPanEnd: onPanEnd,
+          onPanDown: onPanDown,
+          onSecondaryTapDown: onSecondaryTapDown,
+          onSecondaryTapUp: onSecondaryTapUp,
+          onHover: onHover,
+          onEnter: onEnter,
+          onExit: onExit,
+        ),
+      ),
+      interactionContext,
+    );
   }
 
   void drawRawPoints(
@@ -424,7 +448,10 @@ class TouchyCanvas {
     for (int i = 0; i < points.length; i += 2) {
       offsetPoints.add(Offset(points[i], points[i + 1]));
     }
-    _shapeHandler.addShape(Point(pointMode, offsetPoints,
+    _shapeHandler.addShape(
+      Point(
+        pointMode,
+        offsetPoints,
         paint: paint,
         hitTestBehavior: hitTestBehavior,
         gestureMap: TouchCanvasUtil.getGestureCallbackMap(
@@ -446,7 +473,9 @@ class TouchyCanvas {
           onHover: onHover,
           onEnter: onEnter,
           onExit: onExit,
-        )));
+        ),
+      ),
+    );
   }
 
   void drawRect(
@@ -476,33 +505,41 @@ class TouchyCanvas {
   }) {
     _canvas.drawRect(rect, paint);
     _shapeHandler.addShape(
-        Rectangle(rect,
-            paint: paint,
-            hitTestBehavior: hitTestBehavior,
-            gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-              onTapDown: onTapDown,
-              onTapUp: onTapUp,
-              onLongPressStart: onLongPressStart,
-              onLongPressEnd: onLongPressEnd,
-              onLongPressMoveUpdate: onLongPressMoveUpdate,
-              onForcePressStart: onForcePressStart,
-              onForcePressEnd: onForcePressEnd,
-              onForcePressPeak: onForcePressPeak,
-              onForcePressUpdate: onForcePressUpdate,
-              onPanStart: onPanStart,
-              onPanUpdate: onPanUpdate,
-              onPanEnd: onPanEnd,
-              onPanDown: onPanDown,
-              onSecondaryTapDown: onSecondaryTapDown,
-              onSecondaryTapUp: onSecondaryTapUp,
-              onHover: onHover,
-              onEnter: onEnter,
-              onExit: onExit,
-            )),
-        interactionContext);
+      Rectangle(
+        rect,
+        paint: paint,
+        hitTestBehavior: hitTestBehavior,
+        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+          onTapDown: onTapDown,
+          onTapUp: onTapUp,
+          onLongPressStart: onLongPressStart,
+          onLongPressEnd: onLongPressEnd,
+          onLongPressMoveUpdate: onLongPressMoveUpdate,
+          onForcePressStart: onForcePressStart,
+          onForcePressEnd: onForcePressEnd,
+          onForcePressPeak: onForcePressPeak,
+          onForcePressUpdate: onForcePressUpdate,
+          onPanStart: onPanStart,
+          onPanUpdate: onPanUpdate,
+          onPanEnd: onPanEnd,
+          onPanDown: onPanDown,
+          onSecondaryTapDown: onSecondaryTapDown,
+          onSecondaryTapUp: onSecondaryTapUp,
+          onHover: onHover,
+          onEnter: onEnter,
+          onExit: onExit,
+        ),
+      ),
+      interactionContext,
+    );
   }
 
-  void drawShadow(Path path, Color color, double elevation, bool transparentOccluder) {
+  void drawShadow(
+    Path path,
+    Color color,
+    double elevation,
+    bool transparentOccluder,
+  ) {
     _canvas.drawShadow(path, color, elevation, transparentOccluder);
     // _shapeHandler.addShape(PathShape(path));
   }
@@ -533,7 +570,14 @@ class TouchyCanvas {
     PointerExitEventListener? onExit,
   }) {
     _canvas.drawImage(image, p, paint);
-    _shapeHandler.addShape(Rectangle(Rect.fromLTWH(p.dx, p.dy, image.width.toDouble(), image.height.toDouble()),
+    _shapeHandler.addShape(
+      Rectangle(
+        Rect.fromLTWH(
+          p.dx,
+          p.dy,
+          image.width.toDouble(),
+          image.height.toDouble(),
+        ),
         paint: paint,
         hitTestBehavior: hitTestBehavior,
         gestureMap: TouchCanvasUtil.getGestureCallbackMap(
@@ -555,7 +599,9 @@ class TouchyCanvas {
           onHover: onHover,
           onEnter: onEnter,
           onExit: onExit,
-        )));
+        ),
+      ),
+    );
   }
 
   void drawArc(
@@ -586,91 +632,96 @@ class TouchyCanvas {
     PointerExitEventListener? onExit,
   }) {
     _canvas.drawArc(rect, startAngle, sweepAngle, useCenter, paint);
-    var arc = Arc(rect, startAngle, sweepAngle, useCenter,
-        paint: paint,
-        hitTestBehavior: hitTestBehavior,
-        gestureMap: TouchCanvasUtil.getGestureCallbackMap(
-          onTapDown: onTapDown,
-          onTapUp: onTapUp,
-          onLongPressStart: onLongPressStart,
-          onLongPressEnd: onLongPressEnd,
-          onLongPressMoveUpdate: onLongPressMoveUpdate,
-          onForcePressStart: onForcePressStart,
-          onForcePressEnd: onForcePressEnd,
-          onForcePressPeak: onForcePressPeak,
-          onForcePressUpdate: onForcePressUpdate,
-          onPanStart: onPanStart,
-          onPanUpdate: onPanUpdate,
-          onPanEnd: onPanEnd,
-          onPanDown: onPanDown,
-          onSecondaryTapDown: onSecondaryTapDown,
-          onSecondaryTapUp: onSecondaryTapUp,
-          onHover: onHover,
-          onEnter: onEnter,
-          onExit: onExit,
-        ));
+    var arc = Arc(
+      rect,
+      startAngle,
+      sweepAngle,
+      useCenter,
+      paint: paint,
+      hitTestBehavior: hitTestBehavior,
+      gestureMap: TouchCanvasUtil.getGestureCallbackMap(
+        onTapDown: onTapDown,
+        onTapUp: onTapUp,
+        onLongPressStart: onLongPressStart,
+        onLongPressEnd: onLongPressEnd,
+        onLongPressMoveUpdate: onLongPressMoveUpdate,
+        onForcePressStart: onForcePressStart,
+        onForcePressEnd: onForcePressEnd,
+        onForcePressPeak: onForcePressPeak,
+        onForcePressUpdate: onForcePressUpdate,
+        onPanStart: onPanStart,
+        onPanUpdate: onPanUpdate,
+        onPanEnd: onPanEnd,
+        onPanDown: onPanDown,
+        onSecondaryTapDown: onSecondaryTapDown,
+        onSecondaryTapUp: onSecondaryTapUp,
+        onHover: onHover,
+        onEnter: onEnter,
+        onExit: onExit,
+      ),
+    );
     _shapeHandler.addShape(arc);
   }
 
-//
-//  void drawDRRect(RRect outer, RRect inner, Paint paint) {
-//    _canvas.drawDRRect(outer, inner, paint);
-//    // TODO: implement drawDRRect in SHapeHandler
-//  }
-//
-//
-//  void drawRawAtlas(Image atlas, Float32List rstTransforms, Float32List rects,
-//      Int32List colors, BlendMode blendMode, Rect cullRect, Paint paint) {
-//    // TODO: implement drawRatAtlas
-//    _canvas.drawRawAtlas(atlas, rstTransforms, rects, colors, blendMode, cullRect, paint);
-//  }
-//
-//  void drawImageNine(Image image, Rect center, Rect dst, Paint paint){
-//    // TODO: implement drawImageNine
-//    _canvas.drawImageNine(image, center, dst, paint);
-//  }
-//
-//  void drawImageRect(Image image, Rect src, Rect dst, Paint paint){
-//    // TODO: implement drawImageRect
-//    _canvas.drawImageRect(image, src, dst, paint);
-//  }
-//
-//  void drawVertices(Vertices vertices, BlendMode blendMode, Paint paint) {
-//    _canvas.drawVertices(vertices, blendMode, paint);
-// TODO: implement drawVertices
-//  }
+  //
+  //  void drawDRRect(RRect outer, RRect inner, Paint paint) {
+  //    _canvas.drawDRRect(outer, inner, paint);
+  //    // TODO: implement drawDRRect in SHapeHandler
+  //  }
+  //
+  //
+  //  void drawRawAtlas(Image atlas, Float32List rstTransforms, Float32List rects,
+  //      Int32List colors, BlendMode blendMode, Rect cullRect, Paint paint) {
+  //    // TODO: implement drawRatAtlas
+  //    _canvas.drawRawAtlas(atlas, rstTransforms, rects, colors, blendMode, cullRect, paint);
+  //  }
+  //
+  //  void drawImageNine(Image image, Rect center, Rect dst, Paint paint){
+  //    // TODO: implement drawImageNine
+  //    _canvas.drawImageNine(image, center, dst, paint);
+  //  }
+  //
+  //  void drawImageRect(Image image, Rect src, Rect dst, Paint paint){
+  //    // TODO: implement drawImageRect
+  //    _canvas.drawImageRect(image, src, dst, paint);
+  //  }
+  //
+  //  void drawVertices(Vertices vertices, BlendMode blendMode, Paint paint) {
+  //    _canvas.drawVertices(vertices, blendMode, paint);
+  // TODO: implement drawVertices
+  //  }
 
-//
-//  void rotate(double radians) {
-//    // TODO: implement rotate
-//  }
+  //
+  //  void rotate(double radians) {
+  //    // TODO: implement rotate
+  //  }
 
-//
-//  void scale(double sx, [double sy]) {
-//    // TODO: implement scale
-//  }
+  //
+  //  void scale(double sx, [double sy]) {
+  //    // TODO: implement scale
+  //  }
 
-//
-//  void skew(double sx, double sy) {
-//    // TODO: implement skew
-//  }
+  //
+  //  void skew(double sx, double sy) {
+  //    // TODO: implement skew
+  //  }
 
-//
-//  void transform(Float64List matrix4) {
-//    // TODO: implement transform
-//  }
+  //
+  //  void transform(Float64List matrix4) {
+  //    // TODO: implement transform
+  //  }
 
-//
-//  void translate(double dx, double dy) {
-//   _canvas.translate(dx, dy);
-//    // TODO: implement translate
-//  }
+  //
+  //  void translate(double dx, double dy) {
+  //   _canvas.translate(dx, dy);
+  //    // TODO: implement translate
+  //  }
 
-//
-//  void drawAtlas(Image atlas, List<RSTransform> transforms, List<Rect> rects,
-//      List<Color> colors, BlendMode blendMode, Rect cullRect, Paint paint) {
-//    // TODO: implement drawAtlas
-//  }
-//    _canvas.drawAtlas(atlas, transforms, rects, colors, blendMode, cullRect, paint);
-//  }
+  //
+  //  void drawAtlas(Image atlas, List<RSTransform> transforms, List<Rect> rects,
+  //      List<Color> colors, BlendMode blendMode, Rect cullRect, Paint paint) {
+  //    // TODO: implement drawAtlas
+  //  }
+  //    _canvas.drawAtlas(atlas, transforms, rects, colors, blendMode, cullRect, paint);
+  //  }
 }

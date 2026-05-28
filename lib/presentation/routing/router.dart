@@ -16,8 +16,11 @@ class _RouterNotifier extends ChangeNotifier {
     final initialAuth = ref.read(authProvider);
     isAuth = initialAuth.value != null;
     isAuthLoading = initialAuth is AsyncLoading;
-    accessibleVaultIds =
-        ref.read(vaultsProvider).value?.map((p) => p.id).toList();
+    accessibleVaultIds = ref
+        .read(vaultsProvider)
+        .value
+        ?.map((p) => p.id)
+        .toList();
 
     ref.listen<AsyncValue<Session?>>(authProvider, (_, next) {
       isAuth = next.value != null;
@@ -54,7 +57,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           initialLandingMode: LandingMode.invite,
           inviteToken: state.uri.queryParameters['token'],
           inviteDestPath: Uri.decodeComponent(
-              state.uri.queryParameters['dest'] ?? Routes.home),
+            state.uri.queryParameters['dest'] ?? Routes.home,
+          ),
         ),
       ),
       // TODO: maybe think of a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
@@ -100,7 +104,8 @@ final routerProvider = Provider<GoRouter>((ref) {
         if (state.uri.queryParameters.containsKey('token')) return null;
         if (isAuth) {
           return Uri.decodeComponent(
-              state.uri.queryParameters['dest'] ?? Routes.home);
+            state.uri.queryParameters['dest'] ?? Routes.home,
+          );
         }
         return null;
       }

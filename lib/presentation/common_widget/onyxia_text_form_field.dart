@@ -47,7 +47,7 @@ class OnyxiaTextFormField extends StatelessWidget {
       validator: validator,
       style: TextStyle(
         fontSize: fontSize,
-        color: ThemeHelper.neutral900(context),
+        color: ThemeHelper.neutral100(context),
       ),
       decoration: InputDecoration(
         hintText: hintText,
@@ -56,17 +56,17 @@ class OnyxiaTextFormField extends StatelessWidget {
           color: ThemeHelper.neutral500(context).withValues(alpha: 0.7),
         ),
         counter: const SizedBox(),
-        fillColor: ThemeHelper.neutral100(context),
+        fillColor: ThemeHelper.neutral900(context),
         filled: true,
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: ThemeHelper.neutral400(context),
+            color: ThemeHelper.neutral600(context),
             width: 1,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: BorderSide(
-            color: ThemeHelper.neutral600(context),
+            color: ThemeHelper.neutral400(context),
             width: 1,
           ),
         ),

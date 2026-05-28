@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'interaction_service.dart';
 
@@ -63,8 +63,9 @@ class CanvasLoaderService {
     if (!context.mounted) return;
 
     final selected = ref.read(selectedArtifactProvider);
-    final CanvasArtifact? currentCanvas =
-        selected is CanvasArtifact ? selected : null;
+    final CanvasArtifact? currentCanvas = selected is CanvasArtifact
+        ? selected
+        : null;
 
     final vaultId = ref.read(selectedVaultProvider)?.id;
     if (vaultId == null) return;

@@ -18,7 +18,7 @@ class ConstellationNodePainter extends NarwhalPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final bgColor = ThemeHelper.neutral100(context);
+    final bgColor = ThemeHelper.neutral900(context);
     final anyHover = hoverNodeId != null;
     final paint = Paint();
 
@@ -29,10 +29,16 @@ class ConstellationNodePainter extends NarwhalPainter {
       final isHovered = entry.key == hoverNodeId;
       final r = (radii[entry.key] ?? 7.0) * (isHovered ? 1.075 : 1.0);
       final opacity = (anyHover && !isHovered) ? 0.5 : 0.9;
-      final color = isHovered ? ThemeHelper.accentColor() : ThemeHelper.neutral500(context);
+      final color = isHovered
+          ? ThemeHelper.accentColor()
+          : ThemeHelper.neutral400(context);
 
       canvas.drawCircle(entry.value, r, paint..color = bgColor);
-      canvas.drawCircle(entry.value, r, paint..color = color.withValues(alpha: opacity));
+      canvas.drawCircle(
+        entry.value,
+        r,
+        paint..color = color.withValues(alpha: opacity),
+      );
     }
   }
 

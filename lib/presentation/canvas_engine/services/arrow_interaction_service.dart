@@ -45,7 +45,7 @@ class ArrowInteractionService {
 
     if (endObject == null) return;
 
-    arrowPreview.arrow.color = ThemeHelper.neutral600(context);
+    arrowPreview.arrow.color = ThemeHelper.neutral400(context);
     arrowPreview.arrow.stroke = StrokeType.solid;
     arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
     arrowPreview.arrow.arrowProps.endTip = ArrowTip.triangle;

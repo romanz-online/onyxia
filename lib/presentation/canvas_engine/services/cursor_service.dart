@@ -12,7 +12,8 @@ class CanvasCursorService {
   MouseCursor get currentSystemCursor => _currentSystemCursor;
 
   void updateCursors(ToolMode toolMode, bool isPressed, MouseCursor? override) {
-    _currentSystemCursor = override ?? _systemCursorForTool(toolMode, isPressed);
+    _currentSystemCursor =
+        override ?? _systemCursorForTool(toolMode, isPressed);
   }
 
   MouseCursor _systemCursorForTool(ToolMode toolMode, bool isPressed) {
@@ -20,7 +21,9 @@ class CanvasCursorService {
       case ToolMode.pointer:
         return SystemMouseCursors.basic;
       case ToolMode.pan:
-        return isPressed ? SystemMouseCursors.grabbing : SystemMouseCursors.grab;
+        return isPressed
+            ? SystemMouseCursors.grabbing
+            : SystemMouseCursors.grab;
       default:
         return SystemMouseCursors.cell;
     }

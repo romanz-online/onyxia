@@ -1,4 +1,3 @@
- 
 import 'package:flutter/material.dart';
 import 'package:super_tree/src/models/tree_node.dart';
 
@@ -26,7 +25,10 @@ Widget Function(BuildContext, TreeNode<T>) prefixBuilderFromIconProvider<T>({
 
     return Row(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[SizedBox(width: leadingSpacing), icon],
+      children: <Widget>[
+        SizedBox(width: leadingSpacing),
+        icon,
+      ],
     );
   };
 }

@@ -22,7 +22,7 @@ class TreeHighlightedLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextStyle themeBaseStyle =
-      Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
+        Theme.of(context).textTheme.bodyMedium ?? const TextStyle();
     final TextStyle baseStyle = themeBaseStyle.merge(style);
     final TextStyle computedHighlightStyle =
         highlightStyle ??
@@ -61,7 +61,9 @@ class TreeHighlightedLabel extends StatelessWidget {
     required TextStyle highlight,
   }) {
     final List<int> sorted = matchedIndices.toList()..sort();
-    final Set<int> validMatchSet = sorted.where((int index) => index >= 0 && index < text.length).toSet();
+    final Set<int> validMatchSet = sorted
+        .where((int index) => index >= 0 && index < text.length)
+        .toSet();
 
     if (validMatchSet.isEmpty) {
       return <InlineSpan>[TextSpan(text: text, style: baseStyle)];
@@ -84,7 +86,9 @@ class TreeHighlightedLabel extends StatelessWidget {
         inHighlight = true;
       } else {
         if (inHighlight && highlightBuffer.isNotEmpty) {
-          spans.add(TextSpan(text: highlightBuffer.toString(), style: highlight));
+          spans.add(
+            TextSpan(text: highlightBuffer.toString(), style: highlight),
+          );
           highlightBuffer.clear();
         }
         normalBuffer.write(text[i]);

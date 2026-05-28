@@ -134,7 +134,7 @@ class CanvasPainter extends NarwhalPainter {
     for (final object in selectedObjects) {
       if (object.isBrush) {
         final highlightPaint = Paint()
-          ..color = ThemeHelper.blue500(context)
+          ..color = ThemeHelper.blue400(context)
           ..style = .stroke
           ..strokeWidth = 1.5;
 
@@ -298,7 +298,7 @@ class CanvasPainter extends NarwhalPainter {
     final edgeHandleThickness = 16.0 / scale;
     final edgeWidth = 1.5 / scale;
 
-    final selectionColor = ThemeHelper.blue500(context);
+    final selectionColor = ThemeHelper.blue400(context);
 
     final edgeHandles = [
       ResizeHandle.topCenter,
@@ -388,8 +388,8 @@ class CanvasPainter extends NarwhalPainter {
     final borderRadius = 3.0 / scale;
     final borderWidth = 2.5 / scale;
 
-    final selectionColor = ThemeHelper.blue500(context);
-    final backgroundColor = ThemeHelper.neutral100(context);
+    final selectionColor = ThemeHelper.blue400(context);
+    final backgroundColor = ThemeHelper.neutral900(context);
 
     final cornerHandles = [
       ResizeHandle.topLeft,
@@ -466,7 +466,7 @@ class CanvasPainter extends NarwhalPainter {
 
     final points = object.arrowProps.points;
     final scale = ref.read(canvasViewportProvider).value.getMaxScaleOnAxis();
-    final selectionColor = ThemeHelper.blue500(context);
+    final selectionColor = ThemeHelper.blue400(context);
 
     // Calculate hit rectangles for each arrow segment (copied from CanvasArrowInteractive._getArrowSegmentHitRects)
     for (int i = 0; i < points.length - 1; i++) {

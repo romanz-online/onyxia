@@ -24,8 +24,9 @@ class ArtifactSnapshotsRepository
   String getIdFromItem(ArtifactSnapshot item) => item.artifactId;
 
   @override
-  Map<String, dynamic> keyFilter(ArtifactSnapshot item) =>
-      {'artifact_id': item.artifactId};
+  Map<String, dynamic> keyFilter(ArtifactSnapshot item) => {
+    'artifact_id': item.artifactId,
+  };
 
   /// Returns the latest snapshot for [artifactId], or null if none exists.
   Future<ArtifactSnapshot?> latestFor(String artifactId) async {
@@ -47,9 +48,9 @@ class ArtifactSnapshotsRepository
     if (vaultId == null || vaultId!.isEmpty) {
       throw ArgumentError('Invalid vaultId: $vaultId');
     }
-    await Supabase.instance.client.from(tableName).upsert(
-      {...snap.toMap(), 'vault_id': vaultId},
-      onConflict: 'artifact_id',
-    );
+    await Supabase.instance.client.from(tableName).upsert({
+      ...snap.toMap(),
+      'vault_id': vaultId,
+    }, onConflict: 'artifact_id');
   }
 }

@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -20,35 +20,34 @@ class PanToolBehavior extends CanvasToolGestureHandler {
 
   @override
   void Function(
-          TapDownDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onSecondaryTapDown => (
-            details,
-            ref,
-            buildContext,
-            interactionContext,
-          ) {
-            switch (interactionContext) {
-              case ObjectFillInteractionContext(:final targetObject):
-                canvasRightClick(
-                  buildContext,
-                  canvasConfig.allowArtifactsOnBackground, // isMarkup
-                  details.globalPosition,
-                  details.localPosition,
-                  ref,
-                  clickedObj: targetObject,
-                );
-                break;
-              case BackgroundInteraction():
-                canvasRightClick(
-                  buildContext,
-                  canvasConfig.allowArtifactsOnBackground, // isMarkup
-                  details.globalPosition,
-                  details.localPosition,
-                  ref,
-                  clickedObj: null,
-                );
-              case _:
-                break;
-            }
-          };
+    TapDownDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onSecondaryTapDown => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ObjectFillInteractionContext(:final targetObject):
+        canvasRightClick(
+          buildContext,
+          canvasConfig.allowArtifactsOnBackground, // isMarkup
+          details.globalPosition,
+          details.localPosition,
+          ref,
+          clickedObj: targetObject,
+        );
+        break;
+      case BackgroundInteraction():
+        canvasRightClick(
+          buildContext,
+          canvasConfig.allowArtifactsOnBackground, // isMarkup
+          details.globalPosition,
+          details.localPosition,
+          ref,
+          clickedObj: null,
+        );
+      case _:
+        break;
+    }
+  };
 }

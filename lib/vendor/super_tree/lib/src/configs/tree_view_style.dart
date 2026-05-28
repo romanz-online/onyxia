@@ -62,7 +62,8 @@ class TreeViewStyle {
       idleColor: idleColor ?? this.idleColor,
       hoverColor: hoverColor ?? this.hoverColor,
       selectedColor: selectedColor ?? this.selectedColor,
-      expandAnimationDuration: expandAnimationDuration ?? this.expandAnimationDuration,
+      expandAnimationDuration:
+          expandAnimationDuration ?? this.expandAnimationDuration,
       labelStyle: labelStyle ?? this.labelStyle,
       dragAndDrop: dragAndDrop ?? this.dragAndDrop,
     );

@@ -90,7 +90,7 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
               isArrowToolActive: toolMode == ToolMode.arrow,
               isGesturing:
                   ref.watch(canvasGestureStateProvider).interactionContext !=
-                      null,
+                  null,
             ),
           );
         }
@@ -119,7 +119,10 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
 
   /// Builds large hover detector for connection point circles (gridSpacing * 3)
   Widget? _buildLargeHoverDetector(
-      CanvasObject canvasObject, WidgetRef ref, ToolMode toolMode) {
+    CanvasObject canvasObject,
+    WidgetRef ref,
+    ToolMode toolMode,
+  ) {
     // Original logic for showing connection point circles
     if (![
       CanvasObjectType.rectangle,
@@ -224,8 +227,10 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
     final margin = CanvasBounds.gridSpacing;
 
     // Check if cursor is within range
-    final isInRange =
-        canvasObject.isPointInObject(cursorPosition, margin: margin);
+    final isInRange = canvasObject.isPointInObject(
+      cursorPosition,
+      margin: margin,
+    );
     final currentPrimed = ref.read(arrowToolPrimedObjectsProvider);
     final isCurrentlyPrimed = currentPrimed?.object.id == canvasObject.id;
 
@@ -247,7 +252,10 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
 
   /// Updates the arrow tool primed object, finding the closest object if multiple are in range
   void _updateArrowToolPrimedObject(
-      CanvasObject canvasObject, Offset cursorPosition, WidgetRef ref) {
+    CanvasObject canvasObject,
+    Offset cursorPosition,
+    WidgetRef ref,
+  ) {
     final currentPrimed = ref.read(arrowToolPrimedObjectsProvider);
 
     // If no object is currently primed, or this object is closer, set it as primed

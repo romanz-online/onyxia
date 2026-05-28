@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:onyxia/presentation/canvas_engine/widgets/canvas_pin.dart';
 import 'package:super_clipboard/super_clipboard.dart';
@@ -182,7 +182,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final viewportController = ref.watch(canvasViewportProvider);
 
     return Container(
-      color: ThemeHelper.neutral200(context),
+      color: ThemeHelper.neutral800(context),
       child: Listener(
         onPointerDown: (_) =>
             ref.read(canvasMousePressedProvider.notifier).set(true),
@@ -424,9 +424,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: ThemeHelper.neutral200(context),
+            color: ThemeHelper.neutral800(context),
             borderRadius: .circular(8),
-            border: .all(color: ThemeHelper.neutral400(context), width: 1.5),
+            border: .all(color: ThemeHelper.neutral600(context), width: 1.5),
           ),
         ),
       ),
@@ -546,12 +546,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
             if (!isDragHovering) return const SizedBox.expand();
 
             return Container(
-              color: ThemeHelper.blue400(context).withValues(alpha: 0.5),
+              color: ThemeHelper.blue500(context).withValues(alpha: 0.5),
               padding: .all(16),
               child: DottedBorder(
                 borderType: .RRect,
                 radius: .circular(8),
-                color: ThemeHelper.white(context).withValues(alpha: 0.7),
+                color: ThemeHelper.black(context).withValues(alpha: 0.7),
                 strokeWidth: 4,
                 dashPattern: const [8, 4],
                 child: Container(

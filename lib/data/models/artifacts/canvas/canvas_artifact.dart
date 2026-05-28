@@ -1,11 +1,7 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:convert';
 
-enum CanvasType with NarwhalEnum {
-  whiteboard,
-  markup,
-  flow,
-}
+enum CanvasType with NarwhalEnum { whiteboard, markup, flow }
 
 class CanvasArtifact extends Artifact {
   final CanvasType canvasType;
@@ -27,11 +23,12 @@ class CanvasArtifact extends Artifact {
   });
 
   CanvasArtifact.fromMap(super.map)
-      : canvasType = CanvasType.values.fromString(
-            (map['body'] as Map<String, dynamic>?)?['canvas_type'] ?? ''),
-        imageUrl =
-            (map['body'] as Map<String, dynamic>?)?['image_url'] as String?,
-        super.fromMap();
+    : canvasType = CanvasType.values.fromString(
+        (map['body'] as Map<String, dynamic>?)?['canvas_type'] ?? '',
+      ),
+      imageUrl =
+          (map['body'] as Map<String, dynamic>?)?['image_url'] as String?,
+      super.fromMap();
 
   @override
   Map<String, dynamic> toMapSub() {

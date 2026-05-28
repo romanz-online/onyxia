@@ -17,8 +17,11 @@ class GlobalErrorHandler {
     };
   }
 
-  static void report(Object error, StackTrace? stack,
-      {required String source}) {
+  static void report(
+    Object error,
+    StackTrace? stack, {
+    required String source,
+  }) {
     final message = _format(error);
     final signature = '$source|$message';
     final now = DateTime.now();

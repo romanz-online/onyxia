@@ -44,6 +44,16 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     );
     _vaultId = ref.watch(selectedVaultProvider.select((p) => p?.id));
 
+    // Propagate rename-driven name changes (same id, new name) into NoteState
+    // without re-running build() — preserves BardController + realtime ops sub.
+    ref.listen<Artifact?>(selectedArtifactProvider, (_, next) {
+      if (next is! NoteArtifact) return;
+      final current = state.value;
+      if (current?.note == null) return;
+      if (current!.note!.name == next.name) return;
+      state = AsyncData(current.copyWith(note: next));
+    });
+
     ref.onDispose(() {
       final controller = _controller;
       _controller = null;
@@ -127,5 +137,5 @@ typedef NoteStateProvider = AsyncNotifierProvider<NoteNotifier, NoteState>;
 /// Creates a NoteNotifier for the currently selected Note item.
 final selectedNoteStateProvider =
     AsyncNotifierProvider.autoDispose<NoteNotifier, NoteState>(
-  NoteNotifier.new,
-);
+      NoteNotifier.new,
+    );

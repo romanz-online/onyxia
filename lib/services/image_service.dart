@@ -21,15 +21,15 @@ class ImageService {
     required String vaultId,
   }) async {
     if (bytes.length > _maxImageBytes) {
-      throw ArgumentError(
-        'Image too large (${bytes.length} bytes, max 10MB)',
-      );
+      throw ArgumentError('Image too large (${bytes.length} bytes, max 10MB)');
     }
     final mime = _mimeFromFileName(fileName);
     final id = const Uuid().v4();
     final storagePath = 'vaults/$vaultId/images/${id}_$fileName';
 
-    await Supabase.instance.client.storage.from(_bucket).uploadBinary(
+    await Supabase.instance.client.storage
+        .from(_bucket)
+        .uploadBinary(
           storagePath,
           bytes,
           fileOptions: FileOptions(contentType: mime, upsert: false),

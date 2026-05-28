@@ -7,11 +7,12 @@ typedef TreeNodeFilter<T> = bool Function(TreeNode<T> node);
 typedef TreeSearchLabelProvider<T> = String Function(T data);
 
 /// Query matcher that can use node metadata and label text.
-typedef TreeNodeQueryMatcher<T> = TreeFuzzyMatchResult? Function(
-  String query,
-  TreeNode<T> node,
-  String candidate,
-);
+typedef TreeNodeQueryMatcher<T> =
+    TreeFuzzyMatchResult? Function(
+      String query,
+      TreeNode<T> node,
+      String candidate,
+    );
 
 /// Match metadata used to drive fuzzy-search highlighting.
 class TreeFuzzyMatchResult {
@@ -25,21 +26,26 @@ class TreeFuzzyMatchResult {
 }
 
 /// Signature for custom fuzzy match algorithms.
-typedef TreeFuzzyMatcher = TreeFuzzyMatchResult? Function(String query, String candidate);
+typedef TreeFuzzyMatcher =
+    TreeFuzzyMatchResult? Function(String query, String candidate);
 
 /// Extra query matcher hook used by [FuzzyTreeFilter] before the default matcher.
-typedef TreeFilterCustomMatcher<T> = TreeFuzzyMatchResult? Function(
-  String normalizedQuery,
-  TreeNode<T> node,
-  String candidate,
-);
+typedef TreeFilterCustomMatcher<T> =
+    TreeFuzzyMatchResult? Function(
+      String normalizedQuery,
+      TreeNode<T> node,
+      String candidate,
+    );
 
 /// Maps specific query keywords to a node predicate result.
 class TreeFilterKeywordRule<T> {
   const TreeFilterKeywordRule({
     required this.keywords,
     required this.predicate,
-    this.matchResult = const TreeFuzzyMatchResult(score: 0, matchedIndices: <int>[]),
+    this.matchResult = const TreeFuzzyMatchResult(
+      score: 0,
+      matchedIndices: <int>[],
+    ),
   });
 
   /// Keywords expected in lowercase trimmed format.
@@ -115,12 +121,9 @@ class FuzzyTreeFilter<T> {
   }
 
   /// Adapter for plugging this filter directly into `TreeSearchController.searchMatcher`.
-  TreeFuzzyMatchResult? Function(String, TreeNode<T>, String) asSearchMatcher() {
-    return (
-      String query,
-      TreeNode<T> node,
-      String candidate,
-    ) {
+  TreeFuzzyMatchResult? Function(String, TreeNode<T>, String)
+  asSearchMatcher() {
+    return (String query, TreeNode<T> node, String candidate) {
       return match(query, node, candidate);
     };
   }
@@ -129,11 +132,7 @@ class FuzzyTreeFilter<T> {
   static TreeFilterCustomMatcher<T> extensionSuffixMatcher<T>({
     bool Function(TreeNode<T> node)? nodePredicate,
   }) {
-    return (
-      String normalizedQuery,
-      TreeNode<T> node,
-      String candidate,
-    ) {
+    return (String normalizedQuery, TreeNode<T> node, String candidate) {
       if (!normalizedQuery.startsWith('.')) {
         return null;
       }
@@ -181,7 +180,11 @@ TreeFuzzyMatchResult? defaultTreeFuzzyMatcher(String query, String candidate) {
   int lastMatchIndex = -1;
   final List<int> matches = <int>[];
 
-  for (int i = 0; i < lowerCandidate.length && queryIndex < lowerQuery.length; i++) {
+  for (
+    int i = 0;
+    i < lowerCandidate.length && queryIndex < lowerQuery.length;
+    i++
+  ) {
     if (lowerCandidate[i] == lowerQuery[queryIndex]) {
       matches.add(i);
       if (lastMatchIndex >= 0) {

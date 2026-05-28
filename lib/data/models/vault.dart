@@ -31,13 +31,13 @@ class Vault {
   Map<String, dynamic> toMap() => {'id': id, 'name': name};
 
   Vault.fromMap(Map<String, dynamic> map)
-      : id = map['id'] ?? '',
-        name = map['name'] ?? '',
-        //
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'] ?? '',
-        updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';
+    : id = map['id'] ?? '',
+      name = map['name'] ?? '',
+      //
+      createdAt = TimestampService.fromMap(map['created_at']),
+      createdBy = map['created_by'] ?? '',
+      updatedAt = TimestampService.fromMap(map['updated_at']),
+      updatedBy = map['updated_by'] ?? '';
 
   @override
   String toString() {

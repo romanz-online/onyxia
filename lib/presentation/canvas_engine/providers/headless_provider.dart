@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import 'objects_provider.dart';
 import 'bounds_provider.dart';
@@ -132,10 +132,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     }
 
     // Create default-sized shape
-    final Offset topLeft = ghostPosition.translate(
-      spacing * -5,
-      spacing * -5,
-    );
+    final Offset topLeft = ghostPosition.translate(spacing * -5, spacing * -5);
     final Offset bottomRight = ghostPosition.translate(
       spacing * 5,
       spacing * 5,
@@ -185,10 +182,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     }
 
     // Create item object with larger default size than shapes
-    final Offset topLeft = ghostPosition.translate(
-      spacing * -6,
-      spacing * -4,
-    );
+    final Offset topLeft = ghostPosition.translate(spacing * -6, spacing * -4);
     final Offset bottomRight = ghostPosition.translate(
       spacing * 6,
       spacing * 4,
@@ -211,8 +205,9 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
 
     // Find the source object from the objects provider
     final objects = ref.read(canvasObjectsProvider).objects;
-    final sourceObject =
-        objects.firstWhereOrNull((obj) => obj.id == startObjectId);
+    final sourceObject = objects.firstWhereOrNull(
+      (obj) => obj.id == startObjectId,
+    );
 
     if (sourceObject != null &&
         sourceObject.type == CanvasObjectType.artifact) {
@@ -226,8 +221,9 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     final notes = this.ref.read(artifactsProvider).value ?? const <Artifact>[];
 
     // Filter notes where parentId matches the source item
-    final children =
-        notes.where((req) => req.parentFolderId == parentArtifactId).toList();
+    final children = notes
+        .where((req) => req.parentFolderId == parentArtifactId)
+        .toList();
 
     return children.isNotEmpty ? children : null;
   }
@@ -235,5 +231,5 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
 
 final headlessProvider =
     NotifierProvider.autoDispose<HeadlessArrowNotifier, HeadlessState>(
-  HeadlessArrowNotifier.new,
-);
+      HeadlessArrowNotifier.new,
+    );

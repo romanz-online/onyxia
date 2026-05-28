@@ -24,16 +24,26 @@ class SuperTreeNodeWidget<T> extends StatefulWidget {
 
   final Widget Function(BuildContext, TreeNode<T>) prefixBuilder;
   final TreeLabelProvider<T>? labelProvider;
-  final Widget Function(BuildContext context, TreeNode<T> node, Widget? renameField) contentBuilder;
+  final Widget Function(
+    BuildContext context,
+    TreeNode<T> node,
+    Widget? renameField,
+  )
+  contentBuilder;
   final Widget Function(BuildContext, TreeNode<T>)? trailingBuilder;
 
   /// Signature for generating right-click (desktop) or long-press (mobile) context menus.
-  final List<ContextMenuItem> Function(BuildContext, TreeNode<T>)? contextMenuBuilder;
+  final List<ContextMenuItem> Function(BuildContext, TreeNode<T>)?
+  contextMenuBuilder;
 
   /// Optional delegated open-menu callback. When non-null, takes precedence
   /// over [contextMenuBuilder] / built-in [ContextMenuOverlay] — the caller
   /// owns the menu surface entirely.
-  final void Function(BuildContext context, Offset globalPosition, TreeNode<T> node)?
+  final void Function(
+    BuildContext context,
+    Offset globalPosition,
+    TreeNode<T> node,
+  )?
   onContextMenuRequested;
 
   const SuperTreeNodeWidget({
@@ -57,7 +67,8 @@ class SuperTreeNodeWidget<T> extends StatefulWidget {
   State<SuperTreeNodeWidget<T>> createState() => _SuperTreeNodeWidgetState<T>();
 }
 
-class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with SingleTickerProviderStateMixin {
+class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
+    with SingleTickerProviderStateMixin {
   static const double _defaultCaretSize = 20;
   static const double _defaultLoadingSize = 14;
   static const double _defaultLoadingStrokeWidth = 2;
@@ -85,10 +96,9 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
       vsync: this,
       value: _isExpanded ? 1.0 : 0.0,
     );
-    _caretRotation = Tween<double>(
-      begin: 0.0,
-      end: 0.25,
-    ).animate(CurvedAnimation(parent: _expansionController, curve: Curves.easeInOut));
+    _caretRotation = Tween<double>(begin: 0.0, end: 0.25).animate(
+      CurvedAnimation(parent: _expansionController, curve: Curves.easeInOut),
+    );
 
     if (_prevRenamingNodeId == widget.node.id) {
       _initializeRenameText();
@@ -100,7 +110,8 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
     super.didUpdateWidget(oldWidget);
     final currentRenamingId = widget.controller.renamingNodeId;
 
-    if (currentRenamingId == widget.node.id && _prevRenamingNodeId != widget.node.id) {
+    if (currentRenamingId == widget.node.id &&
+        _prevRenamingNodeId != widget.node.id) {
       _initializeRenameText();
     }
 
@@ -133,7 +144,10 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
     // Select all text in the next frame to ensure it's effective
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted && widget.controller.renamingNodeId == widget.node.id) {
-        _renameController.selection = TextSelection(baseOffset: 0, extentOffset: _renameController.text.length);
+        _renameController.selection = TextSelection(
+          baseOffset: 0,
+          extentOffset: _renameController.text.length,
+        );
         _renameFocusNode.requestFocus();
       }
     });
@@ -154,8 +168,11 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
     } else if (widget.logic.expansionTrigger == ExpansionTrigger.tap) {
       widget.controller.toggleNodeExpansion(widget.node);
     }
-    final bool isMultiSelect = widget.logic.selectionMode == SelectionMode.multiple;
-    final bool isControlPressed = HardwareKeyboard.instance.isControlPressed || HardwareKeyboard.instance.isMetaPressed;
+    final bool isMultiSelect =
+        widget.logic.selectionMode == SelectionMode.multiple;
+    final bool isControlPressed =
+        HardwareKeyboard.instance.isControlPressed ||
+        HardwareKeyboard.instance.isMetaPressed;
     final bool isShiftPressed = HardwareKeyboard.instance.isShiftPressed;
 
     if (isMultiSelect && isShiftPressed) {
@@ -205,7 +222,11 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
   }
 
   Widget _buildDefaultExpansionIcon() {
-    return const Icon(Icons.keyboard_arrow_right, color: Colors.grey, size: _defaultCaretSize);
+    return const Icon(
+      Icons.keyboard_arrow_right,
+      color: Colors.grey,
+      size: _defaultCaretSize,
+    );
   }
 
   Widget _buildDefaultLoadingExpansionIcon() {
@@ -217,12 +238,17 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
   }
 
   Widget _buildExpansionIcon(BuildContext context) {
-    final TreeNodeAsyncState asyncState = widget.controller.getNodeAsyncState(widget.node.id);
+    final TreeNodeAsyncState asyncState = widget.controller.getNodeAsyncState(
+      widget.node.id,
+    );
     if (asyncState.isLoading) {
-      return widget.loadingExpansionBuilder?.call(context, widget.node) ?? _buildDefaultLoadingExpansionIcon();
+      return widget.loadingExpansionBuilder?.call(context, widget.node) ??
+          _buildDefaultLoadingExpansionIcon();
     }
 
-    final Widget icon = widget.expansionBuilder?.call(context, widget.node) ?? _buildDefaultExpansionIcon();
+    final Widget icon =
+        widget.expansionBuilder?.call(context, widget.node) ??
+        _buildDefaultExpansionIcon();
     return RotationTransition(turns: _caretRotation, child: icon);
   }
 
@@ -236,10 +262,14 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
   }
 
   Widget _buildRenameField(BuildContext context) {
-    final Color selectionColor = Theme.of(context).colorScheme.primary.withAlpha(77);
+    final Color selectionColor = Theme.of(
+      context,
+    ).colorScheme.primary.withAlpha(77);
     final Color cursorColor = Theme.of(context).colorScheme.primary;
     final TextStyle? renameStyle =
-        widget.style.labelStyle ?? widget.style.textStyle ?? Theme.of(context).textTheme.bodyMedium;
+        widget.style.labelStyle ??
+        widget.style.textStyle ??
+        Theme.of(context).textTheme.bodyMedium;
 
     return SuperTreeRenameField(
       controller: _renameController,
@@ -287,17 +317,21 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
   }
 
   List<TreeNode<T>> _resolveDragNodes(bool isSelected) {
-    final bool canUseMultiSelection = widget.logic.selectionMode == SelectionMode.multiple;
+    final bool canUseMultiSelection =
+        widget.logic.selectionMode == SelectionMode.multiple;
     if (!canUseMultiSelection || !isSelected) {
       return <TreeNode<T>>[widget.node];
     }
 
-    final List<TreeNode<T>> selectedNodes = widget.controller.getSelectedNodesInVisibleOrder(topLevelOnly: true);
+    final List<TreeNode<T>> selectedNodes = widget.controller
+        .getSelectedNodesInVisibleOrder(topLevelOnly: true);
     if (selectedNodes.length <= 1) {
       return <TreeNode<T>>[widget.node];
     }
 
-    final bool containsCurrentNode = selectedNodes.any((TreeNode<T> node) => node.id == widget.node.id);
+    final bool containsCurrentNode = selectedNodes.any(
+      (TreeNode<T> node) => node.id == widget.node.id,
+    );
     if (!containsCurrentNode) {
       return <TreeNode<T>>[widget.node];
     }
@@ -305,7 +339,11 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
     return selectedNodes;
   }
 
-  void _handleDrop(TreeDragPayload<T> payload, TreeNode<T> targetNode, NodeDropPosition position) {
+  void _handleDrop(
+    TreeDragPayload<T> payload,
+    TreeNode<T> targetNode,
+    NodeDropPosition position,
+  ) {
     final List<TreeNode<T>> draggedNodes = payload.nodes;
     final bool insertBefore = position == NodeDropPosition.above;
     final bool nestInside = position == NodeDropPosition.inside;
@@ -331,9 +369,14 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
   @override
   Widget build(BuildContext context) {
     final double paddingLeft = widget.style.indentAmount * widget.node.depth;
-    final bool canExpand = widget.node.hasChildren || widget.controller.canNodeLoadChildren(widget.node);
-    final bool isSelected = widget.controller.selectedNodeIds.contains(widget.node.id);
-    final TreeIntegrityIssue? integrityIssue = widget.controller.getIntegrityIssueForNode(widget.node.id);
+    final bool canExpand =
+        widget.node.hasChildren ||
+        widget.controller.canNodeLoadChildren(widget.node);
+    final bool isSelected = widget.controller.selectedNodeIds.contains(
+      widget.node.id,
+    );
+    final TreeIntegrityIssue? integrityIssue = widget.controller
+        .getIntegrityIssueForNode(widget.node.id);
     final List<TreeNode<T>> dragNodes = _resolveDragNodes(isSelected);
 
     return TreeDragAndDropWrapper<T>(
@@ -351,7 +394,8 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
           onLongPressStart: _handleLongPressStart,
           onTap: _handleTap,
           onDoubleTap:
-              (widget.logic.expansionTrigger == ExpansionTrigger.doubleTap || widget.logic.onNodeDoubleTap != null)
+              (widget.logic.expansionTrigger == ExpansionTrigger.doubleTap ||
+                  widget.logic.onNodeDoubleTap != null)
               ? _handleDoubleTap
               : null,
           behavior: HitTestBehavior.opaque,
@@ -371,7 +415,8 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
                 borderRadius: BorderRadius.circular(4),
                 color: isSelected
                     ? widget.style.selectedColor
-                    : (_isHovering || widget.controller.contextMenuNodeId == widget.node.id)
+                    : (_isHovering ||
+                          widget.controller.contextMenuNodeId == widget.node.id)
                     ? widget.style.hoverColor
                     : widget.style.idleColor,
                 border: Border.all(
@@ -406,7 +451,9 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
                     child: widget.contentBuilder(
                       context,
                       widget.node,
-                      widget.controller.renamingNodeId == widget.node.id ? _buildRenameField(context) : null,
+                      widget.controller.renamingNodeId == widget.node.id
+                          ? _buildRenameField(context)
+                          : null,
                     ),
                   ),
 
@@ -415,12 +462,17 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
                       padding: const EdgeInsets.only(left: 6),
                       child: Tooltip(
                         message: integrityIssue.message,
-                        child: Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error, size: 16),
+                        child: Icon(
+                          Icons.error_outline,
+                          color: Theme.of(context).colorScheme.error,
+                          size: 16,
+                        ),
                       ),
                     ),
 
                   // Trailing Actions
-                  if (widget.trailingBuilder != null) widget.trailingBuilder!(context, widget.node),
+                  if (widget.trailingBuilder != null)
+                    widget.trailingBuilder!(context, widget.node),
                 ],
               ),
             ),

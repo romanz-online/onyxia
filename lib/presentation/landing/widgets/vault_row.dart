@@ -63,7 +63,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
               padding: .symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
                 color: isHovered
-                    ? ThemeHelper.neutral300(context).withValues(alpha: 0.5)
+                    ? ThemeHelper.neutral700(context).withValues(alpha: 0.5)
                     : Colors.transparent,
                 borderRadius: .circular(4),
               ),
@@ -82,7 +82,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                           style: TextStyle(
                             fontSize: 13,
                             fontWeight: .w600,
-                            color: ThemeHelper.neutral900(context),
+                            color: ThemeHelper.neutral100(context),
                           ),
                         ),
                       ),

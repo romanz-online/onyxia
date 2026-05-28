@@ -14,9 +14,9 @@ class VaultMembersRepository extends BaseSupabaseRepository<VaultMember> {
 
   @override
   Map<String, dynamic> keyFilter(VaultMember item) => {
-        'vault_id': item.vaultId,
-        'user_id': item.userId,
-      };
+    'vault_id': item.vaultId,
+    'user_id': item.userId,
+  };
 
   @override
   VaultMember fromMap(Map<String, dynamic> map) => VaultMember.fromMap(map);

@@ -18,25 +18,24 @@ class VaultInvitation {
     String? vaultId,
     String? email,
     DateTime? expiresAt,
-  }) =>
-      VaultInvitation(
-        token: token ?? this.token,
-        vaultId: vaultId ?? this.vaultId,
-        email: email ?? this.email,
-        expiresAt: expiresAt ?? this.expiresAt,
-      );
+  }) => VaultInvitation(
+    token: token ?? this.token,
+    vaultId: vaultId ?? this.vaultId,
+    email: email ?? this.email,
+    expiresAt: expiresAt ?? this.expiresAt,
+  );
 
   Map<String, dynamic> toMap() => {
-        'token': token,
-        'vault_id': vaultId,
-        'email': email,
-      };
+    'token': token,
+    'vault_id': vaultId,
+    'email': email,
+  };
 
   VaultInvitation.fromMap(Map<String, dynamic> map)
-      : token = map['token'] ?? '',
-        vaultId = map['vault_id'] ?? '',
-        email = map['email'] ?? '',
-        expiresAt = TimestampService.fromMap(map['expires_at']);
+    : token = map['token'] ?? '',
+      vaultId = map['vault_id'] ?? '',
+      email = map['email'] ?? '',
+      expiresAt = TimestampService.fromMap(map['expires_at']);
 
   @override
   bool operator ==(Object other) =>

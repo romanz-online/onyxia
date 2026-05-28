@@ -19,7 +19,9 @@ class TouchyDashedPainter {
 
       while (distance < metric.length) {
         final double nextDash = distance + span;
-        final double nextEnd = nextDash > metric.length ? metric.length : nextDash;
+        final double nextEnd = nextDash > metric.length
+            ? metric.length
+            : nextDash;
 
         // Extract the dash segment
         final Path dashPath = metric.extractPath(distance, nextEnd);

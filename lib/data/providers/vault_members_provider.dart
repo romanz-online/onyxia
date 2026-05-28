@@ -1,8 +1,9 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:async';
 
-final vaultMembersProvider =
-    StreamProvider.autoDispose<List<VaultMember>>((ref) {
+final vaultMembersProvider = StreamProvider.autoDispose<List<VaultMember>>((
+  ref,
+) {
   final vaultId = ref.watch(selectedVaultProvider.select((p) => p?.id));
   if (vaultId == null) return Stream.value([]);
   return VaultMembersRepository(vaultId: vaultId).getStream();
@@ -14,16 +15,18 @@ typedef VaultMemberWithUser = ({VaultMember member, User user});
 /// Streams the selected vault's members alongside their user records. Within
 /// a vault context, every userId we care to display belongs to a member, so
 /// this replaces the older global `userLookupProvider` / `UserLookupService`.
-final vaultMembersWithUsersProvider = StreamNotifierProvider.autoDispose<
-    VaultMembersWithUsersNotifier, List<VaultMemberWithUser>>(
-  VaultMembersWithUsersNotifier.new,
-);
+final vaultMembersWithUsersProvider =
+    StreamNotifierProvider.autoDispose<
+      VaultMembersWithUsersNotifier,
+      List<VaultMemberWithUser>
+    >(VaultMembersWithUsersNotifier.new);
 
 /// O(1) userId → User lookup derived from [vaultMembersWithUsersProvider].
 /// For call sites that have a userId and want to render the user — comment
 /// pins, avatars, etc.
-final vaultMemberUserByIdProvider =
-    Provider.autoDispose<Map<String, User>>((ref) {
+final vaultMemberUserByIdProvider = Provider.autoDispose<Map<String, User>>((
+  ref,
+) {
   final list = ref.watch(vaultMembersWithUsersProvider).value ?? const [];
   return {for (final e in list) e.member.userId: e.user};
 });
@@ -38,13 +41,9 @@ class VaultMembersWithUsersNotifier
     final controller = StreamController<List<VaultMemberWithUser>>();
     ref.onDispose(controller.close);
 
-    ref.listen<AsyncValue<List<VaultMember>>>(
-      vaultMembersProvider,
-      (_, next) {
-        next.whenData((members) => _process(members, controller));
-      },
-      fireImmediately: true,
-    );
+    ref.listen<AsyncValue<List<VaultMember>>>(vaultMembersProvider, (_, next) {
+      next.whenData((members) => _process(members, controller));
+    }, fireImmediately: true);
 
     return controller.stream;
   }
@@ -69,7 +68,8 @@ class VaultMembersWithUsersNotifier
       for (final m in members)
         (
           member: m,
-          user: _userCache[m.userId] ??
+          user:
+              _userCache[m.userId] ??
               User(id: m.userId, name: 'Unknown User', email: ''),
         ),
     ]);

@@ -9,8 +9,8 @@ final selectedVaultProvider = Provider<Vault?>((ref) {
 
 final _selectedVaultIdFromUrlProvider =
     NotifierProvider<_SelectedVaultIdFromUrlNotifier, String?>(
-  _SelectedVaultIdFromUrlNotifier.new,
-);
+      _SelectedVaultIdFromUrlNotifier.new,
+    );
 
 class _SelectedVaultIdFromUrlNotifier extends Notifier<String?> {
   @override

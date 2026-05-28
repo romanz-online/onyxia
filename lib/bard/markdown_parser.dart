@@ -1,6 +1,13 @@
 import 'markdown_span.dart';
 
-enum _TokenType { bold, italic, strikethrough, wikilinkOpen, wikilinkClose, newline }
+enum _TokenType {
+  bold,
+  italic,
+  strikethrough,
+  wikilinkOpen,
+  wikilinkClose,
+  newline,
+}
 
 class _Token {
   const _Token(this.type, this.start, this.end);
@@ -13,12 +20,33 @@ MarkdownParseResult parseMarkdown(String text) {
   if (text.isEmpty) return MarkdownParseResult.empty;
 
   final tokens = _tokenize(text);
-  final newlinePositions = tokens.where((t) => t.type == _TokenType.newline).map((t) => t.start).toList();
+  final newlinePositions = tokens
+      .where((t) => t.type == _TokenType.newline)
+      .map((t) => t.start)
+      .toList();
 
   final inlineSpans = [
-    ..._matchSymmetricType(tokens, _TokenType.bold, MarkdownFormatType.bold, text, newlinePositions),
-    ..._matchSymmetricType(tokens, _TokenType.italic, MarkdownFormatType.italic, text, newlinePositions),
-    ..._matchSymmetricType(tokens, _TokenType.strikethrough, MarkdownFormatType.strikethrough, text, newlinePositions),
+    ..._matchSymmetricType(
+      tokens,
+      _TokenType.bold,
+      MarkdownFormatType.bold,
+      text,
+      newlinePositions,
+    ),
+    ..._matchSymmetricType(
+      tokens,
+      _TokenType.italic,
+      MarkdownFormatType.italic,
+      text,
+      newlinePositions,
+    ),
+    ..._matchSymmetricType(
+      tokens,
+      _TokenType.strikethrough,
+      MarkdownFormatType.strikethrough,
+      text,
+      newlinePositions,
+    ),
     ..._matchWikiLinks(tokens, text, newlinePositions),
   ]..sort((a, b) => a.markerStartOpen.compareTo(b.markerStartOpen));
 
@@ -78,28 +106,33 @@ List<MarkdownSpan> _matchSymmetricType(
       opens.add(token);
     } else {
       final open = opens.removeLast();
-      spans.add(MarkdownSpan(
-        type: spanType,
-        markerStartOpen: open.start,
-        contentStart: open.end,
-        contentEnd: token.start,
-        markerEndClose: token.end,
-        isExplicitlyClosed: true,
-      ));
+      spans.add(
+        MarkdownSpan(
+          type: spanType,
+          markerStartOpen: open.start,
+          contentStart: open.end,
+          contentEnd: token.start,
+          markerEndClose: token.end,
+          isExplicitlyClosed: true,
+        ),
+      );
     }
   }
 
   // Auto-close unclosed opens at next \n or end of text
   for (final open in opens) {
-    final autoCloseAt = _nextNewlineAfter(open.start, newlinePositions) ?? text.length;
-    spans.add(MarkdownSpan(
-      type: spanType,
-      markerStartOpen: open.start,
-      contentStart: open.end,
-      contentEnd: autoCloseAt,
-      markerEndClose: autoCloseAt,
-      isExplicitlyClosed: false,
-    ));
+    final autoCloseAt =
+        _nextNewlineAfter(open.start, newlinePositions) ?? text.length;
+    spans.add(
+      MarkdownSpan(
+        type: spanType,
+        markerStartOpen: open.start,
+        contentStart: open.end,
+        contentEnd: autoCloseAt,
+        markerEndClose: autoCloseAt,
+        isExplicitlyClosed: false,
+      ),
+    );
   }
 
   return spans;
@@ -118,28 +151,33 @@ List<MarkdownSpan> _matchWikiLinks(
       opens.add(token);
     } else if (token.type == _TokenType.wikilinkClose && opens.isNotEmpty) {
       final open = opens.removeLast();
-      spans.add(MarkdownSpan(
-        type: MarkdownFormatType.wikiLink,
-        markerStartOpen: open.start,
-        contentStart: open.end,
-        contentEnd: token.start,
-        markerEndClose: token.end,
-        isExplicitlyClosed: true,
-      ));
+      spans.add(
+        MarkdownSpan(
+          type: MarkdownFormatType.wikiLink,
+          markerStartOpen: open.start,
+          contentStart: open.end,
+          contentEnd: token.start,
+          markerEndClose: token.end,
+          isExplicitlyClosed: true,
+        ),
+      );
     }
     // Unmatched ]] tokens are silently ignored
   }
 
   for (final open in opens) {
-    final autoCloseAt = _nextNewlineAfter(open.start, newlinePositions) ?? text.length;
-    spans.add(MarkdownSpan(
-      type: MarkdownFormatType.wikiLink,
-      markerStartOpen: open.start,
-      contentStart: open.end,
-      contentEnd: autoCloseAt,
-      markerEndClose: autoCloseAt,
-      isExplicitlyClosed: false,
-    ));
+    final autoCloseAt =
+        _nextNewlineAfter(open.start, newlinePositions) ?? text.length;
+    spans.add(
+      MarkdownSpan(
+        type: MarkdownFormatType.wikiLink,
+        markerStartOpen: open.start,
+        contentStart: open.end,
+        contentEnd: autoCloseAt,
+        markerEndClose: autoCloseAt,
+        isExplicitlyClosed: false,
+      ),
+    );
   }
 
   return spans;
@@ -167,19 +205,44 @@ List<LineSpan> _parseLineSpans(String text) {
 LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   // Check longer prefixes first to avoid premature matching
   if (line.startsWith('### ')) {
-    return LineSpan(type: LineFormatType.heading3, lineStart: lineStart, lineEnd: lineEnd, markerEnd: lineStart + 4);
+    return LineSpan(
+      type: LineFormatType.heading3,
+      lineStart: lineStart,
+      lineEnd: lineEnd,
+      markerEnd: lineStart + 4,
+    );
   }
   if (line.startsWith('## ')) {
-    return LineSpan(type: LineFormatType.heading2, lineStart: lineStart, lineEnd: lineEnd, markerEnd: lineStart + 3);
+    return LineSpan(
+      type: LineFormatType.heading2,
+      lineStart: lineStart,
+      lineEnd: lineEnd,
+      markerEnd: lineStart + 3,
+    );
   }
   if (line.startsWith('# ')) {
-    return LineSpan(type: LineFormatType.heading1, lineStart: lineStart, lineEnd: lineEnd, markerEnd: lineStart + 2);
+    return LineSpan(
+      type: LineFormatType.heading1,
+      lineStart: lineStart,
+      lineEnd: lineEnd,
+      markerEnd: lineStart + 2,
+    );
   }
   if (line.startsWith('- ') || line.startsWith('* ')) {
-    return LineSpan(type: LineFormatType.bulletList, lineStart: lineStart, lineEnd: lineEnd, markerEnd: lineStart + 2);
+    return LineSpan(
+      type: LineFormatType.bulletList,
+      lineStart: lineStart,
+      lineEnd: lineEnd,
+      markerEnd: lineStart + 2,
+    );
   }
   if (line.startsWith('> ')) {
-    return LineSpan(type: LineFormatType.blockquote, lineStart: lineStart, lineEnd: lineEnd, markerEnd: lineStart + 2);
+    return LineSpan(
+      type: LineFormatType.blockquote,
+      lineStart: lineStart,
+      lineEnd: lineEnd,
+      markerEnd: lineStart + 2,
+    );
   }
   final numberedMatch = RegExp(r'^\d+\. ').firstMatch(line);
   if (numberedMatch != null) {

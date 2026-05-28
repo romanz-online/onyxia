@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
@@ -19,40 +19,44 @@ class ArtifactToolBehavior extends CanvasToolGestureHandler {
 
   @override
   void Function(
-          TapUpDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onTapUp => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ObjectFillInteractionContext(:final targetObject):
-                CanvasInteractionService.createPin(
-                  ref: ref,
-                  position: details.localPosition,
-                  targetObject: targetObject,
-                );
-                break;
-              case BackgroundInteraction():
-                if (canvasConfig.allowArtifactsOnBackground) {
-                  switch (canvasConfig.artifactDisplay) {
-                    case ArtifactCanvasDisplay.pin:
-                      CanvasInteractionService.createPin(
-                        ref: ref,
-                        position: details.localPosition,
-                        targetObject: null,
-                      );
-                      break;
-                    case ArtifactCanvasDisplay.object:
-                      CanvasInteractionService.createArtifactObject(
-                        ref: ref,
-                        position: details.localPosition,
-                        artifact: null,
-                      );
-                      break;
-                  }
-                }
-                break;
-              case _:
-                return;
-            }
+    TapUpDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onTapUp => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ObjectFillInteractionContext(:final targetObject):
+        CanvasInteractionService.createPin(
+          ref: ref,
+          position: details.localPosition,
+          targetObject: targetObject,
+        );
+        break;
+      case BackgroundInteraction():
+        if (canvasConfig.allowArtifactsOnBackground) {
+          switch (canvasConfig.artifactDisplay) {
+            case ArtifactCanvasDisplay.pin:
+              CanvasInteractionService.createPin(
+                ref: ref,
+                position: details.localPosition,
+                targetObject: null,
+              );
+              break;
+            case ArtifactCanvasDisplay.object:
+              CanvasInteractionService.createArtifactObject(
+                ref: ref,
+                position: details.localPosition,
+                artifact: null,
+              );
+              break;
+          }
+        }
+        break;
+      case _:
+        return;
+    }
 
-            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-          };
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+  };
 }

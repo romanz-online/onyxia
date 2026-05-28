@@ -136,7 +136,9 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
     if (canvas == null) {
       if (ref.mounted && _loadGeneration == myGeneration) {
         state = const CanvasBounds(
-            bounds: CanvasBounds.defaultBounds, isLoading: false);
+          bounds: CanvasBounds.defaultBounds,
+          isLoading: false,
+        );
       }
       return;
     }
@@ -146,7 +148,9 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
       case CanvasType.flow:
         if (ref.mounted && _loadGeneration == myGeneration) {
           state = const CanvasBounds(
-              bounds: CanvasBounds.defaultBounds, isLoading: false);
+            bounds: CanvasBounds.defaultBounds,
+            isLoading: false,
+          );
         }
         break;
 
@@ -165,7 +169,9 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
         } else {
           if (ref.mounted && _loadGeneration == myGeneration) {
             state = const CanvasBounds(
-                bounds: CanvasBounds.defaultBounds, isLoading: false);
+              bounds: CanvasBounds.defaultBounds,
+              isLoading: false,
+            );
           }
         }
         break;
@@ -322,15 +328,15 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
 
   /// Snap position to grid
   Offset snap(Offset position) => Offset(
-      (position.dx / CanvasBounds.gridSpacing).round() *
-          CanvasBounds.gridSpacing,
-      (position.dy / CanvasBounds.gridSpacing).round() *
-          CanvasBounds.gridSpacing);
+    (position.dx / CanvasBounds.gridSpacing).round() * CanvasBounds.gridSpacing,
+    (position.dy / CanvasBounds.gridSpacing).round() * CanvasBounds.gridSpacing,
+  );
 
   /// Clamp position to canvas bounds
   Offset clamp(Offset position) => Offset(
-      position.dx.clamp(state.bounds.left, state.bounds.right),
-      position.dy.clamp(state.bounds.top, state.bounds.bottom));
+    position.dx.clamp(state.bounds.left, state.bounds.right),
+    position.dy.clamp(state.bounds.top, state.bounds.bottom),
+  );
 
   /// Get current bounds
   Rect get bounds => state.bounds;
@@ -341,5 +347,5 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
 
 final canvasBoundsProvider =
     NotifierProvider.autoDispose<CanvasBoundsNotifier, CanvasBounds>(
-  CanvasBoundsNotifier.new,
-);
+      CanvasBoundsNotifier.new,
+    );

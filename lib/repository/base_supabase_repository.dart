@@ -92,11 +92,13 @@ abstract class BaseSupabaseRepository<T> {
     }
     return _execute(() async {
       if (items.isEmpty) return;
-      await Future.wait(items.map((item) {
-        dynamic q = _table.update(_writeMap(item));
-        keyFilter(item).forEach((k, v) => q = q.eq(k, v));
-        return q;
-      }));
+      await Future.wait(
+        items.map((item) {
+          dynamic q = _table.update(_writeMap(item));
+          keyFilter(item).forEach((k, v) => q = q.eq(k, v));
+          return q;
+        }),
+      );
     });
   }
 

@@ -21,78 +21,109 @@ class _CharProfile {
   final String closing;
   final Set<BardBehavior> behaviors;
   final int triggerLength; // 2 for ~~: fires after second char of opening
-  final bool noAdjacentDuplicate; // don't fire if same char immediately precedes opening
+  final bool
+  noAdjacentDuplicate; // don't fire if same char immediately precedes opening
 }
 
 final List<_CharProfile> _kCharRegistry = [
-  _CharProfile(opening: '(', closing: ')', behaviors: {
-    BardBehavior.autocomplete,
-    BardBehavior.skipClose,
-    BardBehavior.wrapSelection,
-    BardBehavior.deletePair
-  }),
-  _CharProfile(opening: '[', closing: ']', behaviors: {
-    BardBehavior.autocomplete,
-    BardBehavior.skipClose,
-    BardBehavior.wrapSelection,
-    BardBehavior.deletePair
-  }),
-  _CharProfile(opening: '{', closing: '}', behaviors: {
-    BardBehavior.autocomplete,
-    BardBehavior.skipClose,
-    BardBehavior.wrapSelection,
-    BardBehavior.deletePair
-  }),
-  _CharProfile(opening: "'", closing: "'", behaviors: {
-    BardBehavior.autocomplete,
-    BardBehavior.skipClose,
-    BardBehavior.wrapSelection,
-    BardBehavior.deletePair
-  }),
-  _CharProfile(opening: '"', closing: '"', behaviors: {
-    BardBehavior.autocomplete,
-    BardBehavior.skipClose,
-    BardBehavior.wrapSelection,
-    BardBehavior.deletePair
-  }),
-  _CharProfile(opening: '_', closing: '_', behaviors: {
-    BardBehavior.autocomplete,
-    BardBehavior.skipClose,
-    BardBehavior.wrapSelection,
-    BardBehavior.deletePair
-  }),
   _CharProfile(
-      opening: '*',
-      closing: '*',
-      behaviors: {
-        BardBehavior.autocomplete,
-        BardBehavior.skipClose,
-        BardBehavior.wrapSelection,
-        BardBehavior.deletePair
-      },
-      noAdjacentDuplicate: true),
+    opening: '(',
+    closing: ')',
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+  ),
   _CharProfile(
-      opening: '~~',
-      closing: '~~',
-      behaviors: {BardBehavior.autocomplete, BardBehavior.skipClose},
-      triggerLength: 2,
-      noAdjacentDuplicate: true),
+    opening: '[',
+    closing: ']',
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+  ),
   _CharProfile(
-      opening: '~',
-      closing: '~',
-      behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair}),
+    opening: '{',
+    closing: '}',
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+  ),
   _CharProfile(
-      opening: '=',
-      closing: '=',
-      behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair}),
+    opening: "'",
+    closing: "'",
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+  ),
   _CharProfile(
-      opening: r'$',
-      closing: r'$',
-      behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair}),
+    opening: '"',
+    closing: '"',
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+  ),
   _CharProfile(
-      opening: '%',
-      closing: '%',
-      behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair}),
+    opening: '_',
+    closing: '_',
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+  ),
+  _CharProfile(
+    opening: '*',
+    closing: '*',
+    behaviors: {
+      BardBehavior.autocomplete,
+      BardBehavior.skipClose,
+      BardBehavior.wrapSelection,
+      BardBehavior.deletePair,
+    },
+    noAdjacentDuplicate: true,
+  ),
+  _CharProfile(
+    opening: '~~',
+    closing: '~~',
+    behaviors: {BardBehavior.autocomplete, BardBehavior.skipClose},
+    triggerLength: 2,
+    noAdjacentDuplicate: true,
+  ),
+  _CharProfile(
+    opening: '~',
+    closing: '~',
+    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+  ),
+  _CharProfile(
+    opening: '=',
+    closing: '=',
+    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+  ),
+  _CharProfile(
+    opening: r'$',
+    closing: r'$',
+    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+  ),
+  _CharProfile(
+    opening: '%',
+    closing: '%',
+    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+  ),
 ];
 
 final Map<String, _CharProfile> _profileByOpening = {
@@ -122,7 +153,8 @@ extension _CharBehaviors on _BardEditorState {
   }
 
   bool _isSingleCharDelete(TextEditingValue prev, TextEditingValue curr) {
-    if (!curr.selection.isCollapsed || !prev.selection.isCollapsed) return false;
+    if (!curr.selection.isCollapsed || !prev.selection.isCollapsed)
+      return false;
     final prevCursor = prev.selection.baseOffset;
     final curCursor = curr.selection.baseOffset;
     if (curCursor != prevCursor - 1) return false;
@@ -151,7 +183,8 @@ extension _CharBehaviors on _BardEditorState {
   }
 
   bool _isSingleCharInsert(TextEditingValue prev, TextEditingValue curr) {
-    if (!curr.selection.isCollapsed || !prev.selection.isCollapsed) return false;
+    if (!curr.selection.isCollapsed || !prev.selection.isCollapsed)
+      return false;
     final prevCursor = prev.selection.baseOffset;
     final curCursor = curr.selection.baseOffset;
     if (curCursor != prevCursor + 1) return false;
@@ -166,10 +199,12 @@ extension _CharBehaviors on _BardEditorState {
 
     final profile = _profileByOpening[typedChar];
     if (profile == null ||
-        !profile.behaviors.contains(BardBehavior.wrapSelection)) return;
+        !profile.behaviors.contains(BardBehavior.wrapSelection))
+      return;
 
     final selected = prev.text.substring(selStart, selEnd);
-    final newText = prev.text.substring(0, selStart) +
+    final newText =
+        prev.text.substring(0, selStart) +
         profile.opening +
         selected +
         profile.closing +
@@ -193,7 +228,8 @@ extension _CharBehaviors on _BardEditorState {
     // skip-close: 2-char profiles (e.g. ~~)
     for (final profile in _kCharRegistry) {
       if (profile.triggerLength != 2 ||
-          !profile.behaviors.contains(BardBehavior.skipClose)) continue;
+          !profile.behaviors.contains(BardBehavior.skipClose))
+        continue;
       if (cursor < 2 || text.substring(cursor - 2, cursor) != profile.opening) {
         continue;
       }
@@ -269,8 +305,8 @@ extension _CharBehaviors on _BardEditorState {
 
     final deleted = prev.text[curCursor];
     final profile = _profileByOpening[deleted];
-    if (profile == null ||
-        !profile.behaviors.contains(BardBehavior.deletePair)) return;
+    if (profile == null || !profile.behaviors.contains(BardBehavior.deletePair))
+      return;
 
     final closing = profile.closing;
     if (curCursor + closing.length > curr.text.length) return;
@@ -278,7 +314,8 @@ extension _CharBehaviors on _BardEditorState {
       return;
     }
 
-    final newText = curr.text.substring(0, curCursor) +
+    final newText =
+        curr.text.substring(0, curCursor) +
         curr.text.substring(curCursor + closing.length);
     _controller.value = TextEditingValue(
       text: newText,

@@ -5,13 +5,14 @@ import 'package:onyxia/export.dart';
 
 final artifactsProvider =
     StreamNotifierProvider<ArtifactsTreeNotifier, List<Artifact>>(
-  ArtifactsTreeNotifier.new,
-);
+      ArtifactsTreeNotifier.new,
+    );
 
-final wikiLinkTitlesProvider = Provider<List<String>>((ref) =>
-    (ref.watch(artifactsProvider).value ?? const <Artifact>[])
-        .map((item) => item.name)
-        .toList());
+final wikiLinkTitlesProvider = Provider<List<String>>(
+  (ref) => (ref.watch(artifactsProvider).value ?? const <Artifact>[])
+      .map((item) => item.name)
+      .toList(),
+);
 
 class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   String? _vaultId;
@@ -41,8 +42,9 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     if (itemId.isEmpty) return;
 
     List<String> collectDescendantIds(String parentId) {
-      final children =
-          _items.where((e) => e.parentFolderId == parentId).toList();
+      final children = _items
+          .where((e) => e.parentFolderId == parentId)
+          .toList();
       final ids = children.map((c) => c.id).toList();
       for (final child in children) {
         ids.addAll(collectDescendantIds(child.id));
@@ -65,8 +67,9 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         .routerDelegate
         .currentConfiguration
         .pathParameters['selectedId'];
-    final selectedItem =
-        _items.firstWhereOrNull((a) => a.name == urlSelectedName);
+    final selectedItem = _items.firstWhereOrNull(
+      (a) => a.name == urlSelectedName,
+    );
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
       ref.read(routerProvider).go('/vault/$_vaultId/${Routes.graph}');
     }
@@ -126,8 +129,11 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   Future<String?> renameItem(Artifact item, String newName) async {
     final cleaned = ItemTitleValidationService.correctTitle(newName.trim());
     if (cleaned.isEmpty || cleaned == item.name) return null;
-    final err =
-        ItemTitleValidationService.errorMessage(_items, cleaned, item.id);
+    final err = ItemTitleValidationService.errorMessage(
+      _items,
+      cleaned,
+      item.id,
+    );
     if (err != null) return err;
 
     final oldName = item.name;
@@ -160,7 +166,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
     if (urlSelectedId == oldName) {
       final vaultId = ref.read(selectedVaultProvider.select((p) => p?.id));
-      router.go(renamed.navigationUrl(vaultId));
+      router.go(UrlHelper.artifactPath(vaultId: vaultId, name: renamed.name));
     }
 
     await _repository.update(batch);
@@ -194,13 +200,15 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         CRDTFugueTextHandler(doc, BardCodec.handlerKey).insert(0, note.content);
       }
       final snap = doc.takeSnapshot(pruneHistory: false);
-      await snapsRepo.upsert(ArtifactSnapshot(
-        artifactId: note.id,
-        vaultId: vaultId,
-        snapshotBytes: BardCodec.encodeSnapshot(snap),
-        versionVector: snap.versionVector.toJson(),
-        maxOpSeq: maxSeq,
-      ));
+      await snapsRepo.upsert(
+        ArtifactSnapshot(
+          artifactId: note.id,
+          vaultId: vaultId,
+          snapshotBytes: BardCodec.encodeSnapshot(snap),
+          versionVector: snap.versionVector.toJson(),
+          maxOpSeq: maxSeq,
+        ),
+      );
     }
   }
 }
@@ -216,10 +224,9 @@ String _rewriteWikiLinksInContent(
   required String newName,
 }) {
   if (!content.contains('[[')) return content;
-  final spans = parseMarkdown(content)
-      .inlineSpans
-      .where((s) => s.type == MarkdownFormatType.wikiLink)
-      .toList();
+  final spans = parseMarkdown(
+    content,
+  ).inlineSpans.where((s) => s.type == MarkdownFormatType.wikiLink).toList();
   if (spans.isEmpty) return content;
 
   final buf = StringBuffer();

@@ -50,25 +50,25 @@ class Comment implements ExpandablePin {
   /// Top-level Postgres columns. `subComments` are stored in a separate table
   /// and populated lazily by the comments repository — never serialized here.
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'body': text,
-        'position': position.toMap(),
-        'pinned_object_id': pinnedObjectId,
-        'canvas_artifact_id': canvasId,
-      };
+    'id': id,
+    'body': text,
+    'position': position.toMap(),
+    'pinned_object_id': pinnedObjectId,
+    'canvas_artifact_id': canvasId,
+  };
 
   Comment.fromMap(Map<String, dynamic> map)
-      : id = map['id'] ?? '',
-        text = map['body'] ?? '',
-        position = OffsetExtension.fromMap(map['position']),
-        subComments = const [],
-        pinnedObjectId = map['pinned_object_id'] ?? '',
-        canvasId = map['canvas_artifact_id'] ?? '',
-        //
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'] ?? '',
-        updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';
+    : id = map['id'] ?? '',
+      text = map['body'] ?? '',
+      position = OffsetExtension.fromMap(map['position']),
+      subComments = const [],
+      pinnedObjectId = map['pinned_object_id'] ?? '',
+      canvasId = map['canvas_artifact_id'] ?? '',
+      //
+      createdAt = TimestampService.fromMap(map['created_at']),
+      createdBy = map['created_by'] ?? '',
+      updatedAt = TimestampService.fromMap(map['updated_at']),
+      updatedBy = map['updated_by'] ?? '';
 
   /// Calculate the actual position of the comment on the canvas.
   /// If parent is null, uses absolute positioning.
@@ -85,10 +85,7 @@ class Comment implements ExpandablePin {
       // Regular object positioning: relative positioning based on dimensions
       final objSize = parent.getDimensions();
       return parent.topLeft +
-          Offset(
-            position.dx * objSize.width,
-            position.dy * objSize.height,
-          );
+          Offset(position.dx * objSize.width, position.dy * objSize.height);
     }
   }
 
@@ -97,7 +94,8 @@ class Comment implements ExpandablePin {
   }
 
   @override
-  String toString() => 'Comment('
+  String toString() =>
+      'Comment('
       'id: $id, '
       'text: $text, '
       'position: $position, '

@@ -9,7 +9,10 @@ import 'clipboard_service.dart';
 typedef PasteListenerHandle = JSFunction;
 
 /// Setup paste listener for web platform
-PasteListenerHandle? setupPasteListenerImpl(WidgetRef ref, BuildContext context) {
+PasteListenerHandle? setupPasteListenerImpl(
+  WidgetRef ref,
+  BuildContext context,
+) {
   final listener = ((web.Event event) {
     CanvasClipboardService().handleJsPaste(event, ref, context);
   }).toJS;

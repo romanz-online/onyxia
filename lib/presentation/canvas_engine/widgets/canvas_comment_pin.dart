@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 
@@ -166,7 +166,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
         style: TextStyle(
           fontSize: 14,
           fontWeight: .w500,
-          color: ThemeHelper.neutral900(context),
+          color: ThemeHelper.neutral100(context),
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -264,14 +264,14 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
               key: _inputContainerKey,
               width: containerWidth,
               decoration: BoxDecoration(
-                color: ThemeHelper.neutral100(context),
+                color: ThemeHelper.neutral900(context),
                 borderRadius: .only(
                   topLeft: .circular(18),
                   topRight: .circular(18),
                   bottomRight: .circular(18),
                   bottomLeft: .circular(0),
                 ),
-                border: .all(color: ThemeHelper.blue500(context), width: 2),
+                border: .all(color: ThemeHelper.blue400(context), width: 2),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.10),
@@ -335,7 +335,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             border: OutlineInputBorder(
                               borderRadius: .circular(6),
                               borderSide: BorderSide(
-                                color: ThemeHelper.neutral400(context),
+                                color: ThemeHelper.neutral600(context),
                                 width: 1,
                               ),
                             ),
@@ -349,13 +349,13 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             enabledBorder: OutlineInputBorder(
                               borderRadius: .circular(6),
                               borderSide: BorderSide(
-                                color: ThemeHelper.neutral400(context),
+                                color: ThemeHelper.neutral600(context),
                                 width: 1,
                               ),
                             ),
-                            fillColor: ThemeHelper.neutral100(context),
+                            fillColor: ThemeHelper.neutral900(context),
                             filled: true,
-                            hoverColor: ThemeHelper.neutral100(context),
+                            hoverColor: ThemeHelper.neutral900(context),
                             isDense: true,
                             contentPadding: .only(
                               left: 10,
@@ -409,9 +409,9 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       }
 
       final bool isSelected = isExpanded;
-      final Color backgroundColor = ThemeHelper.neutral100(context);
-      final Color outerBorderColor = ThemeHelper.neutral400(context);
-      final Color selectionColor = ThemeHelper.blue500(context);
+      final Color backgroundColor = ThemeHelper.neutral900(context);
+      final Color outerBorderColor = ThemeHelper.neutral600(context);
+      final Color selectionColor = ThemeHelper.blue400(context);
 
       return AnimatedBuilder(
         animation: _animationController,
@@ -526,7 +526,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                           fontSize: 12,
                                                           fontWeight: .bold,
                                                           color:
-                                                              ThemeHelper.neutral900(
+                                                              ThemeHelper.neutral100(
                                                                 context,
                                                               ),
                                                         ),
@@ -541,7 +541,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                             fontSize: 12,
                                                             fontWeight: .normal,
                                                             color:
-                                                                ThemeHelper.neutral900(
+                                                                ThemeHelper.neutral100(
                                                                   context,
                                                                 ).withValues(
                                                                   alpha: 0.7,
@@ -561,7 +561,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                     fontSize: 14,
                                                     fontWeight: .w500,
                                                     color:
-                                                        ThemeHelper.neutral900(
+                                                        ThemeHelper.neutral100(
                                                           context,
                                                         ),
                                                   ),

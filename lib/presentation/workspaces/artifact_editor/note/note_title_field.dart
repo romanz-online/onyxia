@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
 class NoteTitleField extends ConsumerStatefulWidget {
@@ -31,7 +31,6 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
       final rawSelectedItem = ref.watch(selectedArtifactProvider);
       final Artifact? selectedItem =
           rawSelectedItem ?? noteAsyncState.value?.note;
-      // TODO: controller text doesn't update when i change the noteartifact's name via the tree
       _controller.text = selectedItem?.name ?? '';
 
       _focusNode.addListener(() async {
@@ -139,7 +138,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: .w700,
-            color: ThemeHelper.neutral700(context),
+            color: ThemeHelper.neutral300(context),
           ),
           decoration: InputDecoration(
             fillColor: Colors.transparent,
@@ -148,7 +147,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             hintStyle: TextStyle(
               fontSize: 28,
               fontWeight: .w700,
-              color: ThemeHelper.neutral700(context).withValues(alpha: 0.4),
+              color: ThemeHelper.neutral300(context).withValues(alpha: 0.4),
             ),
             border: .none,
             contentPadding: .symmetric(vertical: 4, horizontal: 0),

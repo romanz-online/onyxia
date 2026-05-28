@@ -29,7 +29,9 @@ class TouchyObjectPainter {
 
   void drawCircle(Offset c, double radius, Paint paint) {
     if (!_shouldDrawInteractive(
-        () => touchyCanvas.canvas.drawCircle(c, radius, paint))) return;
+      () => touchyCanvas.canvas.drawCircle(c, radius, paint),
+    ))
+      return;
     touchyCanvas.drawCircle(
       c,
       radius,
@@ -41,8 +43,12 @@ class TouchyObjectPainter {
       onPanStart: gestureRouter!.getHandlePanStart(interactionContext),
       onPanUpdate: gestureRouter!.getHandlePanUpdate(),
       onPanEnd: gestureRouter!.getHandlePanEnd(),
-      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(interactionContext),
-      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(interactionContext),
+      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(
+        interactionContext,
+      ),
+      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(
+        interactionContext,
+      ),
       onHover: gestureRouter!.getHandleHover(interactionContext),
       onEnter: gestureRouter!.getHandleEnter(interactionContext),
       onExit: gestureRouter!.getHandleExit(interactionContext),
@@ -52,7 +58,9 @@ class TouchyObjectPainter {
 
   void drawRect(Rect rect, Paint paint) {
     if (!_shouldDrawInteractive(
-        () => touchyCanvas.canvas.drawRect(rect, paint))) return;
+      () => touchyCanvas.canvas.drawRect(rect, paint),
+    ))
+      return;
     touchyCanvas.drawRect(
       rect,
       paint,
@@ -63,8 +71,12 @@ class TouchyObjectPainter {
       onPanStart: gestureRouter!.getHandlePanStart(interactionContext),
       onPanUpdate: gestureRouter!.getHandlePanUpdate(),
       onPanEnd: gestureRouter!.getHandlePanEnd(),
-      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(interactionContext),
-      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(interactionContext),
+      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(
+        interactionContext,
+      ),
+      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(
+        interactionContext,
+      ),
       onHover: gestureRouter!.getHandleHover(interactionContext),
       onEnter: gestureRouter!.getHandleEnter(interactionContext),
       onExit: gestureRouter!.getHandleExit(interactionContext),
@@ -74,7 +86,9 @@ class TouchyObjectPainter {
 
   void drawRRect(RRect rrect, Paint paint) {
     if (!_shouldDrawInteractive(
-        () => touchyCanvas.canvas.drawRRect(rrect, paint))) return;
+      () => touchyCanvas.canvas.drawRRect(rrect, paint),
+    ))
+      return;
     touchyCanvas.drawRRect(
       rrect,
       paint,
@@ -85,8 +99,12 @@ class TouchyObjectPainter {
       onPanStart: gestureRouter!.getHandlePanStart(interactionContext),
       onPanUpdate: gestureRouter!.getHandlePanUpdate(),
       onPanEnd: gestureRouter!.getHandlePanEnd(),
-      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(interactionContext),
-      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(interactionContext),
+      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(
+        interactionContext,
+      ),
+      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(
+        interactionContext,
+      ),
       onHover: gestureRouter!.getHandleHover(interactionContext),
       onEnter: gestureRouter!.getHandleEnter(interactionContext),
       onExit: gestureRouter!.getHandleExit(interactionContext),
@@ -96,7 +114,9 @@ class TouchyObjectPainter {
 
   void drawPath(Path path, Paint paint) {
     if (!_shouldDrawInteractive(
-        () => touchyCanvas.canvas.drawPath(path, paint))) return;
+      () => touchyCanvas.canvas.drawPath(path, paint),
+    ))
+      return;
     touchyCanvas.drawPath(
       path,
       paint,
@@ -107,8 +127,12 @@ class TouchyObjectPainter {
       onPanStart: gestureRouter!.getHandlePanStart(interactionContext),
       onPanUpdate: gestureRouter!.getHandlePanUpdate(),
       onPanEnd: gestureRouter!.getHandlePanEnd(),
-      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(interactionContext),
-      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(interactionContext),
+      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(
+        interactionContext,
+      ),
+      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(
+        interactionContext,
+      ),
       onHover: gestureRouter!.getHandleHover(interactionContext),
       onEnter: gestureRouter!.getHandleEnter(interactionContext),
       onExit: gestureRouter!.getHandleExit(interactionContext),
@@ -118,7 +142,9 @@ class TouchyObjectPainter {
 
   void drawOval(Rect oval, Paint paint) {
     if (!_shouldDrawInteractive(
-        () => touchyCanvas.canvas.drawOval(oval, paint))) return;
+      () => touchyCanvas.canvas.drawOval(oval, paint),
+    ))
+      return;
     touchyCanvas.drawOval(
       oval,
       paint,
@@ -129,8 +155,12 @@ class TouchyObjectPainter {
       onPanStart: gestureRouter!.getHandlePanStart(interactionContext),
       onPanUpdate: gestureRouter!.getHandlePanUpdate(),
       onPanEnd: gestureRouter!.getHandlePanEnd(),
-      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(interactionContext),
-      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(interactionContext),
+      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(
+        interactionContext,
+      ),
+      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(
+        interactionContext,
+      ),
       onHover: gestureRouter!.getHandleHover(interactionContext),
       onEnter: gestureRouter!.getHandleEnter(interactionContext),
       onExit: gestureRouter!.getHandleExit(interactionContext),
@@ -140,7 +170,9 @@ class TouchyObjectPainter {
 
   void drawLine(Offset p1, Offset p2, Paint paint) {
     if (!_shouldDrawInteractive(
-        () => touchyCanvas.canvas.drawLine(p1, p2, paint))) return;
+      () => touchyCanvas.canvas.drawLine(p1, p2, paint),
+    ))
+      return;
     touchyCanvas.drawLine(
       p1,
       p2,
@@ -152,8 +184,12 @@ class TouchyObjectPainter {
       onPanStart: gestureRouter!.getHandlePanStart(interactionContext),
       onPanUpdate: gestureRouter!.getHandlePanUpdate(),
       onPanEnd: gestureRouter!.getHandlePanEnd(),
-      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(interactionContext),
-      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(interactionContext),
+      onSecondaryTapDown: gestureRouter!.getHandleSecondaryTapDown(
+        interactionContext,
+      ),
+      onSecondaryTapUp: gestureRouter!.getHandleSecondaryTapUp(
+        interactionContext,
+      ),
       onHover: gestureRouter!.getHandleHover(interactionContext),
       onEnter: gestureRouter!.getHandleEnter(interactionContext),
       onExit: gestureRouter!.getHandleExit(interactionContext),

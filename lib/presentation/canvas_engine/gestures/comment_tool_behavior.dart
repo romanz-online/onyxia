@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -18,21 +18,25 @@ class CommentToolBehavior extends CanvasToolGestureHandler {
 
   @override
   void Function(
-          TapUpDetails, WidgetRef, BuildContext, CanvasInteractionContext)?
-      get onTapUp => (details, ref, buildContext, interactionContext) {
-            switch (interactionContext) {
-              case ObjectFillInteractionContext(:final targetObject):
-                _createComment(details.localPosition, targetObject, ref);
-                break;
-              case BackgroundInteraction():
-                _createComment(details.localPosition, null, ref);
-                break;
-              case _:
-                return;
-            }
+    TapUpDetails,
+    WidgetRef,
+    BuildContext,
+    CanvasInteractionContext,
+  )?
+  get onTapUp => (details, ref, buildContext, interactionContext) {
+    switch (interactionContext) {
+      case ObjectFillInteractionContext(:final targetObject):
+        _createComment(details.localPosition, targetObject, ref);
+        break;
+      case BackgroundInteraction():
+        _createComment(details.localPosition, null, ref);
+        break;
+      case _:
+        return;
+    }
 
-            ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
-          };
+    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+  };
 
   Future<void> _createComment(
     Offset localPosition,

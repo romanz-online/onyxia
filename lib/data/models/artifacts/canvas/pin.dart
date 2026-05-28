@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class Pin implements ExpandablePin {
   final GlobalKey fillAreaKey = GlobalKey();
@@ -40,16 +40,16 @@ class Pin implements ExpandablePin {
   }
 
   Pin.fromMap(Map<String, dynamic> map)
-      : id = map['id'] ?? '',
-        linkedArtifactId = map['linked_artifact_id'] ?? '',
-        canvasId = map['canvas_artifact_id'] ?? '',
-        position = OffsetExtension.fromMap(map['position']),
-        pinnedObjectId = map['pinned_object_id'] ?? '',
-        //
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'] ?? '',
-        updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';
+    : id = map['id'] ?? '',
+      linkedArtifactId = map['linked_artifact_id'] ?? '',
+      canvasId = map['canvas_artifact_id'] ?? '',
+      position = OffsetExtension.fromMap(map['position']),
+      pinnedObjectId = map['pinned_object_id'] ?? '',
+      //
+      createdAt = TimestampService.fromMap(map['created_at']),
+      createdBy = map['created_by'] ?? '',
+      updatedAt = TimestampService.fromMap(map['updated_at']),
+      updatedBy = map['updated_by'] ?? '';
 
   Pin copyWith({
     String? id,
@@ -123,10 +123,7 @@ class Pin implements ExpandablePin {
       // Regular object positioning: relative positioning based on dimensions
       final objSize = parent.getDimensions();
       return parent.topLeft +
-          Offset(
-            (position.dx * objSize.width),
-            (position.dy * objSize.height),
-          );
+          Offset((position.dx * objSize.width), (position.dy * objSize.height));
     }
   }
 }

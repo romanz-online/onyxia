@@ -10,12 +10,8 @@ class TimestampService {
 
   static String formatLastUpdated(String pretext, DateTime? dateTime) =>
       dateTime != null
-          ? '$pretext ${formatTimeAgo(
-              dateTime,
-              useShortFormat: true,
-              usePlural: false,
-            )}'
-          : 'Never edited';
+      ? '$pretext ${formatTimeAgo(dateTime, useShortFormat: true, usePlural: false)}'
+      : 'Never edited';
 
   /// Formats a DateTime as a "time ago" string (e.g., "5 minutes ago", "2 hours ago")
   ///

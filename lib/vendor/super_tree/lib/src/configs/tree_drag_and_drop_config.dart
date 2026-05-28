@@ -11,7 +11,9 @@ class TreeDragAndDropStyle {
 
   /// Returns a copy of this style with the given fields replaced.
   TreeDragAndDropStyle copyWith({Color? indicatorColor}) {
-    return TreeDragAndDropStyle(indicatorColor: indicatorColor ?? this.indicatorColor);
+    return TreeDragAndDropStyle(
+      indicatorColor: indicatorColor ?? this.indicatorColor,
+    );
   }
 }
 
@@ -26,12 +28,21 @@ class TreeDragAndDropConfig<T> {
   /// Callback to determine if a node can be dropped at a specific position.
   ///
   /// If null, all drops not forming cycles are accepted.
-  final bool Function(TreeNode<T> draggedNode, TreeNode<T> targetNode, NodeDropPosition position)? canAcceptDrop;
+  final bool Function(
+    TreeNode<T> draggedNode,
+    TreeNode<T> targetNode,
+    NodeDropPosition position,
+  )?
+  canAcceptDrop;
 
   /// Callback to determine if a set of nodes can be dropped at a specific position.
   ///
   /// If null, batch drops fall back to [canAcceptDrop] validation per node.
-  final bool Function(List<TreeNode<T>> draggedNodes, TreeNode<T> targetNode, NodeDropPosition position)?
+  final bool Function(
+    List<TreeNode<T>> draggedNodes,
+    TreeNode<T> targetNode,
+    NodeDropPosition position,
+  )?
   canAcceptDropMany;
 
   /// Top/bottom edge band ratio used to classify drops as above/below.
@@ -71,8 +82,18 @@ class TreeDragAndDropConfig<T> {
 
   /// Returns a copy of this config with the given fields replaced.
   TreeDragAndDropConfig<T> copyWith({
-    bool Function(TreeNode<T> draggedNode, TreeNode<T> targetNode, NodeDropPosition position)? canAcceptDrop,
-    bool Function(List<TreeNode<T>> draggedNodes, TreeNode<T> targetNode, NodeDropPosition position)? canAcceptDropMany,
+    bool Function(
+      TreeNode<T> draggedNode,
+      TreeNode<T> targetNode,
+      NodeDropPosition position,
+    )?
+    canAcceptDrop,
+    bool Function(
+      List<TreeNode<T>> draggedNodes,
+      TreeNode<T> targetNode,
+      NodeDropPosition position,
+    )?
+    canAcceptDropMany,
     double? dropEdgeBandFraction,
     double? dropEdgeBandFractionForLeaf,
     double? dropPositionHysteresisPx,
@@ -84,10 +105,13 @@ class TreeDragAndDropConfig<T> {
       canAcceptDrop: canAcceptDrop ?? this.canAcceptDrop,
       canAcceptDropMany: canAcceptDropMany ?? this.canAcceptDropMany,
       dropEdgeBandFraction: dropEdgeBandFraction ?? this.dropEdgeBandFraction,
-      dropEdgeBandFractionForLeaf: dropEdgeBandFractionForLeaf ?? this.dropEdgeBandFractionForLeaf,
-      dropPositionHysteresisPx: dropPositionHysteresisPx ?? this.dropPositionHysteresisPx,
+      dropEdgeBandFractionForLeaf:
+          dropEdgeBandFractionForLeaf ?? this.dropEdgeBandFractionForLeaf,
+      dropPositionHysteresisPx:
+          dropPositionHysteresisPx ?? this.dropPositionHysteresisPx,
       enableAutoScroll: enableAutoScroll ?? this.enableAutoScroll,
-      autoScrollEdgeThresholdPx: autoScrollEdgeThresholdPx ?? this.autoScrollEdgeThresholdPx,
+      autoScrollEdgeThresholdPx:
+          autoScrollEdgeThresholdPx ?? this.autoScrollEdgeThresholdPx,
       autoScrollMaxStepPx: autoScrollMaxStepPx ?? this.autoScrollMaxStepPx,
     );
   }

@@ -9,8 +9,8 @@ final selectedArtifactProvider = Provider<Artifact?>((ref) {
 
 final _selectedArtifactNameFromUrlProvider =
     NotifierProvider<_SelectedArtifactNameFromUrlNotifier, String?>(
-  _SelectedArtifactNameFromUrlNotifier.new,
-);
+      _SelectedArtifactNameFromUrlNotifier.new,
+    );
 
 class _SelectedArtifactNameFromUrlNotifier extends Notifier<String?> {
   @override

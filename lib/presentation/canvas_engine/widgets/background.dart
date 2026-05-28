@@ -59,7 +59,7 @@ class BackgroundState extends ConsumerState<Background>
   Widget build(BuildContext context) {
     if (_disposed) {
       // Return a simple container if disposed
-      return Container(color: ThemeHelper.neutral200(context));
+      return Container(color: ThemeHelper.neutral800(context));
     }
 
     try {
@@ -69,7 +69,7 @@ class BackgroundState extends ConsumerState<Background>
       // Show loading indicator while bounds are being initialized
       if (canvasBounds.isLoading) {
         return Container(
-          color: ThemeHelper.neutral200(context),
+          color: ThemeHelper.neutral800(context),
           child: Center(child: OnyxiaLoadingIndicator()),
         );
       }
@@ -81,14 +81,14 @@ class BackgroundState extends ConsumerState<Background>
           canvasBounds.backgroundImage == null &&
           !canvasBounds.hasError) {
         return Container(
-          color: ThemeHelper.neutral200(context),
+          color: ThemeHelper.neutral800(context),
           child: Center(child: OnyxiaLoadingIndicator()),
         );
       }
 
       return RepaintBoundary(
         child: NarwhalPaint(
-          backgroundColor: ThemeHelper.neutral200(context),
+          backgroundColor: ThemeHelper.neutral800(context),
           painter: _CanvasBackgroundPainter(
             canvasBounds: canvasBounds,
             context: context,
@@ -98,7 +98,7 @@ class BackgroundState extends ConsumerState<Background>
     } catch (e) {
       // Return fallback container if ref access fails
       debugPrint('Canvas background build error: $e');
-      return Container(color: ThemeHelper.neutral200(context));
+      return Container(color: ThemeHelper.neutral800(context));
     }
   }
 }

@@ -5,9 +5,9 @@ enum UserRole with NarwhalEnum {
   owner;
 
   String get label => switch (this) {
-        UserRole.member => 'Member',
-        UserRole.owner => 'Owner',
-      };
+    UserRole.member => 'Member',
+    UserRole.owner => 'Owner',
+  };
 }
 
 class VaultMember {
@@ -31,11 +31,7 @@ class VaultMember {
     this.updatedBy,
   });
 
-  VaultMember copyWith({
-    String? vaultId,
-    String? userId,
-    UserRole? role,
-  }) =>
+  VaultMember copyWith({String? vaultId, String? userId, UserRole? role}) =>
       VaultMember(
         vaultId: vaultId ?? this.vaultId,
         userId: userId ?? this.userId,
@@ -43,20 +39,20 @@ class VaultMember {
       );
 
   Map<String, dynamic> toMap() => {
-        'vault_id': vaultId,
-        'user_id': userId,
-        'role': role.value,
-      };
+    'vault_id': vaultId,
+    'user_id': userId,
+    'role': role.value,
+  };
 
   VaultMember.fromMap(Map<String, dynamic> map)
-      : vaultId = map['vault_id'] ?? '',
-        userId = map['user_id'] ?? '',
-        role = UserRole.values.fromString(map['role'] ?? ''),
-        //
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'] ?? '',
-        updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';
+    : vaultId = map['vault_id'] ?? '',
+      userId = map['user_id'] ?? '',
+      role = UserRole.values.fromString(map['role'] ?? ''),
+      //
+      createdAt = TimestampService.fromMap(map['created_at']),
+      createdBy = map['created_by'] ?? '',
+      updatedAt = TimestampService.fromMap(map['updated_at']),
+      updatedBy = map['updated_by'] ?? '';
 
   @override
   bool operator ==(Object other) {
@@ -85,7 +81,8 @@ class VaultMember {
   }
 
   @override
-  String toString() => 'VaultMember('
+  String toString() =>
+      'VaultMember('
       'vaultId: $vaultId, '
       'userId: $userId, '
       'role: ${role.value}, '

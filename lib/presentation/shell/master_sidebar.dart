@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 class MasterSidebar extends ConsumerWidget {
   static const double width = 42;
@@ -20,9 +20,9 @@ class MasterSidebar extends ConsumerWidget {
       width: width,
       height: .infinity,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral100(context),
+        color: ThemeHelper.neutral900(context),
         border: Border(
-          right: BorderSide(color: ThemeHelper.neutral300(context), width: 1),
+          right: BorderSide(color: ThemeHelper.neutral700(context), width: 1),
         ),
       ),
       child: Padding(

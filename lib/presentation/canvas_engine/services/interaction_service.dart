@@ -1,4 +1,4 @@
-﻿import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/canvas_engine/utils/image_drag_data.dart';
 import '../providers/providers.dart';
@@ -80,10 +80,13 @@ class CanvasInteractionService {
 
       // Paste
       if (isModifierPressed && key == LogicalKeyboardKey.keyV) {
-        final targetPosition =
-            ref.read(canvasViewportProvider.notifier).getViewportCenter();
+        final targetPosition = ref
+            .read(canvasViewportProvider.notifier)
+            .getViewportCenter();
         final pasted = await CanvasClipboardService.paste(
-            targetPosition: targetPosition, ref: ref);
+          targetPosition: targetPosition,
+          ref: ref,
+        );
 
         objectsNotifier.addObjects(pasted.$1);
         objectsNotifier.clearSelectedObjects();
@@ -121,8 +124,10 @@ class CanvasInteractionService {
   }
 
   /// Checks if currently focusing on a text input widget
-  static bool isFocusingText(
-      {required BuildContext context, required WidgetRef ref}) {
+  static bool isFocusingText({
+    required BuildContext context,
+    required WidgetRef ref,
+  }) {
     // Check if this widget is still mounted before proceeding
     if (!context.mounted) return false;
 
@@ -169,15 +174,21 @@ class CanvasInteractionService {
 
   /// Checks if modifier keys (Ctrl/Cmd) are currently pressed
   static bool isModifierPressed() {
-    final ctrlPressed = HardwareKeyboard.instance.logicalKeysPressed
-            .contains(LogicalKeyboardKey.controlLeft) ||
-        HardwareKeyboard.instance.logicalKeysPressed
-            .contains(LogicalKeyboardKey.controlRight);
+    final ctrlPressed =
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.controlLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.controlRight,
+        );
 
-    final metaPressed = HardwareKeyboard.instance.logicalKeysPressed
-            .contains(LogicalKeyboardKey.metaLeft) ||
-        HardwareKeyboard.instance.logicalKeysPressed
-            .contains(LogicalKeyboardKey.metaRight);
+    final metaPressed =
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.metaLeft,
+        ) ||
+        HardwareKeyboard.instance.logicalKeysPressed.contains(
+          LogicalKeyboardKey.metaRight,
+        );
 
     return ctrlPressed || metaPressed;
   }
@@ -189,10 +200,9 @@ class CanvasInteractionService {
         !selectedObjects[0].isBrush &&
         !selectedObjects[0].isArtifact &&
         !selectedObjects[0].isImage) {
-      ref.read(canvasTextProvider.notifier).startEditing(
-            selectedObjects[0].content,
-            selectedObjects[0].id,
-          );
+      ref
+          .read(canvasTextProvider.notifier)
+          .startEditing(selectedObjects[0].content, selectedObjects[0].id);
     }
   }
 
@@ -267,16 +277,10 @@ class CanvasInteractionService {
       objectsNotifier.clearSelectedObjects();
       objectsNotifier.selectObject(newObj);
 
-      OnyxiaToast.show(
-        text: 'Image added to canvas',
-        type: ToastType.success,
-      );
+      OnyxiaToast.show(text: 'Image added to canvas', type: ToastType.success);
     } catch (e) {
       debugPrint('Error processing dragged image: $e');
-      OnyxiaToast.show(
-        text: 'Failed to add image: $e',
-        type: ToastType.error,
-      );
+      OnyxiaToast.show(text: 'Failed to add image: $e', type: ToastType.error);
     }
   }
 
@@ -293,8 +297,10 @@ class CanvasInteractionService {
       if (targetObject.isArrow) {
         // Arrow positioning: store as percentage along arrow path (0.0-1.0)
         final arrowPoints = targetObject.arrowProps.points;
-        final pathPercentage =
-            ArrowPathHelper.getPercentageAtPoint(arrowPoints, position);
+        final pathPercentage = ArrowPathHelper.getPercentageAtPoint(
+          arrowPoints,
+          position,
+        );
         finalPosition = Offset(pathPercentage, 0.0);
       } else {
         // Regular object positioning: relative positioning (0.0-1.0)
@@ -367,8 +373,10 @@ class CanvasInteractionService {
       if (targetObject.isArrow) {
         // Arrow positioning: store as percentage along arrow path (0.0-1.0)
         final arrowPoints = targetObject.arrowProps.points;
-        final pathPercentage =
-            ArrowPathHelper.getPercentageAtPoint(arrowPoints, position);
+        final pathPercentage = ArrowPathHelper.getPercentageAtPoint(
+          arrowPoints,
+          position,
+        );
         finalPosition = Offset(pathPercentage, 0.0);
       } else {
         // Regular object positioning: relative positioning (0.0-1.0)
@@ -382,7 +390,9 @@ class CanvasInteractionService {
 
     final commentId = const Uuid().v4();
 
-    ref.read(commentsProvider.notifier).createTemporaryComment(
+    ref
+        .read(commentsProvider.notifier)
+        .createTemporaryComment(
           commentId: commentId,
           position: finalPosition,
           objectId: targetObject?.id,

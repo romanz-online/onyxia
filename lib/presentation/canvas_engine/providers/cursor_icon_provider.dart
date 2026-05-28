@@ -2,8 +2,8 @@ import 'package:onyxia/export.dart';
 
 final canvasMousePressedProvider =
     NotifierProvider.autoDispose<CanvasMousePressedNotifier, bool>(
-  CanvasMousePressedNotifier.new,
-);
+      CanvasMousePressedNotifier.new,
+    );
 
 class CanvasMousePressedNotifier extends Notifier<bool> {
   @override
@@ -14,8 +14,8 @@ class CanvasMousePressedNotifier extends Notifier<bool> {
 
 final cursorIconOverrideProvider =
     NotifierProvider.autoDispose<CursorIconOverrideNotifier, MouseCursor?>(
-  CursorIconOverrideNotifier.new,
-);
+      CursorIconOverrideNotifier.new,
+    );
 
 class CursorIconOverrideNotifier extends Notifier<MouseCursor?> {
   @override

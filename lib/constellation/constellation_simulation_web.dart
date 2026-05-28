@@ -40,8 +40,7 @@ class _WebConstellationSimulation extends ConstellationSimulationBase {
       final jsBuffer = obj.getProperty<JSAny?>('buffer'.toJS);
       if (jsBuffer == null) return;
 
-      final ids = (jsIds as JSArray<JSAny>)
-          .toDart
+      final ids = (jsIds as JSArray<JSAny>).toDart
           .map((s) => (s as JSString).toDart)
           .toList();
 

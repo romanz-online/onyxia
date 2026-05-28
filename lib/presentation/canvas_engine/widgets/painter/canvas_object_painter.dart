@@ -1,4 +1,4 @@
-﻿import 'dart:math';
+import 'dart:math';
 import 'package:touchable/touchable.dart';
 import 'package:onyxia/export.dart';
 import '../../gestures/gestures.dart';
@@ -1468,7 +1468,7 @@ class CanvasObjectPainter {
 
         final innerPaint = Paint()
           ..style = .fill
-          ..color = ThemeHelper.white(context);
+          ..color = ThemeHelper.black(context);
         paintContext.canvas.drawCircle(
           point,
           circleRadius - paint.strokeWidth / 2 + 1,
@@ -2021,9 +2021,9 @@ class CanvasObjectPainter {
 
   Color _getStrokeColor(CanvasObject object, bool drawGaps) {
     if (drawGaps) {
-      return ThemeHelper.blue500(context);
-    } else if (object.color == ThemeHelper.neutral100(context)) {
-      return ThemeHelper.neutral600(context);
+      return ThemeHelper.blue400(context);
+    } else if (object.color == ThemeHelper.neutral900(context)) {
+      return ThemeHelper.neutral400(context);
     }
 
     final hsl = HSLColor.fromColor(object.color);

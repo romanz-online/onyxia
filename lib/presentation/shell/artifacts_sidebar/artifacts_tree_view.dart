@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 import 'dart:async';
 
 class ArtifactsTreeView extends ConsumerStatefulWidget {
@@ -81,7 +81,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     if (item == null || item.type == .folder) return;
 
     if (ref.read(selectedArtifactProvider)?.id == item.id) return;
-    context.go(item.navigationUrl(vaultId));
+    context.go(UrlHelper.artifactPath(vaultId: vaultId, name: item.name));
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {
@@ -174,7 +174,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                   ),
                   child: Icon(
                     LucideIcons.chevronRight,
-                    color: ThemeHelper.neutral900(context),
+                    color: ThemeHelper.neutral100(context),
                     size: 16,
                   ),
                 )
@@ -186,7 +186,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                     node.isExpanded
                         ? LucideIcons.folderOpen
                         : LucideIcons.folder,
-                    color: ThemeHelper.neutral900(context),
+                    color: ThemeHelper.neutral100(context),
                     size: 18,
                   ),
                 )
@@ -195,8 +195,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
           style: TreeViewStyle(
             indentAmount: 16.0,
             padding: .symmetric(vertical: 0),
-            hoverColor: ThemeHelper.neutral200(context),
-            selectedColor: ThemeHelper.neutral200(context),
+            hoverColor: ThemeHelper.neutral800(context),
+            selectedColor: ThemeHelper.neutral800(context),
           ),
           logic: TreeViewConfig(
             enableDragAndDrop: true,
@@ -359,7 +359,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
         OnyxiaMenuItem(
           child: Text(
             opt.label,
-            style: TextStyle(color: ThemeHelper.neutral800(context)),
+            style: TextStyle(color: ThemeHelper.neutral200(context)),
           ),
           onTap: () {
             opt.callback(ref, node, selectedIds);

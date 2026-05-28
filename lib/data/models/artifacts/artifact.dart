@@ -1,4 +1,4 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
 enum ArtifactType with NarwhalEnum {
   note,
@@ -7,11 +7,11 @@ enum ArtifactType with NarwhalEnum {
   image;
 
   String get label => switch (this) {
-        note => 'Note',
-        canvas => 'Canvas',
-        folder => 'Folder',
-        image => 'Image',
-      };
+    note => 'Note',
+    canvas => 'Canvas',
+    folder => 'Folder',
+    image => 'Image',
+  };
 }
 
 abstract class Artifact {
@@ -39,15 +39,15 @@ abstract class Artifact {
 
   // Named constructor for shared field deserialization
   Artifact.fromMap(Map<String, dynamic> map)
-      : id = map['id'] ?? '',
-        type = ArtifactType.values.fromString(map['type']),
-        name = map['name'] ?? '',
-        parentFolderId = map['parent_folder_id'] ?? '',
-        //
-        createdAt = TimestampService.fromMap(map['created_at']),
-        createdBy = map['created_by'] ?? '',
-        updatedAt = TimestampService.fromMap(map['updated_at']),
-        updatedBy = map['updated_by'] ?? '';
+    : id = map['id'] ?? '',
+      type = ArtifactType.values.fromString(map['type']),
+      name = map['name'] ?? '',
+      parentFolderId = map['parent_folder_id'] ?? '',
+      //
+      createdAt = TimestampService.fromMap(map['created_at']),
+      createdBy = map['created_by'] ?? '',
+      updatedAt = TimestampService.fromMap(map['updated_at']),
+      updatedBy = map['updated_by'] ?? '';
 
   /// Factory constructor that creates the appropriate concrete Artifact subclass
   /// based on the 'type' field in the map
@@ -79,11 +79,7 @@ abstract class Artifact {
     };
   }
 
-  Artifact copyWith({
-    String? id,
-    String? name,
-    String? parentFolderId,
-  });
+  Artifact copyWith({String? id, String? name, String? parentFolderId});
 
   @override
   String toString() {
@@ -127,14 +123,10 @@ abstract class Artifact {
         updatedBy.hashCode;
   }
 
-  /// Returns the navigation URL for this item within the given vault.
-  String navigationUrl(String? vaultId) =>
-      vaultId == null ? '' : '/vault/$vaultId/$name';
-
   dynamic castToSubtype() => switch (type) {
-        ArtifactType.note => this as NoteArtifact,
-        ArtifactType.canvas => this as CanvasArtifact,
-        ArtifactType.folder => this as FolderArtifact,
-        ArtifactType.image => this as ImageArtifact,
-      };
+    ArtifactType.note => this as NoteArtifact,
+    ArtifactType.canvas => this as CanvasArtifact,
+    ArtifactType.folder => this as FolderArtifact,
+    ArtifactType.image => this as ImageArtifact,
+  };
 }

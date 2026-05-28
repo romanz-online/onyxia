@@ -12,7 +12,10 @@ class ConstellationNode {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is ConstellationNode && id == other.id && assignedTo == other.assignedTo;
+      identical(this, other) ||
+      other is ConstellationNode &&
+          id == other.id &&
+          assignedTo == other.assignedTo;
 
   @override
   int get hashCode => Object.hash(id, assignedTo);
@@ -26,7 +29,10 @@ class ConstellationEdge {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is ConstellationEdge && source == other.source && target == other.target;
+      identical(this, other) ||
+      other is ConstellationEdge &&
+          source == other.source &&
+          target == other.target;
 
   @override
   int get hashCode => Object.hash(source, target);

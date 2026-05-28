@@ -12,17 +12,12 @@ class User {
   });
 
   User.initial()
-      : id = '',
-        name = 'Anonymous User',
-        email = '',
-        isLogged = false;
+    : id = '',
+      name = 'Anonymous User',
+      email = '',
+      isLogged = false;
 
-  User copyWith({
-    String? id,
-    String? name,
-    String? email,
-    bool? isLogged,
-  }) =>
+  User copyWith({String? id, String? name, String? email, bool? isLogged}) =>
       User(
         id: id ?? this.id,
         name: name ?? this.name,
@@ -31,10 +26,10 @@ class User {
       );
 
   factory User.fromMap(Map<String, dynamic> map) => User(
-        id: map['id'] ?? '',
-        name: map['name'] ?? '',
-        email: map['email'] ?? '',
-      );
+    id: map['id'] ?? '',
+    name: map['name'] ?? '',
+    email: map['email'] ?? '',
+  );
 
   @override
   bool operator ==(Object other) =>
@@ -49,7 +44,8 @@ class User {
   int get hashCode => Object.hash(id, email, name, isLogged);
 
   @override
-  String toString() => 'User(id: $id, '
+  String toString() =>
+      'User(id: $id, '
       'name: $name, '
       'email: $email, '
       'isLogged: $isLogged, '
