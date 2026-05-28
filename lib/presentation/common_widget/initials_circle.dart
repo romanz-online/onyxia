@@ -13,10 +13,7 @@ class InitialsCircle extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: BoxDecoration(
-        shape: .circle,
-        color: ThemeHelper.accentColor(),
-      ),
+      decoration: BoxDecoration(shape: .circle, color: ThemeHelper.accent()),
       child: Center(
         child: Text(
           name.trim().isEmpty
@@ -30,7 +27,7 @@ class InitialsCircle extends StatelessWidget {
           style: TextStyle(
             fontSize: size * 0.38,
             fontWeight: .w500,
-            color: ThemeHelper.neutral900(),
+            color: ThemeHelper.background1(),
           ),
         ),
       ),

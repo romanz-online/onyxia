@@ -85,7 +85,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: .w600,
-                    color: ThemeHelper.neutral200(),
+                    color: ThemeHelper.foreground1(),
                   ),
                 ),
                 const Gap(20),
@@ -119,10 +119,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                   const Gap(8),
                   Text(
                     _errorMessage!,
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: ThemeHelper.errorColor(),
-                    ),
+                    style: TextStyle(fontSize: 12, color: ThemeHelper.error()),
                   ),
                 ],
                 const Gap(16),

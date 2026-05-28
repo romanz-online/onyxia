@@ -23,7 +23,7 @@ class TreeTile extends ConsumerWidget {
           ? BoxDecoration(
               boxShadow: [
                 BoxShadow(
-                  color: ThemeHelper.white().withValues(alpha: 0.2),
+                  color: ThemeHelper.foreground1().withValues(alpha: 0.2),
                   spreadRadius: 1,
                   blurRadius: 3,
                   offset: const Offset(0, 2),

@@ -481,15 +481,15 @@ class _MenuPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 12,
-      shadowColor: ThemeHelper.white().withValues(alpha: 0.15),
+      shadowColor: ThemeHelper.foreground1().withValues(alpha: 0.15),
       borderRadius: .circular(8),
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral900(),
+          color: ThemeHelper.background1(),
           borderRadius: .circular(8),
           border: .all(
-            color: ThemeHelper.neutral500().withValues(alpha: 0.2),
+            color: ThemeHelper.foreground2().withValues(alpha: 0.2),
             width: 1,
           ),
         ),
@@ -515,7 +515,7 @@ class _MenuDivider extends StatelessWidget {
       height: 1,
       margin: .symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral500().withValues(alpha: 0.2),
+        color: ThemeHelper.foreground2().withValues(alpha: 0.2),
       ),
     );
   }
@@ -543,8 +543,8 @@ class _MenuRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textColor = item.enabled
-        ? ThemeHelper.neutral300()
-        : ThemeHelper.neutral500();
+        ? ThemeHelper.foreground1()
+        : ThemeHelper.foreground2();
 
     return MouseRegion(
       onEnter: (_) => onEnter(),
@@ -555,7 +555,7 @@ class _MenuRow extends StatelessWidget {
           height: itemHeight,
           margin: .symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
-            color: highlighted ? ThemeHelper.neutral700() : Colors.transparent,
+            color: highlighted ? ThemeHelper.auxiliary() : Colors.transparent,
             borderRadius: .circular(6),
           ),
           child: Padding(

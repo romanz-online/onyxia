@@ -37,12 +37,12 @@ class DragOffBar extends StatelessWidget {
 
   BoxDecoration _getPanelDecoration(BuildContext context) {
     return BoxDecoration(
-      color: ThemeHelper.neutral900(),
+      color: ThemeHelper.background1(),
       borderRadius: .circular(8),
-      border: .all(color: ThemeHelper.neutral600(), width: 1),
+      border: .all(color: ThemeHelper.auxiliary(), width: 1),
       boxShadow: [
         BoxShadow(
-          color: ThemeHelper.neutral100().withValues(alpha: 0.1),
+          color: ThemeHelper.foreground1().withValues(alpha: 0.1),
           blurRadius: 3,
           offset: const Offset(0, 1),
         ),
@@ -51,7 +51,7 @@ class DragOffBar extends StatelessWidget {
   }
 
   Widget _buildSeparator(BuildContext context) =>
-      Container(width: 1, height: 24, color: ThemeHelper.neutral700());
+      Container(width: 1, height: 24, color: ThemeHelper.auxiliary());
 
   Widget _buildDefaultDragFeedback(
     BuildContext context,
@@ -64,12 +64,12 @@ class DragOffBar extends StatelessWidget {
         width: defaultArtifactObjectDimensions.width,
         height: defaultArtifactObjectDimensions.height,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral900(),
+          color: ThemeHelper.background1(),
           borderRadius: .circular(8),
-          border: .all(color: ThemeHelper.neutral700(), width: 2),
+          border: .all(color: ThemeHelper.auxiliary(), width: 2),
         ),
         child: Center(
-          child: Icon(button.icon, size: 24, color: ThemeHelper.neutral500()),
+          child: Icon(button.icon, size: 24, color: ThemeHelper.foreground2()),
         ),
       ),
     );

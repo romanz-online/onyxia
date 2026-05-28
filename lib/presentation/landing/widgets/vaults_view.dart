@@ -19,7 +19,7 @@ class VaultsView extends ConsumerWidget {
           width: leftColumnWidth,
           child: _VaultListColumn(vaults: vaults),
         ),
-        VerticalDivider(width: 2, color: ThemeHelper.neutral700()),
+        VerticalDivider(width: 2, color: ThemeHelper.auxiliary()),
         Expanded(child: _RightColumn(user: user)),
       ],
     );
@@ -34,7 +34,7 @@ class _VaultListColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ThemeHelper.neutral800(),
+      color: ThemeHelper.background2(),
       padding: .fromLTRB(12, 12, 12, 6),
       child: Column(
         crossAxisAlignment: .start,
@@ -47,7 +47,7 @@ class _VaultListColumn extends StatelessWidget {
                       'No vaults',
                       style: TextStyle(
                         fontSize: 13,
-                        color: ThemeHelper.neutral500(),
+                        color: ThemeHelper.foreground2(),
                       ),
                     ),
                   )
@@ -102,7 +102,7 @@ class _RightColumn extends ConsumerWidget {
             style: TextStyle(
               fontSize: 32,
               fontWeight: .bold,
-              color: ThemeHelper.neutral300(),
+              color: ThemeHelper.foreground1(),
             ),
           ),
           const Gap(16),
@@ -116,7 +116,7 @@ class _RightColumn extends ConsumerWidget {
                   'You are logged in as ${user.email}',
                   style: TextStyle(
                     fontSize: 13,
-                    color: ThemeHelper.neutral500(),
+                    color: ThemeHelper.foreground2(),
                   ),
                 ),
               ),
@@ -213,7 +213,7 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: .w600,
-                      color: ThemeHelper.neutral200(),
+                      color: ThemeHelper.foreground1(),
                     ),
                   ),
                   OnyxiaTextFormField(

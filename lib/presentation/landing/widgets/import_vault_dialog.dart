@@ -97,7 +97,7 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: .w600,
-                color: ThemeHelper.neutral200(),
+                color: ThemeHelper.foreground1(),
               ),
             ),
             OnyxiaTextFormField(
@@ -108,7 +108,7 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
             ),
             Text(
               'Importing ${widget.files.length} files from folder.',
-              style: TextStyle(fontSize: 12, color: ThemeHelper.neutral500()),
+              style: TextStyle(fontSize: 12, color: ThemeHelper.foreground2()),
             ),
             const Spacer(),
             Row(
@@ -146,17 +146,17 @@ class ImportProgressView extends StatelessWidget {
       children: [
         Text(
           'Importing $done / $total files',
-          style: TextStyle(fontSize: 14, color: ThemeHelper.neutral300()),
+          style: TextStyle(fontSize: 14, color: ThemeHelper.foreground1()),
         ),
         LinearProgressIndicator(
           value: value,
           minHeight: 6,
-          backgroundColor: ThemeHelper.neutral800(),
-          valueColor: AlwaysStoppedAnimation<Color>(ThemeHelper.errorColor()),
+          backgroundColor: ThemeHelper.background2(),
+          valueColor: AlwaysStoppedAnimation<Color>(ThemeHelper.error()),
         ),
         Text(
           "Please don't close this window until the import is complete.",
-          style: TextStyle(fontSize: 12, color: ThemeHelper.neutral500()),
+          style: TextStyle(fontSize: 12, color: ThemeHelper.foreground2()),
         ),
       ],
     );

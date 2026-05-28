@@ -246,9 +246,9 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       child: Container(
         width: 180,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral900(),
+          color: ThemeHelper.background1(),
           borderRadius: .circular(4),
-          border: .all(color: ThemeHelper.neutral600(), width: 0.5),
+          border: .all(color: ThemeHelper.auxiliary(), width: 0.5),
         ),
         child: Column(
           mainAxisSize: .min,
@@ -275,7 +275,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
   }
 
   Widget _buildMenuDivider(BuildContext context) =>
-      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral600());
+      Divider(height: 1, thickness: 0, color: ThemeHelper.auxiliary());
 
   Widget _buildActionMenuItem({
     required String title,
@@ -285,7 +285,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
       builder: (context, isHovered) {
         return Container(
           color: isHovered
-              ? ThemeHelper.blue500().withValues(alpha: 0.5)
+              ? ThemeHelper.accent().withValues(alpha: 0.5)
               : Colors.transparent,
           child: ListTile(
             title: Text(
@@ -293,7 +293,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
               style: TextStyle(
                 fontSize: 15,
                 fontWeight: .w400,
-                color: ThemeHelper.neutral100(),
+                color: ThemeHelper.foreground1(),
               ),
             ),
             onTap: onTap,
@@ -352,7 +352,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
         scale,
       );
 
-      final Color borderColor = ThemeHelper.blue400();
+      final Color borderColor = ThemeHelper.accent();
 
       return Positioned(
         left: expandedRect.left,
@@ -376,12 +376,12 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                   width: _defaultSize.width,
                   height: _defaultSize.height,
                   decoration: BoxDecoration(
-                    color: ThemeHelper.neutral900(),
+                    color: ThemeHelper.background1(),
                     borderRadius: .circular(8),
                     border: .all(color: borderColor, width: 1.5),
                     boxShadow: [
                       BoxShadow(
-                        color: ThemeHelper.neutral100().withValues(alpha: 0.3),
+                        color: ThemeHelper.foreground1().withValues(alpha: 0.3),
                         blurRadius: 4,
                         offset: .zero,
                       ),
@@ -418,17 +418,17 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       ),
                                       decoration: InputDecoration(
                                         hintText: 'Untitled',
-                                        hoverColor: ThemeHelper.neutral900(),
-                                        fillColor: ThemeHelper.neutral900(),
+                                        hoverColor: ThemeHelper.background1(),
+                                        fillColor: ThemeHelper.background1(),
                                         focusedBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color: ThemeHelper.neutral600(),
+                                            color: ThemeHelper.auxiliary(),
                                             width: 1,
                                           ),
                                         ),
                                         enabledBorder: OutlineInputBorder(
                                           borderSide: BorderSide(
-                                            color: ThemeHelper.neutral600(),
+                                            color: ThemeHelper.auxiliary(),
                                             width: 1,
                                           ),
                                         ),
@@ -454,7 +454,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                         style: TextStyle(
                                           fontSize: 16,
                                           fontWeight: .w600,
-                                          color: ThemeHelper.neutral100(),
+                                          color: ThemeHelper.foreground1(),
                                         ),
                                         maxLines: 1,
                                         overflow: .ellipsis,
@@ -508,7 +508,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       child: Container(
                                         decoration: BoxDecoration(
                                           border: .all(
-                                            color: ThemeHelper.neutral600(),
+                                            color: ThemeHelper.auxiliary(),
                                             width: 1,
                                           ),
                                           borderRadius: .circular(4),
@@ -520,7 +520,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                           expands: true,
                                           style: TextStyle(
                                             fontSize: 13,
-                                            color: ThemeHelper.neutral100(),
+                                            color: ThemeHelper.foreground1(),
                                             height: 1.5,
                                           ),
                                           decoration: const InputDecoration(
@@ -559,7 +559,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                           : '',
                                       style: TextStyle(
                                         fontSize: 13,
-                                        color: ThemeHelper.neutral100(),
+                                        color: ThemeHelper.foreground1(),
                                         height: 1.5,
                                       ),
                                     ),

@@ -45,21 +45,21 @@ class OnyxiaTextFormField extends StatelessWidget {
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
       validator: validator,
-      style: TextStyle(fontSize: fontSize, color: ThemeHelper.neutral100()),
+      style: TextStyle(fontSize: fontSize, color: ThemeHelper.foreground1()),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(
           fontSize: fontSize,
-          color: ThemeHelper.neutral500().withValues(alpha: 0.7),
+          color: ThemeHelper.foreground2().withValues(alpha: 0.7),
         ),
         counter: const SizedBox(),
-        fillColor: ThemeHelper.neutral900(),
+        fillColor: ThemeHelper.background1(),
         filled: true,
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: ThemeHelper.neutral600(), width: 1),
+          borderSide: BorderSide(color: ThemeHelper.auxiliary(), width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderSide: BorderSide(color: ThemeHelper.neutral400(), width: 1),
+          borderSide: BorderSide(color: ThemeHelper.foreground2(), width: 1),
         ),
       ),
     );

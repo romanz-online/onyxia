@@ -134,7 +134,7 @@ class CanvasPainter extends NarwhalPainter {
     for (final object in selectedObjects) {
       if (object.isBrush) {
         final highlightPaint = Paint()
-          ..color = ThemeHelper.blue400()
+          ..color = ThemeHelper.accent()
           ..style = .stroke
           ..strokeWidth = 1.5;
 
@@ -161,7 +161,7 @@ class CanvasPainter extends NarwhalPainter {
 
   void _drawAlignment(Canvas canvas) {
     final paint = Paint()
-      ..color = ThemeHelper.accentColor()
+      ..color = ThemeHelper.accent()
       ..strokeWidth = 1.0
       ..style = .stroke;
 
@@ -298,7 +298,7 @@ class CanvasPainter extends NarwhalPainter {
     final edgeHandleThickness = 16.0 / scale;
     final edgeWidth = 1.5 / scale;
 
-    final selectionColor = ThemeHelper.blue400();
+    final selectionColor = ThemeHelper.accent();
 
     final edgeHandles = [
       ResizeHandle.topCenter,
@@ -388,8 +388,8 @@ class CanvasPainter extends NarwhalPainter {
     final borderRadius = 3.0 / scale;
     final borderWidth = 2.5 / scale;
 
-    final selectionColor = ThemeHelper.blue400();
-    final backgroundColor = ThemeHelper.neutral900();
+    final selectionColor = ThemeHelper.accent();
+    final backgroundColor = ThemeHelper.background1();
 
     final cornerHandles = [
       ResizeHandle.topLeft,
@@ -455,18 +455,18 @@ class CanvasPainter extends NarwhalPainter {
     final gestureState = ref.read(canvasGestureStateProvider);
     if (gestureState.activeObject != null &&
         gestureState.activeObject!.isArrow &&
-        gestureState.arrowMoveType != ArrowMoveType.none) {
+        gestureState.arrowMoveType != .none) {
       return;
     }
 
     if (object.arrowProps.points.length <= 1 ||
-        object.arrowProps.arrowType == ArrowType.curved) {
+        object.arrowProps.arrowType == .curved) {
       return;
     }
 
     final points = object.arrowProps.points;
     final scale = ref.read(canvasViewportProvider).value.getMaxScaleOnAxis();
-    final selectionColor = ThemeHelper.blue400();
+    final selectionColor = ThemeHelper.accent();
 
     // Calculate hit rectangles for each arrow segment (copied from CanvasArrowInteractive._getArrowSegmentHitRects)
     for (int i = 0; i < points.length - 1; i++) {

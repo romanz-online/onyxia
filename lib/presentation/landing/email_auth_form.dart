@@ -87,7 +87,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           const Gap(8),
           Text(
             _errorMessage!,
-            style: TextStyle(fontSize: 12, color: ThemeHelper.errorColor()),
+            style: TextStyle(fontSize: 12, color: ThemeHelper.error()),
           ),
         ],
         const Gap(12),

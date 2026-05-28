@@ -91,7 +91,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             child: IntrinsicHeight(
               child: SpeechBalloon(
                 nipLocation: .top,
-                color: ThemeHelper.errorColor(),
+                color: ThemeHelper.error(),
                 borderRadius: 6,
                 nipHeight: 8,
                 width: .infinity,
@@ -103,7 +103,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
                       _errorMessage ?? '',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white,
+                        color: ThemeHelper.foreground1(),
                         fontWeight: .w700,
                       ),
                     ),
@@ -138,7 +138,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: .w700,
-            color: ThemeHelper.neutral300(),
+            color: ThemeHelper.foreground1(),
           ),
           decoration: InputDecoration(
             fillColor: Colors.transparent,
@@ -147,7 +147,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             hintStyle: TextStyle(
               fontSize: 28,
               fontWeight: .w700,
-              color: ThemeHelper.neutral300().withValues(alpha: 0.4),
+              color: ThemeHelper.foreground1().withValues(alpha: 0.4),
             ),
             border: .none,
             contentPadding: .symmetric(vertical: 4, horizontal: 0),

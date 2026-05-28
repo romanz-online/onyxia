@@ -33,7 +33,7 @@ class _OnyxiaLoadingIndicatorState extends State<OnyxiaLoadingIndicator>
 
   @override
   Widget build(BuildContext context) {
-    final color = widget.color ?? ThemeHelper.accentColor();
+    final color = widget.color ?? ThemeHelper.accent();
     final dotBase = widget.size * 0.5;
 
     return SizedBox(

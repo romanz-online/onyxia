@@ -123,7 +123,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
             child: IntrinsicHeight(
               child: SpeechBalloon(
                 nipLocation: .top,
-                color: ThemeHelper.errorColor(),
+                color: ThemeHelper.error(),
                 borderRadius: 6,
                 nipHeight: 8,
                 width: .infinity,
@@ -135,7 +135,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       _errorMessage ?? '',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.white,
+                        color: ThemeHelper.foreground1(),
                         fontWeight: .w700,
                       ),
                     ),
@@ -156,7 +156,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       link: _layerLink,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: ThemeHelper.neutral800(),
+                          color: ThemeHelper.background2(),
                           borderRadius: .circular(4),
                         ),
                         child: Shortcuts(
@@ -193,7 +193,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: .normal,
-                                color: ThemeHelper.neutral300(),
+                                color: ThemeHelper.foreground1(),
                               ),
                               decoration: InputDecoration(
                                 border: .none,
@@ -241,7 +241,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: .normal,
-                        color: ThemeHelper.neutral300(),
+                        color: ThemeHelper.foreground1(),
                         letterSpacing: 0.5,
                       ),
                       overflow: .ellipsis,
@@ -254,7 +254,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: .normal,
-                        color: ThemeHelper.neutral500(),
+                        color: ThemeHelper.foreground2(),
                         letterSpacing: 0.5,
                       ),
                       maxLines: 1,

@@ -19,7 +19,7 @@ class PreAuthView extends StatelessWidget {
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: .bold,
-                color: ThemeHelper.neutral300(),
+                color: ThemeHelper.foreground1(),
               ),
             ),
             SizedBox(

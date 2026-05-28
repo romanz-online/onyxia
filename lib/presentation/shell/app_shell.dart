@@ -83,7 +83,7 @@ class _AppShellState extends ConsumerState<AppShell> {
               ),
               Expanded(
                 child: ColoredBox(
-                  color: ThemeHelper.neutral900(),
+                  color: ThemeHelper.background1(),
                   child: WorkspaceHost(
                     vaultId: widget.vaultId,
                     selectedId: widget.selectedId,
@@ -181,8 +181,8 @@ class _ResizeDividerState extends State<_ResizeDivider> {
                 duration: const Duration(milliseconds: 150),
                 width: (_isDragging || isHovered) ? 3 : 1,
                 color: (_isDragging || isHovered)
-                    ? ThemeHelper.accentColor()
-                    : ThemeHelper.neutral700(),
+                    ? ThemeHelper.accent()
+                    : ThemeHelper.auxiliary(),
               ),
             ),
           ),

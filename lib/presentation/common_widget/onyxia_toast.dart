@@ -487,25 +487,27 @@ class _ToastWidget extends StatelessWidget {
     );
   }
 
+  // TODO: simplify this. don't need all of these colors except for error
+
   Color _getBackgroundColor(BuildContext context) => switch (type) {
     .success => NarwhalColors.green900,
-    .warning => ThemeHelper.amber(),
-    .error => ThemeHelper.errorColor(),
-    .info => ThemeHelper.neutral400(),
+    .warning => NarwhalColors.amber,
+    .error => ThemeHelper.error(),
+    .info => ThemeHelper.foreground2(),
   };
 
   Color _getTextColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.neutral300(),
-    .warning => ThemeHelper.neutral100(),
-    .error => ThemeHelper.black(),
-    .info => ThemeHelper.neutral800(),
+    .success => ThemeHelper.foreground1(),
+    .warning => ThemeHelper.foreground1(),
+    .error => ThemeHelper.background1(),
+    .info => ThemeHelper.background2(),
   };
 
   Color _getIconColor(BuildContext context) => switch (type) {
     .success => NarwhalColors.green300,
-    .warning => ThemeHelper.neutral100(),
-    .error => ThemeHelper.black(),
-    .info => ThemeHelper.accentColor(),
+    .warning => ThemeHelper.foreground1(),
+    .error => ThemeHelper.background1(),
+    .info => ThemeHelper.accent(),
   };
 
   IconData _getIcon() => switch (type) {
@@ -544,7 +546,7 @@ class _ProgressToastContent extends StatelessWidget {
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: ThemeHelper.neutral800(),
+                      color: ThemeHelper.background2(),
                       fontSize: 14,
                       fontWeight: .w500,
                     ),
@@ -554,7 +556,7 @@ class _ProgressToastContent extends StatelessWidget {
                 Text(
                   '$percent%',
                   style: TextStyle(
-                    color: ThemeHelper.neutral600(),
+                    color: ThemeHelper.auxiliary(),
                     fontSize: 12,
                     fontWeight: .w400,
                   ),
@@ -566,10 +568,8 @@ class _ProgressToastContent extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: safeValue > 0 ? safeValue : null,
                 minHeight: 4,
-                backgroundColor: ThemeHelper.neutral500(),
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  ThemeHelper.accentColor(),
-                ),
+                backgroundColor: ThemeHelper.foreground2(),
+                valueColor: AlwaysStoppedAnimation<Color>(ThemeHelper.accent()),
               ),
             ),
           ],

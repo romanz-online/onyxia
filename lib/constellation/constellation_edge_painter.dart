@@ -33,7 +33,7 @@ class ConstellationEdgePainter extends CustomPainter {
 
       edgePaint.color = hasHover
           ? (isConnected
-                ? ThemeHelper.accentColor()
+                ? ThemeHelper.accent()
                 : const Color(0x1E969696) /* rgba(150,150,150, 0.12) */ )
           : const Color(0x59969696); // rgba(150,150,150, 0.35)
 

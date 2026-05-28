@@ -45,10 +45,10 @@ class ArrowInteractionService {
 
     if (endObject == null) return;
 
-    arrowPreview.arrow.color = ThemeHelper.neutral400();
-    arrowPreview.arrow.stroke = StrokeType.solid;
-    arrowPreview.arrow.arrowProps.startTip = ArrowTip.none;
-    arrowPreview.arrow.arrowProps.endTip = ArrowTip.triangle;
+    arrowPreview.arrow.color = NarwhalColors.neutral400;
+    arrowPreview.arrow.stroke = .solid;
+    arrowPreview.arrow.arrowProps.startTip = .none;
+    arrowPreview.arrow.arrowProps.endTip = .triangle;
 
     ref.read(pinsProvider.notifier).addPins(pinsToAdd);
     objectsToAdd.add(arrowPreview.arrow);

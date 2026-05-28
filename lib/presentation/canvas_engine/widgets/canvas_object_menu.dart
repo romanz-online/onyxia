@@ -308,7 +308,7 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
                     decoration: BoxDecoration(
                       shape: .circle,
                       gradient: RadialGradient(
-                        colors: [Colors.black, Colors.transparent],
+                        colors: [ThemeHelper.background1(), Colors.transparent],
                       ),
                     ),
                   ),
@@ -412,21 +412,21 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
   }
 
   Widget _buildDivider() =>
-      Container(width: 0.5, height: iconSize, color: ThemeHelper.neutral600());
+      Container(width: 0.5, height: iconSize, color: ThemeHelper.auxiliary());
 
   // SUB-MENUS
 
   Widget _buildColorPalette() {
     final List<Color> colorPalette = [
-      ThemeHelper.neutral100(),
-      ThemeHelper.neutral600(),
+      NarwhalColors.neutral100,
+      NarwhalColors.neutral600,
       NarwhalColors.red800,
       NarwhalColors.orange700,
       NarwhalColors.green700,
       NarwhalColors.blue300,
       NarwhalColors.purple500,
-      ThemeHelper.neutral900(),
-      ThemeHelper.neutral500(),
+      NarwhalColors.neutral900,
+      NarwhalColors.neutral500,
       NarwhalColors.red900,
       NarwhalColors.orange800,
       NarwhalColors.green800,
@@ -689,11 +689,11 @@ class GridPalette extends StatelessWidget {
     return Material(
       elevation: 2,
       borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),
-      color: ThemeHelper.neutral800(),
+      color: ThemeHelper.background2(),
       child: Container(
         decoration: BoxDecoration(
           border: .all(
-            color: ThemeHelper.neutral600(),
+            color: ThemeHelper.auxiliary(),
             width: CanvasObjectMenuState.borderWidth,
           ),
           borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),

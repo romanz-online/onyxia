@@ -35,7 +35,7 @@ class ArtifactsSidebar extends ConsumerWidget {
             duration: duration,
             curve: Curves.easeInOut,
             width: w,
-            color: ThemeHelper.neutral900(),
+            color: ThemeHelper.background1(),
             onEnd: () {
               if (animateNextCollapseChange.value) {
                 animateNextCollapseChange.value = false;

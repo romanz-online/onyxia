@@ -1078,7 +1078,7 @@ class CanvasObjectPainter {
 
     if (paintContext.isGhost) {
       paint = Paint()
-        ..color = ThemeHelper.neutral500().withValues(alpha: 0.5)
+        ..color = ThemeHelper.foreground2().withValues(alpha: 0.5)
         ..isAntiAlias = true
         ..filterQuality = FilterQuality.high;
     }
@@ -1466,7 +1466,7 @@ class CanvasObjectPainter {
 
         final innerPaint = Paint()
           ..style = .fill
-          ..color = ThemeHelper.black();
+          ..color = Colors.black;
         paintContext.canvas.drawCircle(
           point,
           circleRadius - paint.strokeWidth / 2 + 1,
@@ -2019,9 +2019,9 @@ class CanvasObjectPainter {
 
   Color _getStrokeColor(CanvasObject object, bool drawGaps) {
     if (drawGaps) {
-      return ThemeHelper.blue400();
-    } else if (object.color == ThemeHelper.neutral900()) {
-      return ThemeHelper.neutral400();
+      return ThemeHelper.accent();
+    } else if (object.color == ThemeHelper.background1()) {
+      return ThemeHelper.foreground2();
     }
 
     final hsl = HSLColor.fromColor(object.color);
@@ -2030,8 +2030,8 @@ class CanvasObjectPainter {
   }
 
   double _getStrokeWidth(CanvasObject object) => switch (object.stroke) {
-    StrokeType.dashed || StrokeType.solid => 3.5,
-    StrokeType.thick => 6.0,
-    StrokeType.none => 2.0,
+    .dashed || .solid => 3.5,
+    .thick => 6.0,
+    .none => 2.0,
   };
 }

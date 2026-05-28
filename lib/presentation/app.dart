@@ -26,23 +26,24 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
     );
   }
 
+  // TODO: i'm making my own theme. need to gut a lot of this
   ThemeData _buildTheme() {
     return ThemeData(
       fontFamily: 'Inter',
-      colorScheme: ColorScheme.fromSeed(seedColor: ThemeHelper.accentColor()),
-      scaffoldBackgroundColor: ThemeHelper.neutral900(),
-      cardColor: ThemeHelper.neutral900(),
-      dividerColor: ThemeHelper.neutral600(),
-      canvasColor: ThemeHelper.neutral200(),
-      primaryColor: ThemeHelper.accentColor(),
+      colorScheme: ColorScheme.fromSeed(seedColor: ThemeHelper.accent()),
+      scaffoldBackgroundColor: ThemeHelper.background1(),
+      cardColor: ThemeHelper.background1(),
+      dividerColor: ThemeHelper.auxiliary(),
+      canvasColor: ThemeHelper.foreground1(),
+      primaryColor: ThemeHelper.accent(),
       useMaterial3: true,
       appBarTheme: AppBarTheme(
-        backgroundColor: ThemeHelper.neutral900(),
-        foregroundColor: ThemeHelper.neutral700(),
+        backgroundColor: ThemeHelper.background1(),
+        foregroundColor: ThemeHelper.auxiliary(),
         elevation: 0,
-        iconTheme: IconThemeData(color: ThemeHelper.neutral200()),
+        iconTheme: IconThemeData(color: ThemeHelper.foreground1()),
       ),
-      iconTheme: IconThemeData(color: ThemeHelper.neutral200()),
+      iconTheme: IconThemeData(color: ThemeHelper.foreground1()),
       textTheme:
           const TextTheme(
             // Small scale (10px)
@@ -59,24 +60,24 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
             labelLarge: TextStyle(fontSize: 16, fontWeight: .w300),
             bodyLarge: TextStyle(fontSize: 16, fontWeight: .w400),
           ).apply(
-            bodyColor: ThemeHelper.neutral700(),
-            displayColor: ThemeHelper.neutral700(),
+            bodyColor: ThemeHelper.auxiliary(),
+            displayColor: ThemeHelper.auxiliary(),
           ),
       inputDecorationTheme: InputDecorationTheme(
-        fillColor: ThemeHelper.neutral700(),
+        fillColor: ThemeHelper.auxiliary(),
         filled: true,
         border: OutlineInputBorder(
-          borderSide: BorderSide(color: ThemeHelper.neutral600()),
+          borderSide: BorderSide(color: ThemeHelper.auxiliary()),
         ),
       ),
       tooltipTheme: TooltipThemeData(
         waitDuration: Duration(milliseconds: 800),
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral300(),
+          color: ThemeHelper.foreground1(),
           borderRadius: .circular(4),
         ),
       ),
-      popupMenuTheme: PopupMenuThemeData(color: ThemeHelper.neutral200()),
+      popupMenuTheme: PopupMenuThemeData(color: ThemeHelper.foreground1()),
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: _NoTransitionBuilder(),

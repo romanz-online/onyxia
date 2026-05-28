@@ -107,7 +107,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         loading: () => Expanded(child: Center(child: OnyxiaLoadingIndicator())),
         error: (e, _) => Text(
           'Failed to load members: $e',
-          style: TextStyle(color: ThemeHelper.errorColor()),
+          style: TextStyle(color: ThemeHelper.error()),
         ),
         data: (entries) => _buildContent(entries),
       ),
@@ -123,7 +123,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: .w600,
-            color: ThemeHelper.neutral300(),
+            color: ThemeHelper.foreground1(),
           ),
         ),
         const Gap(8),
@@ -156,7 +156,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           Container(
             padding: .all(12),
             decoration: BoxDecoration(
-              color: ThemeHelper.neutral800(),
+              color: ThemeHelper.background2(),
               borderRadius: .circular(8),
             ),
             child: Column(
@@ -167,7 +167,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: .w600,
-                    color: ThemeHelper.neutral300(),
+                    color: ThemeHelper.foreground1(),
                   ),
                 ),
                 const Gap(6),
@@ -179,7 +179,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                         _generatedLink!,
                         style: TextStyle(
                           fontSize: 12,
-                          color: ThemeHelper.neutral200(),
+                          color: ThemeHelper.foreground1(),
                         ),
                         maxLines: 1,
                       ),
@@ -203,7 +203,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           style: TextStyle(
             fontSize: 13,
             fontWeight: .w600,
-            color: ThemeHelper.neutral300(),
+            color: ThemeHelper.foreground1(),
           ),
         ),
         const Gap(8),
@@ -213,7 +213,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
             shrinkWrap: true,
             itemCount: entries.length,
             separatorBuilder: (_, __) =>
-                Divider(height: 1, color: ThemeHelper.neutral700()),
+                Divider(height: 1, color: ThemeHelper.auxiliary()),
             itemBuilder: (_, i) =>
                 _MemberRow(member: entries[i].member, user: entries[i].user),
           ),
@@ -247,7 +247,7 @@ class _MemberRow extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: .w500,
-                    color: ThemeHelper.neutral100(),
+                    color: ThemeHelper.foreground1(),
                   ),
                   maxLines: 1,
                   overflow: .ellipsis,
@@ -257,7 +257,7 @@ class _MemberRow extends StatelessWidget {
                     email,
                     style: TextStyle(
                       fontSize: 12,
-                      color: ThemeHelper.neutral300(),
+                      color: ThemeHelper.foreground1(),
                     ),
                     maxLines: 1,
                     overflow: .ellipsis,
@@ -270,7 +270,7 @@ class _MemberRow extends StatelessWidget {
             style: TextStyle(
               fontSize: 12,
               fontWeight: .w500,
-              color: ThemeHelper.neutral300(),
+              color: ThemeHelper.foreground1(),
             ),
           ),
         ],

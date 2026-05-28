@@ -28,13 +28,16 @@ class InfoMessageView extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 20,
                   fontWeight: .w600,
-                  color: ThemeHelper.neutral200(),
+                  color: ThemeHelper.foreground1(),
                 ),
               ),
               Text(
                 message,
                 textAlign: .center,
-                style: TextStyle(fontSize: 13, color: ThemeHelper.neutral300()),
+                style: TextStyle(
+                  fontSize: 13,
+                  color: ThemeHelper.foreground1(),
+                ),
               ),
             ],
           ),

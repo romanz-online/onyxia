@@ -174,7 +174,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                   ),
                   child: Icon(
                     LucideIcons.chevronRight,
-                    color: ThemeHelper.neutral100(),
+                    color: ThemeHelper.foreground1(),
                     size: 16,
                   ),
                 )
@@ -186,7 +186,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                     node.isExpanded
                         ? LucideIcons.folderOpen
                         : LucideIcons.folder,
-                    color: ThemeHelper.neutral100(),
+                    color: ThemeHelper.foreground1(),
                     size: 18,
                   ),
                 )
@@ -195,8 +195,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
           style: TreeViewStyle(
             indentAmount: 16.0,
             padding: .symmetric(vertical: 0),
-            hoverColor: ThemeHelper.neutral800(),
-            selectedColor: ThemeHelper.neutral800(),
+            hoverColor: ThemeHelper.background2(),
+            selectedColor: ThemeHelper.background2(),
           ),
           logic: TreeViewConfig(
             enableDragAndDrop: true,
@@ -359,7 +359,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
         OnyxiaMenuItem(
           child: Text(
             opt.label,
-            style: TextStyle(color: ThemeHelper.neutral200()),
+            style: TextStyle(color: ThemeHelper.foreground1()),
           ),
           onTap: () {
             opt.callback(ref, node, selectedIds);

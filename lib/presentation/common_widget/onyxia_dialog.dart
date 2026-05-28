@@ -25,17 +25,17 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
       elevation: 4,
       backgroundColor: Colors.transparent,
       surfaceTintColor: Colors.transparent,
-      shadowColor: ThemeHelper.neutral900(),
+      shadowColor: ThemeHelper.background1(),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       child: Material(
-        color: ThemeHelper.neutral900(),
+        color: ThemeHelper.background1(),
         borderRadius: BorderRadius.circular(20),
         clipBehavior: Clip.antiAlias,
         child: Container(
           width: widget.width,
           height: widget.height,
           constraints: const BoxConstraints(minWidth: 300),
-          color: ThemeHelper.neutral900(),
+          color: ThemeHelper.background1(),
           child: Column(
             spacing: 20,
             children: [
@@ -43,7 +43,7 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
               Container(
                 padding: .fromLTRB(20, 20, 20, 0),
                 decoration: BoxDecoration(
-                  color: ThemeHelper.neutral900(),
+                  color: ThemeHelper.background1(),
                   borderRadius: .only(
                     topLeft: .circular(20),
                     topRight: .circular(20),
@@ -57,7 +57,7 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
                       style: TextStyle(
                         fontSize: 20,
                         fontWeight: .w400,
-                        color: ThemeHelper.neutral200(),
+                        color: ThemeHelper.foreground1(),
                       ),
                     ),
                   ],

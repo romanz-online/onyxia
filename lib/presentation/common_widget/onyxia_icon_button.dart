@@ -35,7 +35,7 @@ class OnyxiaIconButton extends StatelessWidget {
   });
 
   Color getIconColor() {
-    Color result = ThemeHelper.neutral200();
+    Color result = ThemeHelper.foreground1();
     return enabled ? result : result.withValues(alpha: 0.5);
   }
 
@@ -45,11 +45,11 @@ class OnyxiaIconButton extends StatelessWidget {
       if (!enabled) {
         return Colors.transparent;
       } else if (isPressed || states.contains(WidgetState.pressed)) {
-        return ThemeHelper.neutral600().withValues(alpha: 0.5);
+        return ThemeHelper.auxiliary().withValues(alpha: 0.5);
       } else if (isSelected) {
-        return ThemeHelper.neutral600().withValues(alpha: 0.8);
+        return ThemeHelper.auxiliary().withValues(alpha: 0.8);
       } else if (states.contains(WidgetState.hovered)) {
-        return ThemeHelper.neutral800();
+        return ThemeHelper.background2();
       } else {
         return Colors.transparent;
       }
@@ -115,16 +115,16 @@ class OnyxiaIconButton extends StatelessWidget {
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
-                  color: badgeColor ?? ThemeHelper.red(),
+                  color: badgeColor ?? ThemeHelper.accent(),
                   shape: .circle,
                 ),
                 alignment: .center,
                 child: Text(
                   badgeCount > 9 ? '9+' : '$badgeCount',
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9,
                     fontWeight: .w700,
-                    color: Colors.white,
+                    color: ThemeHelper.foreground1(),
                   ),
                 ),
               ),

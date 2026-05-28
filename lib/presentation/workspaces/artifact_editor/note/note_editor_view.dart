@@ -167,10 +167,7 @@ class _ErrorView extends StatelessWidget {
         mainAxisAlignment: .center,
         spacing: 16,
         children: [
-          Text(
-            'Error: $error',
-            style: TextStyle(color: ThemeHelper.errorColor()),
-          ),
+          Text('Error: $error', style: TextStyle(color: ThemeHelper.error())),
           ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
         ],
       ),
@@ -363,7 +360,7 @@ class _NoteEditorField extends ConsumerWidget {
                 child: BardEditor(
                   controller: controller,
                   collab: collab,
-                  style: TextStyle(color: ThemeHelper.neutral100()),
+                  style: TextStyle(color: ThemeHelper.foreground1()),
                   autofocus: true,
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
@@ -391,13 +388,13 @@ class _DragOverlay extends StatelessWidget {
     if (!isDragOver) return const SizedBox.shrink();
     return Positioned.fill(
       child: Container(
-        color: ThemeHelper.blue400().withValues(alpha: 0.1),
+        color: ThemeHelper.accent().withValues(alpha: 0.1),
         child: Center(
           child: Text(
             'Drop image here',
             style: TextStyle(
               fontSize: 18,
-              color: ThemeHelper.blue400(),
+              color: ThemeHelper.accent(),
               fontWeight: .w500,
             ),
           ),

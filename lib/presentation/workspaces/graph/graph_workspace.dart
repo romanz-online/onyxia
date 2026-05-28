@@ -13,7 +13,7 @@ class _GraphWorkspaceState extends ConsumerState<GraphWorkspace> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral900(),
+        color: ThemeHelper.background1(),
         borderRadius: .only(topLeft: .circular(8)),
       ),
       child: const Constellation(),

@@ -93,7 +93,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
           : ConnectionPoint.bottom;
     }
 
-    ghostObject.color = ThemeHelper.neutral900();
+    ghostObject.color = ThemeHelper.background1();
     ref.read(canvasObjectsProvider.notifier).addObject(ghostObject);
 
     arrow.arrowProps.endObjectId = ghostObject.id;
@@ -270,11 +270,11 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
           child: Material(
             elevation: 8,
             borderRadius: .circular(buttonBorderRadius),
-            color: ThemeHelper.neutral900(),
+            color: ThemeHelper.background1(),
             child: Container(
               decoration: BoxDecoration(
                 border: .all(
-                  color: ThemeHelper.neutral600(),
+                  color: ThemeHelper.auxiliary(),
                   width: borderWidth,
                 ),
                 borderRadius: .circular(buttonBorderRadius),
@@ -292,7 +292,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                     height: addSectionSize.height,
                     width: addSectionSize.width,
                     decoration: BoxDecoration(
-                      color: ThemeHelper.neutral400().withValues(alpha: 0.05),
+                      color: ThemeHelper.foreground2().withValues(alpha: 0.05),
                       borderRadius: .only(
                         bottomLeft: .circular(buttonBorderRadius),
                         bottomRight: .circular(buttonBorderRadius),
@@ -384,14 +384,14 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
             child: IntrinsicWidth(
               child: Material(
                 elevation: 12,
-                shadowColor: ThemeHelper.white().withValues(alpha: 0.15),
+                shadowColor: ThemeHelper.foreground1().withValues(alpha: 0.15),
                 borderRadius: .circular(8),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: ThemeHelper.neutral900(),
+                    color: ThemeHelper.background1(),
                     borderRadius: .circular(8),
                     border: .all(
-                      color: ThemeHelper.neutral500().withValues(alpha: 0.2),
+                      color: ThemeHelper.foreground2().withValues(alpha: 0.2),
                       width: 1,
                     ),
                   ),
@@ -414,7 +414,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
         padding: .all(16),
         child: Text(
           'No child notes available',
-          style: TextStyle(fontSize: 14, color: ThemeHelper.neutral500()),
+          style: TextStyle(fontSize: 14, color: ThemeHelper.foreground2()),
           textAlign: .center,
         ),
       );
@@ -454,7 +454,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
           height: 40,
           margin: .symmetric(horizontal: 4, vertical: 1),
           decoration: BoxDecoration(
-            color: isHovered ? ThemeHelper.neutral700() : Colors.transparent,
+            color: isHovered ? ThemeHelper.auxiliary() : Colors.transparent,
             borderRadius: .circular(6),
           ),
           child: Padding(
@@ -464,7 +464,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                 Icon(
                   LucideIcons.fileText,
                   size: 16,
-                  color: ThemeHelper.neutral300(),
+                  color: ThemeHelper.foreground1(),
                 ),
                 const Gap(8),
                 Expanded(
@@ -473,7 +473,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: .w500,
-                      color: ThemeHelper.neutral300(),
+                      color: ThemeHelper.foreground1(),
                     ),
                     maxLines: 1,
                     overflow: .ellipsis,

@@ -51,7 +51,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
           icon: LucideIcons.users,
           child: Text(
             'Members',
-            style: TextStyle(color: ThemeHelper.neutral100()),
+            style: TextStyle(color: ThemeHelper.foreground1()),
           ),
           onTap: () => showDialog(
             context: context,
@@ -63,7 +63,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
           icon: LucideIcons.logOut,
           child: Text(
             'Manage Vaults',
-            style: TextStyle(color: ThemeHelper.neutral100()),
+            style: TextStyle(color: ThemeHelper.foreground1()),
           ),
           onTap: () => context.go(Routes.home),
         ),

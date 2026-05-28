@@ -145,12 +145,12 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
           width: _width,
           height: _height,
           decoration: BoxDecoration(
-            color: ThemeHelper.neutral900(),
+            color: ThemeHelper.background1(),
             borderRadius: .circular(8),
-            border: .all(color: ThemeHelper.neutral700(), width: 2),
+            border: .all(color: ThemeHelper.auxiliary(), width: 2),
             boxShadow: [
               BoxShadow(
-                color: ThemeHelper.neutral100().withValues(alpha: 0.15),
+                color: ThemeHelper.foreground1().withValues(alpha: 0.15),
                 blurRadius: 8,
               ),
             ],

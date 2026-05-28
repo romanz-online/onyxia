@@ -182,7 +182,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
     final viewportController = ref.watch(canvasViewportProvider);
 
     return Container(
-      color: ThemeHelper.neutral800(),
+      color: ThemeHelper.background2(),
       child: Listener(
         onPointerDown: (_) =>
             ref.read(canvasMousePressedProvider.notifier).set(true),
@@ -424,9 +424,9 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
           width: width,
           height: height,
           decoration: BoxDecoration(
-            color: ThemeHelper.neutral800(),
+            color: ThemeHelper.background2(),
             borderRadius: .circular(8),
-            border: .all(color: ThemeHelper.neutral600(), width: 1.5),
+            border: .all(color: ThemeHelper.auxiliary(), width: 1.5),
           ),
         ),
       ),
@@ -546,12 +546,12 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
             if (!isDragHovering) return const SizedBox.expand();
 
             return Container(
-              color: ThemeHelper.blue500().withValues(alpha: 0.5),
+              color: ThemeHelper.accent().withValues(alpha: 0.5),
               padding: .all(16),
               child: DottedBorder(
                 borderType: .RRect,
                 radius: .circular(8),
-                color: ThemeHelper.black().withValues(alpha: 0.7),
+                color: ThemeHelper.background1().withValues(alpha: 0.7),
                 strokeWidth: 4,
                 dashPattern: const [8, 4],
                 child: Container(
