@@ -3,30 +3,30 @@ import 'package:onyxia/export.dart';
 class NarwhalColors {
   NarwhalColors._();
 
-  static const neutral900 = Color(0xFF1C1C1E);
-  // static const neutral800 = Color(0xFF28282C);
-  // static const neutral700 = Color(0xFF394648);
-  static const neutral600 = Color(0xFF536560);
-  static const neutral500 = Color(0xFF909699);
-  static const neutral400 = Color(0xFFCFD8DC);
-  static const neutral300 = Color(0xFFECEFF1);
-  // static const neutral200 = Color(0xFFF7F9F9);
-  static const neutral100 = Color(0xFFFFFFFF);
+  static const neutral900 = const Color(0xFF1C1C1E);
+  // static const neutral800 = const Color(0xFF28282C);
+  // static const neutral700 = const Color(0xFF394648);
+  static const neutral600 = const Color(0xFF536560);
+  static const neutral500 = const Color(0xFF909699);
+  static const neutral400 = const Color(0xFFCFD8DC);
+  static const neutral300 = const Color(0xFFECEFF1);
+  // static const neutral200 = const Color(0xFFF7F9F9);
+  static const neutral100 = const Color(0xFFFFFFFF);
 
-  static const blue600 = Color(0xFF699DFF);
-  static const blue300 = Color(0xFFC8DBFF);
+  static const blue600 = const Color(0xFF699DFF);
+  static const blue300 = const Color(0xFFC8DBFF);
 
-  static const green800 = Color(0xFF2E7D32);
-  static const green700 = Color(0xFF388E3C);
+  static const green800 = const Color(0xFF2E7D32);
+  static const green700 = const Color(0xFF388E3C);
 
-  static const orange800 = Color(0xFFEF6C00);
-  static const orange700 = Color(0xFFF57C00);
+  static const orange800 = const Color(0xFFEF6C00);
+  static const orange700 = const Color(0xFFF57C00);
 
-  static const red900 = Color(0xFFB71C1C);
-  static const red800 = Color(0xFFC62828);
+  static const red900 = const Color(0xFFB71C1C);
+  static const red800 = const Color(0xFFC62828);
 
-  static const purple600 = Color(0xFF8E24AA);
-  static const purple500 = Color(0xFF9C27B0);
+  static const purple600 = const Color(0xFF8E24AA);
+  static const purple500 = const Color(0xFF9C27B0);
 }
 
 /// A helper class for getting theme-aware colors.
