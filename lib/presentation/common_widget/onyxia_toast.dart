@@ -488,7 +488,7 @@ class _ToastWidget extends StatelessWidget {
   }
 
   Color _getBackgroundColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.green900(),
+    .success => NarwhalColors.green900,
     .warning => ThemeHelper.amber(),
     .error => ThemeHelper.errorColor(),
     .info => ThemeHelper.neutral400(),
@@ -502,7 +502,7 @@ class _ToastWidget extends StatelessWidget {
   };
 
   Color _getIconColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.green300(),
+    .success => NarwhalColors.green300,
     .warning => ThemeHelper.neutral100(),
     .error => ThemeHelper.black(),
     .info => ThemeHelper.accentColor(),

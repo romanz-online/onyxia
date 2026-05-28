@@ -91,7 +91,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             child: IntrinsicHeight(
               child: SpeechBalloon(
                 nipLocation: .top,
-                color: ThemeHelper.red500(),
+                color: ThemeHelper.errorColor(),
                 borderRadius: 6,
                 nipHeight: 8,
                 width: .infinity,

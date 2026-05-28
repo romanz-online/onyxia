@@ -34,32 +34,28 @@ class OnyxiaIconButton extends StatelessWidget {
     this.badgeColor,
   });
 
-  Color getIconColor(IconButtonThemeHelper theme) {
-    Color result = theme.iconColor();
+  Color getIconColor() {
+    Color result = ThemeHelper.neutral200();
     return enabled ? result : result.withValues(alpha: 0.5);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeHelper.iconButton;
-
     Color getBackgroundColor(Set<WidgetState> states) {
       if (!enabled) {
         return Colors.transparent;
-      } else if (isPressed) {
-        return theme.pressedBackgroundColor();
+      } else if (isPressed || states.contains(WidgetState.pressed)) {
+        return ThemeHelper.neutral600().withValues(alpha: 0.5);
       } else if (isSelected) {
-        return theme.selectedBackgroundColor();
-      } else if (states.contains(WidgetState.pressed)) {
-        return theme.pressedBackgroundColor();
+        return ThemeHelper.neutral600().withValues(alpha: 0.8);
       } else if (states.contains(WidgetState.hovered)) {
-        return theme.hoveredBackgroundColor();
+        return ThemeHelper.neutral800();
       } else {
-        return theme.defaultBackgroundColor();
+        return Colors.transparent;
       }
     }
 
-    final iconColorFinal = iconColor ?? getIconColor(theme);
+    final iconColorFinal = iconColor ?? getIconColor();
 
     final button = SizedBox(
       width: size + (hasCaret ? 24 : 0),
@@ -70,7 +66,7 @@ class OnyxiaIconButton extends StatelessWidget {
           padding: .all(.all(3)),
           backgroundColor: .resolveWith<Color>(getBackgroundColor),
           overlayColor: .all(Colors.transparent),
-          side: .all(BorderSide.none),
+          side: .all(.none),
           shape: .all(RoundedRectangleBorder(borderRadius: .circular(8))),
           mouseCursor: .all(SystemMouseCursors.basic),
         ),
@@ -86,7 +82,7 @@ class OnyxiaIconButton extends StatelessWidget {
                         ? LucideIcons.chevronUp
                         : LucideIcons.chevronDown,
                     size: 16,
-                    color: getIconColor(theme),
+                    color: getIconColor(),
                   ),
                 ],
               )

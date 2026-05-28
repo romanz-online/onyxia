@@ -96,15 +96,12 @@ class ThemeHelper {
   // TODO: switch to using themed: https://pub.dev/packages/themed and let users switch between them on the fly. use "slumber" as a second theme, #051622 #1BA098 #DEB992
 
   static Color accentColor() => orange();
-  static Color errorColor() => NarwhalColors.red400;
+  static Color errorColor() => NarwhalColors.red500;
 
   static Color amber() => NarwhalColors.amber;
   static Color yellow() => NarwhalColors.yellow;
-  static Color blue() => NarwhalColors.blue;
   static Color red() => NarwhalColors.red;
   static Color orange() => NarwhalColors.orange;
-  static Color green() => NarwhalColors.green;
-  static Color purple() => NarwhalColors.purple;
   static Color black() => Colors.black;
   static Color white() => Colors.white;
 
@@ -118,62 +115,6 @@ class ThemeHelper {
   static Color neutral800() => NarwhalColors.neutral800;
   static Color neutral900() => NarwhalColors.neutral900;
 
-  static Color red100() => NarwhalColors.red100;
-  static Color red200() => NarwhalColors.red200;
-  static Color red300() => NarwhalColors.red300;
-  static Color red400() => NarwhalColors.red400;
-  static Color red500() => NarwhalColors.red500;
-  static Color red600() => NarwhalColors.red600;
-  static Color red700() => NarwhalColors.red700;
-  static Color red800() => NarwhalColors.red800;
-  static Color red900() => NarwhalColors.red900;
-
-  static Color orange200() => NarwhalColors.orange200;
-  static Color orange300() => NarwhalColors.orange300;
-  static Color orange400() => NarwhalColors.orange400;
-  static Color orange700() => NarwhalColors.orange700;
-  static Color orange800() => NarwhalColors.orange800;
-
-  static Color green300() => NarwhalColors.green300;
-  static Color green400() => NarwhalColors.green400;
-  static Color green500() => NarwhalColors.green500;
-  static Color green600() => NarwhalColors.green600;
-  static Color green700() => NarwhalColors.green700;
-  static Color green800() => NarwhalColors.green800;
-  static Color green900() => NarwhalColors.green900;
-
-  static Color blue100() => NarwhalColors.blue100;
-  static Color blue200() => NarwhalColors.blue200;
-  static Color blue300() => NarwhalColors.blue300;
   static Color blue400() => NarwhalColors.blue400;
   static Color blue500() => NarwhalColors.blue500;
-  static Color blue600() => NarwhalColors.blue600;
-  static Color blue700() => NarwhalColors.blue700;
-  static Color blue800() => NarwhalColors.blue800;
-
-  static Color purple100() => NarwhalColors.purple100;
-  static Color purple200() => NarwhalColors.purple200;
-  static Color purple300() => NarwhalColors.purple300;
-  static Color purple400() => NarwhalColors.purple400;
-  static Color purple500() => NarwhalColors.purple500;
-  static Color purple600() => NarwhalColors.purple600;
-
-  static const IconButtonThemeHelper iconButton = IconButtonThemeHelper();
-}
-
-// TODO: get rid of this. let OnyxiaIconButton handle all of this internally
-class IconButtonThemeHelper {
-  const IconButtonThemeHelper();
-
-  Color defaultBackgroundColor() => Colors.transparent;
-
-  Color hoveredBackgroundColor() => ThemeHelper.neutral800();
-
-  Color selectedBackgroundColor() =>
-      ThemeHelper.neutral600().withValues(alpha: 0.8);
-
-  Color pressedBackgroundColor() =>
-      ThemeHelper.neutral600().withValues(alpha: 0.5);
-
-  Color iconColor() => ThemeHelper.neutral200();
 }

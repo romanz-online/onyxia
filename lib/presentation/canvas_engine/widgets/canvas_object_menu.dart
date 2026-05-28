@@ -420,18 +420,18 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     final List<Color> colorPalette = [
       ThemeHelper.neutral100(),
       ThemeHelper.neutral600(),
-      ThemeHelper.red800(),
-      ThemeHelper.orange700(),
-      ThemeHelper.green700(),
-      ThemeHelper.blue300(),
-      ThemeHelper.purple500(),
+      NarwhalColors.red800,
+      NarwhalColors.orange700,
+      NarwhalColors.green700,
+      NarwhalColors.blue300,
+      NarwhalColors.purple500,
       ThemeHelper.neutral900(),
       ThemeHelper.neutral500(),
-      ThemeHelper.red900(),
-      ThemeHelper.orange800(),
-      ThemeHelper.green800(),
-      ThemeHelper.blue600(),
-      ThemeHelper.purple600(),
+      NarwhalColors.red900,
+      NarwhalColors.orange800,
+      NarwhalColors.green800,
+      NarwhalColors.blue600,
+      NarwhalColors.purple600,
     ];
 
     final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
