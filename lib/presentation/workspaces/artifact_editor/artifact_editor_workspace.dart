@@ -78,6 +78,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                   color: ThemeHelper.neutral800(context),
                 ),
               ),
+              // TODO: this should have an inline-text hyperlink button to create a new untitled note
               Text(
                 'Select an item from the sidebar to view',
                 style: TextStyle(
