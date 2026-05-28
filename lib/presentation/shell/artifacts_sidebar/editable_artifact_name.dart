@@ -1,8 +1,6 @@
 ﻿import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
-// TODO: i'm pretty sure the super tree is preventing me from doing various things in the text editor here, like pressing space to add a space or pressing enter to submit or esc to undo the change and leave editing mode
-
 final renameArtifactIdProvider =
     NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
       RenameArtifactIdNotifier.new,
@@ -39,6 +37,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
   bool _isEditing = false;
   late TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
+  final FocusNode _keyboardFocusNode = FocusNode();
   final OverlayPortalController _overlayController = OverlayPortalController();
   final LayerLink _layerLink = LayerLink();
   String? _errorMessage;
@@ -77,7 +76,13 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
   void dispose() {
     _controller.dispose();
     _focusNode.dispose();
+    _keyboardFocusNode.dispose();
     super.dispose();
+  }
+
+  void _cancelEditing() {
+    _controller.text = _baseName;
+    _focusNode.unfocus();
   }
 
   Future<void> _saveChanges() async {
@@ -154,37 +159,68 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                           color: ThemeHelper.neutral200(context),
                           borderRadius: .circular(4),
                         ),
-                        child: TextField(
-                          controller: _controller,
-                          focusNode: _focusNode,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: .normal,
-                            color: ThemeHelper.neutral700(context),
-                          ),
-                          decoration: InputDecoration(
-                            border: .none,
-                            contentPadding: .zero,
-                            isDense: true,
-                            fillColor: Colors.transparent,
-                            hoverColor: Colors.transparent,
-                          ),
-                          autofocus: true,
-                          onSubmitted: (_) => _saveChanges(),
-                          onChanged: (value) {
-                            final msg = ItemTitleValidationService.errorMessage(
-                              ref.read(artifactsProvider).value ??
-                                  const <Artifact>[],
-                              value,
-                              widget.item.id,
-                            );
-                            setState(() => _errorMessage = msg);
-                            if (msg != null) {
-                              _overlayController.show();
-                            } else {
-                              _overlayController.hide();
-                            }
+                        child: Shortcuts(
+                          shortcuts: const <ShortcutActivator, Intent>{
+                            SingleActivator(LogicalKeyboardKey.space):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.enter):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.arrowUp):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.arrowDown):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.arrowLeft):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.arrowRight):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.home):
+                                DoNothingAndStopPropagationIntent(),
+                            SingleActivator(LogicalKeyboardKey.end):
+                                DoNothingAndStopPropagationIntent(),
                           },
+                          child: KeyboardListener(
+                            focusNode: _keyboardFocusNode,
+                            onKeyEvent: (event) {
+                              if (event is KeyDownEvent &&
+                                  event.logicalKey ==
+                                      LogicalKeyboardKey.escape) {
+                                _cancelEditing();
+                              }
+                            },
+                            child: TextField(
+                              controller: _controller,
+                              focusNode: _focusNode,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: .normal,
+                                color: ThemeHelper.neutral700(context),
+                              ),
+                              decoration: InputDecoration(
+                                border: .none,
+                                contentPadding: .zero,
+                                isDense: true,
+                                fillColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                              ),
+                              autofocus: true,
+                              onSubmitted: (_) => _saveChanges(),
+                              onChanged: (value) {
+                                final msg =
+                                    ItemTitleValidationService.errorMessage(
+                                      ref.read(artifactsProvider).value ??
+                                          const <Artifact>[],
+                                      value,
+                                      widget.item.id,
+                                    );
+                                setState(() => _errorMessage = msg);
+                                if (msg != null) {
+                                  _overlayController.show();
+                                } else {
+                                  _overlayController.hide();
+                                }
+                              },
+                            ),
+                          ),
                         ),
                       ),
                     ),

@@ -2,14 +2,7 @@
 import 'dart:async';
 
 class ArtifactsTreeView extends ConsumerStatefulWidget {
-  const ArtifactsTreeView({
-    super.key,
-    this.onClickNode,
-    this.onDoubleClickNode,
-  });
-
-  final void Function(Artifact item)? onClickNode;
-  final void Function(Artifact item)? onDoubleClickNode;
+  const ArtifactsTreeView({super.key});
 
   @override
   ArtifactsTreeViewState createState() => ArtifactsTreeViewState();
@@ -19,17 +12,29 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   List<TreeNode<Artifact>> _roots = [];
   late TreeController<Artifact> treeController;
   StreamSubscription<TreeNodeMovedEvent<Artifact>>? _moveSubscription;
+  StreamSubscription<TreeSelectionChangedEvent<Artifact>>?
+  _selectionSubscription;
+
+  // Cursor-anchored context menu state. The stack key lets us convert the
+  // global click position from super_tree's callback into a local offset for
+  // the `Positioned` trigger.
+  final GlobalKey _stackKey = GlobalKey();
+  Offset _menuLocalPosition = Offset.zero;
+  TreeNode<Artifact>? _menuNode;
+  bool _isMenuOpen = false;
 
   @override
   void initState() {
     super.initState();
     treeController = TreeController<Artifact>(roots: _roots);
     _subscribeToMoveEvents();
+    _subscribeToSelectionEvents();
   }
 
   @override
   void dispose() {
     _moveSubscription?.cancel();
+    _selectionSubscription?.cancel();
     treeController.dispose();
     super.dispose();
   }
@@ -37,6 +42,13 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   void _subscribeToMoveEvents() {
     _moveSubscription?.cancel();
     _moveSubscription = treeController.addNodeMovedListener(_onNodesMoved);
+  }
+
+  void _subscribeToSelectionEvents() {
+    _selectionSubscription?.cancel();
+    _selectionSubscription = treeController.addSelectionChangedListener(
+      _onSelectionChanged,
+    );
   }
 
   void _onNodesMoved(TreeNodeMovedEvent<Artifact> event) {
@@ -49,9 +61,27 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     }
   }
 
-  void _selectItem(Artifact item) {
-    treeController.setSelectedNodeId(item.id);
-    context.go(item.navigationUrl(ref.read(selectedVaultProvider)?.id));
+  /// Single source of truth: any tree-selection change routes to the URL,
+  /// which in turn updates `selectedArtifactProvider`.
+  void _onSelectionChanged(TreeSelectionChangedEvent<Artifact> event) {
+    final ids = event.selectedNodeIds;
+    final vaultId = ref.read(selectedVaultProvider)?.id;
+    if (vaultId == null) return;
+
+    if (ids.isEmpty) {
+      if (ref.read(selectedArtifactProvider) != null) {
+        context.go('/vault/$vaultId');
+      }
+      return;
+    }
+
+    if (ids.length > 1) return;
+
+    final item = ref.read(artifactsProvider.notifier).getItemById(ids.first);
+    if (item == null || item.type == .folder) return;
+
+    if (ref.read(selectedArtifactProvider)?.id == item.id) return;
+    context.go(item.navigationUrl(vaultId));
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {
@@ -64,12 +94,14 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     final oldController = treeController;
     _moveSubscription?.cancel();
+    _selectionSubscription?.cancel();
     setState(() {
       _roots = newRoots;
       treeController = TreeController<Artifact>(roots: newRoots);
     });
     oldController.dispose();
     _subscribeToMoveEvents();
+    _subscribeToSelectionEvents();
 
     if (preserved.length == 1) {
       treeController.setSelectedNodeId(preserved.first);
@@ -102,12 +134,13 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     // Push URL → tree: when the selected artifact changes from anywhere
     // (direct URL paste, browser back/forward, rename redirect), keep the
-    // tree highlight in sync.
+    // tree highlight in sync. `setSelectedNodeId` and `deselectAll` will
+    // each emit a selection-change event back, but `_onSelectionChanged`
+    // bails when the URL already matches, so the loop terminates.
     ref.listen<Artifact?>(selectedArtifactProvider, (_, next) {
       if (next != null) {
         final ids = treeController.selectedNodeIds;
         if (ids.length == 1 && ids.first == next.id) return;
-        treeController.deselectAll();
         treeController.setSelectedNodeId(next.id);
       } else if (treeController.selectedNodeIds.isNotEmpty) {
         treeController.deselectAll();
@@ -123,112 +156,145 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
-    // TODO: it's also possible to deselect all nodes through the tree widget but that won't deselect the currently-selected artifact. Wiring this requires an on-selection-change callback in vendored super_tree, which CLAUDE.md keeps out of scope. but a workaround would be that if the user clicks the sidebar background (missing a node) then it deselects; this is the tree's behavior anyway, it's just being mimicked this way cont. but more realistically i probably need to dig into the vendor code and expose several signals to properly sync things up
+    // TODO: for some reason selecting or deselecting nodes causes the artifacts sidebar width to change
 
-    // TODO: theme brightness or something is messing up the tree context menu and making it white
-
-    return SuperTreeView<Artifact>(
-      controller: treeController,
-      expansionSlotSize: 20,
-      expansionBuilder: (ctx, node) => node.hasChildren
-          ? Padding(
-              padding: .fromLTRB(
-                node.isExpanded ? 2 : 3,
-                0,
-                0,
-                node.isExpanded ? 4 : 2,
-              ),
-              child: Icon(
-                LucideIcons.chevronRight,
-                color: ThemeHelper.neutral900(context),
-                size: 16,
-              ),
-            )
-          : const SizedBox.shrink(),
-      prefixBuilder: (ctx, node) => node.data.type == .folder
-          ? Padding(
-              padding: .only(left: 7),
-              child: Icon(
-                node.isExpanded ? LucideIcons.folderOpen : LucideIcons.folder,
-                color: ThemeHelper.neutral900(context),
-                size: 18,
-              ),
-            )
-          : const SizedBox.shrink(),
-      contentBuilder: (context, node, _) => TreeTile(node: node),
-      style: TreeViewStyle(
-        indentAmount: 16.0,
-        padding: .symmetric(vertical: 0),
-        hoverColor: ThemeHelper.neutral200(context),
-        selectedColor: ThemeHelper.neutral200(context),
-      ),
-      logic: TreeViewConfig(
-        enableDragAndDrop: true,
-        selectionMode: .multiple,
-        expansionTrigger: .tap,
-        onNodeTap: (id) => _onNodeTapped(id),
-        onNodeDoubleTap: (id) => _onNodeDoubleTapped(id),
-        dragAndDrop: TreeDragAndDropConfig(
-          canAcceptDrop: (draggedNode, targetNode, position) {
-            if (position != .inside) return false;
-            if (targetNode.data.type != .folder) return false;
-            if (targetNode.id == draggedNode.id) return false;
-            return true;
-          },
-          canAcceptDropMany: (draggedNodes, targetNode, position) {
-            if (position != .inside) return false;
-            if (targetNode.data.type != .folder) return false;
-            if (draggedNodes.map((e) => e.data.id).contains(targetNode.id)) {
-              return false;
-            }
-            return true;
-          },
+    return Stack(
+      key: _stackKey,
+      children: [
+        SuperTreeView<Artifact>(
+          controller: treeController,
+          expansionSlotSize: 20,
+          expansionBuilder: (ctx, node) => node.hasChildren
+              ? Padding(
+                  padding: .fromLTRB(
+                    node.isExpanded ? 2 : 3,
+                    0,
+                    0,
+                    node.isExpanded ? 4 : 2,
+                  ),
+                  child: Icon(
+                    LucideIcons.chevronRight,
+                    color: ThemeHelper.neutral900(context),
+                    size: 16,
+                  ),
+                )
+              : const SizedBox.shrink(),
+          prefixBuilder: (ctx, node) => node.data.type == .folder
+              ? Padding(
+                  padding: .only(left: 7),
+                  child: Icon(
+                    node.isExpanded
+                        ? LucideIcons.folderOpen
+                        : LucideIcons.folder,
+                    color: ThemeHelper.neutral900(context),
+                    size: 18,
+                  ),
+                )
+              : const SizedBox.shrink(),
+          contentBuilder: (context, node, _) => TreeTile(node: node),
+          style: TreeViewStyle(
+            indentAmount: 16.0,
+            padding: .symmetric(vertical: 0),
+            hoverColor: ThemeHelper.neutral200(context),
+            selectedColor: ThemeHelper.neutral200(context),
+          ),
+          logic: TreeViewConfig(
+            enableDragAndDrop: true,
+            selectionMode: .multiple,
+            expansionTrigger: .tap,
+            onNodeTap: (id) => _onNodeTapped(id),
+            dragAndDrop: TreeDragAndDropConfig(
+              canAcceptDrop: (draggedNode, targetNode, position) {
+                if (position != .inside) return false;
+                if (targetNode.data.type != .folder) return false;
+                if (targetNode.id == draggedNode.id) return false;
+                return true;
+              },
+              canAcceptDropMany: (draggedNodes, targetNode, position) {
+                if (position != .inside) return false;
+                if (targetNode.data.type != .folder) return false;
+                if (draggedNodes
+                    .map((e) => e.data.id)
+                    .contains(targetNode.id)) {
+                  return false;
+                }
+                return true;
+              },
+            ),
+          ),
+          onNodeContextMenuRequested: _openContextMenu,
         ),
-      ),
-      contextMenuBuilder: (ctx, node) =>
-          _buildContextMenuItems(artifactsContextMenuOptions().options, node),
+        if (_menuNode != null)
+          Positioned(
+            left: _menuLocalPosition.dx,
+            top: _menuLocalPosition.dy,
+            child: OnyxiaOverlay(
+              isOpen: _isMenuOpen,
+              anchor: const Aligned(
+                follower: .topLeft,
+                target: .topLeft,
+                offset: Offset.zero,
+                backup: Aligned(
+                  follower: .bottomRight,
+                  target: .topLeft,
+                  offset: Offset.zero,
+                ),
+              ),
+              onClose: _closeContextMenu,
+              builder: (ctx, close) => OnyxiaMenu(
+                items: _buildOnyxiaMenuItems(
+                  artifactsContextMenuOptions().options,
+                  _menuNode!,
+                ),
+                closeOverlay: close,
+              ),
+              child: const SizedBox.shrink(),
+            ),
+          ),
+      ],
     );
   }
 
-  void _onNodeTapped(String id) {
-    if (widget.onClickNode != null) {
-      final item = ref.read(artifactsProvider.notifier).getItemById(id);
-      if (item != null) widget.onClickNode!.call(item);
-      return;
-    }
+  void _openContextMenu(
+    BuildContext ctx,
+    Offset globalPosition,
+    TreeNode<Artifact> node,
+  ) {
+    final renderBox =
+        _stackKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+    setState(() {
+      _menuLocalPosition = renderBox.globalToLocal(globalPosition);
+      _menuNode = node;
+      _isMenuOpen = true;
+    });
+    treeController.setContextMenuNodeId(node.id);
+  }
 
+  void _closeContextMenu() {
+    setState(() {
+      _isMenuOpen = false;
+      _menuNode = null;
+    });
+    treeController.setContextMenuNodeId(null);
+  }
+
+  /// Super_tree's internal tap handler already calls `setSelectedNodeId(id)`,
+  /// which fires the selection-change event that drives navigation. This
+  /// handler only covers the deselect-on-re-tap case super_tree doesn't
+  /// provide: tapping the already-selected artifact deselects it. With no
+  /// modifiers, re-tap on the same node leaves the controller's selection
+  /// set unchanged, so no event fires — call `deselectAll()` to trigger one.
+  // TODO: is this even needed? doesn't the tree return a list of selected id's so if there's nothing selected i can just check there and call deselectAll() there?
+  void _onNodeTapped(String id) {
     final hasModifier =
         HardwareKeyboard.instance.isControlPressed ||
         HardwareKeyboard.instance.isMetaPressed ||
         HardwareKeyboard.instance.isShiftPressed;
     if (hasModifier) return;
 
-    final item = ref.read(artifactsProvider.notifier).getItemById(id);
-    // don't select folders, just let the tree open them
-    if (item == null || item.type == .folder) return;
-
-    // tapping the already-selected artifact deselects it by navigating
-    // back to the vault root, which clears the `selectedId` route param
-    final currentlySelected = ref.read(selectedArtifactProvider);
-    if (currentlySelected?.id == item.id) {
-      final vaultId = ref.read(selectedVaultProvider)?.id;
-      if (vaultId != null) {
-        treeController.deselectAll();
-        context.go('/vault/$vaultId');
-        return;
-      }
-    }
-
-    _selectItem(item);
-  }
-
-  void _onNodeDoubleTapped(String id) {
-    final item = ref.read(artifactsProvider.notifier).getItemById(id);
-    if (item == null) return;
-    if (widget.onDoubleClickNode == null) {
-      _selectItem(item);
-    } else {
-      widget.onDoubleClickNode!.call(item);
+    if (ref.read(selectedArtifactProvider)?.id == id) {
+      treeController.deselectAll();
     }
   }
 
@@ -279,24 +345,23 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     }
   }
 
-  List<ContextMenuItem> _buildContextMenuItems(
+  // TODO: this shouldn't rely on TreeContextMenuOption. it's creating a data structure then translating it into another data structure entirely internally. ridiculous. it should start and end as a OnyxiaMenu and there should be icons similar to what's in vaults_tree_context_menu.dart
+  List<OnyxiaMenuItem> _buildOnyxiaMenuItems(
     List<TreeContextMenuOption> options,
     TreeNode<Artifact> node,
   ) {
-    final List<ContextMenuItem> items = [];
+    final List<OnyxiaMenuItem> items = [];
     final selectedIds = treeController.selectedNodeIds;
     for (final opt in options) {
       if (opt.dividerBefore && items.isNotEmpty) {
-        items.add(
-          ContextMenuItem(
-            child: const Divider(height: 1, thickness: 1),
-            onTap: () {},
-          ),
-        );
+        items.add(const OnyxiaMenuItem.divider());
       }
       items.add(
-        ContextMenuItem(
-          child: Text(opt.label),
+        OnyxiaMenuItem(
+          child: Text(
+            opt.label,
+            style: TextStyle(color: ThemeHelper.neutral800(context)),
+          ),
           onTap: () {
             opt.callback(ref, node, selectedIds);
             if (opt.clearSelectionAfter) treeController.deselectAll();

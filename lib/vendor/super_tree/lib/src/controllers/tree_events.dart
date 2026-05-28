@@ -57,3 +57,19 @@ final class TreeNodeRenamedEvent<T> extends TreeEvent<T> {
   /// The new name that was applied to the node.
   final String newName;
 }
+
+/// Emitted when the set of selected node IDs changes.
+///
+/// Fires only when [selectedNodeIds] actually differs from [previousNodeIds].
+final class TreeSelectionChangedEvent<T> extends TreeEvent<T> {
+  TreeSelectionChangedEvent({
+    required this.selectedNodeIds,
+    required this.previousNodeIds,
+  });
+
+  /// The set of node IDs that are now selected (unmodifiable).
+  final Set<String> selectedNodeIds;
+
+  /// The set of node IDs that were selected before this change (unmodifiable).
+  final Set<String> previousNodeIds;
+}

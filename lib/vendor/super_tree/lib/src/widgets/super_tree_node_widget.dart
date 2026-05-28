@@ -30,6 +30,12 @@ class SuperTreeNodeWidget<T> extends StatefulWidget {
   /// Signature for generating right-click (desktop) or long-press (mobile) context menus.
   final List<ContextMenuItem> Function(BuildContext, TreeNode<T>)? contextMenuBuilder;
 
+  /// Optional delegated open-menu callback. When non-null, takes precedence
+  /// over [contextMenuBuilder] / built-in [ContextMenuOverlay] — the caller
+  /// owns the menu surface entirely.
+  final void Function(BuildContext context, Offset globalPosition, TreeNode<T> node)?
+  onContextMenuRequested;
+
   const SuperTreeNodeWidget({
     super.key,
     required this.node,
@@ -44,6 +50,7 @@ class SuperTreeNodeWidget<T> extends StatefulWidget {
     required this.contentBuilder,
     this.trailingBuilder,
     this.contextMenuBuilder,
+    this.onContextMenuRequested,
   }) : assert(expansionSlotSize > 0);
 
   @override
@@ -255,6 +262,11 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>> with Si
   }
 
   void _showContextMenu(Offset position) {
+    if (widget.onContextMenuRequested != null) {
+      widget.onContextMenuRequested!(context, position, widget.node);
+      return;
+    }
+
     if (widget.contextMenuBuilder == null) return;
 
     final items = widget.contextMenuBuilder!(context, widget.node);

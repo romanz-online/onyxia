@@ -28,7 +28,7 @@ class OnyxiaMenu extends StatelessWidget {
     super.key,
     required this.items,
     required this.closeOverlay,
-    this.width = 180,
+    this.width = 160,
   });
 
   @override
@@ -56,11 +56,11 @@ class OnyxiaMenu extends StatelessWidget {
   Widget _buildItem(BuildContext context, OnyxiaMenuItem item) {
     if (item.isDivider) {
       return Padding(
-        padding: .symmetric(vertical: 4),
+        padding: .symmetric(vertical: 4, horizontal: 4),
         child: Divider(
           height: 1,
-          thickness: 1,
-          color: ThemeHelper.neutral400(context),
+          thickness: 0.5,
+          color: ThemeHelper.neutral800(context),
         ),
       );
     }

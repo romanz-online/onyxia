@@ -153,6 +153,13 @@ class TreeController<T> extends ChangeNotifier {
         .cast<TreeNodeRenamedEvent<T>>();
   }
 
+  /// Emits only [TreeSelectionChangedEvent] instances.
+  Stream<TreeSelectionChangedEvent<T>> get selectionChangedEvents {
+    return events
+        .where((TreeEvent<T> event) => event is TreeSelectionChangedEvent<T>)
+        .cast<TreeSelectionChangedEvent<T>>();
+  }
+
   /// Registers a listener for [TreeNodeAddedEvent] notifications.
   StreamSubscription<TreeNodeAddedEvent<T>> addNodeAddedListener(
     void Function(TreeNodeAddedEvent<T> event) onData,
@@ -179,6 +186,13 @@ class TreeController<T> extends ChangeNotifier {
     void Function(TreeNodeRenamedEvent<T> event) onData,
   ) {
     return nodeRenamedEvents.listen(onData);
+  }
+
+  /// Registers a listener for [TreeSelectionChangedEvent] notifications.
+  StreamSubscription<TreeSelectionChangedEvent<T>> addSelectionChangedListener(
+    void Function(TreeSelectionChangedEvent<T> event) onData,
+  ) {
+    return selectionChangedEvents.listen(onData);
   }
 
   /// Creates a new [TreeController] initialized with optional [roots].
@@ -797,27 +811,52 @@ class TreeController<T> extends ChangeNotifier {
       ? null
       : (_anchorNodeId ?? _selectedNodeIds.first);
 
+  /// Emits a [TreeSelectionChangedEvent] when [_selectedNodeIds] differs from
+  /// [previous]. Call after every mutation that touches the selection set.
+  void _emitSelectionChangedIfNeeded(Set<String> previous) {
+    if (_setEquals(previous, _selectedNodeIds)) return;
+    _eventController.add(
+      TreeSelectionChangedEvent<T>(
+        selectedNodeIds: Set<String>.unmodifiable(_selectedNodeIds),
+        previousNodeIds: Set<String>.unmodifiable(previous),
+      ),
+    );
+  }
+
+  bool _setEquals(Set<String> a, Set<String> b) {
+    if (a.length != b.length) return false;
+    for (final String id in a) {
+      if (!b.contains(id)) return false;
+    }
+    return true;
+  }
+
   /// Deselects all nodes.
   void deselectAll() {
     if (_selectedNodeIds.isNotEmpty) {
+      final previous = Set<String>.from(_selectedNodeIds);
       _selectedNodeIds.clear();
       _anchorNodeId = null;
       notifyListeners();
+      _emitSelectionChangedIfNeeded(previous);
     }
   }
 
   /// Update the current selected node ID (single selection).
   void setSelectedNodeId(String? id) {
+    final previous = Set<String>.from(_selectedNodeIds);
     _selectedNodeIds.clear();
     _anchorNodeId = id;
     if (id != null) {
       _selectedNodeIds.add(id);
     }
     notifyListeners();
+    _emitSelectionChangedIfNeeded(previous);
   }
 
   /// Toggles selection of a node.
   void toggleSelection(String id) {
+    final previous = Set<String>.from(_selectedNodeIds);
     if (_selectedNodeIds.contains(id)) {
       _selectedNodeIds.remove(id);
       if (_anchorNodeId == id) {
@@ -830,6 +869,7 @@ class TreeController<T> extends ChangeNotifier {
       _anchorNodeId = id;
     }
     notifyListeners();
+    _emitSelectionChangedIfNeeded(previous);
   }
 
   /// Selects a range of nodes from the anchor node to the target node.
@@ -849,6 +889,7 @@ class TreeController<T> extends ChangeNotifier {
     final min = startIndex < endIndex ? startIndex : endIndex;
     final max = startIndex < endIndex ? endIndex : startIndex;
 
+    final previous = Set<String>.from(_selectedNodeIds);
     _selectedNodeIds.clear();
     for (int i = min; i <= max; i++) {
       _selectedNodeIds.add(_flatVisibleNodes[i].id);
@@ -857,6 +898,7 @@ class TreeController<T> extends ChangeNotifier {
     _anchorNodeId = anchorId;
 
     notifyListeners();
+    _emitSelectionChangedIfNeeded(previous);
   }
 
   /// Selects the next visible node in the flat list.
@@ -981,6 +1023,7 @@ class TreeController<T> extends ChangeNotifier {
       node.isExpanded = expandedNodeIds.contains(node.id);
     }
 
+    final Set<String> previousSelection = Set<String>.from(_selectedNodeIds);
     _selectedNodeIds.clear();
     for (final String nodeId in selectedNodeIds) {
       if (_nodeIndex.containsKey(nodeId)) {
@@ -998,6 +1041,7 @@ class TreeController<T> extends ChangeNotifier {
 
     _rebuildFlatList();
     notifyListeners();
+    _emitSelectionChangedIfNeeded(previousSelection);
   }
 
   List<String> _readStringList(Object? value) {

@@ -112,6 +112,14 @@ class SuperTreeView<T> extends StatefulWidget {
   final List<ContextMenuItem> Function(BuildContext, TreeNode<T>)?
   contextMenuBuilder;
 
+  /// Optional delegated open-menu callback. When non-null, replaces the
+  /// built-in [ContextMenuOverlay] flow on right-click / long-press of a
+  /// node; the caller is responsible for opening (and styling) the menu
+  /// surface and for managing [TreeController.setContextMenuNodeId] for
+  /// hover-while-open styling.
+  final void Function(BuildContext context, Offset globalPosition, TreeNode<T> node)?
+  onNodeContextMenuRequested;
+
   /// Optional function called when right-clicking (desktop) or long-pressing (mobile) the tree background.
   /// Returns a list of [ContextMenuItem]s to display in the overlay for root-level actions.
   final List<ContextMenuItem> Function(BuildContext)? rootContextMenuBuilder;
@@ -139,6 +147,7 @@ class SuperTreeView<T> extends StatefulWidget {
     this.labelProvider,
     this.trailingBuilder,
     this.contextMenuBuilder,
+    this.onNodeContextMenuRequested,
     this.rootContextMenuBuilder,
     this.scrollController,
     this.physics,
@@ -168,6 +177,8 @@ class SuperTreeView<T> extends StatefulWidget {
     Widget Function(BuildContext, TreeNode<T>)? trailingBuilder,
     List<ContextMenuItem> Function(BuildContext, TreeNode<T>)?
     contextMenuBuilder,
+    void Function(BuildContext, Offset, TreeNode<T>)?
+    onNodeContextMenuRequested,
     List<ContextMenuItem> Function(BuildContext)? rootContextMenuBuilder,
     ScrollController? scrollController,
     ScrollPhysics? physics,
@@ -188,6 +199,7 @@ class SuperTreeView<T> extends StatefulWidget {
       separatorBuilder: separatorBuilder,
       trailingBuilder: trailingBuilder,
       contextMenuBuilder: contextMenuBuilder,
+      onNodeContextMenuRequested: onNodeContextMenuRequested,
       rootContextMenuBuilder: rootContextMenuBuilder,
       scrollController: scrollController,
       physics: physics,
@@ -211,6 +223,7 @@ class SuperTreeView<T> extends StatefulWidget {
     this.labelProvider,
     this.trailingBuilder,
     this.contextMenuBuilder,
+    this.onNodeContextMenuRequested,
     this.rootContextMenuBuilder,
     this.scrollController,
     this.physics,
@@ -529,6 +542,7 @@ class _SuperTreeViewState<T> extends State<SuperTreeView<T>> {
       contentBuilder: widget.contentBuilder,
       trailingBuilder: widget.trailingBuilder,
       contextMenuBuilder: widget.contextMenuBuilder,
+      onContextMenuRequested: widget.onNodeContextMenuRequested,
     );
   }
 

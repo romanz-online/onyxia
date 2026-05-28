@@ -58,6 +58,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
             builder: (_) => const VaultMembersDialog(),
           ),
         ),
+        OnyxiaMenuItem.divider(),
         OnyxiaMenuItem(
           icon: LucideIcons.logOut,
           child: Text(
