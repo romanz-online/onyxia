@@ -285,7 +285,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   /// provide: tapping the already-selected artifact deselects it. With no
   /// modifiers, re-tap on the same node leaves the controller's selection
   /// set unchanged, so no event fires — call `deselectAll()` to trigger one.
-  // TODO: is this even needed? doesn't the tree return a list of selected id's so if there's nothing selected i can just check there and call deselectAll() there?
   void _onNodeTapped(String id) {
     final hasModifier =
         HardwareKeyboard.instance.isControlPressed ||
