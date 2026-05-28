@@ -74,6 +74,14 @@ class ThemeHelper {
 
   // TODO: come up with a handful of colors that i can reliably reuse everywhere, probably no more than 10 but realistically closer to 6, which will be much more easy to swap out
 
+  // background color 1 (primary background everywhere)
+  // background color 2 (slightly lighter background to contrast with primary background)
+  // auxiliary color (for tooltips, probably other stuff, meant to stand out from both background colors)
+  // foreground color 1 (primary color used for bard editor, popup menu text/icons)
+  // foreground color 2 (secondary text color for artifact tree names (currently used for the trailing extension text), most icons outside of popup menus)
+  // accent color (highlights, hyperlinks)
+  // error color (error text and error speech bubbles)
+
   // TODO: create a better, more cohesive color palette based around charcoal/embers called "onyxia" (drop the narwhal theme entirely). best i've found so far is #222831 #393E46 #B55400 #EEEEEE as a base and it needs some shade variants defined in a cohesive theme template that i can reuse for other themes easily WITHOUT relying on the materal them stupidity
 
   // TODO: switch to using themed: https://pub.dev/packages/themed and let users switch between them on the fly. use "slumber" as a second theme, #051622 #1BA098 #DEB992
