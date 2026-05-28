@@ -166,7 +166,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
         style: TextStyle(
           fontSize: 14,
           fontWeight: .w500,
-          color: ThemeHelper.neutral100(context),
+          color: ThemeHelper.neutral100(),
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -264,14 +264,14 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
               key: _inputContainerKey,
               width: containerWidth,
               decoration: BoxDecoration(
-                color: ThemeHelper.neutral900(context),
+                color: ThemeHelper.neutral900(),
                 borderRadius: .only(
                   topLeft: .circular(18),
                   topRight: .circular(18),
                   bottomRight: .circular(18),
                   bottomLeft: .circular(0),
                 ),
-                border: .all(color: ThemeHelper.blue400(context), width: 2),
+                border: .all(color: ThemeHelper.blue400(), width: 2),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.10),
@@ -327,7 +327,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                           decoration: InputDecoration(
                             hintText: 'Add Comment',
                             hintStyle: TextStyle(
-                              color: ThemeHelper.neutral500(context),
+                              color: ThemeHelper.neutral500(),
                               fontSize: 15,
                               fontStyle: .normal,
                               fontWeight: .w400,
@@ -335,27 +335,27 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                             border: OutlineInputBorder(
                               borderRadius: .circular(6),
                               borderSide: BorderSide(
-                                color: ThemeHelper.neutral600(context),
+                                color: ThemeHelper.neutral600(),
                                 width: 1,
                               ),
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: .circular(6),
                               borderSide: BorderSide(
-                                color: ThemeHelper.neutral500(context),
+                                color: ThemeHelper.neutral500(),
                                 width: 1,
                               ),
                             ),
                             enabledBorder: OutlineInputBorder(
                               borderRadius: .circular(6),
                               borderSide: BorderSide(
-                                color: ThemeHelper.neutral600(context),
+                                color: ThemeHelper.neutral600(),
                                 width: 1,
                               ),
                             ),
-                            fillColor: ThemeHelper.neutral900(context),
+                            fillColor: ThemeHelper.neutral900(),
                             filled: true,
-                            hoverColor: ThemeHelper.neutral900(context),
+                            hoverColor: ThemeHelper.neutral900(),
                             isDense: true,
                             contentPadding: .only(
                               left: 10,
@@ -409,9 +409,9 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
       }
 
       final bool isSelected = isExpanded;
-      final Color backgroundColor = ThemeHelper.neutral900(context);
-      final Color outerBorderColor = ThemeHelper.neutral600(context);
-      final Color selectionColor = ThemeHelper.blue400(context);
+      final Color backgroundColor = ThemeHelper.neutral900();
+      final Color outerBorderColor = ThemeHelper.neutral600();
+      final Color selectionColor = ThemeHelper.blue400();
 
       return AnimatedBuilder(
         animation: _animationController,
@@ -526,9 +526,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                           fontSize: 12,
                                                           fontWeight: .bold,
                                                           color:
-                                                              ThemeHelper.neutral100(
-                                                                context,
-                                                              ),
+                                                              ThemeHelper.neutral100(),
                                                         ),
                                                       ),
                                                     ),
@@ -541,11 +539,11 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                             fontSize: 12,
                                                             fontWeight: .normal,
                                                             color:
-                                                                ThemeHelper.neutral100(
-                                                                  context,
-                                                                ).withValues(
-                                                                  alpha: 0.7,
-                                                                ),
+                                                                ThemeHelper.neutral100()
+                                                                    .withValues(
+                                                                      alpha:
+                                                                          0.7,
+                                                                    ),
                                                           ),
                                                         ),
                                                       ),
@@ -561,9 +559,7 @@ class _CanvasCommentPinState extends ConsumerState<CanvasCommentPin>
                                                     fontSize: 14,
                                                     fontWeight: .w500,
                                                     color:
-                                                        ThemeHelper.neutral100(
-                                                          context,
-                                                        ),
+                                                        ThemeHelper.neutral100(),
                                                   ),
                                                 ),
                                               ],

@@ -65,7 +65,7 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: .w600,
-                    color: ThemeHelper.neutral200(context),
+                    color: ThemeHelper.neutral200(),
                   ),
                 ),
                 const Gap(20),
@@ -83,7 +83,7 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                     _errorMessage!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: ThemeHelper.red400(context),
+                      color: ThemeHelper.errorColor(),
                     ),
                   ),
                 ],

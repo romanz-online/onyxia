@@ -411,30 +411,27 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
     return buttons;
   }
 
-  Widget _buildDivider() => Container(
-    width: 0.5,
-    height: iconSize,
-    color: ThemeHelper.neutral600(context),
-  );
+  Widget _buildDivider() =>
+      Container(width: 0.5, height: iconSize, color: ThemeHelper.neutral600());
 
   // SUB-MENUS
 
   Widget _buildColorPalette() {
     final List<Color> colorPalette = [
-      ThemeHelper.neutral100(context),
-      ThemeHelper.neutral600(context),
-      ThemeHelper.red800(context),
-      ThemeHelper.orange700(context),
-      ThemeHelper.green700(context),
-      ThemeHelper.blue300(context),
-      ThemeHelper.purple500(context),
-      ThemeHelper.neutral900(context),
-      ThemeHelper.neutral500(context),
-      ThemeHelper.red900(context),
-      ThemeHelper.orange800(context),
-      ThemeHelper.green800(context),
-      ThemeHelper.blue600(context),
-      ThemeHelper.purple600(context),
+      ThemeHelper.neutral100(),
+      ThemeHelper.neutral600(),
+      ThemeHelper.red800(),
+      ThemeHelper.orange700(),
+      ThemeHelper.green700(),
+      ThemeHelper.blue300(),
+      ThemeHelper.purple500(),
+      ThemeHelper.neutral900(),
+      ThemeHelper.neutral500(),
+      ThemeHelper.red900(),
+      ThemeHelper.orange800(),
+      ThemeHelper.green800(),
+      ThemeHelper.blue600(),
+      ThemeHelper.purple600(),
     ];
 
     final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
@@ -692,11 +689,11 @@ class GridPalette extends StatelessWidget {
     return Material(
       elevation: 2,
       borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),
-      color: ThemeHelper.neutral800(context),
+      color: ThemeHelper.neutral800(),
       child: Container(
         decoration: BoxDecoration(
           border: .all(
-            color: ThemeHelper.neutral600(context),
+            color: ThemeHelper.neutral600(),
             width: CanvasObjectMenuState.borderWidth,
           ),
           borderRadius: .circular(CanvasObjectMenuState.buttonBorderRadius),

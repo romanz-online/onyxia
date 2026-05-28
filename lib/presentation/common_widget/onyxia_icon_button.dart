@@ -34,8 +34,8 @@ class OnyxiaIconButton extends StatelessWidget {
     this.badgeColor,
   });
 
-  Color getIconColor(IconButtonThemeHelper theme, BuildContext context) {
-    Color result = theme.iconColor(context);
+  Color getIconColor(IconButtonThemeHelper theme) {
+    Color result = theme.iconColor();
     return enabled ? result : result.withValues(alpha: 0.5);
   }
 
@@ -47,19 +47,19 @@ class OnyxiaIconButton extends StatelessWidget {
       if (!enabled) {
         return Colors.transparent;
       } else if (isPressed) {
-        return theme.pressedBackgroundColor(context);
+        return theme.pressedBackgroundColor();
       } else if (isSelected) {
-        return theme.selectedBackgroundColor(context);
+        return theme.selectedBackgroundColor();
       } else if (states.contains(WidgetState.pressed)) {
-        return theme.pressedBackgroundColor(context);
+        return theme.pressedBackgroundColor();
       } else if (states.contains(WidgetState.hovered)) {
-        return theme.hoveredBackgroundColor(context);
+        return theme.hoveredBackgroundColor();
       } else {
-        return theme.defaultBackgroundColor(context);
+        return theme.defaultBackgroundColor();
       }
     }
 
-    final iconColorFinal = iconColor ?? getIconColor(theme, context);
+    final iconColorFinal = iconColor ?? getIconColor(theme);
 
     final button = SizedBox(
       width: size + (hasCaret ? 24 : 0),
@@ -86,7 +86,7 @@ class OnyxiaIconButton extends StatelessWidget {
                         ? LucideIcons.chevronUp
                         : LucideIcons.chevronDown,
                     size: 16,
-                    color: getIconColor(theme, context),
+                    color: getIconColor(theme),
                   ),
                 ],
               )

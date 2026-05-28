@@ -371,7 +371,7 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer>
               width: size.width,
               height: size.height,
               decoration: BoxDecoration(
-                color: ThemeHelper.neutral800(context),
+                color: ThemeHelper.neutral800(),
                 borderRadius: .circular(12),
               ),
               child: ClipRRect(
@@ -381,7 +381,7 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer>
                     _buildDraggableHeader(),
                     Expanded(
                       child: Container(
-                        color: ThemeHelper.neutral800(context),
+                        color: ThemeHelper.neutral800(),
                         child: buildBody(context, ref),
                       ),
                     ),
@@ -442,17 +442,17 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer>
           child: Container(
             width: size.width,
             decoration: BoxDecoration(
-              color: ThemeHelper.neutral800(context),
+              color: ThemeHelper.neutral800(),
               border: _mode == NarwhalDrawerMode.left
                   ? Border(
                       right: BorderSide(
-                        color: ThemeHelper.neutral600(context),
+                        color: ThemeHelper.neutral600(),
                         width: 1,
                       ),
                     )
                   : Border(
                       left: BorderSide(
-                        color: ThemeHelper.neutral600(context),
+                        color: ThemeHelper.neutral600(),
                         width: 1,
                       ),
                     ),
@@ -480,7 +480,7 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer>
       child: Material(
         elevation: 4,
         child: Container(
-          color: ThemeHelper.neutral800(context),
+          color: ThemeHelper.neutral800(),
           child: Column(
             children: [
               _buildDraggableHeader(),
@@ -498,9 +498,9 @@ abstract class NarwhalDrawerState<T extends NarwhalDrawer>
       height: 44,
       padding: .symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral800(context),
+        color: ThemeHelper.neutral800(),
         border: Border(
-          bottom: BorderSide(color: ThemeHelper.neutral600(context), width: 1),
+          bottom: BorderSide(color: ThemeHelper.neutral600(), width: 1),
         ),
       ),
       child: Row(

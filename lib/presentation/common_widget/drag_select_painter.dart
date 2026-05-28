@@ -50,7 +50,7 @@ void paintDragSelect(BuildContext context, Canvas canvas, Rect? dragSelect) {
   canvas.drawRect(
     Rect.fromPoints(dragSelect.topLeft, dragSelect.bottomRight),
     Paint()
-      ..color = ThemeHelper.blue500(context).withValues(alpha: 0.5)
+      ..color = ThemeHelper.blue500().withValues(alpha: 0.5)
       ..style = .fill,
   );
 
@@ -58,7 +58,7 @@ void paintDragSelect(BuildContext context, Canvas canvas, Rect? dragSelect) {
   canvas.drawRect(
     Rect.fromPoints(dragSelect.topLeft, dragSelect.bottomRight),
     Paint()
-      ..color = ThemeHelper.blue500(context)
+      ..color = ThemeHelper.blue500()
       ..style = .stroke
       ..strokeWidth = 2.0,
   );

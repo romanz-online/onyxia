@@ -223,7 +223,7 @@ class ArrowPreviewNotifier extends Notifier<ArrowPreview?> {
   ) {
     final arrowObj = CanvasObject(
       id: const Uuid().v4(),
-      color: ThemeHelper.neutral500(context).withValues(alpha: 0.5),
+      color: ThemeHelper.neutral500().withValues(alpha: 0.5),
       type: CanvasObjectType.arrow,
       topLeft: .zero,
       bottomRight: .zero,

@@ -488,23 +488,23 @@ class _ToastWidget extends StatelessWidget {
   }
 
   Color _getBackgroundColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.green900(context),
+    .success => ThemeHelper.green900(),
     .warning => ThemeHelper.amber(),
     .error => ThemeHelper.errorColor(),
-    .info => ThemeHelper.neutral400(context),
+    .info => ThemeHelper.neutral400(),
   };
 
   Color _getTextColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.neutral300(context),
-    .warning => ThemeHelper.neutral100(context),
-    .error => ThemeHelper.black(context),
-    .info => ThemeHelper.neutral800(context),
+    .success => ThemeHelper.neutral300(),
+    .warning => ThemeHelper.neutral100(),
+    .error => ThemeHelper.black(),
+    .info => ThemeHelper.neutral800(),
   };
 
   Color _getIconColor(BuildContext context) => switch (type) {
-    .success => ThemeHelper.green300(context),
-    .warning => ThemeHelper.neutral100(context),
-    .error => ThemeHelper.black(context),
+    .success => ThemeHelper.green300(),
+    .warning => ThemeHelper.neutral100(),
+    .error => ThemeHelper.black(),
     .info => ThemeHelper.accentColor(),
   };
 
@@ -544,7 +544,7 @@ class _ProgressToastContent extends StatelessWidget {
                   child: Text(
                     label,
                     style: TextStyle(
-                      color: ThemeHelper.neutral800(context),
+                      color: ThemeHelper.neutral800(),
                       fontSize: 14,
                       fontWeight: .w500,
                     ),
@@ -554,7 +554,7 @@ class _ProgressToastContent extends StatelessWidget {
                 Text(
                   '$percent%',
                   style: TextStyle(
-                    color: ThemeHelper.neutral600(context),
+                    color: ThemeHelper.neutral600(),
                     fontSize: 12,
                     fontWeight: .w400,
                   ),
@@ -566,7 +566,7 @@ class _ProgressToastContent extends StatelessWidget {
               child: LinearProgressIndicator(
                 value: safeValue > 0 ? safeValue : null,
                 minHeight: 4,
-                backgroundColor: ThemeHelper.neutral500(context),
+                backgroundColor: ThemeHelper.neutral500(),
                 valueColor: AlwaysStoppedAnimation<Color>(
                   ThemeHelper.accentColor(),
                 ),

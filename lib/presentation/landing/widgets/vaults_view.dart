@@ -19,7 +19,7 @@ class VaultsView extends ConsumerWidget {
           width: leftColumnWidth,
           child: _VaultListColumn(vaults: vaults),
         ),
-        VerticalDivider(width: 2, color: ThemeHelper.neutral700(context)),
+        VerticalDivider(width: 2, color: ThemeHelper.neutral700()),
         Expanded(child: _RightColumn(user: user)),
       ],
     );
@@ -34,7 +34,7 @@ class _VaultListColumn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: ThemeHelper.neutral800(context),
+      color: ThemeHelper.neutral800(),
       padding: .fromLTRB(12, 12, 12, 6),
       child: Column(
         crossAxisAlignment: .start,
@@ -47,14 +47,16 @@ class _VaultListColumn extends StatelessWidget {
                       'No vaults',
                       style: TextStyle(
                         fontSize: 13,
-                        color: ThemeHelper.neutral500(context),
+                        color: ThemeHelper.neutral500(),
                       ),
                     ),
                   )
                 : ListView.builder(
                     itemCount: vaults.length,
-                    itemBuilder: (context, index) =>
-                        VaultRow(vault: vaults[index]),
+                    itemBuilder: (context, index) => Padding(
+                      padding: .only(bottom: 6),
+                      child: VaultRow(vault: vaults[index]),
+                    ),
                   ),
           ),
         ],
@@ -100,7 +102,7 @@ class _RightColumn extends ConsumerWidget {
             style: TextStyle(
               fontSize: 32,
               fontWeight: .bold,
-              color: ThemeHelper.neutral300(context),
+              color: ThemeHelper.neutral300(),
             ),
           ),
           const Gap(16),
@@ -114,7 +116,7 @@ class _RightColumn extends ConsumerWidget {
                   'You are logged in as ${user.email}',
                   style: TextStyle(
                     fontSize: 13,
-                    color: ThemeHelper.neutral500(context),
+                    color: ThemeHelper.neutral500(),
                   ),
                 ),
               ),
@@ -211,7 +213,7 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: .w600,
-                      color: ThemeHelper.neutral200(context),
+                      color: ThemeHelper.neutral200(),
                     ),
                   ),
                   OnyxiaTextFormField(

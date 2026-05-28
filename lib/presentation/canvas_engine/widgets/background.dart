@@ -59,7 +59,7 @@ class BackgroundState extends ConsumerState<Background>
   Widget build(BuildContext context) {
     if (_disposed) {
       // Return a simple container if disposed
-      return Container(color: ThemeHelper.neutral800(context));
+      return Container(color: ThemeHelper.neutral800());
     }
 
     try {
@@ -69,7 +69,7 @@ class BackgroundState extends ConsumerState<Background>
       // Show loading indicator while bounds are being initialized
       if (canvasBounds.isLoading) {
         return Container(
-          color: ThemeHelper.neutral800(context),
+          color: ThemeHelper.neutral800(),
           child: Center(child: OnyxiaLoadingIndicator()),
         );
       }
@@ -81,14 +81,14 @@ class BackgroundState extends ConsumerState<Background>
           canvasBounds.backgroundImage == null &&
           !canvasBounds.hasError) {
         return Container(
-          color: ThemeHelper.neutral800(context),
+          color: ThemeHelper.neutral800(),
           child: Center(child: OnyxiaLoadingIndicator()),
         );
       }
 
       return RepaintBoundary(
         child: NarwhalPaint(
-          backgroundColor: ThemeHelper.neutral800(context),
+          backgroundColor: ThemeHelper.neutral800(),
           painter: _CanvasBackgroundPainter(
             canvasBounds: canvasBounds,
             context: context,
@@ -98,7 +98,7 @@ class BackgroundState extends ConsumerState<Background>
     } catch (e) {
       // Return fallback container if ref access fails
       debugPrint('Canvas background build error: $e');
-      return Container(color: ThemeHelper.neutral800(context));
+      return Container(color: ThemeHelper.neutral800());
     }
   }
 }
@@ -117,7 +117,7 @@ class _CanvasBackgroundPainter extends NarwhalPainter {
     final canvas = Canvas(recorder, bounds);
 
     final Paint paint = createThemePaint(
-      (context) => ThemeHelper.neutral500(context).withValues(alpha: 0.5),
+      (context) => ThemeHelper.neutral500().withValues(alpha: 0.5),
       strokeWidth: 2.0,
       strokeCap: .round,
     );

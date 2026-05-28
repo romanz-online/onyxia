@@ -20,9 +20,9 @@ class MasterSidebar extends ConsumerWidget {
       width: width,
       height: .infinity,
       decoration: BoxDecoration(
-        color: ThemeHelper.neutral900(context),
+        color: ThemeHelper.neutral900(),
         border: Border(
-          right: BorderSide(color: ThemeHelper.neutral700(context), width: 1),
+          right: BorderSide(color: ThemeHelper.neutral700(), width: 1),
         ),
       ),
       child: Padding(

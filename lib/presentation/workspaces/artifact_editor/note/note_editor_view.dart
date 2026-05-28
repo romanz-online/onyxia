@@ -363,7 +363,7 @@ class _NoteEditorField extends ConsumerWidget {
                 child: BardEditor(
                   controller: controller,
                   collab: collab,
-                  style: TextStyle(color: ThemeHelper.neutral100(context)),
+                  style: TextStyle(color: ThemeHelper.neutral100()),
                   autofocus: true,
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
@@ -391,13 +391,13 @@ class _DragOverlay extends StatelessWidget {
     if (!isDragOver) return const SizedBox.shrink();
     return Positioned.fill(
       child: Container(
-        color: ThemeHelper.blue400(context).withValues(alpha: 0.1),
+        color: ThemeHelper.blue400().withValues(alpha: 0.1),
         child: Center(
           child: Text(
             'Drop image here',
             style: TextStyle(
               fontSize: 18,
-              color: ThemeHelper.blue400(context),
+              color: ThemeHelper.blue400(),
               fontWeight: .w500,
             ),
           ),

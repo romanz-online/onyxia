@@ -80,7 +80,7 @@ When writing Flutter widgets with Riverpod, follow these rules for `ref.*` usage
 
 ### Colors - CRITICAL RULE
 
-- **ALWAYS** use `ThemeHelper` colors (e.g. `ThemeHelper.neutral100(context)`) instead of hardcoded color values
+- **ALWAYS** use `ThemeHelper` colors (e.g. `ThemeHelper.neutral100()`) instead of hardcoded color values
 - **NEVER** write `Color(0xFF...)`, `Colors.xxx`, or any other hardcoded color literal in widget code
 - **EXCEPTION — no context**: When a `BuildContext` or `ThemeHelper` is genuinely inaccessible (e.g. in a constant or a static context), a hardcoded color may be used as a temporary measure — but it **MUST** be accompanied by a comment:
   ```dart

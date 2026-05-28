@@ -183,7 +183,7 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
         child: IntrinsicHeight(
           child: sb.SpeechBalloon(
             nipLocation: _nipFor(_resolvedDirection),
-            color: ThemeHelper.neutral700(context),
+            color: ThemeHelper.neutral700(),
             borderRadius: 6,
             nipHeight: 6,
             width: double.infinity,
@@ -196,7 +196,7 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: ThemeHelper.neutral200(context),
+                    color: ThemeHelper.neutral200(),
                   ),
                 ),
               ),

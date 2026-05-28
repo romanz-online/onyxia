@@ -454,9 +454,9 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
         width: widget.snapHintWidth,
         height: screenSize.height,
         decoration: BoxDecoration(
-          color: ThemeHelper.blue500(context).withValues(alpha: 0.5),
+          color: ThemeHelper.blue500().withValues(alpha: 0.5),
           border: Border(
-            right: BorderSide(color: ThemeHelper.blue500(context), width: 1),
+            right: BorderSide(color: ThemeHelper.blue500(), width: 1),
           ),
         ),
       ),
@@ -468,8 +468,8 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
     return Positioned.fill(
       child: Container(
         decoration: BoxDecoration(
-          color: ThemeHelper.blue500(context).withValues(alpha: 0.5),
-          border: .all(color: ThemeHelper.blue500(context), width: 1),
+          color: ThemeHelper.blue500().withValues(alpha: 0.5),
+          border: .all(color: ThemeHelper.blue500(), width: 1),
         ),
       ),
     );
@@ -484,9 +484,9 @@ class _NarwhalDrawerLayoutState extends State<NarwhalDrawerLayout> {
         width: widget.snapHintWidth,
         height: screenSize.height,
         decoration: BoxDecoration(
-          color: ThemeHelper.blue500(context).withValues(alpha: 0.5),
+          color: ThemeHelper.blue500().withValues(alpha: 0.5),
           border: Border(
-            left: BorderSide(color: ThemeHelper.blue500(context), width: 1),
+            left: BorderSide(color: ThemeHelper.blue500(), width: 1),
           ),
         ),
       ),

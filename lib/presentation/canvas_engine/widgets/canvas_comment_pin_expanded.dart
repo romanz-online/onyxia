@@ -237,12 +237,9 @@ class _CanvasCommentPinExpandedState
                     maxHeight: _maxHeight,
                   ),
                   decoration: BoxDecoration(
-                    color: ThemeHelper.neutral900(context),
+                    color: ThemeHelper.neutral900(),
                     borderRadius: .circular(20),
-                    border: .all(
-                      color: ThemeHelper.neutral600(context),
-                      width: 1.0,
-                    ),
+                    border: .all(color: ThemeHelper.neutral600(), width: 1.0),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.15),
@@ -392,7 +389,7 @@ class _CanvasCommentPinExpandedState
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: .w600,
-                    color: ThemeHelper.neutral100(context),
+                    color: ThemeHelper.neutral100(),
                   ),
                 ),
               ),
@@ -418,7 +415,7 @@ class _CanvasCommentPinExpandedState
             ],
           ),
         ),
-        Container(height: 1, color: ThemeHelper.neutral600(context)),
+        Container(height: 1, color: ThemeHelper.neutral600()),
       ],
     );
   }
@@ -486,7 +483,7 @@ class _CanvasCommentPinExpandedState
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: .bold,
-                            color: ThemeHelper.neutral100(context),
+                            color: ThemeHelper.neutral100(),
                           ),
                         ),
                         const Gap(8),
@@ -496,9 +493,9 @@ class _CanvasCommentPinExpandedState
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: .normal,
-                              color: ThemeHelper.neutral100(
-                                context,
-                              ).withValues(alpha: 0.7),
+                              color: ThemeHelper.neutral100().withValues(
+                                alpha: 0.7,
+                              ),
                             ),
                           ),
                       ],
@@ -584,7 +581,7 @@ class _CanvasCommentPinExpandedState
                 decoration: InputDecoration(
                   hintText: 'Enter Reply',
                   hintStyle: TextStyle(
-                    color: ThemeHelper.neutral500(context),
+                    color: ThemeHelper.neutral500(),
                     fontSize: 15,
                     fontStyle: .normal,
                     fontWeight: .w400,
@@ -592,27 +589,27 @@ class _CanvasCommentPinExpandedState
                   border: OutlineInputBorder(
                     borderRadius: .circular(6),
                     borderSide: BorderSide(
-                      color: ThemeHelper.neutral600(context),
+                      color: ThemeHelper.neutral600(),
                       width: 1,
                     ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: .circular(6),
                     borderSide: BorderSide(
-                      color: ThemeHelper.neutral500(context),
+                      color: ThemeHelper.neutral500(),
                       width: 1,
                     ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: .circular(6),
                     borderSide: BorderSide(
-                      color: ThemeHelper.neutral600(context),
+                      color: ThemeHelper.neutral600(),
                       width: 1,
                     ),
                   ),
-                  fillColor: ThemeHelper.neutral900(context),
+                  fillColor: ThemeHelper.neutral900(),
                   filled: true,
-                  hoverColor: ThemeHelper.neutral900(context),
+                  hoverColor: ThemeHelper.neutral900(),
                   isDense: true,
                   contentPadding: .only(
                     left: 10,
@@ -649,9 +646,9 @@ class _CanvasCommentPinExpandedState
       child: Container(
         width: 140,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral900(context),
+          color: ThemeHelper.neutral900(),
           borderRadius: .circular(4),
-          border: .all(color: ThemeHelper.neutral600(context), width: 1),
+          border: .all(color: ThemeHelper.neutral600(), width: 1),
         ),
         child: Column(
           mainAxisSize: .min,
@@ -670,7 +667,7 @@ class _CanvasCommentPinExpandedState
   }
 
   Widget _buildMenuDivider(BuildContext context) =>
-      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral600(context));
+      Divider(height: 1, thickness: 0, color: ThemeHelper.neutral600());
 
   Widget _buildActionMenuItem({
     required String title,
@@ -679,13 +676,13 @@ class _CanvasCommentPinExpandedState
     final TextStyle? canvasStyle = TextStyle(
       fontSize: 15,
       fontWeight: .w400,
-      color: ThemeHelper.neutral100(context),
+      color: ThemeHelper.neutral100(),
     );
     return HoverBuilder(
       builder: (context, isHovered) {
         return Container(
           color: isHovered
-              ? ThemeHelper.blue500(context).withValues(alpha: 0.5)
+              ? ThemeHelper.blue500().withValues(alpha: 0.5)
               : Colors.transparent,
           child: ListTile(
             title: Text(title, style: canvasStyle),
@@ -709,9 +706,9 @@ class _CanvasCommentPinExpandedState
       child: Container(
         width: 120,
         decoration: BoxDecoration(
-          color: ThemeHelper.neutral900(context),
+          color: ThemeHelper.neutral900(),
           borderRadius: .circular(4),
-          border: .all(color: ThemeHelper.neutral600(context), width: 1),
+          border: .all(color: ThemeHelper.neutral600(), width: 1),
         ),
         child: Column(
           mainAxisSize: .min,

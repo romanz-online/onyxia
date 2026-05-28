@@ -86,7 +86,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
                 isHovered ? 'Add Text' : '',
                 style: TextStyle(
                   fontSize: 17,
-                  color: ThemeHelper.neutral500(context).withValues(alpha: 0.6),
+                  color: ThemeHelper.neutral500().withValues(alpha: 0.6),
                   fontWeight: .w500,
                 ),
               ),
@@ -129,7 +129,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
                     autofocus: true,
                     maxLines: null,
                     style: TextStyle(
-                      color: ThemeHelper.neutral100(context),
+                      color: ThemeHelper.neutral100(),
                       fontSize: 16,
                     ),
                     decoration: const InputDecoration(
@@ -196,7 +196,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
                 child: Text(
                   canvasObject.content,
                   style: TextStyle(
-                    color: ThemeHelper.neutral100(context),
+                    color: ThemeHelper.neutral100(),
                     fontSize: 16,
                   ),
                 ),
@@ -215,7 +215,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
       child: Container(
         key: canvasObject.textAreaKey,
         decoration: BoxDecoration(
-          border: .all(color: ThemeHelper.blue400(context), width: 1.5),
+          border: .all(color: ThemeHelper.blue400(), width: 1.5),
         ),
         padding: .all(5.0),
         child: IntrinsicWidth(
@@ -225,10 +225,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
               focusNode: ref.watch(canvasTextProvider).focusNode,
               autofocus: true,
               maxLines: null,
-              style: TextStyle(
-                color: ThemeHelper.neutral100(context),
-                fontSize: 16,
-              ),
+              style: TextStyle(color: ThemeHelper.neutral100(), fontSize: 16),
               decoration: const InputDecoration(
                 border: .none,
                 contentPadding: .zero,
@@ -286,7 +283,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
                       .read(canvasObjectsProvider)
                       .selectedObjects
                       .contains(canvasObject)
-                  ? ThemeHelper.blue400(context)
+                  ? ThemeHelper.blue400()
                   : Colors.transparent,
               width: 1.5,
             ),
@@ -296,10 +293,7 @@ class CanvasObjectTextArea extends ConsumerWidget {
             child: IntrinsicHeight(
               child: Text(
                 canvasObject.content,
-                style: TextStyle(
-                  color: ThemeHelper.neutral100(context),
-                  fontSize: 16,
-                ),
+                style: TextStyle(color: ThemeHelper.neutral100(), fontSize: 16),
               ),
             ),
           ),
@@ -376,12 +370,12 @@ class CanvasArrowTextArea extends ConsumerWidget {
           child: Container(
             padding: .all(padding),
             decoration: BoxDecoration(
-              color: ThemeHelper.neutral900(context),
-              border: .all(color: ThemeHelper.blue400(context), width: 3.0),
+              color: ThemeHelper.neutral900(),
+              border: .all(color: ThemeHelper.blue400(), width: 3.0),
               borderRadius: .circular(8.0),
             ),
             child: Container(
-              color: ThemeHelper.neutral900(context).withAlpha(10),
+              color: ThemeHelper.neutral900().withAlpha(10),
               child: IntrinsicWidth(
                 child: IntrinsicHeight(
                   child: TextField(
@@ -390,7 +384,7 @@ class CanvasArrowTextArea extends ConsumerWidget {
                     autofocus: true,
                     maxLines: null,
                     style: TextStyle(
-                      color: ThemeHelper.neutral100(context),
+                      color: ThemeHelper.neutral100(),
                       fontSize: 16,
                     ),
                     decoration: const InputDecoration(
@@ -452,10 +446,10 @@ class CanvasArrowTextArea extends ConsumerWidget {
                   child: Container(
                     padding: .all(padding),
                     decoration: BoxDecoration(
-                      color: ThemeHelper.neutral900(context),
+                      color: ThemeHelper.neutral900(),
                       border: .all(
                         color: isSelected
-                            ? ThemeHelper.blue400(context)
+                            ? ThemeHelper.blue400()
                             : canvasObject.color,
                         width: 3.0,
                       ),
@@ -464,7 +458,7 @@ class CanvasArrowTextArea extends ConsumerWidget {
                     child: Text(
                       canvasObject.content,
                       style: TextStyle(
-                        color: ThemeHelper.neutral100(context),
+                        color: ThemeHelper.neutral100(),
                         fontSize: 16,
                       ),
                     ),

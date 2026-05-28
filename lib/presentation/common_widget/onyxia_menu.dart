@@ -36,13 +36,13 @@ class OnyxiaMenu extends StatelessWidget {
     return Material(
       elevation: 8,
       borderRadius: .circular(6.0),
-      color: ThemeHelper.neutral900(context),
+      color: ThemeHelper.neutral900(),
       clipBehavior: .antiAlias,
       child: Container(
         width: width,
         decoration: BoxDecoration(
           borderRadius: .circular(6.0),
-          border: .all(color: ThemeHelper.neutral600(context).withAlpha(25)),
+          border: .all(color: ThemeHelper.neutral600().withAlpha(25)),
         ),
         child: ListView(
           padding: .symmetric(vertical: 4.0),
@@ -60,7 +60,7 @@ class OnyxiaMenu extends StatelessWidget {
         child: Divider(
           height: 1,
           thickness: 0.5,
-          color: ThemeHelper.neutral200(context),
+          color: ThemeHelper.neutral200(),
         ),
       );
     }
@@ -79,7 +79,7 @@ class OnyxiaMenu extends StatelessWidget {
           spacing: 8,
           children: [
             if (item.icon != null)
-              Icon(item.icon, size: 14, color: ThemeHelper.neutral300(context)),
+              Icon(item.icon, size: 14, color: ThemeHelper.neutral300()),
             Expanded(child: item.child!),
           ],
         ),

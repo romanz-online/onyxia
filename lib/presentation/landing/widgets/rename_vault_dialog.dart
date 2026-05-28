@@ -64,7 +64,7 @@ class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: .w600,
-                  color: ThemeHelper.neutral200(context),
+                  color: ThemeHelper.neutral200(),
                 ),
               ),
               OnyxiaTextFormField(

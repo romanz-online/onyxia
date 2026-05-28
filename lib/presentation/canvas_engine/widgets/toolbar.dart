@@ -63,12 +63,12 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
 
   BoxDecoration _getPanelDecoration() {
     return BoxDecoration(
-      color: ThemeHelper.neutral900(context),
+      color: ThemeHelper.neutral900(),
       borderRadius: .circular(8),
-      border: .all(color: ThemeHelper.neutral600(context), width: 1),
+      border: .all(color: ThemeHelper.neutral600(), width: 1),
       boxShadow: [
         BoxShadow(
-          color: ThemeHelper.neutral100(context).withValues(alpha: 0.1),
+          color: ThemeHelper.neutral100().withValues(alpha: 0.1),
           blurRadius: 3,
           offset: const Offset(0, 1),
         ),
@@ -78,12 +78,12 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
 
   BoxDecoration _getShapesSubMenuDecoration() {
     return BoxDecoration(
-      color: ThemeHelper.neutral900(context),
+      color: ThemeHelper.neutral900(),
       borderRadius: .circular(8),
-      border: .all(color: ThemeHelper.neutral600(context), width: 1),
+      border: .all(color: ThemeHelper.neutral600(), width: 1),
       boxShadow: [
         BoxShadow(
-          color: ThemeHelper.neutral100(context).withValues(alpha: 0.1),
+          color: ThemeHelper.neutral100().withValues(alpha: 0.1),
           blurRadius: 3,
           offset: const Offset(0, 1),
         ),
@@ -92,11 +92,7 @@ class ToolBarWidgetState extends ConsumerState<Toolbar> {
   }
 
   Widget _buildSeparator() {
-    return Container(
-      width: 1,
-      height: 24,
-      color: ThemeHelper.neutral700(context),
-    );
+    return Container(width: 1, height: 24, color: ThemeHelper.neutral700());
   }
 
   // --- Event and state handling methods ---

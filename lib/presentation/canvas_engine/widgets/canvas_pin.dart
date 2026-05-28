@@ -111,7 +111,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
         style: TextStyle(
           fontSize: 14,
           fontWeight: .w500,
-          color: ThemeHelper.neutral100(context),
+          color: ThemeHelper.neutral100(),
         ),
       ),
       textDirection: TextDirection.ltr,
@@ -196,9 +196,9 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
         });
       }
 
-      final Color backgroundColor = ThemeHelper.neutral900(context);
-      final Color outerBorderColor = ThemeHelper.neutral600(context);
-      final Color selectionColor = ThemeHelper.blue400(context);
+      final Color backgroundColor = ThemeHelper.neutral900();
+      final Color outerBorderColor = ThemeHelper.neutral600();
+      final Color selectionColor = ThemeHelper.blue400();
 
       return AnimatedBuilder(
         animation: _animationController,
@@ -279,7 +279,7 @@ class _CanvasPinState extends ConsumerState<CanvasPin>
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: .w500,
-                                        color: ThemeHelper.neutral100(context),
+                                        color: ThemeHelper.neutral100(),
                                       ),
                                       maxLines: 1,
                                       overflow: .ellipsis,

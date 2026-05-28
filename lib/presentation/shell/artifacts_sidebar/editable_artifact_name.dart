@@ -123,7 +123,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
             child: IntrinsicHeight(
               child: SpeechBalloon(
                 nipLocation: .top,
-                color: ThemeHelper.red500(context),
+                color: ThemeHelper.red500(),
                 borderRadius: 6,
                 nipHeight: 8,
                 width: .infinity,
@@ -156,7 +156,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       link: _layerLink,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: ThemeHelper.neutral800(context),
+                          color: ThemeHelper.neutral800(),
                           borderRadius: .circular(4),
                         ),
                         child: Shortcuts(
@@ -193,7 +193,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: .normal,
-                                color: ThemeHelper.neutral300(context),
+                                color: ThemeHelper.neutral300(),
                               ),
                               decoration: InputDecoration(
                                 border: .none,
@@ -241,7 +241,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: .normal,
-                        color: ThemeHelper.neutral300(context),
+                        color: ThemeHelper.neutral300(),
                         letterSpacing: 0.5,
                       ),
                       overflow: .ellipsis,
@@ -254,7 +254,7 @@ class EditableArtifactNameState extends ConsumerState<EditableArtifactName> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: .normal,
-                        color: ThemeHelper.neutral500(context),
+                        color: ThemeHelper.neutral500(),
                         letterSpacing: 0.5,
                       ),
                       maxLines: 1,

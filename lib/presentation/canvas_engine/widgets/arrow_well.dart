@@ -127,8 +127,8 @@ class _ArrowWellState extends ConsumerState<ArrowWell> {
     const double wellSize = 8.0;
     const double enlargedScale = 3.0;
     final IconData displayIcon = arrowIcon;
-    final Color primaryColor = ThemeHelper.blue400(context);
-    final Color secondaryColor = ThemeHelper.neutral900(context);
+    final Color primaryColor = ThemeHelper.blue400();
+    final Color secondaryColor = ThemeHelper.neutral900();
 
     final isVisible = _shouldBeVisible;
     final opacity = isVisible ? 1.0 : 0.0;

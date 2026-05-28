@@ -19,7 +19,7 @@ class InviteView extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 32,
                 fontWeight: .bold,
-                color: ThemeHelper.neutral300(context),
+                color: ThemeHelper.neutral300(),
               ),
             ),
             FutureBuilder<Vault?>(
@@ -34,7 +34,7 @@ class InviteView extends ConsumerWidget {
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: .w600,
-                    color: ThemeHelper.neutral200(context),
+                    color: ThemeHelper.neutral200(),
                   ),
                   textAlign: .center,
                 );
@@ -42,10 +42,7 @@ class InviteView extends ConsumerWidget {
             ),
             Text(
               'Invitations expire 14 days after being sent.',
-              style: TextStyle(
-                fontSize: 13,
-                color: ThemeHelper.neutral400(context),
-              ),
+              style: TextStyle(fontSize: 13, color: ThemeHelper.neutral400()),
               textAlign: .center,
             ),
           ],

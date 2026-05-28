@@ -13,7 +13,7 @@ class ArtifactsSidebarFooter extends ConsumerWidget {
     return Container(
       decoration: BoxDecoration(
         border: Border(
-          top: BorderSide(color: ThemeHelper.neutral700(context), width: 1),
+          top: BorderSide(color: ThemeHelper.neutral700(), width: 1),
         ),
       ),
       padding: .symmetric(horizontal: 12, vertical: 4),
