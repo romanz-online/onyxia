@@ -94,9 +94,8 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
 
   OnyxiaTooltipDirection _autoDirection() {
     final ro = _childKey.currentContext?.findRenderObject();
-    if (ro is! RenderBox || !ro.attached) {
-      return OnyxiaTooltipDirection.bottom;
-    }
+    if (ro is! RenderBox || !ro.attached) return .bottom;
+
     final viewport = MediaQuery.sizeOf(context);
     final pos = ro.localToGlobal(Offset.zero);
     final bottomRoom = viewport.height - (pos.dy + ro.size.height);
@@ -106,51 +105,49 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
 
     // Crude clearance estimate — most tooltips are a single line, ~32px tall.
     const needed = 50.0;
-    if (bottomRoom > needed) return OnyxiaTooltipDirection.bottom;
-    if (topRoom > needed) return OnyxiaTooltipDirection.top;
-    return rightRoom > leftRoom
-        ? OnyxiaTooltipDirection.right
-        : OnyxiaTooltipDirection.left;
+    if (bottomRoom > needed) return .bottom;
+    if (topRoom > needed) return .top;
+    return rightRoom > leftRoom ? .right : .left;
   }
 
   // Nip points TOWARD the trigger. When the balloon sits below the trigger,
   // the nip is on the balloon's top edge.
   sb.NipLocation _nipFor(OnyxiaTooltipDirection d) => switch (d) {
-    OnyxiaTooltipDirection.bottom => sb.NipLocation.top,
-    OnyxiaTooltipDirection.top => sb.NipLocation.bottom,
-    OnyxiaTooltipDirection.right => sb.NipLocation.left,
-    OnyxiaTooltipDirection.left => sb.NipLocation.right,
+    .bottom => .top,
+    .top => .bottom,
+    .right => .left,
+    .left => .right,
   };
 
   Anchor _anchorFor(OnyxiaTooltipDirection d) => switch (d) {
-    OnyxiaTooltipDirection.bottom => const Aligned(
-      follower: Alignment.topCenter,
-      target: Alignment.bottomCenter,
+    .bottom => const Aligned(
+      follower: .topCenter,
+      target: .bottomCenter,
       offset: Offset(0, 6),
     ),
-    OnyxiaTooltipDirection.top => const Aligned(
-      follower: Alignment.bottomCenter,
-      target: Alignment.topCenter,
+    .top => const Aligned(
+      follower: .bottomCenter,
+      target: .topCenter,
       offset: Offset(0, -6),
     ),
-    OnyxiaTooltipDirection.right => const Aligned(
-      follower: Alignment.centerLeft,
-      target: Alignment.centerRight,
+    .right => const Aligned(
+      follower: .centerLeft,
+      target: .centerRight,
       offset: Offset(6, 0),
     ),
-    OnyxiaTooltipDirection.left => const Aligned(
-      follower: Alignment.centerRight,
-      target: Alignment.centerLeft,
+    .left => const Aligned(
+      follower: .centerRight,
+      target: .centerLeft,
       offset: Offset(-6, 0),
     ),
   };
 
   // Scale origin matches the nip so the balloon grows out of the trigger.
   Alignment _scaleOriginFor(OnyxiaTooltipDirection d) => switch (d) {
-    OnyxiaTooltipDirection.bottom => Alignment.topCenter,
-    OnyxiaTooltipDirection.top => Alignment.bottomCenter,
-    OnyxiaTooltipDirection.right => Alignment.centerLeft,
-    OnyxiaTooltipDirection.left => Alignment.centerRight,
+    .bottom => .topCenter,
+    .top => .bottomCenter,
+    .right => .centerLeft,
+    .left => .centerRight,
   };
 
   // Single-axis scale: scale only the axis perpendicular to the trigger-
@@ -162,11 +159,10 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
   // is invisible. Single-axis scale eliminates the orthogonal motion
   // entirely.
   Matrix4 _scaleMatrix(OnyxiaTooltipDirection d, double s) {
-    final vertical =
-        d == OnyxiaTooltipDirection.top || d == OnyxiaTooltipDirection.bottom;
+    final vertical = d == .top || d == .bottom;
     return vertical
-        ? Matrix4.diagonal3Values(1.0, s, 1.0)
-        : Matrix4.diagonal3Values(s, 1.0, 1.0);
+        ? .diagonal3Values(1.0, s, 1.0)
+        : .diagonal3Values(s, 1.0, 1.0);
   }
 
   @override

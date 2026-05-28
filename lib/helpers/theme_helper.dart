@@ -82,7 +82,16 @@ class ThemeHelper {
   // accent color (highlights, hyperlinks)
   // error color (error text and error speech bubbles)
 
-  // TODO: create a better, more cohesive color palette based around charcoal/embers called "onyxia" (drop the narwhal theme entirely). best i've found so far is #222831 #393E46 #B55400 #EEEEEE as a base and it needs some shade variants defined in a cohesive theme template that i can reuse for other themes easily WITHOUT relying on the materal them stupidity
+  // TODO: simplify current color palette into these values
+  // background 1: neutral900
+  // background 2: neutral800
+  // auxiliary: neutral700
+  // foreground 1: neutral300
+  // foreground 2: neutral500
+  // accent: NarwhalColors.orange
+  // error: red500
+
+  // TODO: create a better, more cohesive color palette based around charcoal/embers called "onyxia" (drop the narwhal theme entirely). best i've found so far is #222831 #393E46 #B55400/#FF7700 #EEEEEE as a base and it needs some shade variants defined in a cohesive theme template that i can reuse for other themes easily WITHOUT relying on the materal them stupidity
 
   // TODO: switch to using themed: https://pub.dev/packages/themed and let users switch between them on the fly. use "slumber" as a second theme, #051622 #1BA098 #DEB992
 
