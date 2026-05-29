@@ -38,9 +38,9 @@ class _RouterNotifier extends ChangeNotifier {
 /// should open in. The invite/reset-password/login routes render the same
 /// screen — only the overlay's content differs.
 LandingMode _landingModeFor(String location) {
-  if (location == Routes.invite) return LandingMode.invite;
-  if (location == Routes.resetPassword) return LandingMode.resetPassword;
-  return LandingMode.signIn;
+  if (location == Routes.invite) return .invite;
+  if (location == Routes.resetPassword) return .resetPassword;
+  return .signIn;
 }
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -77,7 +77,8 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: Routes.invite,
             name: 'invite',
-            builder: (_, __) => const WorkspaceHost(vaultId: '', selectedId: null),
+            builder: (_, __) =>
+                const WorkspaceHost(vaultId: '', selectedId: null),
           ),
           // TODO: need a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
           GoRoute(
