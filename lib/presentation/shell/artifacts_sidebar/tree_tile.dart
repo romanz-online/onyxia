@@ -48,7 +48,6 @@ class TreeTile extends ConsumerWidget {
         padding: .only(right: 12),
         child: _EditableArtifactName(
           item: nodeData,
-
           trailingExtension: _imageExt(nodeData),
         ),
       ),

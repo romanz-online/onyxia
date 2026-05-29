@@ -30,6 +30,13 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
   ThemeData _buildTheme() => ThemeData(
     useMaterial3: true,
     fontFamily: 'Inter',
+    scrollbarTheme: ScrollbarThemeData(
+      thumbColor: .resolveWith(
+        (states) => states.contains(WidgetState.hovered)
+            ? ThemeHelper.auxiliary()
+            : ThemeHelper.background2(),
+      ),
+    ),
     pageTransitionsTheme: PageTransitionsTheme(
       builders: {
         for (final platform in TargetPlatform.values)
