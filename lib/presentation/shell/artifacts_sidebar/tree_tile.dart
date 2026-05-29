@@ -16,10 +16,10 @@ class RenameArtifactIdNotifier extends Notifier<String?> {
 }
 
 class TreeTile extends ConsumerWidget {
+  // TODO: pass in isHovered and make the text lighter when hovered
   final TreeNode<Artifact> node;
-  final bool isDragging;
 
-  const TreeTile({super.key, required this.node, this.isDragging = false});
+  const TreeTile({super.key, required this.node});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,19 +33,7 @@ class TreeTile extends ConsumerWidget {
     );
 
     return Container(
-      height: 24,
-      decoration: isDragging
-          ? BoxDecoration(
-              boxShadow: [
-                BoxShadow(
-                  color: ThemeHelper.foreground1().withValues(alpha: 0.2),
-                  spreadRadius: 1,
-                  blurRadius: 3,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            )
-          : null,
+      height: 22,
       child: Padding(
         padding: .only(right: 12),
         child: _EditableArtifactName(

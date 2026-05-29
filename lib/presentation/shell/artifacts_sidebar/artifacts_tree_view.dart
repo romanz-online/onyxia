@@ -192,7 +192,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
           contentBuilder: (context, node, _) => TreeTile(node: node),
           style: TreeViewStyle(
             indentAmount: 16.0,
-            padding: .symmetric(vertical: 0),
+            padding: .fromLTRB(8, 0, 16, 0),
             hoverColor: ThemeHelper.background2(),
             selectedColor: ThemeHelper.background2(),
           ),

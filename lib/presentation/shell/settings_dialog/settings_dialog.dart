@@ -1,14 +1,15 @@
 import 'package:onyxia/export.dart';
 
-class VaultSettingsDialog extends ConsumerStatefulWidget {
-  const VaultSettingsDialog({super.key});
+class SettingsDialog extends ConsumerStatefulWidget {
+  const SettingsDialog({super.key});
 
   @override
-  ConsumerState<VaultSettingsDialog> createState() =>
-      _VaultSettingsDialogState();
+  ConsumerState<SettingsDialog> createState() => _SettingsDialogState();
 }
 
-class _VaultSettingsDialogState extends ConsumerState<VaultSettingsDialog> {
+// TODO: turn vault members into a separate widget
+
+class _SettingsDialogState extends ConsumerState<SettingsDialog> {
   final TextEditingController _emailController = TextEditingController();
   String _email = '';
   bool _isSending = false;

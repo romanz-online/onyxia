@@ -57,9 +57,8 @@ class ArtifactsSidebar extends ConsumerWidget {
                     Expanded(
                       child: Container(
                         width: .infinity,
-                        // TODO: scrollbar needs more space on the left. figure out how to separately apply horizontal padding here (remove it from here) to the actual internal tree structure WITHOUT affecting the scrollbar attached to it
                         padding: .only(left: 6, top: 6, bottom: 6, right: 18),
-                        child: ArtifactsTreeView(),
+                        child: const ArtifactsTreeView(),
                       ),
                     ),
                     Container(

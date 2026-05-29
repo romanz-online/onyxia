@@ -4,7 +4,7 @@ import 'package:super_tree/src/configs/tree_drag_and_drop_config.dart';
 /// Configuration for the visual appearance of the [SuperTreeView].
 class TreeViewStyle {
   /// Padding applied to each node row.
-  final EdgeInsetsGeometry padding;
+  final EdgeInsets padding;
 
   /// Amount of horizontal space added for each level of depth.
   final double indentAmount;
@@ -45,7 +45,7 @@ class TreeViewStyle {
 
   /// Returns a copy of this style with the given fields replaced.
   TreeViewStyle copyWith({
-    EdgeInsetsGeometry? padding,
+    EdgeInsets? padding,
     double? indentAmount,
     TextStyle? textStyle,
     Color? idleColor,
