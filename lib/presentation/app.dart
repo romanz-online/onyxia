@@ -26,7 +26,7 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
     );
   }
 
-  // TODO: i'm making my own theme. need to gut a lot of this
+  // TODO: i'm making my own theme. need to gut or replace a lot of this
   ThemeData _buildTheme() {
     return ThemeData(
       fontFamily: 'Inter',
