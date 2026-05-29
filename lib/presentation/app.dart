@@ -1,4 +1,5 @@
 import 'package:onyxia/export.dart';
+import 'package:themed/themed.dart';
 
 class NarwhalApp extends ConsumerStatefulWidget {
   const NarwhalApp({super.key});
@@ -13,24 +14,32 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
   @override
   Widget build(BuildContext context) {
     final routerInstance = ref.watch(routerProvider);
+    // Watched so MaterialApp rebuilds and ColorScheme.fromSeed recomputes
+    // when the user toggles themes — ColorRef swaps alone don't refresh
+    // Material's seeded color scheme.
+    ref.watch(themeProvider);
 
-    return MaterialApp.router(
-      debugShowCheckedModeBanner: false,
-      title: 'Onyxia',
-      routeInformationParser: routerInstance.routeInformationParser,
-      routerDelegate: routerInstance.routerDelegate,
-      routeInformationProvider: routerInstance.routeInformationProvider,
-      theme: _buildTheme(),
-      builder: (context, child) =>
-          Portal(child: child ?? const SizedBox.shrink()),
+    return Themed(
+      child: MaterialApp.router(
+        debugShowCheckedModeBanner: false,
+        title: 'Onyxia',
+        routeInformationParser: routerInstance.routeInformationParser,
+        routerDelegate: routerInstance.routerDelegate,
+        routeInformationProvider: routerInstance.routeInformationProvider,
+        theme: _buildTheme(),
+        builder: (context, child) =>
+            Portal(child: child ?? const SizedBox.shrink()),
+      ),
     );
   }
 
-  // TODO: i'm making my own theme. need to gut or replace a lot of this
+  // TODO: walk through all of this. do i even need "MaterialApp"? do i need any of these values if i'm overriding a lot of them? which ones don't i override?
   ThemeData _buildTheme() {
     return ThemeData(
       fontFamily: 'Inter',
+      // what is this for? do i use it anywhere?
       colorScheme: ColorScheme.fromSeed(seedColor: ThemeHelper.accent()),
+      // do i actually use any of these?
       scaffoldBackgroundColor: ThemeHelper.background1(),
       cardColor: ThemeHelper.background1(),
       dividerColor: ThemeHelper.auxiliary(),
@@ -44,6 +53,7 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
         iconTheme: IconThemeData(color: ThemeHelper.foreground1()),
       ),
       iconTheme: IconThemeData(color: ThemeHelper.foreground1()),
+      // does this ever get used? i'm unsure
       textTheme:
           const TextTheme(
             // Small scale (10px)
@@ -63,6 +73,7 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
             bodyColor: ThemeHelper.auxiliary(),
             displayColor: ThemeHelper.auxiliary(),
           ),
+      // i use onyxiatextformfield; do i need this at all?
       inputDecorationTheme: InputDecorationTheme(
         fillColor: ThemeHelper.auxiliary(),
         filled: true,
@@ -70,6 +81,7 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
           borderSide: BorderSide(color: ThemeHelper.auxiliary()),
         ),
       ),
+      // i use my own onyxiatooltip
       tooltipTheme: TooltipThemeData(
         waitDuration: Duration(milliseconds: 800),
         decoration: BoxDecoration(
@@ -77,7 +89,9 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
           borderRadius: .circular(4),
         ),
       ),
+      // i don't think i use popup menus at all?
       popupMenuTheme: PopupMenuThemeData(color: ThemeHelper.foreground1()),
+      // is there a simpler way of doing this?
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: _NoTransitionBuilder(),

@@ -58,6 +58,7 @@ dependencies:
     path: lib/vendor/touchable
   super_tree:
     path: lib/vendor/super_tree
+  themed: ^8.1.0
 
 dependency_overrides:
   intl: 0.19.0

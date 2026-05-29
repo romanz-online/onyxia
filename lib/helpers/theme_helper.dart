@@ -1,45 +1,82 @@
 import 'package:onyxia/export.dart';
+import 'package:themed/themed.dart';
 
 class NarwhalColors {
   NarwhalColors._();
 
-  static const neutral900 = const Color(0xFF1C1C1E);
+  // static const neutral900 = const Color(0xFF1C1C1E);
   // static const neutral800 = const Color(0xFF28282C);
   // static const neutral700 = const Color(0xFF394648);
   static const neutral600 = const Color(0xFF536560);
-  static const neutral500 = const Color(0xFF909699);
+  // static const neutral500 = const Color(0xFF909699);
   static const neutral400 = const Color(0xFFCFD8DC);
   // static const neutral300 = const Color(0xFFECEFF1);
   // static const neutral200 = const Color(0xFFF7F9F9);
   static const neutral100 = const Color(0xFFFFFFFF);
-
-  static const blue600 = const Color(0xFF699DFF);
-  static const blue300 = const Color(0xFFC8DBFF);
-
-  static const green800 = const Color(0xFF2E7D32);
-  static const green700 = const Color(0xFF388E3C);
-
-  static const orange800 = const Color(0xFFEF6C00);
-  static const orange700 = const Color(0xFFF57C00);
-
-  static const red900 = const Color(0xFFB71C1C);
-  static const red800 = const Color(0xFFC62828);
-
-  static const purple600 = const Color(0xFF8E24AA);
-  static const purple500 = const Color(0xFF9C27B0);
 }
 
-/// A helper class for getting theme-aware colors.
+enum ThemeVariant { onyxia, slumber }
+
+/// A helper class for getting theme-aware colors. Each method returns a
+/// [ColorRef] (which `extends Color`) whose resolved RGB depends on the
+/// active [ThemeVariant]. Switch themes via `themeProvider`'s `set`/`toggle`.
 class ThemeHelper {
   ThemeHelper._();
 
-  // TODO: switch to using themed: https://pub.dev/packages/themed and let users switch between them on the fly. use "slumber" as a second theme, #051622 #1BA098 #DEB992
+  static const ColorRef _background1 = ColorRef(
+    Color(0xFF1F2329),
+    id: 'background1',
+  );
+  static const ColorRef _background2 = ColorRef(
+    Color(0xFF34383F),
+    id: 'background2',
+  );
+  static const ColorRef _auxiliary = ColorRef(
+    Color(0xFF494D54),
+    id: 'auxiliary',
+  );
+  static const ColorRef _foreground1 = ColorRef(
+    Color(0xFFEEEEEE),
+    id: 'foreground1',
+  );
+  static const ColorRef _foreground2 = ColorRef(
+    Color(0xFF969A9F),
+    id: 'foreground2',
+  );
+  static const ColorRef _accent = ColorRef(Color(0xFFFF7700), id: 'accent');
+  static const ColorRef _error = ColorRef(Color(0xFFF03E3E), id: 'error');
 
-  static Color background1() => const Color(0xFF1F2329);
-  static Color background2() => const Color(0xFF34383F);
-  static Color auxiliary() => const Color(0xFF494D54);
-  static Color foreground1() => const Color(0xFFEEEEEE);
-  static Color foreground2() => const Color(0xFF969A9F);
-  static Color accent() => const Color(0xFFFF7700);
-  static Color error() => const Color(0xFFF03E3E);
+  static Color background1() => _background1;
+  static Color background2() => _background2;
+  static Color auxiliary() => _auxiliary;
+  static Color foreground1() => _foreground1;
+  static Color foreground2() => _foreground2;
+  static Color accent() => _accent;
+  static Color error() => _error;
+
+  static final Map<ThemeRef, Object> _onyxia = {
+    _background1: const Color(0xFF1F2329),
+    _background2: const Color(0xFF34383F),
+    _auxiliary: const Color(0xFF494D54),
+    _foreground1: const Color(0xFFEEEEEE),
+    _foreground2: const Color(0xFF969A9F),
+    _accent: const Color(0xFFFF7700),
+    _error: const Color(0xFFF03E3E),
+  };
+
+  static final Map<ThemeRef, Object> _slumber = {
+    _background1: const Color(0xFF051622),
+    _background2: const Color(0xFF0A2230),
+    _auxiliary: const Color(0xFF1BA098),
+    _foreground1: const Color(0xFFEEEEEE),
+    _foreground2: const Color(0xFF969A9F),
+    _accent: const Color(0xFFDEB992),
+    _error: const Color(0xFFF03E3E),
+  };
+
+  static Map<ThemeRef, Object> paletteFor(ThemeVariant variant) =>
+      switch (variant) {
+        .onyxia => _onyxia,
+        .slumber => _slumber,
+      };
 }

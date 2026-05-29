@@ -58,6 +58,12 @@ class MasterSidebar extends ConsumerWidget {
                 },
               ),
             ],
+            OnyxiaIconButton(
+              icon: LucideIcons.palette,
+              tooltip: 'Switch theme',
+              tooltipDirection: .right,
+              onPressed: () => ref.read(themeProvider.notifier).toggle(),
+            ),
           ],
         ),
       ),
