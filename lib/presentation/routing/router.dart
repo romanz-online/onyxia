@@ -34,6 +34,15 @@ class _RouterNotifier extends ChangeNotifier {
   }
 }
 
+/// Maps a matched route location to the [LandingMode] the [LandingOverlay]
+/// should open in. The invite/reset-password/login routes render the same
+/// screen — only the overlay's content differs.
+LandingMode _landingModeFor(String location) {
+  if (location == Routes.invite) return LandingMode.invite;
+  if (location == Routes.resetPassword) return LandingMode.resetPassword;
+  return LandingMode.signIn;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterNotifier(ref);
 
@@ -51,17 +60,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: <RouteBase>[
       ShellRoute(
         builder: (context, state, child) {
-          final loc = state.matchedLocation;
           final vaultId = state.pathParameters['id'] ?? '';
-          LandingMode landingMode;
-          if (loc == Routes.invite) {
-            landingMode = .invite;
-          } else if (loc == Routes.resetPassword) {
-            landingMode = .resetPassword;
-          } else {
-            landingMode = .signIn;
-          }
-          // TODO: because of this, the landing background never renders. this routing business overall just needs to be reworked because it's gotten messy. the appshell should effectively ALWAYS be getting returned and the workspace background should also always be getting rendered and it can decide for itself what specifically to render, and most of the routes (invite, reset password, login) are the exact same screen in actuality with only one internal widget (the landing overlay) changing its content.
+          final landingMode = _landingModeFor(state.matchedLocation);
           final destParam = state.uri.queryParameters['dest'];
           return AppShell(
             vaultId: vaultId,
@@ -77,18 +77,20 @@ final routerProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: Routes.invite,
             name: 'invite',
-            builder: (_, __) => const SizedBox.shrink(),
+            builder: (_, __) => const WorkspaceHost(vaultId: '', selectedId: null),
           ),
           // TODO: need a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
           GoRoute(
             path: Routes.resetPassword,
             name: 'resetPassword',
-            builder: (_, __) => const SizedBox.shrink(),
+            builder: (_, __) =>
+                const WorkspaceHost(vaultId: '', selectedId: null),
           ),
           GoRoute(
             path: Routes.home,
             name: 'home',
-            builder: (_, __) => const SizedBox.shrink(),
+            builder: (_, __) =>
+                const WorkspaceHost(vaultId: '', selectedId: null),
           ),
           GoRoute(
             path: '/vault/:id',
