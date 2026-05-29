@@ -150,7 +150,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
               color: ThemeHelper.foreground1().withValues(alpha: 0.4),
             ),
             border: .none,
-            contentPadding: .symmetric(vertical: 4, horizontal: 0),
+            contentPadding: .all(4),
             isDense: true,
           ),
         ),

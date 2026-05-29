@@ -66,7 +66,7 @@ class _AppShellState extends ConsumerState<AppShell> {
     }
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: ThemeHelper.background1(),
       body: Stack(
         children: [
           Row(

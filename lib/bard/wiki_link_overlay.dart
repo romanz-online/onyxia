@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:onyxia/export.dart';
 
 // TODO: this widget's visibility behavior isn't correct. it should not be popping up when the user passively moves their selection over an existing link
 
@@ -27,7 +27,7 @@ class WikiLinkOverlay extends StatelessWidget {
     return Material(
       elevation: 8,
       borderRadius: .circular(6),
-      color: Theme.of(context).colorScheme.surface,
+      color: ThemeHelper.background2(),
       child: Container(
         constraints: const BoxConstraints(
           maxHeight: 200,
@@ -35,7 +35,7 @@ class WikiLinkOverlay extends StatelessWidget {
           maxWidth: 320,
         ),
         decoration: BoxDecoration(
-          border: .all(color: Theme.of(context).dividerColor),
+          border: .all(color: ThemeHelper.auxiliary()),
           borderRadius: .circular(6),
         ),
         child: ListView.builder(
@@ -51,9 +51,7 @@ class WikiLinkOverlay extends StatelessWidget {
               child: Container(
                 padding: .symmetric(horizontal: 12, vertical: 8),
                 color: isSelected
-                    ? Theme.of(
-                        context,
-                      ).colorScheme.primary.withValues(alpha: 0.12)
+                    ? ThemeHelper.accent().withValues(alpha: 0.12)
                     : Colors.transparent,
                 child: Text(
                   target,
@@ -61,8 +59,8 @@ class WikiLinkOverlay extends StatelessWidget {
                     fontSize: 13,
                     fontWeight: isSelected ? .w600 : .w400,
                     color: isSelected
-                        ? Theme.of(context).colorScheme.primary
-                        : Theme.of(context).colorScheme.onSurface,
+                        ? ThemeHelper.accent()
+                        : ThemeHelper.foreground1(),
                   ),
                 ),
               ),

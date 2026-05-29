@@ -75,9 +75,10 @@ class ArtifactObject extends ConsumerWidget {
       child: Center(
         child: Text(
           item.name.isEmpty ? 'Untitled' : item.name,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: ThemeHelper.foreground1(),
+          style: TextStyle(
+            fontSize: 12,
             fontWeight: .w500,
+            color: ThemeHelper.foreground1(),
           ),
           overflow: .ellipsis,
           maxLines: 1,
@@ -116,9 +117,10 @@ class ArtifactObject extends ConsumerWidget {
             ),
             child: Text(
               item.name.isEmpty ? 'Untitled' : item.name,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: ThemeHelper.foreground1(),
+              style: TextStyle(
+                fontSize: 12,
                 fontWeight: .w600,
+                color: ThemeHelper.foreground1(),
               ),
               overflow: .ellipsis,
               maxLines: 2,
@@ -172,7 +174,9 @@ class ArtifactObject extends ConsumerWidget {
 
     return Text(
       contentText,
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+      style: TextStyle(
+        fontSize: 10,
+        fontWeight: .w600,
         color: ThemeHelper.foreground2(),
         height: 1.4,
       ),
@@ -209,9 +213,10 @@ class ArtifactObject extends ConsumerWidget {
             const Gap(8),
             Text(
               'Note not found',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.red,
+              style: TextStyle(
+                fontSize: 10,
                 fontWeight: .w500,
+                color: Colors.red,
               ),
               textAlign: .center,
             ),
