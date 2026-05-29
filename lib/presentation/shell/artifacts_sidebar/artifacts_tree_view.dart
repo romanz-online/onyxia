@@ -156,8 +156,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
-    // TODO: for some reason selecting or deselecting nodes causes the artifacts sidebar width to change
-
     return Stack(
       key: _stackKey,
       children: [
@@ -242,9 +240,11 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
               ),
               onClose: _closeContextMenu,
               builder: (ctx, close) => OnyxiaMenu(
-                items: _buildOnyxiaMenuItems(
-                  artifactsContextMenuOptions().options,
+                width: 180,
+                items: buildArtifactContextMenuItems(
+                  ref,
                   _menuNode!,
+                  treeController.selectedNodeIds,
                 ),
                 closeOverlay: close,
               ),
@@ -342,33 +342,6 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     for (final root in roots) {
       apply(root);
     }
-  }
-
-  // TODO: this shouldn't rely on TreeContextMenuOption. it's creating a data structure then translating it into another data structure entirely internally. ridiculous. it should start and end as a OnyxiaMenu and there should be icons similar to what's in vaults_tree_context_menu.dart
-  List<OnyxiaMenuItem> _buildOnyxiaMenuItems(
-    List<TreeContextMenuOption> options,
-    TreeNode<Artifact> node,
-  ) {
-    final List<OnyxiaMenuItem> items = [];
-    final selectedIds = treeController.selectedNodeIds;
-    for (final opt in options) {
-      if (opt.dividerBefore && items.isNotEmpty) {
-        items.add(const OnyxiaMenuItem.divider());
-      }
-      items.add(
-        OnyxiaMenuItem(
-          child: Text(
-            opt.label,
-            style: TextStyle(color: ThemeHelper.foreground1()),
-          ),
-          onTap: () {
-            opt.callback(ref, node, selectedIds);
-            if (opt.clearSelectionAfter) treeController.deselectAll();
-          },
-        ),
-      );
-    }
-    return items;
   }
 }
 

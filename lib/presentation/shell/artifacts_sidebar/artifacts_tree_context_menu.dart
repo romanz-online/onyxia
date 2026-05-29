@@ -1,93 +1,62 @@
-﻿import 'package:onyxia/export.dart';
+import 'package:onyxia/export.dart';
 
-typedef TreeContextMenuCallback =
-    void Function(
-      WidgetRef ref,
-      TreeNode<Artifact> node,
-      Set<String> selectedIds,
-    );
-
-class TreeContextMenuOption {
-  final String label;
-  final int index;
-  final TreeContextMenuCallback callback;
-  final bool dividerBefore;
-  final bool clearSelectionAfter;
-
-  const TreeContextMenuOption({
-    required this.label,
-    required this.index,
-    required this.callback,
-    this.dividerBefore = false,
-    this.clearSelectionAfter = false,
-  });
-}
-
-class ArtifactsTreeContextMenuOptions {
-  final List<TreeContextMenuOption> options;
-
-  const ArtifactsTreeContextMenuOptions({required this.options});
-}
-
-ArtifactsTreeContextMenuOptions artifactsContextMenuOptions() =>
-    ArtifactsTreeContextMenuOptions(
-      options: [
-        TreeContextMenuOption(
-          label: 'Open in New Tab',
-          index: 0,
-          callback: _handleOpenInNewTab,
-        ),
-        TreeContextMenuOption(
-          label: 'Copy Link',
-          index: 1,
-          callback: _handleCopyLink,
-        ),
-        TreeContextMenuOption(
-          label: 'Remove',
-          index: 2,
-          callback: _handleRemove,
-        ),
-        TreeContextMenuOption(
-          label: 'Rename',
-          index: 3,
-          callback: _handleRename,
-        ),
-      ],
-    );
-
-void _handleOpenInNewTab(
-  WidgetRef ref,
-  TreeNode<Artifact> node,
-  Set<String> _,
-) => UrlHelper.openInNewTab(
-  UrlHelper.artifactPath(
-    vaultId: ref.read(selectedVaultProvider)?.id,
-    name: node.data.name,
-  ),
-);
-
-void _handleCopyLink(WidgetRef ref, TreeNode<Artifact> node, Set<String> _) =>
-    UrlHelper.copyLinkToClipboard(
-      UrlHelper.artifactPath(
-        vaultId: ref.read(selectedVaultProvider)?.id,
-        name: node.data.name,
-      ),
-    );
-
-void _handleRemove(
+List<OnyxiaMenuItem> buildArtifactContextMenuItems(
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> selectedIds,
-) async {
-  if (selectedIds.contains(node.data.id)) {
-    for (final id in selectedIds) {
-      ref.read(artifactsProvider.notifier).deleteItem(id);
-    }
-  } else {
-    ref.read(artifactsProvider.notifier).deleteItem(node.data.id);
-  }
-}
-
-void _handleRename(WidgetRef ref, TreeNode<Artifact> node, Set<String> _) {
-  ref.read(renameArtifactIdProvider.notifier).set(node.data.id);
+) {
+  return [
+    OnyxiaMenuItem(
+      icon: LucideIcons.externalLink,
+      child: Text(
+        'Open in New Tab',
+        style: TextStyle(color: ThemeHelper.foreground1()),
+      ),
+      onTap: () => UrlHelper.openInNewTab(
+        UrlHelper.artifactPath(
+          vaultId: ref.read(selectedVaultProvider)?.id,
+          name: node.data.name,
+        ),
+      ),
+    ),
+    OnyxiaMenuItem(
+      icon: LucideIcons.link,
+      child: Text(
+        'Copy Link',
+        style: TextStyle(color: ThemeHelper.foreground1()),
+      ),
+      onTap: () => UrlHelper.copyLinkToClipboard(
+        UrlHelper.artifactPath(
+          vaultId: ref.read(selectedVaultProvider)?.id,
+          name: node.data.name,
+        ),
+      ),
+    ),
+    const OnyxiaMenuItem.divider(),
+    OnyxiaMenuItem(
+      icon: LucideIcons.pencil,
+      child: Text(
+        'Rename',
+        style: TextStyle(color: ThemeHelper.foreground1()),
+      ),
+      onTap: () =>
+          ref.read(renameArtifactIdProvider.notifier).set(node.data.id),
+    ),
+    OnyxiaMenuItem(
+      icon: LucideIcons.trash2,
+      child: Text(
+        'Remove',
+        style: TextStyle(color: ThemeHelper.foreground1()),
+      ),
+      onTap: () {
+        if (selectedIds.contains(node.data.id)) {
+          for (final id in selectedIds) {
+            ref.read(artifactsProvider.notifier).deleteItem(id);
+          }
+        } else {
+          ref.read(artifactsProvider.notifier).deleteItem(node.data.id);
+        }
+      },
+    ),
+  ];
 }

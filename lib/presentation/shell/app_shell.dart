@@ -4,19 +4,19 @@ import 'package:web/web.dart' as web;
 bool _onyxiaReadyDispatched = false;
 
 class AppShell extends ConsumerStatefulWidget {
-  final String? selectedId;
   final String vaultId;
   final LandingMode initialLandingMode;
   final String? inviteToken;
   final String? inviteDestPath;
+  final Widget child;
 
   const AppShell({
     super.key,
-    this.selectedId,
     required this.vaultId,
     this.initialLandingMode = LandingMode.signIn,
     this.inviteToken,
     this.inviteDestPath,
+    required this.child,
   });
 
   @override
@@ -84,10 +84,7 @@ class _AppShellState extends ConsumerState<AppShell> {
               Expanded(
                 child: ColoredBox(
                   color: ThemeHelper.background1(),
-                  child: WorkspaceHost(
-                    vaultId: widget.vaultId,
-                    selectedId: widget.selectedId,
-                  ),
+                  child: widget.child,
                 ),
               ),
             ],

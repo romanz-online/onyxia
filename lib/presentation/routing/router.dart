@@ -49,45 +49,63 @@ final routerProvider = Provider<GoRouter>((ref) {
       return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
     },
     routes: <RouteBase>[
-      GoRoute(
-        path: Routes.invite,
-        name: 'invite',
-        builder: (context, state) => AppShell(
-          vaultId: '',
-          initialLandingMode: LandingMode.invite,
-          inviteToken: state.uri.queryParameters['token'],
-          inviteDestPath: Uri.decodeComponent(
-            state.uri.queryParameters['dest'] ?? Routes.home,
-          ),
-        ),
-      ),
-      // TODO: maybe think of a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
-      GoRoute(
-        path: Routes.resetPassword,
-        name: 'resetPassword',
-        builder: (context, state) => const AppShell(
-          vaultId: '',
-          initialLandingMode: LandingMode.resetPassword,
-        ),
-      ),
-      GoRoute(
-        path: Routes.home,
-        name: 'home',
-        builder: (context, state) => const AppShell(vaultId: ''),
-      ),
-      GoRoute(
-        path: '/vault/:id',
-        name: 'vault',
-        builder: (context, state) =>
-            AppShell(vaultId: state.pathParameters['id']!),
+      ShellRoute(
+        builder: (context, state, child) {
+          final loc = state.matchedLocation;
+          final vaultId = state.pathParameters['id'] ?? '';
+          LandingMode landingMode;
+          if (loc == Routes.invite) {
+            landingMode = LandingMode.invite;
+          } else if (loc == Routes.resetPassword) {
+            landingMode = LandingMode.resetPassword;
+          } else {
+            landingMode = LandingMode.signIn;
+          }
+          final destParam = state.uri.queryParameters['dest'];
+          return AppShell(
+            vaultId: vaultId,
+            initialLandingMode: landingMode,
+            inviteToken: state.uri.queryParameters['token'],
+            inviteDestPath: destParam != null
+                ? Uri.decodeComponent(destParam)
+                : null,
+            child: child,
+          );
+        },
         routes: [
           GoRoute(
-            path: ':selectedId',
-            name: 'vaultItem',
-            builder: (context, state) => AppShell(
-              selectedId: state.pathParameters['selectedId'],
+            path: Routes.invite,
+            name: 'invite',
+            builder: (_, __) => const SizedBox.shrink(),
+          ),
+          // TODO: maybe think of a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
+          GoRoute(
+            path: Routes.resetPassword,
+            name: 'resetPassword',
+            builder: (_, __) => const SizedBox.shrink(),
+          ),
+          GoRoute(
+            path: Routes.home,
+            name: 'home',
+            builder: (_, __) => const SizedBox.shrink(),
+          ),
+          GoRoute(
+            path: '/vault/:id',
+            name: 'vault',
+            builder: (context, state) => WorkspaceHost(
               vaultId: state.pathParameters['id']!,
+              selectedId: null,
             ),
+            routes: [
+              GoRoute(
+                path: ':selectedId',
+                name: 'vaultItem',
+                builder: (context, state) => WorkspaceHost(
+                  vaultId: state.pathParameters['id']!,
+                  selectedId: state.pathParameters['selectedId'],
+                ),
+              ),
+            ],
           ),
         ],
       ),

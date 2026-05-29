@@ -38,8 +38,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   static const double _width = 600;
   static const double _height = 400;
 
-  Offset _position = const Offset(100, 100);
-  bool _positionInitialized = false;
+  Offset _position = const Offset(400, 400);
 
   late LandingMode _mode;
 
@@ -52,17 +51,15 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     super.initState();
     _mode = widget.initialMode;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted || _positionInitialized) return;
-      final size = MediaQuery.of(context).size;
-      setState(() {
-        _position = Offset(
-          (size.width - _width) / 2,
-          (size.height - _height) / 2,
-        );
-        _positionInitialized = true;
-      });
-    });
+    final size =
+        WidgetsBinding.instance.platformDispatcher.views.first.physicalSize;
+    final dpr =
+        WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+    final logicalSize = size / dpr;
+    _position = Offset(
+      (logicalSize.width - _width) / 2,
+      (logicalSize.height - _height) / 2,
+    );
 
     if (widget.initialMode == .invite) {
       final destVaultId = _extractVaultId(widget.inviteDestPath ?? '');

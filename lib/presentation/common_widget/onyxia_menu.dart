@@ -71,6 +71,7 @@ class OnyxiaMenu extends StatelessWidget {
         closeOverlay();
         item.onTap!();
       },
+      hoverColor: ThemeHelper.background2(),
       child: Container(
         width: .infinity,
         alignment: .centerLeft,
