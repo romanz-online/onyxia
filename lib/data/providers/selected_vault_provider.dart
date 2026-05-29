@@ -17,16 +17,13 @@ class _SelectedVaultIdFromUrlNotifier extends Notifier<String?> {
   String? build() {
     final router = ref.watch(routerProvider);
     void listener() {
-      state = _readVaultId(router);
+      state = router.routerDelegate.currentConfiguration.pathParameters['id'];
     }
 
     router.routeInformationProvider.addListener(listener);
     ref.onDispose(() {
       router.routeInformationProvider.removeListener(listener);
     });
-    return _readVaultId(router);
+    return router.routerDelegate.currentConfiguration.pathParameters['id'];
   }
-
-  static String? _readVaultId(GoRouter router) =>
-      router.routerDelegate.currentConfiguration.pathParameters['id'];
 }

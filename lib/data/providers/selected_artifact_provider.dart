@@ -17,16 +17,19 @@ class _SelectedArtifactNameFromUrlNotifier extends Notifier<String?> {
   String? build() {
     final router = ref.watch(routerProvider);
     void listener() {
-      state = _readSelectedId(router);
+      state = router
+          .routerDelegate
+          .currentConfiguration
+          .pathParameters['selectedId'];
     }
 
     router.routeInformationProvider.addListener(listener);
     ref.onDispose(() {
       router.routeInformationProvider.removeListener(listener);
     });
-    return _readSelectedId(router);
+    return router
+        .routerDelegate
+        .currentConfiguration
+        .pathParameters['selectedId'];
   }
-
-  static String? _readSelectedId(GoRouter router) =>
-      router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
 }
