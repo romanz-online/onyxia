@@ -10,7 +10,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.externalLink,
       child: Text(
         'Open in New Tab',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () => UrlHelper.openInNewTab(UrlHelper.vaultGraphPath(vault.id)),
     ),
@@ -18,7 +18,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.link,
       child: Text(
         'Copy Link',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () =>
           UrlHelper.copyLinkToClipboard(UrlHelper.vaultGraphPath(vault.id)),
@@ -28,7 +28,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.pencil,
       child: Text(
         'Rename Vault',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () {
         showDialog(
@@ -42,7 +42,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       icon: LucideIcons.trash2,
       child: Text(
         'Delete Vault',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () => _confirmRemove(context, vault),
     ),
@@ -73,12 +73,12 @@ void _confirmRemove(BuildContext context, Vault vault) async {
               children: [
                 OnyxiaButton(
                   label: 'Cancel',
-                  onTap: () => Navigator.of(ctx).pop(false),
+                  onPressed: () => Navigator.of(ctx).pop(false),
                 ),
                 const Gap(20),
                 OnyxiaButton(
                   label: 'Delete Vault',
-                  onTap: () => Navigator.of(ctx).pop(true),
+                  onPressed: () => Navigator.of(ctx).pop(true),
                 ),
               ],
             ),

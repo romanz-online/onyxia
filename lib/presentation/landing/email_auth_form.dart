@@ -94,7 +94,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
         Center(
           child: OnyxiaButton(
             label: 'Sign in',
-            onTap: _isSubmitting ? null : _submit,
+            onPressed: _isSubmitting ? null : _submit,
           ),
         ),
         const Gap(8),
@@ -104,11 +104,11 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           children: [
             OnyxiaButton(
               label: 'Create an account',
-              onTap: () => widget.onNavigate(.createAccount),
+              onPressed: () => widget.onNavigate(.createAccount),
             ),
             OnyxiaButton(
               label: 'Forgot password?',
-              onTap: () => widget.onNavigate(.forgotPassword),
+              onPressed: () => widget.onNavigate(.forgotPassword),
             ),
           ],
         ),

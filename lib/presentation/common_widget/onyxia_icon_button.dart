@@ -21,7 +21,7 @@ class OnyxiaIconButton extends StatelessWidget {
   const OnyxiaIconButton({
     super.key,
     required this.icon,
-    this.onPressed,
+    this.onPressed,   
     this.enabled = true,
     this.isSelected = false,
     this.isPressed = false,

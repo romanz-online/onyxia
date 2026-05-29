@@ -35,13 +35,13 @@ class OnyxiaMenu extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       elevation: 8,
-      borderRadius: .circular(6.0),
+      borderRadius: .circular(4.0),
       color: ThemeHelper.background1(),
       clipBehavior: .antiAlias,
       child: Container(
         width: width,
         decoration: BoxDecoration(
-          borderRadius: .circular(6.0),
+          borderRadius: .circular(4.0),
           border: .all(color: ThemeHelper.auxiliary().withAlpha(25)),
         ),
         child: ListView(
@@ -58,7 +58,7 @@ class OnyxiaMenu extends StatelessWidget {
       return Padding(
         padding: .symmetric(vertical: 4, horizontal: 4),
         child: Divider(
-          height: 1,
+          height: 0.5,
           thickness: 0.5,
           color: ThemeHelper.foreground1(),
         ),

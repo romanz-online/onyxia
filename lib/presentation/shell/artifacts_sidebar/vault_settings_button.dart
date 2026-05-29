@@ -47,14 +47,14 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
 
   Widget _buildMenu(VoidCallback closeOverlay) {
     return OnyxiaMenu(
-      width: 160,
+      width: 150,
       closeOverlay: closeOverlay,
       items: [
         OnyxiaMenuItem(
           icon: LucideIcons.users,
           child: Text(
             'Members',
-            style: TextStyle(color: ThemeHelper.foreground1()),
+            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
           ),
           onTap: () => showDialog(
             context: context,
@@ -66,7 +66,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
           icon: LucideIcons.logOut,
           child: Text(
             'Manage Vaults',
-            style: TextStyle(color: ThemeHelper.foreground1()),
+            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
           ),
           onTap: () => context.go(Routes.home),
         ),

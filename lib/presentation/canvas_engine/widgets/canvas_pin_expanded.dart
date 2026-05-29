@@ -539,12 +539,13 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
                                       children: [
                                         OnyxiaButton(
                                           label: 'Cancel',
-                                          onTap: () =>
+                                          onPressed: () =>
                                               _exitEditMode(save: false),
                                         ),
                                         OnyxiaButton(
                                           label: 'Save',
-                                          onTap: () => _saveChanges(artifact),
+                                          onPressed: () =>
+                                              _saveChanges(artifact),
                                         ),
                                       ],
                                     ),

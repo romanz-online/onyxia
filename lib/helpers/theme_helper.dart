@@ -5,6 +5,8 @@ import 'package:themed/themed.dart';
 
 // TODO: add a proper theme menu in the project settings overlay that doesn't exist yet
 
+// TODO: add foreground3. should be used for trailing extension text and certain icons
+
 enum ThemeVariant { onyxia, slumber }
 
 /// A helper class for getting theme-aware colors. Each method returns a

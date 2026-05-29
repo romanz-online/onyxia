@@ -102,7 +102,7 @@ class _ResetPasswordViewState extends ConsumerState<ResetPasswordView> {
               Center(
                 child: OnyxiaButton(
                   label: _isSubmitting ? '...' : 'Update password',
-                  onTap: _isSubmitting ? null : _submit,
+                  onPressed: _isSubmitting ? null : _submit,
                 ),
               ),
             ],

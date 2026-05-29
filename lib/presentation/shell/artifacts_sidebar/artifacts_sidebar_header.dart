@@ -9,6 +9,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
     if (selectedVault == null) return const SizedBox.shrink();
 
     return Container(
+      height: 40,
       decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: ThemeHelper.auxiliary(), width: 1),

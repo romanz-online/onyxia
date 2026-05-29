@@ -122,7 +122,7 @@ class _RightColumn extends ConsumerWidget {
               ),
               OnyxiaButton(
                 label: 'Sign out',
-                onTap: ref.read(currentUserProvider.notifier).signOut,
+                onPressed: ref.read(currentUserProvider.notifier).signOut,
               ),
             ],
           ),
@@ -136,11 +136,11 @@ class _RightColumn extends ConsumerWidget {
                 children: [
                   OnyxiaButton(
                     label: 'New Vault',
-                    onTap: () => _showNewVaultDialog(context),
+                    onPressed: () => _showNewVaultDialog(context),
                   ),
                   OnyxiaButton(
                     label: 'Import Vault',
-                    onTap: () => _showImportVaultDialog(context, ref),
+                    onPressed: () => _showImportVaultDialog(context, ref),
                   ),
                 ],
               ),
@@ -228,10 +228,10 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
                     children: [
                       OnyxiaButton(
                         label: 'Cancel',
-                        onTap: Navigator.of(context).pop,
+                        onPressed: Navigator.of(context).pop,
                       ),
                       const Gap(20),
-                      OnyxiaButton(label: 'Create', onTap: _create),
+                      OnyxiaButton(label: 'Create', onPressed: _create),
                     ],
                   ),
                 ],

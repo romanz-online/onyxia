@@ -197,7 +197,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
       ),
       child: _isEditing
           ? Transform.translate(
-              offset: const Offset(-4, -1),
+              offset: const Offset(0, -1),
               child: Row(
                 children: [
                   Expanded(

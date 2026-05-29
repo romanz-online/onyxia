@@ -10,7 +10,7 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
       icon: LucideIcons.externalLink,
       child: Text(
         'Open in New Tab',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () => UrlHelper.openInNewTab(
         UrlHelper.artifactPath(
@@ -23,7 +23,7 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
       icon: LucideIcons.link,
       child: Text(
         'Copy Link',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () => UrlHelper.copyLinkToClipboard(
         UrlHelper.artifactPath(
@@ -36,8 +36,8 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
     OnyxiaMenuItem(
       icon: LucideIcons.pencil,
       child: Text(
-        'Rename',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        'Rename Item',
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () =>
           ref.read(renameArtifactIdProvider.notifier).set(node.data.id),
@@ -45,8 +45,8 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
     OnyxiaMenuItem(
       icon: LucideIcons.trash2,
       child: Text(
-        'Remove',
-        style: TextStyle(color: ThemeHelper.foreground1()),
+        'Remove Item',
+        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () {
         if (selectedIds.contains(node.data.id)) {

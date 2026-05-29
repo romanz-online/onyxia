@@ -144,7 +144,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
             else
               OnyxiaButton(
                 label: 'Send',
-                onTap: _isValidEmail ? _onSendInvite : null,
+                onPressed: _isValidEmail ? _onSendInvite : null,
               ),
           ],
         ),
@@ -183,7 +183,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
                     ),
                     OnyxiaButton(
                       label: 'Copy',
-                      onTap: () {
+                      onPressed: () {
                         Clipboard.setData(ClipboardData(text: _generatedLink!));
                         OnyxiaToast.show(text: 'Link copied.');
                       },

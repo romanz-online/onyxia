@@ -241,7 +241,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
               ),
               onClose: _closeContextMenu,
               builder: (ctx, close) => OnyxiaMenu(
-                width: 180,
+                width: 170,
                 items: buildArtifactContextMenuItems(
                   ref,
                   _menuNode!,

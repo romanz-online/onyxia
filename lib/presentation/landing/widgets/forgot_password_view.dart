@@ -88,7 +88,7 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
                 Center(
                   child: OnyxiaButton(
                     label: _isSubmitting ? '...' : 'Send reset link',
-                    onTap: _isSubmitting ? null : _submit,
+                    onPressed: _isSubmitting ? null : _submit,
                   ),
                 ),
               ],

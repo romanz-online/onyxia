@@ -40,7 +40,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
 
   Widget buildOnyxiaMenu(BuildContext context, void Function() closeOverlay) =>
       OnyxiaMenu(
-        width: 180,
+        width: 170,
         items: buildVaultContextMenuItems(context, widget.vault),
         closeOverlay: closeOverlay,
       );

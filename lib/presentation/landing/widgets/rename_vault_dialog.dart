@@ -78,10 +78,10 @@ class _RenameVaultDialogState extends ConsumerState<RenameVaultDialog> {
                 children: [
                   OnyxiaButton(
                     label: 'Cancel',
-                    onTap: Navigator.of(context).pop,
+                    onPressed: Navigator.of(context).pop,
                   ),
                   const Gap(20),
-                  OnyxiaButton(label: 'Rename', onTap: _rename),
+                  OnyxiaButton(label: 'Rename', onPressed: _rename),
                 ],
               ),
             ],

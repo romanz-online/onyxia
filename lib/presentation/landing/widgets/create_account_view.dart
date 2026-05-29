@@ -126,7 +126,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                 Center(
                   child: OnyxiaButton(
                     label: _isSubmitting ? '...' : 'Create account',
-                    onTap: _isSubmitting ? null : _submit,
+                    onPressed: _isSubmitting ? null : _submit,
                   ),
                 ),
               ],

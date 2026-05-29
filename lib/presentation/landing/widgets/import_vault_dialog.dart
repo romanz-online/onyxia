@@ -75,7 +75,9 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
               const Spacer(),
               Row(
                 mainAxisAlignment: .end,
-                children: [OnyxiaButton(label: 'Importing...', onTap: null)],
+                children: [
+                  OnyxiaButton(label: 'Importing...', onPressed: null),
+                ],
               ),
             ],
           ),
@@ -114,9 +116,12 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
             Row(
               mainAxisAlignment: .end,
               children: [
-                OnyxiaButton(label: 'Cancel', onTap: Navigator.of(context).pop),
+                OnyxiaButton(
+                  label: 'Cancel',
+                  onPressed: Navigator.of(context).pop,
+                ),
                 const Gap(20),
-                OnyxiaButton(label: 'Import', onTap: _startImport),
+                OnyxiaButton(label: 'Import', onPressed: _startImport),
               ],
             ),
           ],
