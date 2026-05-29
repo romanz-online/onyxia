@@ -69,7 +69,9 @@ ConstellationLayout _buildWikiLinks(
       .toList();
 
   if (!showZombies) {
-    keptEdges = keptEdges.where((e) => !zombieNames.contains(e.target)).toList();
+    keptEdges = keptEdges
+        .where((e) => !zombieNames.contains(e.target))
+        .toList();
   }
 
   if (!showOrphans) {
@@ -81,7 +83,9 @@ ConstellationLayout _buildWikiLinks(
     nodes = nodes.where((n) => connectedIds.contains(n.id)).toList();
     final finalIds = nodes.map((n) => n.id).toSet();
     keptEdges = keptEdges
-        .where((e) => finalIds.contains(e.source) && finalIds.contains(e.target))
+        .where(
+          (e) => finalIds.contains(e.source) && finalIds.contains(e.target),
+        )
         .toList();
   }
 
@@ -112,6 +116,8 @@ class _ConstellationState extends ConsumerState<Constellation> {
       ),
     );
   }
+
+  // TODO: the nodes currently all start in one places and explode out. they need to start already spread out over the visible area of the screen, with a margin, so that their movement isn't so explosive.
 
   @override
   Widget build(BuildContext context) {
@@ -152,14 +158,12 @@ class _ConstellationState extends ConsumerState<Constellation> {
                 OnyxiaCheckboxMenuItem(
                   label: 'Orphans',
                   checked: _showOrphans,
-                  onToggle: () =>
-                      setState(() => _showOrphans = !_showOrphans),
+                  onToggle: () => setState(() => _showOrphans = !_showOrphans),
                 ),
                 OnyxiaCheckboxMenuItem(
                   label: 'Zombies',
                   checked: _showZombies,
-                  onToggle: () =>
-                      setState(() => _showZombies = !_showZombies),
+                  onToggle: () => setState(() => _showZombies = !_showZombies),
                 ),
               ],
             ),
