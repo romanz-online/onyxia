@@ -61,6 +61,7 @@ final routerProvider = Provider<GoRouter>((ref) {
           } else {
             landingMode = .signIn;
           }
+          // TODO: because of this, the landing background never renders. this routing business overall just needs to be reworked because it's gotten messy. the appshell should effectively ALWAYS be getting returned and the workspace background should also always be getting rendered and it can decide for itself what specifically to render, and most of the routes (invite, reset password, login) are the exact same screen in actuality with only one internal widget (the landing overlay) changing its content.
           final destParam = state.uri.queryParameters['dest'];
           return AppShell(
             vaultId: vaultId,

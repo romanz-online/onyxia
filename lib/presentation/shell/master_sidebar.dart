@@ -52,6 +52,7 @@ class MasterSidebar extends ConsumerWidget {
               OnyxiaIconButton(
                 icon: LucideIcons.share2,
                 iconColor: ThemeHelper.foreground2(),
+                // TODO: clicking this button again should go to '/vault/$vaultId'. in the same vein, maybe this button should then be selected while the user is on the graph screen
                 tooltip: 'Open graph',
                 tooltipDirection: .right,
                 onPressed: () {

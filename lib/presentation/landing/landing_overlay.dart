@@ -35,9 +35,13 @@ class LandingOverlay extends ConsumerStatefulWidget {
 }
 
 class _LandingOverlayState extends ConsumerState<LandingOverlay> {
-  static const double _width = 600;
-  static const double _height = 400;
+  static const double _minWidth = 600;
+  static const double _minHeight = 400;
+  static const double _handleThickness = 6;
 
+  // TODO: i should come up with a neater way of resizing that doesn't rely on delta so that if i drag my cursor off screen and the widget gets locked in place, the cursor and widget don't have a huge offset when the cursor returns
+  double _width = 600;
+  double _height = 400;
   Offset _position = const Offset(400, 400);
 
   late LandingMode _mode;
@@ -98,6 +102,86 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     });
   }
 
+  void _onResize(
+    DragUpdateDetails d, {
+    bool fromTop = false,
+    bool fromLeft = false,
+    bool fromBottom = false,
+    bool fromRight = false,
+  }) {
+    final viewport = MediaQuery.of(context).size;
+    double newWidth = _width;
+    double newHeight = _height;
+    double newX = _position.dx;
+    double newY = _position.dy;
+
+    if (fromRight) {
+      newWidth = (_width + d.delta.dx).clamp(
+        _minWidth,
+        viewport.width - _position.dx,
+      );
+    } else if (fromLeft) {
+      newWidth = (_width - d.delta.dx).clamp(_minWidth, _position.dx + _width);
+      newX = _position.dx + (_width - newWidth);
+    }
+
+    if (fromBottom) {
+      newHeight = (_height + d.delta.dy).clamp(
+        _minHeight,
+        viewport.height - _position.dy,
+      );
+    } else if (fromTop) {
+      newHeight = (_height - d.delta.dy).clamp(
+        _minHeight,
+        _position.dy + _height,
+      );
+      newY = _position.dy + (_height - newHeight);
+    }
+
+    setState(() {
+      _width = newWidth;
+      _height = newHeight;
+      _position = Offset(newX, newY);
+    });
+  }
+
+  Widget _resizeHandle({
+    double? left,
+    double? top,
+    double? right,
+    double? bottom,
+    double? width,
+    double? height,
+    required MouseCursor cursor,
+    bool fromTop = false,
+    bool fromLeft = false,
+    bool fromBottom = false,
+    bool fromRight = false,
+  }) {
+    return Positioned(
+      left: left,
+      top: top,
+      right: right,
+      bottom: bottom,
+      width: width,
+      height: height,
+      child: MouseRegion(
+        cursor: cursor,
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanUpdate: (d) => _onResize(
+            d,
+            fromTop: fromTop,
+            fromLeft: fromLeft,
+            fromBottom: fromBottom,
+            fromRight: fromRight,
+          ),
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+  }
+
   Future<void> _acceptInvitation() async {
     final token = widget.inviteToken;
     if (token == null || _acceptInFlight) return;
@@ -130,32 +214,110 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       });
     }
 
-    // TODO: this widget should be resizeable. it's a pain in the ass so look for a resizable widget package on pub.dev
-
     return Positioned(
       left: _position.dx,
       top: _position.dy,
-      child: GestureDetector(
-        behavior: .opaque,
-        onPanUpdate: _onPanUpdate,
-        child: Container(
-          width: _width,
-          height: _height,
-          decoration: BoxDecoration(
-            color: ThemeHelper.background1(),
-            borderRadius: .circular(8),
-            border: .all(color: ThemeHelper.auxiliary(), width: 2),
-            boxShadow: [
-              BoxShadow(
-                color: ThemeHelper.foreground1().withValues(alpha: 0.15),
-                blurRadius: 8,
+      child: SizedBox(
+        width: _width,
+        height: _height,
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: GestureDetector(
+                behavior: .opaque,
+                onPanUpdate: _onPanUpdate,
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: ThemeHelper.background1(),
+                    borderRadius: .circular(8),
+                    border: .all(color: ThemeHelper.auxiliary(), width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: ThemeHelper.foreground1().withValues(
+                          alpha: 0.15,
+                        ),
+                        blurRadius: 8,
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: .circular(8),
+                    child: _buildShell(context, user),
+                  ),
+                ),
               ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: .circular(8),
-            child: _buildShell(context, user),
-          ),
+            ),
+            // Edges
+            _resizeHandle(
+              left: 0,
+              right: 0,
+              top: 0,
+              height: _handleThickness,
+              cursor: SystemMouseCursors.resizeUpDown,
+              fromTop: true,
+            ),
+            _resizeHandle(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              height: _handleThickness,
+              cursor: SystemMouseCursors.resizeUpDown,
+              fromBottom: true,
+            ),
+            _resizeHandle(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: _handleThickness,
+              cursor: SystemMouseCursors.resizeLeftRight,
+              fromLeft: true,
+            ),
+            _resizeHandle(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: _handleThickness,
+              cursor: SystemMouseCursors.resizeLeftRight,
+              fromRight: true,
+            ),
+            // Corners — slightly larger and stacked on top of edges so they win
+            _resizeHandle(
+              left: 0,
+              top: 0,
+              width: _handleThickness * 2,
+              height: _handleThickness * 2,
+              cursor: SystemMouseCursors.resizeUpLeftDownRight,
+              fromTop: true,
+              fromLeft: true,
+            ),
+            _resizeHandle(
+              right: 0,
+              top: 0,
+              width: _handleThickness * 2,
+              height: _handleThickness * 2,
+              cursor: SystemMouseCursors.resizeUpRightDownLeft,
+              fromTop: true,
+              fromRight: true,
+            ),
+            _resizeHandle(
+              left: 0,
+              bottom: 0,
+              width: _handleThickness * 2,
+              height: _handleThickness * 2,
+              cursor: SystemMouseCursors.resizeUpRightDownLeft,
+              fromBottom: true,
+              fromLeft: true,
+            ),
+            _resizeHandle(
+              right: 0,
+              bottom: 0,
+              width: _handleThickness * 2,
+              height: _handleThickness * 2,
+              cursor: SystemMouseCursors.resizeUpLeftDownRight,
+              fromBottom: true,
+              fromRight: true,
+            ),
+          ],
         ),
       ),
     );
