@@ -1,6 +1,8 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
 
+// TODO: the scrollbar here is a weird dark orange color. should be ThemeHelper.auxiliary()
+
 class ArtifactsTreeView extends ConsumerStatefulWidget {
   const ArtifactsTreeView({super.key});
 
