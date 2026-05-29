@@ -78,7 +78,7 @@ final routerProvider = Provider<GoRouter>((ref) {
             name: 'invite',
             builder: (_, __) => const SizedBox.shrink(),
           ),
-          // TODO: maybe think of a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
+          // TODO: need a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
           GoRoute(
             path: Routes.resetPassword,
             name: 'resetPassword',

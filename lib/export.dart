@@ -33,9 +33,7 @@ export 'package:onyxia/presentation/common_widget/onyxia_tooltip.dart';
 export 'package:onyxia/presentation/common_widget/initials_circle.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/services/item_title_validation_service.dart';
-
 export 'package:onyxia/presentation/shell/artifacts_sidebar/tree_tile.dart';
-export 'package:onyxia/presentation/shell/artifacts_sidebar/editable_artifact_name.dart';
 
 // Editor Views
 export 'package:onyxia/presentation/workspaces/artifact_editor/canvas/canvas_editor_view.dart';

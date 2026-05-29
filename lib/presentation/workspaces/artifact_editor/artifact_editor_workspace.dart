@@ -72,8 +72,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                 style: TextStyle(
                   fontStyle: .normal,
                   fontSize: 20,
-                  // TODO: not here specifically but this and a lot of other pieces of text and icons (the master sidebar, the artifacts header, the artifact names in the tree view, the settings button) should be slightly dimmer at neutral500 (the same color the trailing extension text uses) instead of being this bright, which should be somewhat reserved for the editor, selected artifact in the tree, onyxiamenu items and a few other things
-                  color: ThemeHelper.foreground1(),
+                  color: ThemeHelper.foreground2(),
                 ),
               ),
               // TODO: this should have an inline-text hyperlink button to create a new untitled note
@@ -82,7 +81,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                 style: TextStyle(
                   fontStyle: .normal,
                   fontSize: 20,
-                  color: ThemeHelper.foreground1(),
+                  color: ThemeHelper.foreground2(),
                 ),
               ),
             ],

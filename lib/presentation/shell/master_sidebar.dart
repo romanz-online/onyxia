@@ -38,6 +38,7 @@ class MasterSidebar extends ConsumerWidget {
                   icon: collapsed
                       ? LucideIcons.panelLeftOpen
                       : LucideIcons.panelLeftClose,
+                  iconColor: ThemeHelper.foreground2(),
                   tooltip: collapsed ? 'Expand sidebar' : 'Collapse sidebar',
                   tooltipDirection: .right,
                   onPressed: () {
@@ -50,6 +51,7 @@ class MasterSidebar extends ConsumerWidget {
             if (vaultId.isNotEmpty) ...[
               OnyxiaIconButton(
                 icon: LucideIcons.share2,
+                iconColor: ThemeHelper.foreground2(),
                 tooltip: 'Open graph',
                 tooltipDirection: .right,
                 onPressed: () {
@@ -60,6 +62,7 @@ class MasterSidebar extends ConsumerWidget {
             ],
             OnyxiaIconButton(
               icon: LucideIcons.palette,
+              iconColor: ThemeHelper.foreground2(),
               tooltip: 'Switch theme',
               tooltipDirection: .right,
               onPressed: () => ref.read(themeProvider.notifier).toggle(),
