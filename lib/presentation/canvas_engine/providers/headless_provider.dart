@@ -2,6 +2,7 @@ import 'package:onyxia/export.dart';
 import '../canvas_config.dart';
 import 'objects_provider.dart';
 import 'bounds_provider.dart';
+import '../utils/colors.dart';
 
 class HeadlessState {
   final CanvasObject? headlessArrow;
@@ -140,7 +141,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
 
     return CanvasObject(
       id: const Uuid().v4(),
-      color: NarwhalColors.neutral100.withValues(alpha: 0.5),
+      color: CanvasColors.neutral100.withValues(alpha: 0.5),
       type: shapeType,
       topLeft: topLeft,
       bottomRight: bottomRight,
@@ -190,7 +191,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
 
     return CanvasObject(
       id: const Uuid().v4(),
-      color: NarwhalColors.neutral100.withValues(alpha: 0.5),
+      color: CanvasColors.neutral100.withValues(alpha: 0.5),
       type: CanvasObjectType.artifact,
       topLeft: topLeft,
       bottomRight: bottomRight,

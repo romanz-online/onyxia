@@ -5,6 +5,7 @@ import 'canvas_gesture_state.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
 import '../services/services.dart';
+import '../utils/colors.dart';
 
 /// Handles gestures for shape creation tools (rectangle, circle, etc.)
 /// Implements create-and-resize behavior where dragging immediately resizes the created shape
@@ -65,7 +66,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
 
     final newObject = CanvasObject.initial().copyWith(
       id: const Uuid().v4(),
-      color: NarwhalColors.neutral100,
+      color: CanvasColors.neutral100,
       type: shapeType,
       topLeft: topLeft,
       bottomRight: bottomRight,
@@ -102,7 +103,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
 
     final newObject = CanvasObject.initial().copyWith(
       id: const Uuid().v4(),
-      color: NarwhalColors.neutral100,
+      color: CanvasColors.neutral100,
       type: shapeType,
       topLeft: topLeft,
       bottomRight: bottomRight,

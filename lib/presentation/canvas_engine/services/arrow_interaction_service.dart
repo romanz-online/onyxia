@@ -3,6 +3,7 @@ import '../canvas_config.dart';
 import '../providers/providers.dart';
 import '../gestures/gestures.dart';
 import 'interaction_service.dart';
+import '../utils/colors.dart';
 
 /// Service for handling arrow well interactions
 /// Provides shared methods for arrow creation and completion that can be used
@@ -45,7 +46,7 @@ class ArrowInteractionService {
 
     if (endObject == null) return;
 
-    arrowPreview.arrow.color = NarwhalColors.neutral400;
+    arrowPreview.arrow.color = CanvasColors.neutral400;
     arrowPreview.arrow.stroke = .solid;
     arrowPreview.arrow.arrowProps.startTip = .none;
     arrowPreview.arrow.arrowProps.endTip = .triangle;
@@ -80,7 +81,7 @@ class ArrowInteractionService {
   }) {
     final arrow = CanvasObject(
       id: const Uuid().v4(),
-      color: NarwhalColors.neutral600,
+      color: CanvasColors.neutral600,
       type: CanvasObjectType.arrow,
       topLeft: .zero,
       bottomRight: .zero,

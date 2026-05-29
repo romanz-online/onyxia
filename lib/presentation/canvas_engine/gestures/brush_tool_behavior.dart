@@ -3,6 +3,7 @@ import '../providers/providers.dart';
 import 'canvas_gesture_state.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
+import '../utils/colors.dart';
 
 /// Handles gestures for brush/freehand drawing tool
 /// Creates stroke objects by tracking pan gestures
@@ -30,7 +31,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
       type: CanvasObjectType.brush,
       topLeft: details.localPosition,
       bottomRight: details.localPosition,
-      color: NarwhalColors.neutral600,
+      color: CanvasColors.neutral600,
       brushProperties: BrushProperties(points: [details.localPosition]),
     );
 

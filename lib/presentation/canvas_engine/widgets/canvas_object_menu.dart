@@ -2,6 +2,7 @@ import 'package:onyxia/export.dart';
 import 'dart:math' as math;
 import '../providers/providers.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../utils/colors.dart';
 
 class CanvasObjectMenu extends ConsumerStatefulWidget {
   final VoidCallback openTextEditor;
@@ -418,8 +419,8 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   Widget _buildColorPalette() {
     final List<Color> colorPalette = [
-      NarwhalColors.neutral100,
-      NarwhalColors.neutral600,
+      CanvasColors.neutral100,
+      CanvasColors.neutral600,
       const Color(0xFFC62828),
       const Color(0xFFF57C00),
       const Color(0xFF388E3C),

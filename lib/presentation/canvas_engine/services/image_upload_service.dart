@@ -1,6 +1,7 @@
 import 'package:onyxia/export.dart';
 import '../providers/objects_provider.dart';
 import '../providers/viewport_provider.dart';
+import '../utils/colors.dart';
 
 class CanvasImageUploadService {
   static Future<void> uploadAndPlaceImages({
@@ -35,7 +36,7 @@ class CanvasImageUploadService {
 
         final newObj = CanvasObject(
           id: const Uuid().v4(),
-          color: NarwhalColors.neutral100,
+          color: CanvasColors.neutral100,
           topLeft: viewportCenter,
           bottomRight: Offset(
             viewportCenter.dx + image.width,
