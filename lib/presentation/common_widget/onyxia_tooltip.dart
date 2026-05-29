@@ -48,14 +48,14 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
   void initState() {
     super.initState();
     _scale = AnimationController(
-      duration: const Duration(milliseconds: 150),
+      duration: const Duration(milliseconds: 80),
       vsync: this,
     );
     _scaleAnim = Tween<double>(
       begin: 0.9,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _scale, curve: Curves.easeInExpo));
-    _opacityAnim = CurvedAnimation(parent: _scale, curve: Curves.easeInExpo);
+    ).animate(CurvedAnimation(parent: _scale, curve: Curves.easeIn));
+    _opacityAnim = CurvedAnimation(parent: _scale, curve: Curves.easeIn);
   }
 
   @override
@@ -146,36 +146,45 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
 
   @override
   Widget build(BuildContext context) {
+    // Text is layered ON TOP of the balloon as a separate, non-scaled child
+    // so glyphs stay perfectly stationary as the chrome scales in. Scaling
+    // the text alongside the balloon (any 2D scale around any pivot) makes
+    // it visibly drift toward its final position, which on left/right
+    // tooltips reads as text "floating into place" after the animation
+    // appears to finish.
     final balloon = FadeTransition(
       opacity: _opacityAnim,
-      child: ScaleTransition(
-        scale: _scaleAnim,
+      child: Stack(
         alignment: .center,
-        child: IntrinsicWidth(
-          child: IntrinsicHeight(
-            child: sb.SpeechBalloon(
-              nipLocation: _nipFor(_resolvedDirection),
-              color: ThemeHelper.auxiliary(),
-              borderRadius: 6,
-              nipHeight: 6,
-              width: double.infinity,
-              height: double.infinity,
-              child: Padding(
-                padding: .symmetric(horizontal: 10, vertical: 6),
-                child: Center(
-                  child: Text(
-                    widget.message,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: .w500,
-                      color: ThemeHelper.foreground1(),
-                    ),
-                  ),
-                ),
+        clipBehavior: .none, // nip protrudes outside the body bounds
+        children: [
+          Positioned.fill(
+            child: ScaleTransition(
+              scale: _scaleAnim,
+              alignment: .center,
+              child: sb.SpeechBalloon(
+                nipLocation: _nipFor(_resolvedDirection),
+                color: ThemeHelper.auxiliary(),
+                borderRadius: 6,
+                nipHeight: 6,
+                width: double.infinity,
+                height: double.infinity,
+                child: const SizedBox.shrink(),
               ),
             ),
           ),
-        ),
+          Padding(
+            padding: .symmetric(horizontal: 10, vertical: 6),
+            child: Text(
+              widget.message,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: .w500,
+                color: ThemeHelper.foreground1(),
+              ),
+            ),
+          ),
+        ],
       ),
     );
 
