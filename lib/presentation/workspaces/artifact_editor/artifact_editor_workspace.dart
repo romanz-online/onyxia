@@ -11,19 +11,6 @@ class ArtifactWorkspace extends ConsumerStatefulWidget {
 
 class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   bool _creatingNote = false;
-  late final TapGestureRecognizer _createTap;
-
-  @override
-  void initState() {
-    super.initState();
-    _createTap = TapGestureRecognizer()..onTap = _createUntitledNote;
-  }
-
-  @override
-  void dispose() {
-    _createTap.dispose();
-    super.dispose();
-  }
 
   Future<void> _createUntitledNote() async {
     if (_creatingNote) return;
@@ -99,34 +86,45 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                 const OnyxiaLoadingIndicator()
               else
                 // TODO: after the note is finished being made, there's a brief moment where the "no item selected" text reappears before the url and selection changes. i assume because of a rebuild here that shouldn't be happening
-                Text.rich(
-                  textAlign: TextAlign.center,
-                  TextSpan(
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: ThemeHelper.foreground2(),
+                Column(
+                  spacing: 12,
+                  children: [
+                    Text(
+                      'No item selected',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: ThemeHelper.foreground2(),
+                      ),
+                      textAlign: .center,
                     ),
-                    children: [
-                      const TextSpan(text: 'No item selected.\n'),
-                      const TextSpan(text: '\n'),
-                      const TextSpan(
-                        text: 'Select an item from the sidebar,\n',
-                      ),
-                      const TextSpan(text: 'or '),
-                      // TODO: the hyperlink text should lerp to be slightly lighter when hovered
-                      TextSpan(
-                        text: 'create a new untitled note',
-                        style: TextStyle(
-                          color: ThemeHelper.accent(),
-                          decoration: TextDecoration.underline,
-                          decorationColor: ThemeHelper.accent(),
-                        ),
-                        recognizer: _createTap,
-                        mouseCursor: SystemMouseCursors.click,
-                      ),
-                      const TextSpan(text: '.'),
-                    ],
-                  ),
+                    HoverBuilder(
+                      builder: (context, isHovered) {
+                        return MouseRegion(
+                          cursor: SystemMouseCursors.click,
+                          child: GestureDetector(
+                            onTap: _createUntitledNote,
+                            child: Text(
+                              'Create new note',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Color.lerp(
+                                  ThemeHelper.accent(),
+                                  Colors.white,
+                                  isHovered ? 0.3 : 0.0,
+                                ),
+                                decoration: TextDecoration.underline,
+                                decorationColor: Color.lerp(
+                                  ThemeHelper.accent(),
+                                  Colors.white,
+                                  isHovered ? 0.3 : 0.0,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
             ],
           ),
