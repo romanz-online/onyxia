@@ -40,20 +40,22 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
   Timer? _showTimer;
   late final AnimationController _scale;
   late final Animation<double> _scaleAnim;
-  OnyxiaTooltipDirection _resolvedDirection = OnyxiaTooltipDirection.bottom;
+  late final Animation<double> _opacityAnim;
+  OnyxiaTooltipDirection _resolvedDirection = .bottom;
   final GlobalKey _childKey = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     _scale = AnimationController(
-      duration: const Duration(milliseconds: 200),
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
     _scaleAnim = Tween<double>(
-      begin: 0.85,
+      begin: 0.9,
       end: 1.0,
-    ).animate(CurvedAnimation(parent: _scale, curve: Curves.elasticOut));
+    ).animate(CurvedAnimation(parent: _scale, curve: Curves.easeInExpo));
+    _opacityAnim = CurvedAnimation(parent: _scale, curve: Curves.easeInExpo);
   }
 
   @override
@@ -142,57 +144,32 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
     ),
   };
 
-  // Scale origin matches the nip so the balloon grows out of the trigger.
-  Alignment _scaleOriginFor(OnyxiaTooltipDirection d) => switch (d) {
-    .bottom => .topCenter,
-    .top => .bottomCenter,
-    .right => .centerLeft,
-    .left => .centerRight,
-  };
-
-  // Single-axis scale: scale only the axis perpendicular to the trigger-
-  // adjacent edge (the axis along which the balloon spawns). The orthogonal
-  // axis stays at 1.0 — uniform 2D scale around an off-axis pivot makes the
-  // text glyphs pulse perpendicular to the spawn direction, which is the
-  // jiggle. Vertical pulse of glyphs is especially perceptible (sharp
-  // baselines moving up/down); horizontal pulse of a centered short line
-  // is invisible. Single-axis scale eliminates the orthogonal motion
-  // entirely.
-  Matrix4 _scaleMatrix(OnyxiaTooltipDirection d, double s) {
-    final vertical = d == .top || d == .bottom;
-    return vertical
-        ? .diagonal3Values(1.0, s, 1.0)
-        : .diagonal3Values(s, 1.0, 1.0);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final balloon = AnimatedBuilder(
-      animation: _scaleAnim,
-      builder: (context, child) => Transform(
-        // TODO: instead of bouncing out from a specific direction, this should have a slight opacity animation to fade in and enlarge altogether in all directions instead of just one
-        transform: _scaleMatrix(_resolvedDirection, _scaleAnim.value),
-        alignment: _scaleOriginFor(_resolvedDirection),
-        child: child,
-      ),
-      child: IntrinsicWidth(
-        child: IntrinsicHeight(
-          child: sb.SpeechBalloon(
-            nipLocation: _nipFor(_resolvedDirection),
-            color: ThemeHelper.auxiliary(),
-            borderRadius: 6,
-            nipHeight: 6,
-            width: double.infinity,
-            height: double.infinity,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Center(
-                child: Text(
-                  widget.message,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: ThemeHelper.foreground1(),
+    final balloon = FadeTransition(
+      opacity: _opacityAnim,
+      child: ScaleTransition(
+        scale: _scaleAnim,
+        alignment: .center,
+        child: IntrinsicWidth(
+          child: IntrinsicHeight(
+            child: sb.SpeechBalloon(
+              nipLocation: _nipFor(_resolvedDirection),
+              color: ThemeHelper.auxiliary(),
+              borderRadius: 6,
+              nipHeight: 6,
+              width: double.infinity,
+              height: double.infinity,
+              child: Padding(
+                padding: .symmetric(horizontal: 10, vertical: 6),
+                child: Center(
+                  child: Text(
+                    widget.message,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: .w500,
+                      color: ThemeHelper.foreground1(),
+                    ),
                   ),
                 ),
               ),

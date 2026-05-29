@@ -75,10 +75,13 @@ abstract class BaseSupabaseRepository<T> {
 
   Future<List<T>> getAll() => query(field: scopeField, isEqualTo: scopeValue);
 
-  Future<void> add(List<T> items) {
+  Future<List<T>> add(List<T> items) {
     return _execute(() async {
-      if (items.isEmpty) return;
-      await _table.insert(items.map(_writeMap).toList());
+      if (items.isEmpty) return <T>[];
+      final rows = await _table.insert(items.map(_writeMap).toList()).select();
+      return (rows as List)
+          .map((r) => fromMap(r as Map<String, dynamic>))
+          .toList();
     });
   }
 

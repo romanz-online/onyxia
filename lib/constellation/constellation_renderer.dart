@@ -1,6 +1,5 @@
 import 'dart:math' as math;
 
-import 'package:flutter/gestures.dart';
 import 'package:onyxia/export.dart';
 
 import 'constellation_edge_painter.dart';

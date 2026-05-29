@@ -10,6 +10,34 @@ class ArtifactWorkspace extends ConsumerStatefulWidget {
 }
 
 class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
+  bool _creatingNote = false;
+  late final TapGestureRecognizer _createTap;
+
+  @override
+  void initState() {
+    super.initState();
+    _createTap = TapGestureRecognizer()..onTap = _createUntitledNote;
+  }
+
+  @override
+  void dispose() {
+    _createTap.dispose();
+    super.dispose();
+  }
+
+  Future<void> _createUntitledNote() async {
+    if (_creatingNote) return;
+    final vaultId = ref.read(selectedVaultProvider)?.id;
+    if (vaultId == null) return;
+    setState(() => _creatingNote = true);
+    final created = await ArtifactsRepository(
+      vaultId: vaultId,
+    ).add([NoteArtifact()]);
+    if (!mounted) return;
+    final saved = created.first;
+    context.go(UrlHelper.artifactPath(vaultId: vaultId, name: saved.name));
+  }
+
   Widget _buildEditorContent(Artifact artifact) => switch (artifact.type) {
     .note => NoteEditorView(),
     .canvas => CanvasEditorView(canvasId: artifact.id),
@@ -67,23 +95,36 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
             mainAxisAlignment: .center,
             spacing: 8,
             children: [
-              Text(
-                'No item selected',
-                style: TextStyle(
-                  fontStyle: .normal,
-                  fontSize: 20,
-                  color: ThemeHelper.foreground2(),
+              if (_creatingNote)
+                const OnyxiaLoadingIndicator()
+              else
+                // TODO: after the note is finished being made, there's a brief moment where the "no item selected" text reappears before the url and selection changes. i assume because of a rebuild here that shouldn't be happening
+                Text.rich(
+                  textAlign: TextAlign.center,
+                  TextSpan(
+                    style: TextStyle(
+                      fontSize: 20,
+                      color: ThemeHelper.foreground2(),
+                    ),
+                    children: [
+                      const TextSpan(text: 'No item selected.\n'),
+                      const TextSpan(
+                        text: 'Select an item from the sidebar, or ',
+                      ),
+                      TextSpan(
+                        text: 'create a new untitled note',
+                        style: TextStyle(
+                          color: ThemeHelper.accent(),
+                          decoration: TextDecoration.underline,
+                          decorationColor: ThemeHelper.accent(),
+                        ),
+                        recognizer: _createTap,
+                        mouseCursor: SystemMouseCursors.click,
+                      ),
+                      const TextSpan(text: '.'),
+                    ],
+                  ),
                 ),
-              ),
-              // TODO: this should have an inline-text hyperlink button to create a new untitled note
-              Text(
-                'Select an item from the sidebar to view',
-                style: TextStyle(
-                  fontStyle: .normal,
-                  fontSize: 20,
-                  color: ThemeHelper.foreground2(),
-                ),
-              ),
             ],
           ),
         ),
