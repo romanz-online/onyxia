@@ -38,10 +38,15 @@ class _VaultRowState extends ConsumerState<VaultRow> {
     setState(() => _isButtonMenuOpen = false);
   }
 
+  Widget buildOnyxiaMenu(BuildContext context, void Function() closeOverlay) =>
+      OnyxiaMenu(
+        width: 180,
+        items: buildVaultContextMenuItems(context, widget.vault),
+        closeOverlay: closeOverlay,
+      );
+
   @override
   Widget build(BuildContext context) {
-    final vault = widget.vault;
-
     return OnyxiaOverlay(
       isOpen: _cursorOffset != null,
       onClose: _closeCursorMenu,
@@ -50,10 +55,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
         target: .topLeft,
         offset: _cursorOffset ?? .zero,
       ),
-      builder: (context, closeOverlay) => OnyxiaMenu(
-        items: buildVaultContextMenuItems(context, vault),
-        closeOverlay: closeOverlay,
-      ),
+      builder: buildOnyxiaMenu,
       child: GestureDetector(
         behavior: .opaque,
         onSecondaryTapDown: (details) => _openCursorMenu(details.localPosition),
@@ -72,11 +74,12 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                   Expanded(
                     child: GestureDetector(
                       behavior: .opaque,
-                      onTap: () => context.go('/vault/${vault.id}/graph'),
+                      onTap: () =>
+                          context.go('/vault/${widget.vault.id}/graph'),
                       child: Padding(
                         padding: .symmetric(horizontal: 1.5, vertical: 7),
                         child: Text(
-                          vault.name,
+                          widget.vault.name,
                           maxLines: 1,
                           overflow: .ellipsis,
                           style: TextStyle(
@@ -96,10 +99,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                       target: .topRight,
                       offset: const Offset(4, 0),
                     ),
-                    builder: (context, closeOverlay) => OnyxiaMenu(
-                      items: buildVaultContextMenuItems(context, vault),
-                      closeOverlay: closeOverlay,
-                    ),
+                    builder: buildOnyxiaMenu,
                     child: OnyxiaIconButton(
                       icon: LucideIcons.ellipsisVertical,
                       size: 24,
