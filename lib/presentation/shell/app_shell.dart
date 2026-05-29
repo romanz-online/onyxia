@@ -148,21 +148,22 @@ class _AppShellState extends ConsumerState<AppShell> {
   }
 }
 
-class _ResizeDivider extends StatefulWidget {
+class _ResizeDivider extends ConsumerStatefulWidget {
   final VoidCallback onDragStart;
   final void Function(double globalDx) onDragUpdate;
 
   const _ResizeDivider({required this.onDragStart, required this.onDragUpdate});
 
   @override
-  State<_ResizeDivider> createState() => _ResizeDividerState();
+  ConsumerState<_ResizeDivider> createState() => _ResizeDividerState();
 }
 
-class _ResizeDividerState extends State<_ResizeDivider> {
+class _ResizeDividerState extends ConsumerState<_ResizeDivider> {
   bool _isDragging = false;
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themeProvider);
     return HoverBuilder(
       builder: (context, isHovered) {
         return MouseRegion(

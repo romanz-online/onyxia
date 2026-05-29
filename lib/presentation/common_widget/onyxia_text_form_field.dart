@@ -43,6 +43,7 @@ class OnyxiaTextFormField extends StatelessWidget {
       onChanged: onChanged,
       onFieldSubmitted: onSubmitted,
       validator: validator,
+      cursorColor: ThemeHelper.accent().withValues(alpha: 0.75),
       style: TextStyle(fontSize: fontSize, color: ThemeHelper.foreground1()),
       decoration: InputDecoration(
         hintText: hintText,
