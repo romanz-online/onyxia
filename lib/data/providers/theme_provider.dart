@@ -7,7 +7,7 @@ final themeProvider = NotifierProvider<ThemeNotifier, ThemeVariant>(
 
 class ThemeNotifier extends Notifier<ThemeVariant> {
   @override
-  ThemeVariant build() => ThemeVariant.onyxia;
+  ThemeVariant build() => .onyxia;
 
   void set(ThemeVariant variant) {
     state = variant;
@@ -15,8 +15,6 @@ class ThemeNotifier extends Notifier<ThemeVariant> {
   }
 
   void toggle() {
-    set(
-      state == ThemeVariant.onyxia ? ThemeVariant.slumber : ThemeVariant.onyxia,
-    );
+    set(state == .onyxia ? .slumber : .onyxia);
   }
 }
