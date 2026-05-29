@@ -163,7 +163,9 @@ class _ResizeDividerState extends ConsumerState<_ResizeDivider> {
 
   @override
   Widget build(BuildContext context) {
+    // TODO: check if there's a better way to do this
     ref.watch(themeProvider);
+    // need the ref.watch otherwise sometimes the color doesn't update
     return HoverBuilder(
       builder: (context, isHovered) {
         return MouseRegion(
