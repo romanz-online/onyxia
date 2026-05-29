@@ -162,10 +162,17 @@ class _ResizeDividerState extends ConsumerState<_ResizeDivider> {
   bool _isDragging = false;
 
   @override
+  void initState() {
+    super.initState();
+    // Triggers a rebuild whenever the theme changes, without touching build()
+    ref.listenManual(themeProvider, (_, __) {
+      // note: for some reason hot reloading causes this to fall out of sync with the provider. reloading the page entirely seems to fix it
+      setState(() {});
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // TODO: check if there's a better way to do this
-    ref.watch(themeProvider);
-    // need the ref.watch otherwise sometimes the color doesn't update
     return HoverBuilder(
       builder: (context, isHovered) {
         return MouseRegion(
