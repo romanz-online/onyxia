@@ -52,9 +52,9 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: Routes.home,
     refreshListenable: notifier,
     errorBuilder: (context, state) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.go(Routes.home);
-      });
+      WidgetsBinding.instance.addPostFrameCallback(
+        (_) => context.go(Routes.home),
+      );
       return Scaffold(body: Center(child: OnyxiaLoadingIndicator()));
     },
     routes: <RouteBase>[
