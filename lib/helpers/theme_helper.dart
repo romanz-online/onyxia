@@ -59,7 +59,7 @@ class ThemeHelper {
     _background2: const Color(0xFF34383F),
     _auxiliary: const Color(0xFF494D54),
     _foreground1: const Color(0xFFEEEEEE),
-    _foreground2: const Color(0xFF969A9F),
+    _foreground2: const Color(0xFFB4B8BD),
     _accent: const Color(0xFFFF7700),
     _error: const Color(0xFFF03E3E),
   };

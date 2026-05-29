@@ -36,6 +36,7 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
       builder: (context, closeOverlay) => _buildMenu(closeOverlay),
       child: OnyxiaIconButton(
         icon: LucideIcons.settings,
+        iconColor: ThemeHelper.foreground2(),
         isPressed: _isMenuOpen,
         onPressed: () => _setMenuOpen(!_isMenuOpen),
       ),

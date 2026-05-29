@@ -21,6 +21,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
         children: [
           OnyxiaIconButton(
             icon: LucideIcons.filePlus,
+            iconColor: ThemeHelper.foreground2(),
             tooltip: 'New note',
             onPressed: () async {
               await ArtifactsRepository(
@@ -30,6 +31,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
           ),
           OnyxiaIconButton(
             icon: LucideIcons.folderPlus,
+            iconColor: ThemeHelper.foreground2(),
             tooltip: 'New folder',
             onPressed: () async {
               await ArtifactsRepository(
@@ -39,6 +41,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
           ),
           OnyxiaIconButton(
             icon: LucideIcons.layoutGrid,
+            iconColor: ThemeHelper.foreground2(),
             tooltip: 'New canvas',
             onPressed: () async {
               await ArtifactsRepository(
@@ -48,6 +51,7 @@ class ArtifactsSidebarHeader extends ConsumerWidget {
           ),
           OnyxiaIconButton(
             icon: LucideIcons.imagePlus,
+            iconColor: ThemeHelper.foreground2(),
             tooltip: 'Upload image',
             onPressed: () async {
               final result = await FilePicker.platform.pickFiles(
