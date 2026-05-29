@@ -30,6 +30,9 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
   ThemeData _buildTheme() => ThemeData(
     useMaterial3: true,
     fontFamily: 'Inter',
+    dialogTheme: DialogThemeData(
+      barrierColor: Colors.black.withValues(alpha: 0.3),
+    ),
     scrollbarTheme: ScrollbarThemeData(
       thumbColor: .resolveWith(
         (states) => states.contains(WidgetState.hovered)

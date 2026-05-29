@@ -22,55 +22,17 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
     final vaultId = ref.read(selectedVaultProvider)?.id;
     if (vaultId == null) return const SizedBox.shrink();
 
-    return OnyxiaOverlay(
-      isOpen: _isMenuOpen,
-      onClose: () => _setMenuOpen(false),
-      anchor: const Aligned(
-        follower: .bottomLeft,
-        target: .bottomRight,
-        offset: const Offset(4, 0),
-        backup: Aligned(
-          follower: .bottomRight,
-          target: .topRight,
-          offset: const Offset(0, -6),
-        ),
-      ),
-      builder: (context, closeOverlay) => _buildMenu(closeOverlay),
-      child: OnyxiaIconButton(
-        icon: LucideIcons.settings,
-        iconColor: ThemeHelper.foreground2(),
-        isPressed: _isMenuOpen,
-        onPressed: () => _setMenuOpen(!_isMenuOpen),
-      ),
-    );
-  }
-
-  Widget _buildMenu(VoidCallback closeOverlay) {
-    return OnyxiaMenu(
-      width: 150,
-      closeOverlay: closeOverlay,
-      items: [
-        OnyxiaMenuItem(
-          icon: LucideIcons.users,
-          child: Text(
-            'Members',
-            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
-          ),
-          onTap: () => showDialog(
-            context: context,
-            builder: (_) => const VaultMembersDialog(),
-          ),
-        ),
-        OnyxiaMenuItem.divider(),
-        OnyxiaMenuItem(
-          icon: LucideIcons.logOut,
-          child: Text(
-            'Manage Vaults',
-            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
-          ),
-          onTap: () => context.go(Routes.home),
-        ),
-      ],
+    return OnyxiaIconButton(
+      icon: LucideIcons.settings,
+      iconColor: ThemeHelper.foreground2(),
+      isPressed: _isMenuOpen,
+      onPressed: () {
+        _setMenuOpen(true);
+        showDialog(
+          context: context,
+          builder: (_) => const VaultMembersDialog(),
+        ).then((_) => _setMenuOpen(false));
+      },
     );
   }
 }

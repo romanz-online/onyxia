@@ -143,7 +143,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
               SizedBox(width: 20, height: 20, child: OnyxiaLoadingIndicator())
             else
               OnyxiaButton(
-                label: 'Send',
+                label: 'Invite',
                 onPressed: _isValidEmail ? _onSendInvite : null,
               ),
           ],
