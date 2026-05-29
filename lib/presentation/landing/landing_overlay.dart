@@ -130,7 +130,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       });
     }
 
-    // TODO: this widget should be resizeable
+    // TODO: this widget should be resizeable. it's a pain in the ass so look for a resizable widget package on pub.dev
 
     return Positioned(
       left: _position.dx,
