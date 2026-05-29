@@ -9,7 +9,7 @@ class NarwhalColors {
   static const neutral600 = const Color(0xFF536560);
   static const neutral500 = const Color(0xFF909699);
   static const neutral400 = const Color(0xFFCFD8DC);
-  static const neutral300 = const Color(0xFFECEFF1);
+  // static const neutral300 = const Color(0xFFECEFF1);
   // static const neutral200 = const Color(0xFFF7F9F9);
   static const neutral100 = const Color(0xFFFFFFFF);
 
@@ -33,16 +33,13 @@ class NarwhalColors {
 class ThemeHelper {
   ThemeHelper._();
 
-  // TODO: create a better, more cohesive color palette based around charcoal/embers called "onyxia" (drop the narwhal theme entirely). best i've found so far is #222831 #393E46 #FF7700 #EEEEEE as a base and it needs some shade variants defined in a cohesive theme template that i can reuse for other themes easily WITHOUT relying on the materal them stupidity
-
   // TODO: switch to using themed: https://pub.dev/packages/themed and let users switch between them on the fly. use "slumber" as a second theme, #051622 #1BA098 #DEB992
 
-  static Color background1() => const Color(0xFF1C1C1E);
-  static Color background2() => const Color(0xFF28282C);
-  static Color auxiliary() => const Color(0xFF394648);
-  static Color foreground1() => const Color(0xFFF7F9F9);
-  static Color foreground2() => const Color(0xFF909699);
-  static Color accent() => const Color(0xFFFF9800);
-  static Color error() => const Color(0xFFF44336);
-  // old error was #F44336
+  static Color background1() => const Color(0xFF1F2329);
+  static Color background2() => const Color(0xFF34383F);
+  static Color auxiliary() => const Color(0xFF494D54);
+  static Color foreground1() => const Color(0xFFEEEEEE);
+  static Color foreground2() => const Color(0xFF969A9F);
+  static Color accent() => const Color(0xFFFF7700);
+  static Color error() => const Color(0xFFF03E3E);
 }
