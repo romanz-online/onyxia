@@ -92,14 +92,10 @@ class _NarwhalAppState extends ConsumerState<NarwhalApp> {
       // i don't think i use popup menus at all?
       popupMenuTheme: PopupMenuThemeData(color: ThemeHelper.foreground1()),
       // is there a simpler way of doing this?
-      pageTransitionsTheme: const PageTransitionsTheme(
+      pageTransitionsTheme: PageTransitionsTheme(
         builders: {
-          TargetPlatform.android: _NoTransitionBuilder(),
-          TargetPlatform.iOS: _NoTransitionBuilder(),
-          TargetPlatform.linux: _NoTransitionBuilder(),
-          TargetPlatform.macOS: _NoTransitionBuilder(),
-          TargetPlatform.windows: _NoTransitionBuilder(),
-          TargetPlatform.fuchsia: _NoTransitionBuilder(),
+          for (final platform in TargetPlatform.values)
+            platform: const _NoTransitionBuilder(),
         },
       ),
     );
