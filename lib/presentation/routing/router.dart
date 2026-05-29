@@ -55,11 +55,11 @@ final routerProvider = Provider<GoRouter>((ref) {
           final vaultId = state.pathParameters['id'] ?? '';
           LandingMode landingMode;
           if (loc == Routes.invite) {
-            landingMode = LandingMode.invite;
+            landingMode = .invite;
           } else if (loc == Routes.resetPassword) {
-            landingMode = LandingMode.resetPassword;
+            landingMode = .resetPassword;
           } else {
-            landingMode = LandingMode.signIn;
+            landingMode = .signIn;
           }
           final destParam = state.uri.queryParameters['dest'];
           return AppShell(
