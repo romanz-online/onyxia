@@ -35,12 +35,12 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
     if (!_isValidEmail || _isSending) return;
     final vault = ref.read(selectedVaultProvider);
     if (vault == null) {
-      OnyxiaToast.error(text: 'No vault selected.');
+      OnyxiaToast.error(text: 'No vault selected');
       return;
     }
     final me = ref.read(currentUserProvider).value;
     if (me == null) {
-      OnyxiaToast.error(text: 'Not signed in.');
+      OnyxiaToast.error(text: 'Not signed in');
       return;
     }
     final email = _email.trim().toLowerCase();
@@ -64,7 +64,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
           ])
           .then((_) {
             if (!mounted) return;
-            OnyxiaToast.show(text: '${existing.email} added to vault.');
+            OnyxiaToast.show(text: '${existing.email} added to vault');
             _emailController.clear();
             setState(() {
               _isSending = false;
@@ -115,15 +115,6 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Text(
-          'Invite by email',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: .w600,
-            color: ThemeHelper.foreground1(),
-          ),
-        ),
-        const Gap(8),
         Row(
           crossAxisAlignment: .center,
           spacing: 8,
@@ -142,6 +133,7 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
             if (_isSending)
               SizedBox(width: 20, height: 20, child: OnyxiaLoadingIndicator())
             else
+              // TODO: i should rework how exactly this is laid out. it should be less of an "invite a person" and more of a "generate invitation" dialog
               OnyxiaButton(
                 label: 'Invite',
                 onPressed: _isValidEmail ? _onSendInvite : null,
@@ -150,48 +142,24 @@ class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
         ),
         if (_generatedLink != null) ...[
           const Gap(8),
-          Container(
-            padding: .all(12),
-            decoration: BoxDecoration(
-              color: ThemeHelper.background2(),
-              borderRadius: .circular(8),
-            ),
-            child: Column(
-              crossAxisAlignment: .start,
-              children: [
-                Text(
-                  'Invite link for $_generatedLinkEmail',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: .w600,
-                    color: ThemeHelper.foreground1(),
-                  ),
+          Row(
+            crossAxisAlignment: .center,
+            spacing: 8,
+            children: [
+              Expanded(
+                child: OnyxiaTextFormField(
+                  controller: TextEditingController(text: _generatedLink!),
                 ),
-                const Gap(6),
-                Row(
-                  spacing: 8,
-                  children: [
-                    Expanded(
-                      child: SelectableText(
-                        _generatedLink!,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: ThemeHelper.foreground1(),
-                        ),
-                        maxLines: 1,
-                      ),
-                    ),
-                    OnyxiaButton(
-                      label: 'Copy',
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: _generatedLink!));
-                        OnyxiaToast.show(text: 'Link copied.');
-                      },
-                    ),
-                  ],
-                ),
-              ],
-            ),
+              ),
+              OnyxiaIconButton(
+                icon: LucideIcons.clipboardCopy,
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _generatedLink!));
+                  // TODO: this toast should be a temporary tooltip under the button ideally
+                  OnyxiaToast.show(text: 'Link copied');
+                },
+              ),
+            ],
           ),
         ],
         const Gap(16),

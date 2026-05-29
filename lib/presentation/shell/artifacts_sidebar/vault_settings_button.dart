@@ -30,7 +30,8 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
         _setMenuOpen(true);
         showDialog(
           context: context,
-          builder: (_) => const SettingsDialog(),
+          // TODO: switch to SettingsDialog() when ready
+          builder: (_) => const VaultMembersDialog(),
         ).then((_) => _setMenuOpen(false));
       },
     );

@@ -371,7 +371,7 @@ class _CanvasEditorView extends ConsumerState<CanvasEditorView> {
                           } else {
                             OnyxiaToast.show(
                               text:
-                                  'Cannot drop item pins on whiteboard canvas.',
+                                  'Cannot drop item pins on whiteboard canvas',
                             );
                           }
                         },
