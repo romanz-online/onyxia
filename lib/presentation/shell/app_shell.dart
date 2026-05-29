@@ -5,18 +5,18 @@ bool _onyxiaReadyDispatched = false;
 
 class AppShell extends ConsumerStatefulWidget {
   final String vaultId;
+  final String? selectedId;
   final LandingMode initialLandingMode;
   final String? inviteToken;
   final String? inviteDestPath;
-  final Widget child;
 
   const AppShell({
     super.key,
     required this.vaultId,
+    this.selectedId,
     this.initialLandingMode = LandingMode.signIn,
     this.inviteToken,
     this.inviteDestPath,
-    required this.child,
   });
 
   @override
@@ -84,7 +84,10 @@ class _AppShellState extends ConsumerState<AppShell> {
               Expanded(
                 child: ColoredBox(
                   color: ThemeHelper.background1(),
-                  child: widget.child,
+                  child: WorkspaceHost(
+                    vaultId: widget.vaultId,
+                    selectedId: widget.selectedId,
+                  ),
                 ),
               ),
             ],

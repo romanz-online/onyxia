@@ -108,9 +108,12 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
                     ),
                     children: [
                       const TextSpan(text: 'No item selected.\n'),
+                      const TextSpan(text: '\n'),
                       const TextSpan(
-                        text: 'Select an item from the sidebar, or ',
+                        text: 'Select an item from the sidebar,\n',
                       ),
+                      const TextSpan(text: 'or '),
+                      // TODO: the hyperlink text should lerp to be slightly lighter when hovered
                       TextSpan(
                         text: 'create a new untitled note',
                         style: TextStyle(

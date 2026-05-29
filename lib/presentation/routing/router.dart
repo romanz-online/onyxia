@@ -43,6 +43,13 @@ LandingMode _landingModeFor(String location) {
   return .signIn;
 }
 
+/// Shared builder for every route under the [ShellRoute]. The routes exist only
+/// for URL matching, path-parameter extraction, and redirect/mode logic — the
+/// actual content is rendered once by [AppShell] -> [WorkspaceHost], so the
+/// matched sub-route's own widget is intentionally empty.
+Widget _routeAnchor(BuildContext context, GoRouterState state) =>
+    const SizedBox.shrink();
+
 final routerProvider = Provider<GoRouter>((ref) {
   final notifier = _RouterNotifier(ref);
 
@@ -59,55 +66,36 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
     routes: <RouteBase>[
       ShellRoute(
-        builder: (context, state, child) {
-          final vaultId = state.pathParameters['id'] ?? '';
-          final landingMode = _landingModeFor(state.matchedLocation);
+        builder: (context, state, _) {
           final destParam = state.uri.queryParameters['dest'];
           return AppShell(
-            vaultId: vaultId,
-            initialLandingMode: landingMode,
+            vaultId: state.pathParameters['id'] ?? '',
+            selectedId: state.pathParameters['selectedId'],
+            initialLandingMode: _landingModeFor(state.matchedLocation),
             inviteToken: state.uri.queryParameters['token'],
             inviteDestPath: destParam != null
                 ? Uri.decodeComponent(destParam)
                 : null,
-            child: child,
           );
         },
         routes: [
-          GoRoute(
-            path: Routes.invite,
-            name: 'invite',
-            builder: (_, __) =>
-                const WorkspaceHost(vaultId: '', selectedId: null),
-          ),
+          GoRoute(path: Routes.invite, name: 'invite', builder: _routeAnchor),
           // TODO: need a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
           GoRoute(
             path: Routes.resetPassword,
             name: 'resetPassword',
-            builder: (_, __) =>
-                const WorkspaceHost(vaultId: '', selectedId: null),
+            builder: _routeAnchor,
           ),
-          GoRoute(
-            path: Routes.home,
-            name: 'home',
-            builder: (_, __) =>
-                const WorkspaceHost(vaultId: '', selectedId: null),
-          ),
+          GoRoute(path: Routes.home, name: 'home', builder: _routeAnchor),
           GoRoute(
             path: '/vault/:id',
             name: 'vault',
-            builder: (context, state) => WorkspaceHost(
-              vaultId: state.pathParameters['id']!,
-              selectedId: null,
-            ),
+            builder: _routeAnchor,
             routes: [
               GoRoute(
                 path: ':selectedId',
                 name: 'vaultItem',
-                builder: (context, state) => WorkspaceHost(
-                  vaultId: state.pathParameters['id']!,
-                  selectedId: state.pathParameters['selectedId'],
-                ),
+                builder: _routeAnchor,
               ),
             ],
           ),

@@ -30,27 +30,30 @@ class ThemeHelper {
   ThemeHelper._();
 
   static const ColorRef _background1 = ColorRef(
-    Color(0xFF1F2329),
+    const Color(0xFF1F2329),
     id: 'background1',
   );
   static const ColorRef _background2 = ColorRef(
-    Color(0xFF34383F),
+    const Color(0xFF34383F),
     id: 'background2',
   );
   static const ColorRef _auxiliary = ColorRef(
-    Color(0xFF494D54),
+    const Color(0xFF494D54),
     id: 'auxiliary',
   );
   static const ColorRef _foreground1 = ColorRef(
-    Color(0xFFEEEEEE),
+    const Color(0xFFEEEEEE),
     id: 'foreground1',
   );
   static const ColorRef _foreground2 = ColorRef(
-    Color(0xFF969A9F),
+    const Color(0xFF969A9F),
     id: 'foreground2',
   );
-  static const ColorRef _accent = ColorRef(Color(0xFFFF7700), id: 'accent');
-  static const ColorRef _error = ColorRef(Color(0xFFF03E3E), id: 'error');
+  static const ColorRef _accent = ColorRef(
+    const Color(0xFFF17D16),
+    id: 'accent',
+  );
+  static const ColorRef _error = ColorRef(const Color(0xFFF03E3E), id: 'error');
 
   static Color background1() => _background1;
   static Color background2() => _background2;
@@ -66,7 +69,7 @@ class ThemeHelper {
     _auxiliary: const Color(0xFF494D54),
     _foreground1: const Color(0xFFEEEEEE),
     _foreground2: const Color(0xFFB4B8BD),
-    _accent: const Color(0xFFFF7700),
+    _accent: const Color(0xFFF17D16),
     _error: const Color(0xFFF03E3E),
   };
 

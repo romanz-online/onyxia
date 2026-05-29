@@ -170,6 +170,7 @@ class _ConstellationState extends ConsumerState<Constellation> {
             child: OnyxiaIconButton(
               icon: LucideIcons.funnel,
               tooltip: 'Filter nodes',
+              tooltipDirection: .left,
               isSelected: _filterMenuOpen,
               onPressed: () =>
                   setState(() => _filterMenuOpen = !_filterMenuOpen),
