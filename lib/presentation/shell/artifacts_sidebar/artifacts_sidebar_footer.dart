@@ -24,7 +24,7 @@ class _ArtifactsSidebarFooterState
         : selectedVault.name;
 
     return Container(
-      height: 40,
+      height: 42,
       decoration: BoxDecoration(
         border: Border(
           top: BorderSide(color: ThemeHelper.auxiliary(), width: 1),

@@ -57,7 +57,8 @@ class ArtifactsSidebar extends ConsumerWidget {
                     Expanded(
                       child: Container(
                         width: .infinity,
-                        padding: .only(left: 6, top: 6, bottom: 6, right: 18),
+                        padding: .only(left: 6, right: 18),
+                        // TODO: need some way to leave a gap above and below the tree without using padding or margin, in such a way that the tree's internal scrollbar includes that space
                         child: const ArtifactsTreeView(),
                       ),
                     ),
