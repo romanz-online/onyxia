@@ -33,7 +33,6 @@ class _ArtifactsSidebarFooterState
       padding: .symmetric(horizontal: 12, vertical: 4),
       child: Row(
         children: [
-          // TODO: this onyxiabutton should open a menu above it (anchored topleft/bottomleft) that displays "manage vaults" at the bottom and above it other vaults that the user can access, readily available. will need to only show the three most recently-modified vaults to prevent overflow
           OnyxiaOverlay(
             isOpen: _isMenuOpen,
             onClose: () => _setMenuOpen(false),
@@ -42,7 +41,8 @@ class _ArtifactsSidebarFooterState
               target: .topLeft,
               offset: const Offset(0, -4),
             ),
-            builder: (context, closeOverlay) => _buildMenu(closeOverlay),
+            builder: (context, closeOverlay) =>
+                _buildMenu(closeOverlay, vaultName),
             child: OnyxiaButton(
               label: vaultName,
               isPressed: _isMenuOpen,
@@ -60,29 +60,39 @@ class _ArtifactsSidebarFooterState
     );
   }
 
-  Widget _buildMenu(VoidCallback closeOverlay) {
+  Widget _buildMenu(VoidCallback closeOverlay, String currentVaultName) {
     return OnyxiaMenu(
       width: 150,
       closeOverlay: closeOverlay,
       items: [
         // TODO: replace with a list of other most recently accessed or modified vaults
         OnyxiaMenuItem(
-          child: Text(
-            'Dummy Vault 1',
-            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
+          child: Row(
+            spacing: 8,
+            children: [
+              const SizedBox(width: 14), // takes up the usual icon space
+              Text(
+                'Dummy Vault 1',
+                style: TextStyle(
+                  color: ThemeHelper.foreground1(),
+                  fontSize: 13,
+                ),
+              ),
+            ],
           ),
           onTap: () => {},
         ),
         OnyxiaMenuItem(
+          icon: LucideIcons.check600,
           child: Text(
-            'Dummy Vault 2',
+            currentVaultName,
             style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
           ),
           onTap: () => {},
         ),
         OnyxiaMenuItem.divider(),
         OnyxiaMenuItem(
-          icon: LucideIcons.logOut,
+          icon: LucideIcons.logOut600,
           child: Text(
             'Manage Vaults',
             style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
