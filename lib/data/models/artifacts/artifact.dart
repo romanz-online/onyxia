@@ -1,6 +1,6 @@
 import 'package:onyxia/export.dart';
 
-enum ArtifactType with NarwhalEnum {
+enum ArtifactType with OnyxiaEnum {
   note,
   canvas,
   folder,

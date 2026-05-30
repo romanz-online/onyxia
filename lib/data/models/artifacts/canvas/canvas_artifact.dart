@@ -1,7 +1,7 @@
 import 'package:onyxia/export.dart';
 import 'dart:convert';
 
-enum CanvasType with NarwhalEnum { whiteboard, markup, flow }
+enum CanvasType with OnyxiaEnum { whiteboard, markup, flow }
 
 class CanvasArtifact extends Artifact {
   final CanvasType canvasType;

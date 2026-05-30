@@ -1,7 +1,7 @@
 ﻿import 'package:onyxia/export.dart';
 import 'providers/tool_mode_provider.dart';
 
-enum ArtifactCanvasDisplay with NarwhalEnum { pin, object }
+enum ArtifactCanvasDisplay with OnyxiaEnum { pin, object }
 
 class CanvasConfig {
   final bool allowArtifactsOnBackground;

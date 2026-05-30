@@ -20,7 +20,7 @@ export 'package:onyxia/presentation/app.dart';
 
 export 'package:onyxia/global_error_handler.dart';
 
-export 'package:onyxia/helpers/narwhal_enum.dart';
+export 'package:onyxia/helpers/onyxia_enum.dart';
 export 'package:onyxia/helpers/offset_extension.dart';
 export 'package:onyxia/helpers/theme_helper.dart';
 export 'package:onyxia/helpers/url_helper.dart';

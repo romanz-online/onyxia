@@ -1,14 +1,14 @@
 import 'package:onyxia/export.dart';
 
 class OnyxiaDialog extends ConsumerStatefulWidget {
-  final String title;
+  final String? title;
   final Widget? content;
   final double? width;
   final double? height;
 
   const OnyxiaDialog({
     super.key,
-    required this.title,
+    this.title,
     this.content,
     this.width = 500.0,
     this.height = 300.0,
@@ -45,42 +45,40 @@ class _OnyxiaDialogState extends ConsumerState<OnyxiaDialog> {
               spacing: 20,
               children: [
                 // Header
-                Container(
-                  padding: .fromLTRB(20, 20, 20, 0),
-                  decoration: BoxDecoration(
-                    color: ThemeHelper.background1(),
-                    borderRadius: .only(
-                      topLeft: .circular(20),
-                      topRight: .circular(20),
+                if (widget.title != null)
+                  Container(
+                    padding: .fromLTRB(20, 20, 20, 0),
+                    decoration: BoxDecoration(
+                      color: ThemeHelper.background1(),
+                      borderRadius: .only(
+                        topLeft: .circular(20),
+                        topRight: .circular(20),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: .spaceBetween,
+                      children: [
+                        Text(
+                          widget.title!,
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: .w400,
+                            color: ThemeHelper.foreground1(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: .spaceBetween,
-                    children: [
-                      Text(
-                        widget.title,
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: .w400,
-                          color: ThemeHelper.foreground1(),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
 
                 // Content
                 Expanded(
-                  child: Padding(
-                    padding: .fromLTRB(20, 0, 20, 20),
-                    child: Column(
-                      crossAxisAlignment: .start,
-                      children: [
-                        widget.content != null
-                            ? widget.content!
-                            : const SizedBox(),
-                      ],
-                    ),
+                  child: Column(
+                    crossAxisAlignment: .start,
+                    children: [
+                      widget.content != null
+                          ? widget.content!
+                          : const SizedBox(),
+                    ],
                   ),
                 ),
               ],

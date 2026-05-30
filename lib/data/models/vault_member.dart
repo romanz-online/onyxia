@@ -1,12 +1,12 @@
 import 'package:onyxia/export.dart';
 
-enum UserRole with NarwhalEnum {
+enum UserRole with OnyxiaEnum {
   member,
   owner;
 
   String get label => switch (this) {
-    UserRole.member => 'Member',
-    UserRole.owner => 'Owner',
+    member => 'Member',
+    owner => 'Owner',
   };
 }
 

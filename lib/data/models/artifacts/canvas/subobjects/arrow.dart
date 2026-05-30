@@ -1,9 +1,9 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/canvas_engine/providers/providers.dart';
 
-enum ArrowTip with NarwhalEnum { triangle, circle, none }
+enum ArrowTip with OnyxiaEnum { triangle, circle, none }
 
-enum ArrowType with NarwhalEnum { segmented, curved }
+enum ArrowType with OnyxiaEnum { segmented, curved }
 
 final minSegmentLength = CanvasBounds.gridSpacing * 2;
 

@@ -293,7 +293,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: .normal,
-                        color: ThemeHelper.foreground2(),
+                        color: ThemeHelper.foreground3(),
                         letterSpacing: 0.5,
                       ),
                       maxLines: 1,

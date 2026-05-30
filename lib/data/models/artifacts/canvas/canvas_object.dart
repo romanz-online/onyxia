@@ -23,7 +23,7 @@ enum ResizeHandle {
   none,
 }
 
-enum CanvasObjectType with NarwhalEnum {
+enum CanvasObjectType with OnyxiaEnum {
   // shapes
   rectangle,
   diamond,
@@ -46,7 +46,7 @@ enum CanvasObjectType with NarwhalEnum {
   artifact,
 }
 
-enum StrokeType with NarwhalEnum { dashed, solid, thick, none }
+enum StrokeType with OnyxiaEnum { dashed, solid, thick, none }
 
 class CanvasObject {
   final GlobalKey fillAreaKey = GlobalKey();

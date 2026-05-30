@@ -10,11 +10,8 @@ class ThemeNotifier extends Notifier<ThemeVariant> {
   ThemeVariant build() => .onyxia;
 
   void set(ThemeVariant variant) {
+    if (state == variant) return;
     state = variant;
     Themed.currentTheme = ThemeHelper.paletteFor(variant);
-  }
-
-  void toggle() {
-    set(state == .onyxia ? .slumber : .onyxia);
   }
 }
