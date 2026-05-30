@@ -60,29 +60,35 @@ void _confirmRemove(BuildContext context, Vault vault) async {
       height: 200,
       title: 'Delete $vaultName?',
       content: Expanded(
-        child: Column(
-          crossAxisAlignment: .start,
-          children: [
-            Text(
-              'This is permanent.',
-              style: TextStyle(fontSize: 20, color: ThemeHelper.foreground1()),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: .end,
-              children: [
-                OnyxiaButton(
-                  label: 'Cancel',
-                  onPressed: () => Navigator.of(ctx).pop(false),
+        child: Padding(
+          padding: .all(20),
+          child: Column(
+            crossAxisAlignment: .start,
+            children: [
+              Text(
+                'This is permanent.',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: ThemeHelper.foreground1(),
                 ),
-                const Gap(20),
-                OnyxiaButton(
-                  label: 'Delete Vault',
-                  onPressed: () => Navigator.of(ctx).pop(true),
-                ),
-              ],
-            ),
-          ],
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: .end,
+                children: [
+                  OnyxiaButton(
+                    label: 'Cancel',
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                  ),
+                  const Gap(20),
+                  OnyxiaButton(
+                    label: 'Delete Vault',
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     ),

@@ -1,4 +1,5 @@
 import 'package:onyxia/export.dart';
+import 'vault_members_tab.dart';
 import 'theme_tab.dart';
 
 enum _SettingsTab with OnyxiaEnum {
@@ -64,12 +65,7 @@ class _SettingsDialogState extends ConsumerState<SettingsDialog> {
   }
 
   Widget _buildTabContent() => switch (_selected) {
-    .members => _buildMembers(),
+    .members => const VaultMembersTab(),
     .theme => const ThemeTab(),
   };
-
-  Widget _buildMembers() {
-    // TODO: members content
-    return const SizedBox.expand();
-  }
 }

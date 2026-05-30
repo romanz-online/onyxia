@@ -1,13 +1,13 @@
 import 'package:onyxia/export.dart';
 
-class VaultMembersDialog extends ConsumerStatefulWidget {
-  const VaultMembersDialog({super.key});
+class VaultMembersTab extends ConsumerStatefulWidget {
+  const VaultMembersTab({super.key});
 
   @override
-  ConsumerState<VaultMembersDialog> createState() => _VaultMembersDialogState();
+  ConsumerState<VaultMembersTab> createState() => _VaultMembersTabState();
 }
 
-class _VaultMembersDialogState extends ConsumerState<VaultMembersDialog> {
+class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   final TextEditingController _emailController = TextEditingController();
   String _email = '';
   bool _isSending = false;

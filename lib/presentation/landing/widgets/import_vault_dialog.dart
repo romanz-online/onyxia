@@ -65,66 +65,82 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
     if (_importing) {
       return OnyxiaDialog(
         width: 600,
-        height: 260,
+        height: 264,
         title: 'Importing Vault',
         content: Expanded(
-          child: Column(
-            crossAxisAlignment: .start,
-            children: [
-              ImportProgressView(done: _done, total: widget.files.length),
-              const Spacer(),
-              Row(
-                mainAxisAlignment: .end,
-                children: [
-                  OnyxiaButton(label: 'Importing...', onPressed: null),
-                ],
-              ),
-            ],
+          child: Padding(
+            padding: .all(20),
+            child: Column(
+              crossAxisAlignment: .start,
+              children: [
+                ImportProgressView(
+                  done: _done,
+                  total: widget.files.length,
+                  currentFileName: _done > widget.files.length
+                      ? 'Done.'
+                      : widget.files[_done].name,
+                ),
+                const Spacer(),
+                Row(
+                  mainAxisAlignment: .end,
+                  children: [
+                    OnyxiaButton(label: 'Importing...', onPressed: null),
+                  ],
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
+    // TODO: user can currently close out of this dialog early by pressing Esc. it should be impossible to close this dialog view.
     return OnyxiaDialog(
       width: 600,
-      height: 260,
+      height: 264,
       title: 'Import Vault',
       content: Expanded(
-        child: Column(
-          crossAxisAlignment: .start,
-          spacing: 10,
-          children: [
-            Text(
-              'Vault Name',
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: .w600,
-                color: ThemeHelper.foreground1(),
-              ),
-            ),
-            OnyxiaTextFormField(
-              maxLength: 50,
-              controller: _nameController,
-              autofocus: true,
-              hintText: 'Enter vault name',
-            ),
-            Text(
-              'Importing ${widget.files.length} files from folder.',
-              style: TextStyle(fontSize: 12, color: ThemeHelper.foreground2()),
-            ),
-            const Spacer(),
-            Row(
-              mainAxisAlignment: .end,
-              children: [
-                OnyxiaButton(
-                  label: 'Cancel',
-                  onPressed: Navigator.of(context).pop,
+        child: Padding(
+          padding: .all(20),
+          child: Column(
+            crossAxisAlignment: .start,
+            spacing: 10,
+            children: [
+              Text(
+                'Vault Name',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: .w600,
+                  color: ThemeHelper.foreground1(),
                 ),
-                const Gap(20),
-                OnyxiaButton(label: 'Import', onPressed: _startImport),
-              ],
-            ),
-          ],
+              ),
+              OnyxiaTextFormField(
+                maxLength: 50,
+                controller: _nameController,
+                autofocus: true,
+                hintText: 'Enter vault name',
+              ),
+              Text(
+                'Importing ${widget.files.length} files from folder.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: ThemeHelper.foreground2(),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: .end,
+                children: [
+                  OnyxiaButton(
+                    label: 'Cancel',
+                    onPressed: Navigator.of(context).pop,
+                  ),
+                  const Gap(20),
+                  OnyxiaButton(label: 'Import', onPressed: _startImport),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -134,27 +150,28 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
 class ImportProgressView extends StatelessWidget {
   final int done;
   final int total;
+  final String currentFileName;
 
   const ImportProgressView({
     super.key,
     required this.done,
     required this.total,
+    required this.currentFileName,
   });
 
   @override
   Widget build(BuildContext context) {
-    final value = total == 0 ? null : done / total;
     return Column(
       mainAxisAlignment: .center,
       crossAxisAlignment: .stretch,
       spacing: 12,
       children: [
         Text(
-          'Importing $done / $total files',
+          'Importing: $currentFileName\n($done / $total)',
           style: TextStyle(fontSize: 14, color: ThemeHelper.foreground1()),
         ),
         LinearProgressIndicator(
-          value: value,
+          value: total == 0 ? null : done / total,
           minHeight: 6,
           backgroundColor: ThemeHelper.background2(),
           valueColor: AlwaysStoppedAnimation<Color>(ThemeHelper.error()),

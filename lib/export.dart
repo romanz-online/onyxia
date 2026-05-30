@@ -63,7 +63,6 @@ export 'package:onyxia/presentation/routing/providers/auth_provider.dart';
 export 'package:onyxia/presentation/shell/workspace_host.dart';
 export 'package:onyxia/presentation/shell/master_sidebar.dart';
 export 'package:onyxia/presentation/shell/app_shell.dart';
-export 'package:onyxia/presentation/shell/settings_dialog/vault_members_dialog.dart';
 export 'package:onyxia/presentation/shell/settings_dialog/settings_dialog.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_view.dart';
 export 'package:onyxia/presentation/shell/artifacts_sidebar/artifacts_tree_context_menu.dart';
