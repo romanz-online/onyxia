@@ -70,7 +70,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (ids.isEmpty) {
       if (ref.read(selectedArtifactProvider) != null) {
-        context.go('/vault/$vaultId');
+        context.go(Routes.vaultUrl(vaultId));
       }
       return;
     }
@@ -81,7 +81,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
     if (item == null || item.type == .folder) return;
 
     if (ref.read(selectedArtifactProvider)?.id == item.id) return;
-    context.go(UrlHelper.artifactPath(vaultId: vaultId, name: item.name));
+    context.go(Routes.artifactUrl(vaultId: vaultId, name: item.name));
   }
 
   void _syncTree(List<TreeNode<Artifact>> newRoots) {

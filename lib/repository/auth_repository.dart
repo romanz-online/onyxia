@@ -32,6 +32,7 @@ class AuthRepository {
   Future<void> sendPasswordResetEmail(String email) async {
     await _client.auth.resetPasswordForEmail(
       email,
+      // TODO: double-check this and hopefully rewrite to Routes.resetPasswordUrl()
       redirectTo: '${Uri.base.origin}${Routes.resetPassword}',
     );
   }

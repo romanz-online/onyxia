@@ -13,7 +13,7 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
         style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
       onTap: () => UrlHelper.openInNewTab(
-        UrlHelper.artifactPath(
+        Routes.artifactUrl(
           vaultId: ref.read(selectedVaultProvider)?.id,
           name: node.data.name,
         ),

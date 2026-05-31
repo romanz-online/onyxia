@@ -12,7 +12,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
         'Open in New Tab',
         style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
-      onTap: () => UrlHelper.openInNewTab(UrlHelper.vaultGraphPath(vault.id)),
+      onTap: () => UrlHelper.openInNewTab(Routes.graphUrl(vault.id)),
     ),
     OnyxiaMenuItem(
       icon: LucideIcons.link,
@@ -20,8 +20,7 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
         'Copy Link',
         style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
-      onTap: () =>
-          UrlHelper.copyLinkToClipboard(UrlHelper.vaultGraphPath(vault.id)),
+      onTap: () => UrlHelper.copyLinkToClipboard(Routes.graphUrl(vault.id)),
     ),
     const OnyxiaMenuItem.divider(),
     OnyxiaMenuItem(

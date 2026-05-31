@@ -364,9 +364,11 @@ class _NoteEditorField extends ConsumerWidget {
                   autofocus: true,
                   focusNode: focusNode,
                   availableWikiTargets: ref.watch(wikiLinkTitlesProvider),
-                  onWikiLinkTapped: (title) {
+                  onWikiLinkTapped: (name) {
                     final vaultId = ref.read(selectedVaultProvider)?.id;
-                    context.go('/vault/$vaultId/$title');
+                    context.go(
+                      Routes.artifactUrl(vaultId: vaultId, name: name),
+                    );
                   },
                 ),
               ),

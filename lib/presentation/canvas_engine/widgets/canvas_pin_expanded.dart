@@ -147,7 +147,7 @@ class _CanvasPinExpandedWidgetState extends ConsumerState<CanvasPinExpanded>
 
   void _navigateToArtifact(Artifact item) {
     context.go(
-      UrlHelper.artifactPath(
+      Routes.artifactUrl(
         vaultId: ref.read(selectedVaultProvider)?.id,
         name: item.name,
       ),

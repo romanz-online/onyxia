@@ -111,7 +111,7 @@ class _ConstellationState extends ConsumerState<Constellation> {
         .firstWhereOrNull((e) => e.name == nodeId);
     if (item == null) return;
     context.go(
-      UrlHelper.artifactPath(
+      Routes.artifactUrl(
         vaultId: ref.read(selectedVaultProvider)?.id,
         name: item.name,
       ),

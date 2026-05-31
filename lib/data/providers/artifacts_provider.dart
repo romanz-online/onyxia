@@ -71,7 +71,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
       (a) => a.name == urlSelectedName,
     );
     if (selectedItem != null && idsToDelete.contains(selectedItem.id)) {
-      ref.read(routerProvider).go('/vault/$_vaultId/');
+      ref.read(routerProvider).go(Routes.vaultUrl(_vaultId));
     }
 
     await _repository.deleteMultiple(idsToDelete);
@@ -166,7 +166,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
         router.routerDelegate.currentConfiguration.pathParameters['selectedId'];
     if (urlSelectedId == oldName) {
       final vaultId = ref.read(selectedVaultProvider.select((p) => p?.id));
-      router.go(UrlHelper.artifactPath(vaultId: vaultId, name: renamed.name));
+      router.go(Routes.artifactUrl(vaultId: vaultId, name: renamed.name));
     }
 
     await _repository.update(batch);

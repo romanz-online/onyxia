@@ -22,7 +22,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
     ).add([NoteArtifact()]);
     if (!mounted) return;
     final saved = created.first;
-    context.go(UrlHelper.artifactPath(vaultId: vaultId, name: saved.name));
+    context.go(Routes.artifactUrl(vaultId: vaultId, name: saved.name));
   }
 
   Widget _buildEditorContent(Artifact artifact) => switch (artifact.type) {
