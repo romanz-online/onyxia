@@ -74,8 +74,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                   Expanded(
                     child: GestureDetector(
                       behavior: .opaque,
-                      onTap: () =>
-                          context.go('/vault/${widget.vault.id}/graph'),
+                      onTap: () => context.go('/vault/${widget.vault.id}/'),
                       child: Padding(
                         padding: .symmetric(horizontal: 1.5, vertical: 7),
                         child: Text(

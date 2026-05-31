@@ -75,6 +75,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                 vaultId: widget.vaultId,
                 isArtifactsSidebarCollapsed: _isArtifactsSidebarCollapsed,
                 animateNextCollapseChange: _animateNextCollapseChange,
+                selectedId: widget.selectedId,
               ),
               ArtifactsSidebar(
                 width: _artifactsSidebarWidth,

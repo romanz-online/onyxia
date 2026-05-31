@@ -18,7 +18,7 @@ class UrlHelper {
   }) => (vaultId == null || vaultId.isEmpty) ? '' : '/vault/$vaultId/$name';
 
   static String vaultGraphPath(String vaultId) =>
-      vaultId.isEmpty ? '/vaults' : '/vault/$vaultId/graph';
+      vaultId.isEmpty ? '/vaults' : '/vault/$vaultId/${Routes.graph}';
 
   // ===== Layer 2: shareable URL adapter =====
 

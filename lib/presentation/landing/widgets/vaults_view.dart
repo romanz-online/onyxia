@@ -85,7 +85,7 @@ class _RightColumn extends ConsumerWidget {
       context: context,
       builder: (_) => ImportVaultDialog(
         files: files,
-        onComplete: (vault) => context.go('/vault/${vault.id}/graph'),
+        onComplete: (vault) => context.go('/vault/${vault.id}/${Routes.graph}'),
       ),
     );
   }
@@ -178,7 +178,7 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
     await _waitForVaultInProvider(newVault.id);
     if (!mounted) return;
     Navigator.of(context).pop();
-    navigatorKey.currentContext?.go('/vault/${newVault.id}/graph');
+    navigatorKey.currentContext?.go('/vault/${newVault.id}/${Routes.graph}');
   }
 
   Future<void> _waitForVaultInProvider(String id) {

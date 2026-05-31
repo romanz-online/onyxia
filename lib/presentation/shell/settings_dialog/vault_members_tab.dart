@@ -77,7 +77,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
     // Generate the UUID client-side (uuid: ^4.5.1 is already a dep) so we don't
     // need a roundtrip to read back the DB-generated token.
     else {
-      // TODO: this should just create a ghost account that will be added to the vault members, and once the user actually logs in for the first time they'll fill in their password etc. and see that they're already a part of a vault
+      // TODO: this should just create a ghost account that will be added to the vault members, and once the user actually logs in for the first time they'll fill in their password etc. and see that they're already a part of a vault. this might mean i need to stop using the real "users" table and start mirroring it into my own table where i can keep additional information. unsure.
     }
   }
 

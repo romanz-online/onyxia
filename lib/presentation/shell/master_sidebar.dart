@@ -6,12 +6,14 @@ class MasterSidebar extends ConsumerWidget {
   final String vaultId;
   final ValueNotifier<bool> isArtifactsSidebarCollapsed;
   final ValueNotifier<bool> animateNextCollapseChange;
+  final String? selectedId;
 
   const MasterSidebar({
     super.key,
     required this.vaultId,
     required this.isArtifactsSidebarCollapsed,
     required this.animateNextCollapseChange,
+    required this.selectedId,
   });
 
   @override
@@ -57,8 +59,13 @@ class MasterSidebar extends ConsumerWidget {
                 tooltipDirection: .right,
                 onPressed: () {
                   if (vaultId.isEmpty) return;
-                  context.go('/vault/$vaultId/${Routes.graph}');
+                  context.go(
+                    selectedId == Routes.graph
+                        ? '/vault/$vaultId/'
+                        : '/vault/$vaultId/${Routes.graph}',
+                  );
                 },
+                isSelected: selectedId == Routes.graph,
               ),
             ],
           ],

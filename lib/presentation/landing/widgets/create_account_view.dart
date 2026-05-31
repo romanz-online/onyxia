@@ -59,7 +59,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-      if (mounted) widget.onNavigate(LandingMode.checkInbox);
+      if (mounted) widget.onNavigate(.checkInbox);
     } on AuthException catch (e) {
       if (mounted) setState(() => _errorMessage = e.message);
     } finally {
@@ -125,7 +125,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                 const Gap(16),
                 Center(
                   child: OnyxiaButton(
-                    label: _isSubmitting ? '...' : 'Create account',
+                    label: 'Create account',
                     onPressed: _isSubmitting ? null : _submit,
                   ),
                 ),
