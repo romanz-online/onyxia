@@ -185,17 +185,18 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                         ? LucideIcons.folderOpen
                         : LucideIcons.folder,
                     color: ThemeHelper.foreground1(),
-                    size: 18,
+                    size: 16,
                   ),
                 )
               : const SizedBox.shrink(),
           contentBuilder: (context, node, _) => TreeTile(node: node),
           style: TreeViewStyle(
-            indentAmount: 16.0,
+            indentAmount: 16,
             padding: .fromLTRB(8, 0, 16, 0),
             hoverColor: ThemeHelper.background2(),
             selectedColor: ThemeHelper.background2(),
           ),
+          padding: .symmetric(vertical: 8),
           logic: TreeViewConfig(
             enableDragAndDrop: true,
             selectionMode: .multiple,

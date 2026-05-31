@@ -11,6 +11,7 @@ class SuperTreeNodeList<T> extends StatelessWidget {
     this.separatorBuilder,
     this.scrollController,
     this.physics,
+    this.padding,
   });
 
   final TreeController<T> controller;
@@ -18,6 +19,7 @@ class SuperTreeNodeList<T> extends StatelessWidget {
   final Widget Function(BuildContext, int)? separatorBuilder;
   final ScrollController? scrollController;
   final ScrollPhysics? physics;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
@@ -27,30 +29,38 @@ class SuperTreeNodeList<T> extends StatelessWidget {
         final List<TreeNode<T>> nodes = controller.flatVisibleNodes;
 
         if (separatorBuilder != null) {
-          return ListView.separated(
+          return ScrollbarTheme(
+            data: ScrollbarTheme.of(context).copyWith(mainAxisMargin: 8),
+            child: ListView.separated(
+              controller: scrollController,
+              physics: physics,
+              itemCount: nodes.length,
+              separatorBuilder: separatorBuilder!,
+              padding: padding,
+              itemBuilder: (BuildContext context, int index) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 3),
+                  child: itemBuilder(nodes[index]),
+                );
+              },
+            ),
+          );
+        }
+
+        return ScrollbarTheme(
+          data: ScrollbarTheme.of(context).copyWith(mainAxisMargin: 8),
+          child: ListView.builder(
             controller: scrollController,
             physics: physics,
             itemCount: nodes.length,
-            separatorBuilder: separatorBuilder!,
+            padding: padding,
             itemBuilder: (BuildContext context, int index) {
               return Padding(
                 padding: const EdgeInsets.only(bottom: 3),
                 child: itemBuilder(nodes[index]),
               );
             },
-          );
-        }
-
-        return ListView.builder(
-          controller: scrollController,
-          physics: physics,
-          itemCount: nodes.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 3),
-              child: itemBuilder(nodes[index]),
-            );
-          },
+          ),
         );
       },
     );

@@ -134,6 +134,8 @@ class SuperTreeView<T> extends StatefulWidget {
   /// The scroll physics applied to the internal ListView.
   final ScrollPhysics? physics;
 
+  final EdgeInsetsGeometry? padding;
+
   /// Internal separator builder for the separated constructor.
   final Widget Function(BuildContext, int)? _separatorBuilder;
 
@@ -155,6 +157,7 @@ class SuperTreeView<T> extends StatefulWidget {
     this.rootContextMenuBuilder,
     this.scrollController,
     this.physics,
+    this.padding,
     this.style = const TreeViewStyle(),
     this.logic = const TreeViewConfig(),
   }) : assert(expansionSlotSize > 0),
@@ -231,6 +234,7 @@ class SuperTreeView<T> extends StatefulWidget {
     this.rootContextMenuBuilder,
     this.scrollController,
     this.physics,
+    this.padding,
     this.style = const TreeViewStyle(),
     this.logic = const TreeViewConfig(),
   }) : assert(expansionSlotSize > 0),
@@ -565,6 +569,7 @@ class _SuperTreeViewState<T> extends State<SuperTreeView<T>> {
         separatorBuilder: widget._separatorBuilder,
         scrollController: widget.scrollController,
         physics: widget.physics,
+        padding: widget.padding,
       ),
     );
   }
