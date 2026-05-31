@@ -11,17 +11,24 @@ class ArtifactWorkspace extends ConsumerStatefulWidget {
 
 class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   bool _creatingNote = false;
+  Artifact? _pendingArtifact;
 
   Future<void> _createUntitledNote() async {
     if (_creatingNote) return;
     final vaultId = ref.read(selectedVaultProvider)?.id;
     if (vaultId == null) return;
     setState(() => _creatingNote = true);
+
     final created = await ArtifactsRepository(
       vaultId: vaultId,
     ).add([NoteArtifact()]);
     if (!mounted) return;
+
     final saved = created.first;
+    setState(() {
+      _pendingArtifact = saved; // bridge the gap before providers catch up
+      _creatingNote = false;
+    });
     context.go(Routes.artifactUrl(vaultId: vaultId, name: saved.name));
   }
 
@@ -71,8 +78,19 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
     // Always subscribe to note state for save tracking
     final noteAsyncState = ref.watch(selectedNoteStateProvider);
     final rawSelectedItem = ref.watch(selectedArtifactProvider);
+
+    // Clear pending once the provider has caught up
+    if (_pendingArtifact != null &&
+        (rawSelectedItem ?? noteAsyncState.value?.note)?.id ==
+            _pendingArtifact!.id) {
+      // Use a post-frame callback to avoid setState during build
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _pendingArtifact = null);
+      });
+    }
+
     final Artifact? selectedItem =
-        rawSelectedItem ?? noteAsyncState.value?.note;
+        rawSelectedItem ?? noteAsyncState.value?.note ?? _pendingArtifact;
 
     if (selectedItem == null) {
       return Container(
