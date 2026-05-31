@@ -38,7 +38,6 @@ class _RouterNotifier extends ChangeNotifier {
 /// should open in. The invite/reset-password/login routes render the same
 /// screen — only the overlay's content differs.
 LandingMode _landingModeFor(String location) {
-  if (location == Routes.invite) return .invite;
   if (location == Routes.resetPassword) return .resetPassword;
   return .signIn;
 }
@@ -79,7 +78,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           );
         },
         routes: [
-          GoRoute(path: Routes.invite, name: 'invite', builder: _routeAnchor),
           // TODO: need a different way to do password reset that doesn't rely so much on supabase. worst comes to worst, just put it into the server and implement later
           GoRoute(
             path: Routes.resetPassword,
@@ -105,40 +103,6 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       if (notifier.isAuthLoading) return null;
       final isAuth = notifier.isAuth;
-      final isOnInvite = state.matchedLocation == Routes.invite;
-      final hasInvite = state.uri.queryParameters['invite'] == 'true';
-
-      if (isOnInvite) {
-        // When a token is present, LandingOverlay (invite mode) runs
-        // accept_vault_invitation and navigates itself — don't preempt it.
-        if (state.uri.queryParameters.containsKey('token')) return null;
-        if (isAuth) {
-          return Uri.decodeComponent(
-            state.uri.queryParameters['dest'] ?? Routes.home,
-          );
-        }
-        return null;
-      }
-
-      if (hasInvite) {
-        if (!isAuth) {
-          final params = Map<String, String>.from(state.uri.queryParameters)
-            ..remove('invite');
-          final path = state.matchedLocation;
-          final dest = params.isEmpty
-              ? path
-              : '$path?${params.entries.map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}').join('&')}';
-          return '${Routes.invite}?dest=${Uri.encodeComponent(dest)}';
-        } else {
-          final params = Map<String, String>.from(state.uri.queryParameters)
-            ..remove('invite');
-          final path = state.matchedLocation;
-          final stripped = params.isEmpty
-              ? path
-              : '$path?${params.entries.map((e) => '${e.key}=${e.value}').join('&')}';
-          return stripped;
-        }
-      }
 
       if (!isAuth &&
           state.matchedLocation != Routes.home &&

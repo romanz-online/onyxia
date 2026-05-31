@@ -49,7 +49,6 @@ export 'package:onyxia/data/models/artifacts/canvas/subobjects/artifact_subobjec
 export 'package:onyxia/data/providers/vaults_provider.dart';
 export 'package:onyxia/data/providers/current_user_provider.dart';
 export 'package:onyxia/data/providers/vault_members_provider.dart';
-export 'package:onyxia/data/providers/vault_invitations_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_artifact_provider.dart';
 export 'package:onyxia/data/providers/selected_vault_provider.dart';
@@ -108,7 +107,6 @@ export 'package:onyxia/repository/vaults_repository.dart';
 export 'package:onyxia/repository/pins_repository.dart';
 export 'package:onyxia/repository/users_repository.dart';
 export 'package:onyxia/repository/vault_members_repository.dart';
-export 'package:onyxia/repository/vault_invitations_repository.dart';
 export 'package:onyxia/repository/artifacts_repository.dart';
 export 'package:onyxia/repository/artifact_ops_repository.dart';
 export 'package:onyxia/repository/artifact_snapshots_repository.dart';

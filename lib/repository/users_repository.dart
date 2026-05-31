@@ -1,5 +1,9 @@
 import 'package:onyxia/export.dart';
 
+// TODO: View public.users is defined with the SECURITY DEFINER property
+
+// TODO: View/Materialized View "users" in the public schema may expose auth.users data to anon or authenticated roles.
+
 /// Reads from the `public.users` view (a thin projection over `auth.users`).
 /// The view is read-only — `add` / `update` / `delete` will fail at the DB
 /// level by design.

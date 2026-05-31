@@ -77,18 +77,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
     // Generate the UUID client-side (uuid: ^4.5.1 is already a dep) so we don't
     // need a roundtrip to read back the DB-generated token.
     else {
-      final token = const Uuid().v4();
-      await VaultInvitationsRepository(vaultId: vault.id)
-          .add([VaultInvitation(vaultId: vault.id, email: email, token: token)])
-          .then((_) {
-            if (!mounted) return;
-            setState(() {
-              _generatedLink = '${Uri.base.origin}/invite?token=$token';
-              _generatedLinkEmail = email;
-              _isSending = false;
-            });
-            _emailController.clear();
-          });
+      // TODO: this should just create a ghost account that will be added to the vault members, and once the user actually logs in for the first time they'll fill in their password etc. and see that they're already a part of a vault
     }
   }
 

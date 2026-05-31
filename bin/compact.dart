@@ -22,6 +22,8 @@ import 'package:postgres/postgres.dart';
 const _unfoldedOpThreshold = 25;
 const _unfoldedAgeHours = 24;
 
+// TODO: this should also remove "ghost accounts" (users who have been added to vaults but haven't signed up themselves) that are older than a certain age
+
 Future<void> main() async {
   final dbUrl = Platform.environment['DATABASE_URL'];
   if (dbUrl == null || dbUrl.isEmpty) {
@@ -36,8 +38,9 @@ Future<void> main() async {
 
   try {
     final candidates = await _findArtifactsNeedingCompaction(conn);
-    stdout
-        .writeln('Found ${candidates.length} artifact(s) needing compaction.');
+    stdout.writeln(
+      'Found ${candidates.length} artifact(s) needing compaction.',
+    );
 
     var compacted = 0;
     var skipped = 0;
@@ -62,10 +65,12 @@ Future<void> main() async {
 }
 
 Future<void> _cleanupExpiredInvitations(Connection conn) async {
-  final result = await conn.execute(Sql.named('''
+  final result = await conn.execute(
+    Sql.named('''
     DELETE FROM vault_invitations
     WHERE expires_at < NOW()
-  '''));
+  '''),
+  );
   stdout.writeln('Deleted ${result.affectedRows} expired invitation(s).');
 }
 
@@ -73,7 +78,8 @@ Endpoint _parseEndpoint(String url) {
   final uri = Uri.parse(url);
   if (uri.scheme != 'postgresql' && uri.scheme != 'postgres') {
     throw FormatException(
-        'DATABASE_URL must start with postgresql:// or postgres://');
+      'DATABASE_URL must start with postgresql:// or postgres://',
+    );
   }
   final userInfo = uri.userInfo.split(':');
   if (userInfo.length < 2) {
@@ -212,10 +218,7 @@ Future<bool> _compactArtifact(
           WHERE artifact_id = @aid::uuid
             AND op_seq <= @mseq
         '''),
-        parameters: {
-          'aid': artifactId,
-          'mseq': newMaxOpSeq,
-        },
+        parameters: {'aid': artifactId, 'mseq': newMaxOpSeq},
       );
     } finally {
       doc.dispose();
