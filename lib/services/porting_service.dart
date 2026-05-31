@@ -66,7 +66,7 @@ class PortingService {
       } else if (_imageExtensions.contains(ext)) {
         await _importImage(file: file, vaultId: vaultId);
       }
-      onProgress?.call(i + 1, files.length);
+      onProgress?.call(i, files.length);
     }
   }
 
