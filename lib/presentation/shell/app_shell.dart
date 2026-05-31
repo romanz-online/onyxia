@@ -123,6 +123,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                     _animateNextCollapseChange.value = false;
                   },
                   onDragUpdate: (globalDx) {
+                    // TODO: don't want to recalculate maxWidth each time, ideally
                     final maxWidth =
                         MediaQuery.of(context).size.width - 46 - 300;
                     _artifactsSidebarWidth.value =

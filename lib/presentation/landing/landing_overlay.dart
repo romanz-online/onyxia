@@ -2,7 +2,6 @@ import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/create_account_view.dart';
 import 'package:onyxia/presentation/landing/widgets/forgot_password_view.dart';
 import 'package:onyxia/presentation/landing/widgets/info_message_view.dart';
-import 'package:onyxia/presentation/landing/widgets/invite_view.dart';
 import 'package:onyxia/presentation/landing/widgets/landing_back_button.dart';
 import 'package:onyxia/presentation/landing/widgets/pre_auth_view.dart';
 import 'package:onyxia/presentation/landing/widgets/reset_password_view.dart';
@@ -14,7 +13,6 @@ enum LandingMode {
   forgotPassword,
   checkInbox,
   resetSent,
-  invite,
   resetPassword,
 }
 
@@ -39,16 +37,15 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
   static const double _minHeight = 400;
   static const double _handleThickness = 6;
 
-  // TODO: i should come up with a neater way of resizing that doesn't rely on delta so that if i drag my cursor off screen and the widget gets locked in place, the cursor and widget don't have a huge offset when the cursor returns
   double _width = 600;
   double _height = 400;
   Offset _position = const Offset(400, 400);
 
-  late LandingMode _mode;
+  Offset? _moveStartCursor;
+  Offset? _moveStartPosition;
+  Rect? _resizeStartRect;
 
-  // Invite-mode state.
-  Future<Vault?>? _inviteVaultFuture;
-  bool _acceptInFlight = false;
+  late LandingMode _mode;
 
   @override
   void initState() {
@@ -64,42 +61,38 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       (logicalSize.width - _width) / 2,
       (logicalSize.height - _height) / 2,
     );
-
-    if (widget.initialMode == .invite) {
-      final destVaultId = _extractVaultId(widget.inviteDestPath ?? '');
-      if (destVaultId != null) {
-        _inviteVaultFuture = VaultsRepository().get(destVaultId);
-      }
-      // Already-signed-in case: ref.listen won't fire if there's no state
-      // transition, so kick the RPC after the first frame.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted) return;
-        if (widget.inviteToken == null) return;
-        final user = ref.read(currentUserProvider).value;
-        if (user != null && user.isLogged) _acceptInvitation();
-      });
-    }
   }
 
   void _setMode(LandingMode mode) {
     setState(() => _mode = mode);
   }
 
-  String? _extractVaultId(String path) {
-    final uri = Uri.parse(path);
-    final segments = uri.pathSegments;
-    if (segments.length >= 2 && segments[0] == 'vault') return segments[1];
-    return null;
+  void _onPanStart(DragStartDetails d) {
+    _moveStartCursor = d.globalPosition;
+    _moveStartPosition = _position;
   }
 
-  void _onPanUpdate(DragUpdateDetails details) {
+  void _onPanUpdate(DragUpdateDetails d) {
+    if (_moveStartCursor == null || _moveStartPosition == null) return;
+
     final size = MediaQuery.of(context).size;
+    final delta = d.globalPosition - _moveStartCursor!;
+
     setState(() {
       _position = Offset(
-        (_position.dx + details.delta.dx).clamp(0, size.width - _width),
-        (_position.dy + details.delta.dy).clamp(0, size.height - _height),
+        (_moveStartPosition!.dx + delta.dx).clamp(0, size.width - _width),
+        (_moveStartPosition!.dy + delta.dy).clamp(0, size.height - _height),
       );
     });
+  }
+
+  void _onResizeStart(DragStartDetails d) {
+    _resizeStartRect = Rect.fromLTWH(
+      _position.dx,
+      _position.dy,
+      _width,
+      _height,
+    );
   }
 
   void _onResize(
@@ -109,33 +102,39 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     bool fromBottom = false,
     bool fromRight = false,
   }) {
+    if (_resizeStartRect == null) return;
+
     final viewport = MediaQuery.of(context).size;
-    double newWidth = _width;
-    double newHeight = _height;
-    double newX = _position.dx;
-    double newY = _position.dy;
+    final rect = _resizeStartRect!;
+    final cursor = d.globalPosition;
+
+    double newX = rect.left;
+    double newY = rect.top;
+    double newWidth = rect.width;
+    double newHeight = rect.height;
 
     if (fromRight) {
-      newWidth = (_width + d.delta.dx).clamp(
+      newWidth = (cursor.dx - rect.left).clamp(
         _minWidth,
-        viewport.width - _position.dx,
+        viewport.width - rect.left,
       );
     } else if (fromLeft) {
-      newWidth = (_width - d.delta.dx).clamp(_minWidth, _position.dx + _width);
-      newX = _position.dx + (_width - newWidth);
+      final rawRight = rect.right; // right edge stays fixed
+      final rawNewX = cursor.dx.clamp(0.0, rawRight - _minWidth);
+      newX = rawNewX;
+      newWidth = (rawRight - newX).clamp(_minWidth, rawRight);
     }
 
     if (fromBottom) {
-      newHeight = (_height + d.delta.dy).clamp(
+      newHeight = (cursor.dy - rect.top).clamp(
         _minHeight,
-        viewport.height - _position.dy,
+        viewport.height - rect.top,
       );
     } else if (fromTop) {
-      newHeight = (_height - d.delta.dy).clamp(
-        _minHeight,
-        _position.dy + _height,
-      );
-      newY = _position.dy + (_height - newHeight);
+      final rawBottom = rect.bottom; // bottom edge stays fixed
+      final rawNewY = cursor.dy.clamp(0.0, rawBottom - _minHeight);
+      newY = rawNewY;
+      newHeight = (rawBottom - newY).clamp(_minHeight, rawBottom);
     }
 
     setState(() {
@@ -168,7 +167,8 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       child: MouseRegion(
         cursor: cursor,
         child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
+          behavior: .opaque,
+          onPanStart: _onResizeStart,
           onPanUpdate: (d) => _onResize(
             d,
             fromTop: fromTop,
@@ -182,37 +182,9 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     );
   }
 
-  Future<void> _acceptInvitation() async {
-    final token = widget.inviteToken;
-    if (token == null || _acceptInFlight) return;
-    _acceptInFlight = true;
-    try {
-      final vaultId =
-          await Supabase.instance.client.rpc(
-                'accept_vault_invitation',
-                params: {'p_token': token},
-              )
-              as String;
-      if (!mounted) return;
-      GoRouter.of(context).go('/vault/$vaultId');
-    } on PostgrestException catch (e) {
-      _acceptInFlight = false;
-      throw _humanizeInvitationError(e);
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider).value ?? User.initial();
-
-    // Invite-mode: kick the accept RPC on the sign-out→sign-in transition.
-    if (widget.initialMode == .invite && widget.inviteToken != null) {
-      ref.listen<AsyncValue<User>>(currentUserProvider, (prev, next) {
-        final wasLogged = prev?.value?.isLogged ?? false;
-        final nowLogged = next.value?.isLogged ?? false;
-        if (!wasLogged && nowLogged) _acceptInvitation();
-      });
-    }
+    final user = ref.watch(currentUserProvider).value ?? .initial();
 
     return Positioned(
       left: _position.dx,
@@ -225,6 +197,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
             Positioned.fill(
               child: GestureDetector(
                 behavior: .opaque,
+                onPanStart: _onPanStart,
                 onPanUpdate: _onPanUpdate,
                 child: Container(
                   decoration: BoxDecoration(
@@ -325,65 +298,32 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   Widget _buildShell(BuildContext context, User user) {
     final screen = _buildScreen(context, user);
-    final showBackButton = _mode != LandingMode.signIn;
+    final showBackButton = _mode != .signIn;
     if (!showBackButton) return screen;
 
     return Stack(
       children: [
         Positioned.fill(child: screen),
-        LandingBackButton(onPressed: () => _setMode(LandingMode.signIn)),
+        LandingBackButton(onPressed: () => _setMode(.signIn)),
       ],
     );
   }
 
-  Widget _buildScreen(BuildContext context, User user) {
-    switch (_mode) {
-      case LandingMode.invite:
-        return InviteView(vaultFuture: _inviteVaultFuture);
-      case LandingMode.resetPassword:
-        return const ResetPasswordView();
-      case LandingMode.createAccount:
-        return CreateAccountView(onNavigate: _setMode);
-      case LandingMode.forgotPassword:
-        return ForgotPasswordView(onNavigate: _setMode);
-      case LandingMode.checkInbox:
-        return const InfoMessageView(
-          title: 'Check your inbox',
-          message:
-              'Check your inbox to confirm your email, then return here to sign in.',
-        );
-      case LandingMode.resetSent:
-        return const InfoMessageView(
-          title: 'Reset link sent',
-          message:
-              'If an account exists for that email, a reset link is on its way.',
-        );
-      case LandingMode.signIn:
-        if (!user.isLogged) return PreAuthView(onNavigate: _setMode);
-        return const VaultsView();
-    }
-  }
-}
-
-Exception _humanizeInvitationError(PostgrestException e) {
-  final msg = e.message;
-  if (msg.contains('invitation_not_found')) {
-    return Exception(
-      'This invitation has already been used or does not exist.',
-    );
-  }
-  if (msg.contains('invitation_expired')) {
-    return Exception(
-      'This invitation has expired. Ask the vault owner for a new one.',
-    );
-  }
-  if (msg.contains('invitation_email_mismatch')) {
-    return Exception(
-      'This invitation was sent to a different email than the one you signed in with.',
-    );
-  }
-  if (msg.contains('unauthenticated')) {
-    return Exception('You need to be signed in to accept an invitation.');
-  }
-  return Exception('Could not accept invitation: $msg');
+  Widget _buildScreen(BuildContext context, User user) => switch (_mode) {
+    .resetPassword => const ResetPasswordView(),
+    .createAccount => CreateAccountView(onNavigate: _setMode),
+    .forgotPassword => ForgotPasswordView(onNavigate: _setMode),
+    .checkInbox => const InfoMessageView(
+      title: 'Check your inbox',
+      message:
+          'Check your inbox to confirm your email, then return here to sign in.',
+    ),
+    .resetSent => const InfoMessageView(
+      title: 'Reset link sent',
+      message:
+          'If an account exists for that email, a reset link is on its way.',
+    ),
+    .signIn =>
+      user.isLogged ? const VaultsView() : PreAuthView(onNavigate: _setMode),
+  };
 }

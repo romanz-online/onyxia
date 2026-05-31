@@ -44,7 +44,6 @@ class UrlHelper {
 
   static void openInNewTab(String relativePath) {
     // TODO: this is entirely a web app. need to put that into claude.md and remove unneeded web-checks and logic from everywhere (constellation excluded)
-    // TODO: generally clean up claude.md because it's outdated
     if (!kIsWeb) return;
     web.window.open(toShareableUrl(relativePath), '_blank');
   }
