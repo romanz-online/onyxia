@@ -37,6 +37,9 @@ class CRDTMapHandler<T> extends Handler<Map<String, T>> {
   @override
   String get id => _id;
 
+  @override
+  String get handlerType => 'CRDTMapHandler';
+
   /// Sets a key-value pair in the map
   void set(String key, T value) {
     final operation = _MapInsertOperation<T>.fromHandler(

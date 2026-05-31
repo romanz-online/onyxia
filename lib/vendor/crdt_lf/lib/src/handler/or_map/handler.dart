@@ -36,6 +36,9 @@ class CRDTORMapHandler<K, V> extends Handler<ORMapState<K, V>> {
   String get id => _id;
 
   @override
+  String get handlerType => 'CRDTORMapHandler';
+
+  @override
   late final OperationFactory operationFactory =
       _ORMapOperationFactory<K, V>(this).fromPayload;
 

@@ -44,6 +44,7 @@ ConstellationLayout _buildWikiLinks(
 
   for (final item in items) {
     if (item is! NoteArtifact) continue;
+    // TODO: because this uses item.content, it misses content updates until the notes' ops are compressed. eventually this should actually read through the ops to properly see what up-to-date connections there are
     for (final rawLink in extractWikiLinks(item.content)) {
       final canonical = titleLookup[rawLink.toLowerCase()];
       if (canonical != null && canonical != item.name) {

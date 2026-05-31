@@ -34,6 +34,9 @@ class CRDTFugueTextHandler extends Handler<FugueTextState> {
   String get id => _id;
 
   @override
+  String get handlerType => 'CRDTFugueTextHandler';
+
+  @override
   late final OperationFactory operationFactory =
       _FugueTextOperationFactory(this).fromPayload;
 

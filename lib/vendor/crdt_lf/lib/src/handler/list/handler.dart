@@ -35,6 +35,9 @@ class CRDTListHandler<T> extends Handler<List<T>> {
   @override
   String get id => _id;
 
+  @override
+  String get handlerType => 'CRDTListHandler';
+
   /// Inserts an element at the specified index
   void insert(int index, T value) {
     final operation = _ListInsertOperation<T>.fromHandler(

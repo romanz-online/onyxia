@@ -33,6 +33,9 @@ class CRDTTextHandler extends Handler<String> {
   String get id => _id;
 
   @override
+  String get handlerType => 'CRDTTextHandler';
+
+  @override
   late final OperationFactory operationFactory =
       _TextOperationFactory(this).fromPayload;
 

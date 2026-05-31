@@ -12,6 +12,9 @@ class TestHandler extends Handler<dynamic> {
   final String id;
 
   @override
+  String get handlerType => 'TestHandler';
+
+  @override
   String getSnapshotState() {
     return '';
   }

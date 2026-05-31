@@ -35,6 +35,9 @@ class CRDTORSetHandler<T> extends Handler<ORSetState<T>> {
   String get id => _id;
 
   @override
+  String get handlerType => 'CRDTORSetHandler';
+
+  @override
   late final OperationFactory operationFactory =
       _ORSetOperationFactory<T>(this).fromPayload;
 

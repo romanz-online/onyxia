@@ -109,5 +109,24 @@ void main() {
         throwsA(isA<FormatException>()),
       );
     });
+
+    // Regression: in minified release builds `runtimeType.toString()` returned
+    // values like `minified:Hh`, which contain a `:` and broke the
+    // `<handler>:<type>` payload round-trip (FormatException on read). The
+    // handler segment must be a stable, colon-free identifier so toPayload()
+    // round-trips through fromPayload().
+    test('toPayload round-trips and handler segment is colon-free', () {
+      for (final operationType in [
+        OperationType.insert(handler),
+        OperationType.delete(handler),
+      ]) {
+        final payload = operationType.toPayload();
+        expect(operationType.handler, isNot(contains(':')));
+
+        final parsed = OperationType.fromPayload(payload);
+        expect(parsed.handler, equals(operationType.handler));
+        expect(parsed.type, equals(operationType.type));
+      }
+    });
   });
 }

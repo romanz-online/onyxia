@@ -22,6 +22,18 @@ abstract class Handler<T>
   /// The factory function that creates an operation from a payload
   OperationFactory get operationFactory;
 
+  /// A stable, build-independent identifier for this handler's type.
+  ///
+  /// Used to tag operations in their serialized payload (see
+  /// [OperationType.toPayload]). It MUST be a constant string that never
+  /// changes across builds and contains no `:` character.
+  ///
+  /// Do NOT derive this from `runtimeType`: in minified release builds
+  /// `runtimeType.toString()` returns values like `minified:Hh`, which both
+  /// break across compilations and contain a `:` that corrupts the
+  /// `<handler>:<type>` payload format.
+  String get handlerType;
+
   /// During transaction consecutive operations can be compounded.
   ///
   /// By default, no compaction occurs and operations are returned as-is.
