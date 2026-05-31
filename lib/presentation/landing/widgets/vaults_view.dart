@@ -1,5 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'package:onyxia/presentation/landing/widgets/import_vault_dialog.dart';
+import 'package:onyxia/presentation/landing/widgets/new_vault_dialog.dart';
 import 'package:onyxia/presentation/landing/widgets/vault_row.dart';
 import 'dart:async';
 
@@ -71,13 +72,10 @@ class _RightColumn extends ConsumerWidget {
   const _RightColumn({required this.user});
 
   void _showNewVaultDialog(BuildContext context) {
-    showDialog(context: context, builder: (_) => _NewVaultDialog());
+    showDialog(context: context, builder: (_) => NewVaultDialog());
   }
 
-  Future<void> _showImportVaultDialog(
-    BuildContext context,
-    WidgetRef ref,
-  ) async {
+  Future<void> _showImportVaultDialog(BuildContext context) async {
     final files = await PortingService.pickFolder();
     if (files.isEmpty || !context.mounted) return;
 
@@ -140,105 +138,13 @@ class _RightColumn extends ConsumerWidget {
                   ),
                   OnyxiaButton(
                     label: 'Import Vault',
-                    onPressed: () => _showImportVaultDialog(context, ref),
+                    onPressed: () => _showImportVaultDialog(context),
                   ),
                 ],
               ),
             ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _NewVaultDialog extends ConsumerStatefulWidget {
-  const _NewVaultDialog();
-
-  @override
-  ConsumerState<_NewVaultDialog> createState() => _NewVaultDialogState();
-}
-
-class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
-  final TextEditingController _nameController = TextEditingController();
-  bool _creating = false;
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    super.dispose();
-  }
-
-  void _create() async {
-    final name = _nameController.text.trim();
-    if (name.isEmpty || _creating) return;
-    setState(() => _creating = true);
-    final newVault = Vault(name: name);
-    await VaultsRepository().add([newVault]);
-    await _waitForVaultInProvider(newVault.id);
-    if (!mounted) return;
-    Navigator.of(context).pop();
-    navigatorKey.currentContext?.go(Routes.graphUrl(newVault.id));
-  }
-
-  Future<void> _waitForVaultInProvider(String id) {
-    final completer = Completer<void>();
-    late ProviderSubscription sub;
-    sub = ref.listenManual<AsyncValue<List<Vault>>>(vaultsProvider, (_, next) {
-      if ((next.value?.any((v) => v.id == id) ?? false) &&
-          !completer.isCompleted) {
-        completer.complete();
-      }
-    }, fireImmediately: true);
-    return completer.future
-        .timeout(const Duration(seconds: 5), onTimeout: () {})
-        .whenComplete(sub.close);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return OnyxiaDialog(
-      width: 468,
-      height: 260,
-      title: _creating ? 'Creating Vault...' : 'New Vault',
-      content: Expanded(
-        child: Padding(
-          padding: .all(20),
-          child: _creating
-              ? Center(child: OnyxiaLoadingIndicator())
-              : Column(
-                  crossAxisAlignment: .start,
-                  spacing: 10,
-                  children: [
-                    Text(
-                      'Vault Name',
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: .w600,
-                        color: ThemeHelper.foreground1(),
-                      ),
-                    ),
-                    OnyxiaTextFormField(
-                      maxLength: 40,
-                      controller: _nameController,
-                      autofocus: true,
-                      hintText: 'Enter vault name',
-                    ),
-                    const Spacer(),
-                    Row(
-                      mainAxisAlignment: .end,
-                      children: [
-                        OnyxiaButton(
-                          label: 'Cancel',
-                          onPressed: Navigator.of(context).pop,
-                        ),
-                        const Gap(20),
-                        OnyxiaButton(label: 'Create', onPressed: _create),
-                      ],
-                    ),
-                  ],
-                ),
-        ),
       ),
     );
   }
