@@ -198,44 +198,47 @@ class _NewVaultDialogState extends ConsumerState<_NewVaultDialog> {
   @override
   Widget build(BuildContext context) {
     return OnyxiaDialog(
-      width: 600,
+      width: 468,
       height: 260,
       title: _creating ? 'Creating Vault...' : 'New Vault',
       content: Expanded(
-        child: _creating
-            ? Center(child: OnyxiaLoadingIndicator())
-            : Column(
-                crossAxisAlignment: .start,
-                spacing: 10,
-                children: [
-                  Text(
-                    'Vault Name',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: .w600,
-                      color: ThemeHelper.foreground1(),
-                    ),
-                  ),
-                  OnyxiaTextFormField(
-                    maxLength: 50,
-                    controller: _nameController,
-                    autofocus: true,
-                    hintText: 'Enter vault name',
-                  ),
-                  const Spacer(),
-                  Row(
-                    mainAxisAlignment: .end,
-                    children: [
-                      OnyxiaButton(
-                        label: 'Cancel',
-                        onPressed: Navigator.of(context).pop,
+        child: Padding(
+          padding: .all(20),
+          child: _creating
+              ? Center(child: OnyxiaLoadingIndicator())
+              : Column(
+                  crossAxisAlignment: .start,
+                  spacing: 10,
+                  children: [
+                    Text(
+                      'Vault Name',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: .w600,
+                        color: ThemeHelper.foreground1(),
                       ),
-                      const Gap(20),
-                      OnyxiaButton(label: 'Create', onPressed: _create),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                    OnyxiaTextFormField(
+                      maxLength: 40,
+                      controller: _nameController,
+                      autofocus: true,
+                      hintText: 'Enter vault name',
+                    ),
+                    const Spacer(),
+                    Row(
+                      mainAxisAlignment: .end,
+                      children: [
+                        OnyxiaButton(
+                          label: 'Cancel',
+                          onPressed: Navigator.of(context).pop,
+                        ),
+                        const Gap(20),
+                        OnyxiaButton(label: 'Create', onPressed: _create),
+                      ],
+                    ),
+                  ],
+                ),
+        ),
       ),
     );
   }
