@@ -49,7 +49,9 @@ class _VaultListColumnState extends ConsumerState<_VaultListColumn> {
                 ),
               ),
             )
-          : SingleChildScrollView(
+          :
+            // TODO: this scrollbar should always be visible if there is enough content to scroll
+            SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: .start,
                 mainAxisAlignment: .start,
