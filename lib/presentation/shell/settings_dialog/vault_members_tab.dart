@@ -10,9 +10,7 @@ class VaultMembersTab extends ConsumerStatefulWidget {
 class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   final TextEditingController _emailController = TextEditingController();
   String _email = '';
-  bool _isSending = false;
-  String? _generatedLink;
-  String? _generatedLinkEmail;
+  bool _isProcessing = false;
 
   @override
   void initState() {
@@ -32,7 +30,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   bool get _isValidEmail => _email.trim().isNotEmpty && _email.contains('@');
 
   Future<void> _onSendInvite() async {
-    if (!_isValidEmail || _isSending) return;
+    if (!_isValidEmail || _isProcessing) return;
     final vault = ref.read(selectedVaultProvider);
     if (vault == null) {
       OnyxiaToast.error(text: 'No vault selected');
@@ -45,7 +43,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
     }
     final email = _email.trim().toLowerCase();
 
-    setState(() => _isSending = true);
+    setState(() => _isProcessing = true);
 
     // Branch A: email already belongs to an existing Onyxia user → add directly.
     final existing = await UsersRepository().getByEmail(email);
@@ -67,16 +65,10 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
             OnyxiaToast.show(text: '${existing.email} added to vault');
             _emailController.clear();
             setState(() {
-              _isSending = false;
-              _generatedLink = null;
-              _generatedLinkEmail = null;
+              _isProcessing = false;
             });
           });
-    }
-    // Branch B: not registered → create invitation row + surface copy-link.
-    // Generate the UUID client-side (uuid: ^4.5.1 is already a dep) so we don't
-    // need a roundtrip to read back the DB-generated token.
-    else {
+    } else {
       // TODO: this should just create a ghost account that will be added to the vault members, and once the user actually logs in for the first time they'll fill in their password etc. and see that they're already a part of a vault. this might mean i need to stop using the real "users" table and start mirroring it into my own table where i can keep additional information. unsure.
     }
   }
@@ -85,18 +77,13 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   Widget build(BuildContext context) {
     final entriesAsync = ref.watch(vaultMembersWithUsersProvider);
 
-    return OnyxiaDialog(
-      title: 'Members',
-      width: 480,
-      height: 480,
-      content: entriesAsync.when(
-        loading: () => Expanded(child: Center(child: OnyxiaLoadingIndicator())),
-        error: (e, _) => Text(
-          'Failed to load members: $e',
-          style: TextStyle(color: ThemeHelper.error()),
-        ),
-        data: (entries) => _buildContent(entries),
+    return entriesAsync.when(
+      loading: () => Expanded(child: Center(child: OnyxiaLoadingIndicator())),
+      error: (e, _) => Text(
+        'Failed to load members: $e',
+        style: TextStyle(color: ThemeHelper.error()),
       ),
+      data: (entries) => _buildContent(entries),
     );
   }
 
@@ -109,68 +96,56 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
           spacing: 8,
           children: [
             Expanded(
+              // TODO: this needs a speech bubble similar to the one made from item_title_validation_service.dart
               child: OnyxiaTextFormField(
                 controller: _emailController,
-                enabled: !_isSending,
-                hintText: 'invite@example.com',
+                enabled: !_isProcessing,
+                hintText: 'Enter email address',
                 keyboardType: TextInputType.emailAddress,
+                autofocus: true,
                 onSubmitted: (_) {
                   if (_isValidEmail) _onSendInvite();
                 },
               ),
             ),
-            if (_isSending)
-              SizedBox(width: 20, height: 20, child: OnyxiaLoadingIndicator())
-            else
-              // TODO: i should rework how exactly this is laid out. it should be less of an "invite a person" and more of a "generate invitation" dialog
+            if (_isProcessing)
+              const OnyxiaLoadingIndicator()
+            else ...[
               OnyxiaButton(
-                label: 'Invite',
+                label: 'Add',
                 onPressed: _isValidEmail ? _onSendInvite : null,
               ),
+            ],
           ],
         ),
-        if (_generatedLink != null) ...[
-          const Gap(8),
-          Row(
-            crossAxisAlignment: .center,
-            spacing: 8,
-            children: [
-              Expanded(
-                child: OnyxiaTextFormField(
-                  controller: TextEditingController(text: _generatedLink!),
-                ),
-              ),
-              OnyxiaIconButton(
-                icon: LucideIcons.clipboardCopy,
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: _generatedLink!));
-                  // TODO: this toast should be a temporary tooltip under the button ideally
-                  OnyxiaToast.show(text: 'Link copied');
-                },
-              ),
-            ],
-          ),
-        ],
-        const Gap(16),
-        Text(
-          'Members (${entries.length})',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: .w600,
-            color: ThemeHelper.foreground1(),
-          ),
-        ),
-        const Gap(8),
+        const Gap(12),
+        Divider(height: 1, color: ThemeHelper.auxiliary()),
+        // Member list
         ConstrainedBox(
-          constraints: const BoxConstraints(maxHeight: 270),
-          child: ListView.separated(
-            shrinkWrap: true,
-            itemCount: entries.length,
-            separatorBuilder: (_, __) =>
-                Divider(height: 1, color: ThemeHelper.auxiliary()),
-            itemBuilder: (_, i) =>
-                _MemberRow(member: entries[i].member, user: entries[i].user),
-          ),
+          constraints: const BoxConstraints(maxHeight: 300),
+          child: entries.isEmpty
+              ? Center(
+                  child: Padding(
+                    padding: .symmetric(vertical: 24),
+                    child: Text(
+                      'No members yet',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: ThemeHelper.foreground1(),
+                      ),
+                    ),
+                  ),
+                )
+              : ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: entries.length,
+                  separatorBuilder: (_, __) =>
+                      Divider(height: 1, color: ThemeHelper.auxiliary()),
+                  itemBuilder: (_, i) => _MemberRow(
+                    member: entries[i].member,
+                    user: entries[i].user,
+                  ),
+                ),
         ),
       ],
     );
@@ -185,7 +160,6 @@ class _MemberRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = user?.name ?? '...';
     final email = user?.email ?? '';
 
     return Padding(
@@ -197,7 +171,7 @@ class _MemberRow extends StatelessWidget {
               crossAxisAlignment: .start,
               children: [
                 Text(
-                  name,
+                  user?.name ?? '...',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: .w500,
