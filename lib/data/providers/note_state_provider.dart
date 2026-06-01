@@ -5,9 +5,6 @@ import 'package:onyxia/export.dart';
 
 // TODO: having a selectedNoteStateProvider separate from selectedArtifactProvider kind of sucks and is confusing. it would be better to keep all of selectedNoteStateProvider's functionality within the actual editor workspace since that's the only area it's being used in anyway
 
-/// Type alias for note state providers — use in widget signatures.
-typedef NoteStateProvider = AsyncNotifierProvider<NoteNotifier, NoteState>;
-
 /// Creates a NoteNotifier for the currently selected Note item.
 final selectedNoteStateProvider =
     AsyncNotifierProvider.autoDispose<NoteNotifier, NoteState>(

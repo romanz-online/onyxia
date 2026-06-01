@@ -133,7 +133,6 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
           child: _NoteEditorContent(
             controller: controller,
             collab: state.collabConfig,
-            state: state,
             focusNode: _focusNode,
             scrollController: _scrollController,
             showHoverContainer: _showHoverContainer,
@@ -175,7 +174,6 @@ class _ErrorView extends StatelessWidget {
 class _NoteEditorContent extends StatefulWidget {
   final BardController controller;
   final BardCollabConfig? collab;
-  final NoteState state;
   final FocusNode focusNode;
   final ScrollController scrollController;
   final bool showHoverContainer;
@@ -188,7 +186,6 @@ class _NoteEditorContent extends StatefulWidget {
   const _NoteEditorContent({
     required this.controller,
     required this.collab,
-    required this.state,
     required this.focusNode,
     required this.scrollController,
     required this.showHoverContainer,
