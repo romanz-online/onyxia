@@ -27,7 +27,7 @@ class OnyxiaTextFormField extends StatelessWidget {
     this.onChanged,
     this.onSubmitted,
     this.validator,
-    this.fontSize,
+    this.fontSize = 14,
   });
 
   @override
@@ -51,6 +51,7 @@ class OnyxiaTextFormField extends StatelessWidget {
           fontSize: fontSize,
           color: ThemeHelper.foreground2().withValues(alpha: 0.7),
         ),
+        contentPadding: .symmetric(vertical: 4, horizontal: 8),
         counter: const SizedBox(),
         fillColor: ThemeHelper.background1(),
         filled: true,

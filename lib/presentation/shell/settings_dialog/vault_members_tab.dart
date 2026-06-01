@@ -61,7 +61,6 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
             ),
           ])
           .then((_) {
-            if (!mounted) return;
             OnyxiaToast.show(text: '${existing.email} added to vault');
             _emailController.clear();
             setState(() {
@@ -78,7 +77,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
     final entriesAsync = ref.watch(vaultMembersWithUsersProvider);
 
     return entriesAsync.when(
-      loading: () => Expanded(child: Center(child: OnyxiaLoadingIndicator())),
+      loading: () => Center(child: OnyxiaLoadingIndicator()),
       error: (e, _) => Text(
         'Failed to load members: $e',
         style: TextStyle(color: ThemeHelper.error()),
@@ -91,32 +90,35 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        Row(
-          crossAxisAlignment: .center,
-          spacing: 8,
-          children: [
-            Expanded(
-              // TODO: this needs a speech bubble similar to the one made from item_title_validation_service.dart
-              child: OnyxiaTextFormField(
-                controller: _emailController,
-                enabled: !_isProcessing,
-                hintText: 'Enter email address',
-                keyboardType: TextInputType.emailAddress,
-                autofocus: true,
-                onSubmitted: (_) {
-                  if (_isValidEmail) _onSendInvite();
-                },
+        SizedBox(
+          height: 40,
+          child: Row(
+            crossAxisAlignment: .center,
+            spacing: 8,
+            children: [
+              Expanded(
+                // TODO: this needs a speech bubble similar to the one made from item_title_validation_service.dart
+                child: OnyxiaTextFormField(
+                  controller: _emailController,
+                  enabled: !_isProcessing,
+                  hintText: 'Enter email address',
+                  keyboardType: TextInputType.emailAddress,
+                  autofocus: true,
+                  onSubmitted: (_) {
+                    if (_isValidEmail) _onSendInvite();
+                  },
+                ),
               ),
-            ),
-            if (_isProcessing)
-              const OnyxiaLoadingIndicator()
-            else ...[
-              OnyxiaButton(
-                label: 'Add',
-                onPressed: _isValidEmail ? _onSendInvite : null,
-              ),
+              if (_isProcessing)
+                const OnyxiaLoadingIndicator()
+              else ...[
+                OnyxiaButton(
+                  label: 'Add',
+                  onPressed: _isValidEmail ? _onSendInvite : null,
+                ),
+              ],
             ],
-          ],
+          ),
         ),
         const Gap(12),
         Divider(height: 1, color: ThemeHelper.auxiliary()),
@@ -163,7 +165,7 @@ class _MemberRow extends StatelessWidget {
     final email = user?.email ?? '';
 
     return Padding(
-      padding: .symmetric(vertical: 8),
+      padding: .symmetric(vertical: 8, horizontal: 8),
       child: Row(
         children: [
           Expanded(
@@ -193,14 +195,20 @@ class _MemberRow extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            member.role.label,
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: .w500,
-              color: ThemeHelper.foreground1(),
-            ),
-          ),
+          member.role == .owner
+              ? Text(
+                  member.role.label,
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: .w500,
+                    color: ThemeHelper.foreground1(),
+                  ),
+                )
+              : OnyxiaIconButton(
+                  icon: LucideIcons.userMinus400,
+                  iconColor: ThemeHelper.foreground1(),
+                  onPressed: () => {}, // TODO: implement member removal
+                ),
         ],
       ),
     );

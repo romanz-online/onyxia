@@ -1,7 +1,5 @@
 import 'package:onyxia/export.dart';
 
-// TODO: this should open a larger project settings overlay that lets the user modify members, themes and whatever else
-
 class VaultSettingsButton extends ConsumerStatefulWidget {
   const VaultSettingsButton({super.key});
 
