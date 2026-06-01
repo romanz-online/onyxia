@@ -213,7 +213,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                 )
               : const SizedBox.shrink(),
           // TODO: contentBuilder has a field called renameField which i should try using instead of manually keeping tracking whether the artifact is being renamed
-          contentBuilder: (context, node, _) => TreeTile(node: node),
+          contentBuilder: (context, node, renameField) => TreeTile(node: node),
           // TODO: track hoveredNode or hoveredNodeId or something. wrap this in MouseRegion and expose the state variable. send it into TreeTile so that the hovered tile can lighten its text
           contentWrapper: (context, node, child) => OnyxiaTooltip(
             message: _getNodeTooltip(node.data),
