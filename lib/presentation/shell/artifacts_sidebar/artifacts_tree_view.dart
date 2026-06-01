@@ -1,5 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'dart:async';
+import 'package:intl/intl.dart';
 
 class ArtifactsTreeView extends ConsumerStatefulWidget {
   const ArtifactsTreeView({super.key});
@@ -59,6 +60,25 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       if (success && node.parent != null)
         treeController.expandNode(node.parent!);
     }
+  }
+
+  String _getNodeTooltip(Artifact artifact) {
+    String ret = '';
+    if (artifact.updatedAt != null) {
+      final formatted = DateFormat(
+        'yyyy-MM-dd HH:mm',
+      ).format(artifact.updatedAt!);
+      ret += 'Last modified at $formatted\n';
+    }
+
+    if (artifact.createdAt != null) {
+      final formatted = DateFormat(
+        'yyyy-MM-dd HH:mm',
+      ).format(artifact.createdAt!);
+      ret += 'Created at $formatted';
+    }
+
+    return ret;
   }
 
   /// Single source of truth: any tree-selection change routes to the URL,
@@ -149,10 +169,13 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
 
     if (async.hasError)
       return Center(
-        child: Text('Error loading items. Please refresh the page.'),
+        child: Text(
+          'Error loading items. Please refresh the page.',
+          style: TextStyle(color: ThemeHelper.error()),
+        ),
       );
 
-    if (!async.hasValue) return Center(child: OnyxiaLoadingIndicator());
+    if (!async.hasValue) return const Center(child: OnyxiaLoadingIndicator());
 
     if (itemNodes.isEmpty) return const SizedBox.shrink();
 
@@ -189,7 +212,15 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                   ),
                 )
               : const SizedBox.shrink(),
+          // TODO: contentBuilder has a field called renameField which i should try using instead of manually keeping tracking whether the artifact is being renamed
           contentBuilder: (context, node, _) => TreeTile(node: node),
+          // TODO: track hoveredNode or hoveredNodeId or something. wrap this in MouseRegion and expose the state variable. send it into TreeTile so that the hovered tile can lighten its text
+          contentWrapper: (context, node, child) => OnyxiaTooltip(
+            message: _getNodeTooltip(node.data),
+            direction: .right,
+            tooltipOffset: const Offset(24, 0),
+            child: child,
+          ),
           style: TreeViewStyle(
             indentAmount: 16,
             padding: .fromLTRB(8, 0, 16, 0),
@@ -233,11 +264,11 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
               anchor: const Aligned(
                 follower: .topLeft,
                 target: .topLeft,
-                offset: Offset.zero,
+                offset: .zero,
                 backup: Aligned(
                   follower: .bottomRight,
                   target: .topLeft,
-                  offset: Offset.zero,
+                  offset: .zero,
                 ),
               ),
               onClose: _closeContextMenu,

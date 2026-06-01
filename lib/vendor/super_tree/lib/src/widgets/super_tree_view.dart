@@ -112,6 +112,8 @@ class SuperTreeView<T> extends StatefulWidget {
   final List<ContextMenuItem> Function(BuildContext, TreeNode<T>)?
   contextMenuBuilder;
 
+  final Widget Function(BuildContext, TreeNode<T>, Widget)? contentWrapper;
+
   /// Optional delegated open-menu callback. When non-null, replaces the
   /// built-in [ContextMenuOverlay] flow on right-click / long-press of a
   /// node; the caller is responsible for opening (and styling) the menu
@@ -150,6 +152,7 @@ class SuperTreeView<T> extends StatefulWidget {
     this.expansionSlotSize = 20,
     required this.prefixBuilder,
     required this.contentBuilder,
+    this.contentWrapper,
     this.labelProvider,
     this.trailingBuilder,
     this.contextMenuBuilder,
@@ -226,6 +229,7 @@ class SuperTreeView<T> extends StatefulWidget {
     this.expansionSlotSize = 20,
     required this.prefixBuilder,
     required this.contentBuilder,
+    this.contentWrapper,
     required Widget Function(BuildContext, int) separatorBuilder,
     this.labelProvider,
     this.trailingBuilder,
@@ -548,6 +552,7 @@ class _SuperTreeViewState<T> extends State<SuperTreeView<T>> {
       prefixBuilder: widget.prefixBuilder,
       labelProvider: widget.labelProvider,
       contentBuilder: widget.contentBuilder,
+      contentWrapper: widget.contentWrapper,
       trailingBuilder: widget.trailingBuilder,
       contextMenuBuilder: widget.contextMenuBuilder,
       onContextMenuRequested: widget.onNodeContextMenuRequested,

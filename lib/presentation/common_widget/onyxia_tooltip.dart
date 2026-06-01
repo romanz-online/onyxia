@@ -13,6 +13,7 @@ class OnyxiaTooltip extends StatefulWidget {
   /// larger of left/right).
   final OnyxiaTooltipDirection? direction;
   final Duration waitDuration;
+  final Offset tooltipOffset;
   final Widget child;
 
   const OnyxiaTooltip({
@@ -20,6 +21,7 @@ class OnyxiaTooltip extends StatefulWidget {
     required this.message,
     this.direction,
     this.waitDuration = const Duration(milliseconds: 500),
+    this.tooltipOffset = .zero,
     required this.child,
   });
 
@@ -122,25 +124,25 @@ class _OnyxiaTooltipState extends State<OnyxiaTooltip>
   };
 
   Anchor _anchorFor(OnyxiaTooltipDirection d) => switch (d) {
-    .bottom => const Aligned(
+    .bottom => Aligned(
       follower: .topCenter,
       target: .bottomCenter,
-      offset: Offset(0, 6),
+      offset: Offset(0 + widget.tooltipOffset.dx, 6 + widget.tooltipOffset.dy),
     ),
-    .top => const Aligned(
+    .top => Aligned(
       follower: .bottomCenter,
       target: .topCenter,
-      offset: Offset(0, -6),
+      offset: Offset(0 + widget.tooltipOffset.dx, -6 + widget.tooltipOffset.dy),
     ),
-    .right => const Aligned(
+    .right => Aligned(
       follower: .centerLeft,
       target: .centerRight,
-      offset: Offset(6, 0),
+      offset: Offset(6 + widget.tooltipOffset.dx, 0 + widget.tooltipOffset.dy),
     ),
-    .left => const Aligned(
+    .left => Aligned(
       follower: .centerRight,
       target: .centerLeft,
-      offset: Offset(-6, 0),
+      offset: Offset(-6 + widget.tooltipOffset.dx, 0 + widget.tooltipOffset.dy),
     ),
   };
 

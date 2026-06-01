@@ -1,8 +1,6 @@
 import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
-// TODO: add tooltip that says when it was created and when last modified, maybe
-
 final renameArtifactIdProvider =
     NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
       RenameArtifactIdNotifier.new,
@@ -16,7 +14,6 @@ class RenameArtifactIdNotifier extends Notifier<String?> {
 }
 
 class TreeTile extends ConsumerWidget {
-  // TODO: pass in isHovered and make the text lighter when hovered
   final TreeNode<Artifact> node;
 
   const TreeTile({super.key, required this.node});

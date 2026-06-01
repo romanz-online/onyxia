@@ -30,6 +30,7 @@ class SuperTreeNodeWidget<T> extends StatefulWidget {
     Widget? renameField,
   )
   contentBuilder;
+  final Widget Function(BuildContext, TreeNode<T>, Widget)? contentWrapper;
   final Widget Function(BuildContext, TreeNode<T>)? trailingBuilder;
 
   /// Signature for generating right-click (desktop) or long-press (mobile) context menus.
@@ -58,6 +59,7 @@ class SuperTreeNodeWidget<T> extends StatefulWidget {
     required this.prefixBuilder,
     this.labelProvider,
     required this.contentBuilder,
+    this.contentWrapper,
     this.trailingBuilder,
     this.contextMenuBuilder,
     this.onContextMenuRequested,
@@ -406,73 +408,88 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
               canExpand: canExpand,
               isSelected: isSelected,
               labelProvider: widget.labelProvider,
-              child: Container(
-                padding: EdgeInsets.only(left: paddingLeft),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(4),
-                  color: isSelected
-                      ? widget.style.selectedColor
-                      : (_isHovering ||
-                            widget.controller.contextMenuNodeId ==
-                                widget.node.id)
-                      ? widget.style.hoverColor
-                      : widget.style.idleColor,
-                  border: Border.all(
-                    color: widget.controller.renamingNodeId == widget.node.id
-                        ? Theme.of(context).colorScheme.primary.withAlpha(204)
-                        : Colors.transparent,
-                    width: 2.0,
-                  ),
-                ),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    if (canExpand)
-                      GestureDetector(
-                        onTap: _handleIconTap,
-                        behavior: HitTestBehavior.opaque,
-                        child: KeyedSubtree(
-                          key: Key('expansion_caret_${widget.node.id}'),
-                          child: _buildExpansionSlot(context),
-                        ),
-                      )
-                    else
-                      SizedBox(width: widget.expansionSlotSize),
 
-                    // Prefix (e.g. File/Folder icon)
-                    widget.prefixBuilder(context, widget.node),
-
-                    const SizedBox(width: 8),
-
-                    // Content
-                    Expanded(
-                      child: widget.contentBuilder(
-                        context,
-                        widget.node,
-                        widget.controller.renamingNodeId == widget.node.id
-                            ? _buildRenameField(context)
-                            : null,
+              child: Builder(
+                builder: (context) {
+                  final Widget nodeContent = Container(
+                    padding: EdgeInsets.only(left: paddingLeft),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(4),
+                      color: isSelected
+                          ? widget.style.selectedColor
+                          : (_isHovering ||
+                                widget.controller.contextMenuNodeId ==
+                                    widget.node.id)
+                          ? widget.style.hoverColor
+                          : widget.style.idleColor,
+                      border: Border.all(
+                        color:
+                            widget.controller.renamingNodeId == widget.node.id
+                            ? Theme.of(
+                                context,
+                              ).colorScheme.primary.withAlpha(204)
+                            : Colors.transparent,
+                        width: 2.0,
                       ),
                     ),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (canExpand)
+                          GestureDetector(
+                            onTap: _handleIconTap,
+                            behavior: HitTestBehavior.opaque,
+                            child: KeyedSubtree(
+                              key: Key('expansion_caret_${widget.node.id}'),
+                              child: _buildExpansionSlot(context),
+                            ),
+                          )
+                        else
+                          SizedBox(width: widget.expansionSlotSize),
 
-                    if (integrityIssue != null)
-                      Padding(
-                        padding: const EdgeInsets.only(left: 6),
-                        child: Tooltip(
-                          message: integrityIssue.message,
-                          child: Icon(
-                            Icons.error_outline,
-                            color: Theme.of(context).colorScheme.error,
-                            size: 16,
+                        // Prefix (e.g. File/Folder icon)
+                        widget.prefixBuilder(context, widget.node),
+
+                        const SizedBox(width: 8),
+
+                        // Content
+                        Expanded(
+                          child: widget.contentBuilder(
+                            context,
+                            widget.node,
+                            widget.controller.renamingNodeId == widget.node.id
+                                ? _buildRenameField(context)
+                                : null,
                           ),
                         ),
-                      ),
 
-                    // Trailing Actions
-                    if (widget.trailingBuilder != null)
-                      widget.trailingBuilder!(context, widget.node),
-                  ],
-                ),
+                        if (integrityIssue != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 6),
+                            child: Tooltip(
+                              message: integrityIssue.message,
+                              child: Icon(
+                                Icons.error_outline,
+                                color: Theme.of(context).colorScheme.error,
+                                size: 16,
+                              ),
+                            ),
+                          ),
+
+                        // Trailing Actions
+                        if (widget.trailingBuilder != null)
+                          widget.trailingBuilder!(context, widget.node),
+                      ],
+                    ),
+                  );
+                  return widget.contentWrapper != null
+                      ? widget.contentWrapper!(
+                          context,
+                          widget.node,
+                          nodeContent,
+                        )
+                      : nodeContent;
+                },
               ),
             ),
           ),
