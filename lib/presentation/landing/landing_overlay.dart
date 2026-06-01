@@ -184,7 +184,18 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
 
   @override
   Widget build(BuildContext context) {
-    final user = ref.watch(currentUserProvider).value ?? .initial();
+    final userAsync = ref.watch(currentUserProvider);
+
+    final content = userAsync.when(
+      loading: () => const Center(child: OnyxiaLoadingIndicator()),
+      error: (e, _) => Center(
+        child: Text(
+          'An unexpected error occurred.',
+          style: TextStyle(color: ThemeHelper.error()),
+        ),
+      ),
+      data: (user) => _buildContent(context, user),
+    );
 
     return Positioned(
       left: _position.dx,
@@ -213,10 +224,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: .circular(8),
-                    child: _buildShell(context, user),
-                  ),
+                  child: ClipRRect(borderRadius: .circular(8), child: content),
                 ),
               ),
             ),
@@ -296,15 +304,13 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
     );
   }
 
-  Widget _buildShell(BuildContext context, User user) {
-    final screen = _buildScreen(context, user);
+  Widget _buildContent(BuildContext context, User user) {
     final showBackButton = _mode != .signIn;
-    if (!showBackButton) return screen;
-
     return Stack(
       children: [
-        Positioned.fill(child: screen),
-        LandingBackButton(onPressed: () => _setMode(.signIn)),
+        Positioned.fill(child: _buildScreen(context, user)),
+        if (showBackButton)
+          LandingBackButton(onPressed: () => _setMode(.signIn)),
       ],
     );
   }

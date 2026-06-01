@@ -40,7 +40,6 @@
     /* Disable horizontal bounce-scroll to prevent two-finger swipe navigation */
     html,
     body {
-      /* Match ThemeHelper.neutral100 dark-mode value (NarwhalColors.neutral900) */
       background-color: #1C1C1E;
       overscroll-behavior-x: none;
       /* Chrome/Edge/Firefox 65+ */
@@ -78,15 +77,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: #1C1C1E;
+      background-color: #1F2329;
       z-index: 2147483647; /* sit above flutter-view during boot */
     }
 
-    /* Pulse-dot loader. Mirrors OnyxiaLoadingIndicator in
-       lib/presentation/common_widget/onyxia_loading_indicator.dart —
-       keep duration / scale / opacity / color in sync if you change them.
-       #909699 matches ThemeHelper.neutral500 (NarwhalColors.neutral500);
-       hardcoded here because no BuildContext exists pre-Flutter. */
+    /* Pulse-dot loader. Mirrors OnyxiaLoadingIndicator */
     .pulse-dot {
       width: 16px;
       height: 16px;

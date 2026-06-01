@@ -1,14 +1,14 @@
 import 'package:onyxia/export.dart';
 import 'package:themed/themed.dart';
 
-class NarwhalApp extends ConsumerStatefulWidget {
-  const NarwhalApp({super.key});
+class OnyxiaApp extends ConsumerStatefulWidget {
+  const OnyxiaApp({super.key});
 
   @override
-  ConsumerState<NarwhalApp> createState() => _NarwhalAppState();
+  ConsumerState<OnyxiaApp> createState() => _OnyxiaAppState();
 }
 
-class _NarwhalAppState extends ConsumerState<NarwhalApp> {
+class _OnyxiaAppState extends ConsumerState<OnyxiaApp> {
   @override
   Widget build(BuildContext context) {
     final routerInstance = ref.watch(routerProvider);

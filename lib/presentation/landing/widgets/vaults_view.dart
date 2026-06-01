@@ -4,36 +4,39 @@ import 'package:onyxia/presentation/landing/widgets/new_vault_dialog.dart';
 import 'package:onyxia/presentation/landing/widgets/vault_row.dart';
 import 'dart:async';
 
-class VaultsView extends ConsumerWidget {
+class VaultsView extends StatelessWidget {
   static const double leftColumnWidth = 180;
 
   const VaultsView({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value ?? User.initial();
-    final vaults = ref.watch(vaultsProvider).value ?? const <Vault>[];
-
+  Widget build(BuildContext context) {
     return Row(
       children: [
-        SizedBox(
-          width: leftColumnWidth,
-          child: _VaultListColumn(vaults: vaults),
-        ),
+        SizedBox(width: leftColumnWidth, child: const _VaultListColumn()),
         VerticalDivider(width: 2, color: ThemeHelper.auxiliary()),
-        Expanded(child: _RightColumn(user: user)),
+        Expanded(child: const _RightColumn()),
       ],
     );
   }
 }
 
-class _VaultListColumn extends StatelessWidget {
-  final List<Vault> vaults;
-
-  const _VaultListColumn({required this.vaults});
+class _VaultListColumn extends ConsumerStatefulWidget {
+  const _VaultListColumn();
 
   @override
+  ConsumerState<_VaultListColumn> createState() => _VaultListColumnState();
+}
+
+class _VaultListColumnState extends ConsumerState<_VaultListColumn> {
+  @override
   Widget build(BuildContext context) {
+    // TODO: this is showing the wrong vault selection per user. it's never refreshing or invalidating for a different user.
+    final vaultsAsync = ref.watch(vaultsProvider);
+    final vaults = vaultsAsync.isLoading
+        ? const <Vault>[]
+        : vaultsAsync.value ?? const <Vault>[];
+
     return Container(
       color: ThemeHelper.background2(),
       padding: .fromLTRB(12, 12, 12, 6),
@@ -41,38 +44,39 @@ class _VaultListColumn extends StatelessWidget {
         crossAxisAlignment: .start,
         spacing: 6,
         children: [
-          Expanded(
-            child: vaults.isEmpty
-                ? Center(
-                    child: Text(
-                      'No vaults',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: ThemeHelper.foreground2(),
-                      ),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: vaults.length,
-                    itemBuilder: (context, index) => Padding(
-                      padding: .only(bottom: 6),
-                      child: VaultRow(vault: vaults[index]),
-                    ),
+          for (final vault in vaults)
+            Padding(
+              padding: .only(bottom: 6),
+              child: VaultRow(vault: vault),
+            ),
+          if (vaults.isEmpty)
+            Expanded(
+              child: Center(
+                child: Text(
+                  'No vaults',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: ThemeHelper.foreground2(),
                   ),
-          ),
+                ),
+              ),
+            ),
         ],
       ),
     );
   }
 }
 
-class _RightColumn extends ConsumerWidget {
-  final User user;
+class _RightColumn extends ConsumerStatefulWidget {
+  const _RightColumn();
 
-  const _RightColumn({required this.user});
+  @override
+  ConsumerState<_RightColumn> createState() => _RightColumnState();
+}
 
+class _RightColumnState extends ConsumerState<_RightColumn> {
   void _showNewVaultDialog(BuildContext context) {
-    showDialog(context: context, builder: (_) => NewVaultDialog());
+    showDialog(context: context, builder: (_) => const NewVaultDialog());
   }
 
   Future<void> _showImportVaultDialog(BuildContext context) async {
@@ -89,62 +93,73 @@ class _RightColumn extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: .symmetric(horizontal: 16, vertical: 12),
-      child: Column(
-        crossAxisAlignment: .start,
-        children: [
-          Text(
-            'Onyxia',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: .bold,
-              color: ThemeHelper.foreground1(),
+  Widget build(BuildContext context) {
+    final userAsync = ref.watch(currentUserProvider);
+
+    return userAsync.when(
+      loading: () => const Center(child: OnyxiaLoadingIndicator()),
+      error: (e, _) => Center(
+        child: Text(
+          'An unexpected error occurred while logging in.',
+          style: TextStyle(color: ThemeHelper.error()),
+        ),
+      ),
+      data: (user) => Padding(
+        padding: .symmetric(horizontal: 16, vertical: 12),
+        child: Column(
+          crossAxisAlignment: .start,
+          children: [
+            Text(
+              'Onyxia',
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: .bold,
+                color: ThemeHelper.foreground1(),
+              ),
             ),
-          ),
-          const Gap(16),
-          Column(
-            crossAxisAlignment: .start,
-            spacing: 4,
-            children: [
-              Padding(
-                padding: .only(left: 4),
-                child: Text(
-                  'You are logged in as ${user.email}',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: ThemeHelper.foreground2(),
+            const Gap(16),
+            Column(
+              crossAxisAlignment: .start,
+              spacing: 4,
+              children: [
+                Padding(
+                  padding: .only(left: 4),
+                  child: Text(
+                    'You are logged in as ${user.email}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: ThemeHelper.foreground2(),
+                    ),
                   ),
                 ),
-              ),
-              OnyxiaButton(
-                label: 'Sign out',
-                onPressed: ref.read(currentUserProvider.notifier).signOut,
-              ),
-            ],
-          ),
-          const Spacer(),
-          Row(
-            mainAxisAlignment: .end,
-            children: [
-              Column(
-                spacing: 6,
-                crossAxisAlignment: .end,
-                children: [
-                  OnyxiaButton(
-                    label: 'New Vault',
-                    onPressed: () => _showNewVaultDialog(context),
-                  ),
-                  OnyxiaButton(
-                    label: 'Import Vault',
-                    onPressed: () => _showImportVaultDialog(context),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                OnyxiaButton(
+                  label: 'Sign out',
+                  onPressed: ref.read(currentUserProvider.notifier).signOut,
+                ),
+              ],
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: .end,
+              children: [
+                Column(
+                  spacing: 6,
+                  crossAxisAlignment: .end,
+                  children: [
+                    OnyxiaButton(
+                      label: 'New Vault',
+                      onPressed: () => _showNewVaultDialog(context),
+                    ),
+                    OnyxiaButton(
+                      label: 'Import Vault',
+                      onPressed: () => _showImportVaultDialog(context),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

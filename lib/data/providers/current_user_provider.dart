@@ -16,33 +16,34 @@ final currentUserProvider = StreamNotifierProvider<CurrentUserNotifier, User>(
 );
 
 class CurrentUserNotifier extends StreamNotifier<User> {
-  final _repository = AuthRepository();
+  final _authRepository = AuthRepository();
+  final _usersRepository = UsersRepository();
 
   @override
   Stream<User> build() {
-    return _repository.authStateChanges.asyncMap((authState) async {
+    return _authRepository.authStateChanges.asyncMap((authState) async {
       final session = authState.session;
-      if (session == null) return User.initial();
-      final user = await UsersRepository().get(session.user.id);
-      return user?.copyWith(isLogged: true) ?? User.initial();
+      if (session == null) return .initial();
+      final user = await _usersRepository.get(session.user.id);
+      return user?.copyWith(isLogged: true) ?? .initial();
     });
   }
 
-  Future<void> signOut() async => await _repository.signOut();
+  Future<void> signOut() async => await _authRepository.signOut();
 
   Future<void> signUpWithEmail({
     required String email,
     required String password,
-  }) async => _repository.signUpWithEmail(email: email, password: password);
+  }) async => _authRepository.signUpWithEmail(email: email, password: password);
 
   Future<void> signInWithEmail({
     required String email,
     required String password,
-  }) async => _repository.signInWithEmail(email: email, password: password);
+  }) async => _authRepository.signInWithEmail(email: email, password: password);
 
   Future<void> sendPasswordResetEmail(String email) async =>
-      _repository.sendPasswordResetEmail(email);
+      _authRepository.sendPasswordResetEmail(email);
 
   Future<void> updatePassword(String newPassword) async =>
-      _repository.updatePassword(newPassword);
+      _authRepository.updatePassword(newPassword);
 }

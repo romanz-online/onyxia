@@ -1,5 +1,4 @@
 import 'export.dart';
-import 'supabase_config.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() async {
@@ -8,14 +7,18 @@ void main() async {
 
   BrowserContextMenu.disableContextMenu();
 
-  await Supabase.initialize(url: supabaseUrl, anonKey: supabaseAnonKey);
+  await Supabase.initialize(
+    url: 'https://nhceibemgsbcgsrqrvzd.supabase.co',
+    anonKey: 'sb_publishable_s_Lw-sNKGvdng1Vs9LWJcQ_PP-gh-t_',
+    authOptions: const FlutterAuthClientOptions(authFlowType: .pkce),
+  );
 
   usePathUrlStrategy();
 
   runApp(
     ProviderScope(
       observers: const [GlobalProviderObserver()],
-      child: const NarwhalApp(),
+      child: const OnyxiaApp(),
     ),
   );
 }
