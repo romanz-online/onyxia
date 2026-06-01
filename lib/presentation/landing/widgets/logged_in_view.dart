@@ -5,7 +5,7 @@ import 'package:onyxia/presentation/landing/widgets/vault_row.dart';
 import 'dart:async';
 
 class LoggedInView extends StatelessWidget {
-  static const double leftColumnWidth = 180;
+  static const double leftColumnWidth = 200;
 
   const LoggedInView({super.key});
 
@@ -35,33 +35,34 @@ class _VaultListColumnState extends ConsumerState<_VaultListColumn> {
     final vaults = vaultsAsync.isLoading
         ? const <Vault>[]
         : vaultsAsync.value ?? const <Vault>[];
-    // TODO: needs to scroll vertically on overflow
     return Container(
       color: ThemeHelper.background2(),
-      padding: .fromLTRB(12, 12, 12, 6),
-      child: Column(
-        crossAxisAlignment: .start,
-        spacing: 6,
-        children: [
-          for (final vault in vaults)
-            Padding(
-              padding: .only(bottom: 6),
-              child: VaultRow(vault: vault),
-            ),
-          if (vaults.isEmpty)
-            Expanded(
-              child: Center(
-                child: Text(
-                  'No vaults',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: ThemeHelper.foreground2(),
-                  ),
+      padding: .fromLTRB(12, 12, 4, 6),
+      height: .infinity,
+      child: vaults.isEmpty
+          ? Center(
+              child: Text(
+                'No vaults',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: ThemeHelper.foreground2(),
                 ),
               ),
+            )
+          : SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: .start,
+                mainAxisAlignment: .start,
+                spacing: 6,
+                children: [
+                  for (final vault in vaults)
+                    Padding(
+                      padding: .only(bottom: 6, right: 16),
+                      child: VaultRow(vault: vault),
+                    ),
+                ],
+              ),
             ),
-        ],
-      ),
     );
   }
 }
