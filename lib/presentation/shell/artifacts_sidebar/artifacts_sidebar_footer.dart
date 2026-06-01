@@ -1,4 +1,5 @@
 import 'package:onyxia/export.dart';
+import 'dart:math' as math;
 
 class ArtifactsSidebarFooter extends ConsumerStatefulWidget {
   const ArtifactsSidebarFooter({super.key});
@@ -14,6 +15,61 @@ class _ArtifactsSidebarFooterState
   void _setMenuOpen(bool open) {
     if (_isMenuOpen == open) return;
     setState(() => _isMenuOpen = open);
+  }
+
+  // TODO: the results from this are wrong
+  List<Vault> getMostRelevantVaults(
+    List<Vault> vaults,
+    Vault? currentVault,
+    String currentUserId,
+    Map<String, DateTime> accessLog, {
+    int count = 3,
+  }) {
+    final now = DateTime.now();
+
+    double recencyScore(DateTime? dt, {double halfLifeDays = 7}) {
+      if (dt == null) return 0;
+      final ageDays = now.difference(dt).inDays.toDouble();
+      // Exponential decay: score halves every `halfLifeDays`
+      return math.exp(-ageDays * math.log(2) / halfLifeDays);
+    }
+
+    double score(Vault vault) {
+      double s = 0.0;
+
+      // Strongest signal: user recently modified it
+      if (vault.updatedBy == currentUserId) {
+        s += 1.0 * recencyScore(vault.updatedAt);
+      }
+
+      // Medium signal: user created it
+      if (vault.createdBy == currentUserId) {
+        s += 0.5 * recencyScore(vault.createdAt);
+      }
+
+      // Weaker signal: user just visited it
+      final accessed = accessLog[vault.id];
+      if (accessed != null) {
+        s += 0.3 * recencyScore(accessed);
+      }
+
+      return s;
+    }
+
+    final scored =
+        vaults
+            .where((v) => v != currentVault)
+            .map((v) => (vault: v, score: score(v)))
+            .toList()
+          ..sort((a, b) => b.score.compareTo(a.score));
+
+    // Only return vaults with some signal — avoid showing random vaults
+    // if the user has no history yet
+    return scored
+        .where((e) => e.score > 0)
+        .take(count)
+        .map((e) => e.vault)
+        .toList();
   }
 
   @override
@@ -42,7 +98,7 @@ class _ArtifactsSidebarFooterState
               offset: const Offset(0, -4),
             ),
             builder: (context, closeOverlay) =>
-                _buildMenu(closeOverlay, vaultName),
+                _buildMenu(closeOverlay, selectedVault),
             child: OnyxiaButton(
               label: vaultName,
               isPressed: _isMenuOpen,
@@ -60,42 +116,68 @@ class _ArtifactsSidebarFooterState
     );
   }
 
-  Widget _buildMenu(VoidCallback closeOverlay, String currentVaultName) {
+  Widget _buildMenu(VoidCallback closeOverlay, Vault? currentVault) {
+    final vaultsAsync = ref.watch(vaultsProvider);
+    final vaults = vaultsAsync.isLoading || currentVault == null
+        ? const <Vault>[]
+        : vaultsAsync.value ?? const <Vault>[];
+
+    final relevantVaults = getMostRelevantVaults(
+      vaults,
+      currentVault,
+      ref.read(currentUserProvider).value?.id ?? '',
+      {}, // TODO: implement recently-accessed (but not written-to) vaults, stored only in sharedpreferences
+      count: 2,
+    );
+
     return OnyxiaMenu(
       width: 150,
       closeOverlay: closeOverlay,
       items: [
-        // TODO: replace with a list of other most recently accessed or modified vaults
-        OnyxiaMenuItem(
-          child: Row(
-            spacing: 8,
-            children: [
-              const SizedBox(width: 14), // takes up the usual icon space
-              Text(
-                'Dummy Vault 1',
-                style: TextStyle(
-                  color: ThemeHelper.foreground1(),
-                  fontSize: 13,
+        for (final vault in relevantVaults)
+          OnyxiaMenuItem(
+            child: Row(
+              spacing: 8,
+              children: [
+                const SizedBox(width: 14), // takes up the usual icon space
+                // Expanded mimics OnyxiaMenuItem's interior design
+                Expanded(
+                  child: Text(
+                    vault.name,
+                    style: TextStyle(
+                      color: ThemeHelper.foreground1(),
+                      fontSize: 13,
+                      overflow: .ellipsis,
+                    ),
+                  ),
                 ),
+              ],
+            ),
+            onTap: () => context.go(Routes.vaultUrl(vault.id)),
+          ),
+        if (currentVault != null)
+          OnyxiaMenuItem(
+            icon: LucideIcons.check600,
+            child: Text(
+              currentVault.name,
+              style: TextStyle(
+                color: ThemeHelper.foreground1(),
+                fontSize: 13,
+                overflow: .ellipsis,
               ),
-            ],
+            ),
+            onTap: () => {},
           ),
-          onTap: () => {},
-        ),
-        OnyxiaMenuItem(
-          icon: LucideIcons.check600,
-          child: Text(
-            currentVaultName,
-            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
-          ),
-          onTap: () => {},
-        ),
         OnyxiaMenuItem.divider(),
         OnyxiaMenuItem(
           icon: LucideIcons.logOut600,
           child: Text(
             'Manage Vaults',
-            style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
+            style: TextStyle(
+              color: ThemeHelper.foreground1(),
+              fontSize: 13,
+              overflow: .ellipsis,
+            ),
           ),
           onTap: () => context.go(Routes.home),
         ),
