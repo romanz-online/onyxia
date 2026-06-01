@@ -5,10 +5,15 @@ final vaultsProvider = StreamNotifierProvider<VaultsNotifier, List<Vault>>(
 );
 
 class VaultsNotifier extends StreamNotifier<List<Vault>> {
-  final VaultsRepository _repository = VaultsRepository();
+  late VaultsRepository _repository;
 
   @override
-  Stream<List<Vault>> build() => _repository.getStream();
+  Stream<List<Vault>> build() {
+    final userId = ref.watch(currentUserProvider.select((u) => u.value?.id));
+    _repository = VaultsRepository();
+    if (userId == null || userId.isEmpty) return Stream.value(const <Vault>[]);
+    return _repository.getStream();
+  }
 
   void renameVault(String id, String newName) {
     final p = state.value?.firstWhereOrNull((e) => e.id == id);
