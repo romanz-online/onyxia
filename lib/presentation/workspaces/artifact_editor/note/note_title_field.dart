@@ -1,6 +1,8 @@
 import 'package:onyxia/export.dart';
 import 'package:speech_balloon/speech_balloon.dart';
 
+// TODO: renaming through this title field makes the artifact reload fully, or it flickers or something. this doesn't happen when renaming through the tree tile, which is completely smooth.
+
 class NoteTitleField extends ConsumerStatefulWidget {
   final FocusNode? nextFocusNode;
 

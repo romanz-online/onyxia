@@ -96,6 +96,11 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       },
     );
 
+    final snapSub = snapsRepo.changeStreamFor(note.id).listen((_) {
+      if (ref.mounted) ref.invalidateSelf();
+    });
+    ref.onDispose(snapSub.cancel);
+
     final controller = BardController(text: '');
     _controller = controller;
 

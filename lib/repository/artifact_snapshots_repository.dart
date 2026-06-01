@@ -1,4 +1,5 @@
 import 'package:onyxia/export.dart';
+import 'dart:async';
 
 class ArtifactSnapshotsRepository
     extends BaseSupabaseRepository<ArtifactSnapshot> {
@@ -52,5 +53,34 @@ class ArtifactSnapshotsRepository
       ...snap.toMap(),
       'vault_id': vaultId,
     }, onConflict: 'artifact_id');
+  }
+
+  /// Realtime signal that fires whenever this artifact's snapshot row is
+  /// inserted or replaced. Carries no payload — callers re-fetch via [latestFor].
+  Stream<void> changeStreamFor(String artifactId) {
+    late final RealtimeChannel channel;
+    late final StreamController<void> controller;
+    controller = StreamController<void>(
+      onListen: () {
+        channel =
+            Supabase.instance.client
+                .channel('artifact_snapshots:$artifactId')
+                .onPostgresChanges(
+                  event: .all,
+                  schema: 'public',
+                  table: tableName,
+                  filter: PostgresChangeFilter(
+                    type: .eq,
+                    column: 'artifact_id',
+                    value: artifactId,
+                  ),
+                  callback: (_) => controller.add(null),
+                )
+              ..subscribe();
+      },
+      onCancel: () async =>
+          await Supabase.instance.client.removeChannel(channel),
+    );
+    return controller.stream;
   }
 }

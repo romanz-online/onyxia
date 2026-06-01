@@ -176,8 +176,6 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     // is silently overwritten on next load by replaying the pre-rename ops.
     if (rewrittenNotes.isNotEmpty && _vaultId != null) {
       await _rebuildSnapshotsForRewrittenNotes(rewrittenNotes, _vaultId!);
-      // Force the open editor (if any) to re-hydrate from the new snapshot.
-      ref.invalidate(selectedNoteStateProvider);
     }
 
     return null;

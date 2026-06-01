@@ -1,7 +1,6 @@
+import 'package:onyxia/export.dart';
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:onyxia/export.dart';
 
 class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
   ArtifactOpsRepository({required super.vaultId});
@@ -56,11 +55,11 @@ class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
             Supabase.instance.client
                 .channel('artifact_ops:$artifactId')
                 .onPostgresChanges(
-                  event: PostgresChangeEvent.insert,
+                  event: .insert,
                   schema: 'public',
                   table: tableName,
                   filter: PostgresChangeFilter(
-                    type: PostgresChangeFilterType.eq,
+                    type: .eq,
                     column: 'artifact_id',
                     value: artifactId,
                   ),
