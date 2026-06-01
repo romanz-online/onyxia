@@ -3,27 +3,27 @@ import 'dart:async';
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 
-// TODO: having a selectedNoteStateProvider separate from selectedArtifactProvider kind of sucks and is confusing. it would be better to keep all of selectedNoteStateProvider's functionality within the actual editor workspace since that's the only area it's being used in anyway
+// TODO: it would be better to keep all of noteEditorProvider's functionality within the actual editor workspace since that's the only area it's being used in anyway. i'm not even actually sure if i need a provider at all since it's not going cross-file.
 
 /// Creates a NoteNotifier for the currently selected Note item.
-final selectedNoteStateProvider =
-    AsyncNotifierProvider.autoDispose<NoteNotifier, NoteState>(
-      NoteNotifier.new,
+final noteEditorProvider =
+    AsyncNotifierProvider.autoDispose<NoteEditorStateNotifier, NoteEditorState>(
+      NoteEditorStateNotifier.new,
     );
 
-class NoteState {
+class NoteEditorState {
   final NoteArtifact? note;
   final BardController? bardController;
   final BardCollabConfig? collabConfig;
 
-  const NoteState({this.note, this.bardController, this.collabConfig});
+  const NoteEditorState({this.note, this.bardController, this.collabConfig});
 
-  NoteState copyWith({
+  NoteEditorState copyWith({
     NoteArtifact? note,
     BardController? bardController,
     BardCollabConfig? collabConfig,
   }) {
-    return NoteState(
+    return NoteEditorState(
       note: note ?? this.note,
       bardController: bardController ?? this.bardController,
       collabConfig: collabConfig ?? this.collabConfig,
@@ -31,13 +31,13 @@ class NoteState {
   }
 }
 
-class NoteNotifier extends AsyncNotifier<NoteState> {
+class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
   String? _vaultId;
   BardController? _controller;
   StreamController<Uint8List>? _remoteOpsController;
 
   @override
-  Future<NoteState> build() async {
+  Future<NoteEditorState> build() async {
     final selectedNoteId = ref.watch(
       selectedArtifactProvider.select((a) => a is NoteArtifact ? a.id : null),
     );
@@ -55,12 +55,10 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
       }
     });
 
-    if (selectedNoteId == null || _vaultId == null) {
-      return const NoteState();
-    }
-
     final userId = Supabase.instance.client.auth.currentUser?.id;
-    if (userId == null) return const NoteState();
+    if (selectedNoteId == null || _vaultId == null || userId == null) {
+      return const NoteEditorState();
+    }
 
     final note = ref.read(selectedArtifactProvider) as NoteArtifact;
     final opsRepo = ArtifactOpsRepository(vaultId: _vaultId);
@@ -78,13 +76,13 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     ref.onDispose(supabaseSub.cancel);
 
     final snap = await snapsRepo.latestFor(note.id);
-    if (!ref.mounted) return const NoteState();
+    if (!ref.mounted) return const NoteEditorState();
 
     final initialOps = await opsRepo.opBytesFor(
       note.id,
       sinceSeq: snap?.maxOpSeq,
     );
-    if (!ref.mounted) return const NoteState();
+    if (!ref.mounted) return const NoteEditorState();
 
     final collab = BardCollabConfig(
       initialSnapshot: snap?.snapshotBytes,
@@ -104,7 +102,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     final controller = BardController(text: '');
     _controller = controller;
 
-    return NoteState(
+    return NoteEditorState(
       note: note,
       bardController: controller,
       collabConfig: collab,

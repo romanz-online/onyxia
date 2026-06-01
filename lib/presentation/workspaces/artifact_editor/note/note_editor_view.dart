@@ -44,7 +44,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   }
 
   void _checkNoteChange() {
-    final noteState = ref.read(selectedNoteStateProvider);
+    final noteState = ref.read(noteEditorProvider);
     noteState.whenData((state) {
       final newNoteId = state.note?.id;
       if (newNoteId != _currentNoteId) {
@@ -103,10 +103,10 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    final noteState = ref.watch(selectedNoteStateProvider);
+    final noteState = ref.watch(noteEditorProvider);
 
     final item = ref.watch(
-      selectedNoteStateProvider.select((state) => state.value?.note),
+      noteEditorProvider.select((state) => state.value?.note),
     );
     if (item == null) {
       return const Center(child: OnyxiaLoadingIndicator());
@@ -116,7 +116,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       loading: () => Center(child: OnyxiaLoadingIndicator()),
       error: (error, _) => _ErrorView(
         error: error,
-        onRetry: () => ref.invalidate(selectedNoteStateProvider),
+        onRetry: () => ref.invalidate(noteEditorProvider),
       ),
       data: (state) {
         final controller = state.bardController;

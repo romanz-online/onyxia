@@ -51,7 +51,7 @@ export 'package:onyxia/data/providers/vault_members_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_artifact_provider.dart';
 export 'package:onyxia/data/providers/selected_vault_provider.dart';
-export 'package:onyxia/data/providers/note_state_provider.dart';
+export 'package:onyxia/data/providers/note_editor_provider.dart';
 export 'package:onyxia/data/providers/theme_provider.dart';
 
 export 'package:onyxia/presentation/routing/router.dart';
