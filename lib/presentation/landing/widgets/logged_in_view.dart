@@ -4,10 +4,10 @@ import 'package:onyxia/presentation/landing/widgets/new_vault_dialog.dart';
 import 'package:onyxia/presentation/landing/widgets/vault_row.dart';
 import 'dart:async';
 
-class VaultsView extends StatelessWidget {
+class LoggedInView extends StatelessWidget {
   static const double leftColumnWidth = 180;
 
-  const VaultsView({super.key});
+  const LoggedInView({super.key});
 
   @override
   Widget build(BuildContext context) {

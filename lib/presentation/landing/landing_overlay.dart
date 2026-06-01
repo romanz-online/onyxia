@@ -5,7 +5,7 @@ import 'package:onyxia/presentation/landing/widgets/info_message_view.dart';
 import 'package:onyxia/presentation/landing/widgets/landing_back_button.dart';
 import 'package:onyxia/presentation/landing/widgets/pre_auth_view.dart';
 import 'package:onyxia/presentation/landing/widgets/reset_password_view.dart';
-import 'package:onyxia/presentation/landing/widgets/vaults_view.dart';
+import 'package:onyxia/presentation/landing/widgets/logged_in_view.dart';
 
 enum LandingMode {
   signIn,
@@ -330,6 +330,6 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
           'If an account exists for that email, a reset link is on its way.',
     ),
     .signIn =>
-      user.isLogged ? const VaultsView() : PreAuthView(onNavigate: _setMode),
+      user.isLogged ? const LoggedInView() : PreAuthView(onNavigate: _setMode),
   };
 }

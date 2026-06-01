@@ -18,7 +18,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
   String? _errorMessage;
   ProviderSubscription<Artifact?>? _itemListener;
 
-  String? _titleOnFocusGain;
+  String? _currentTitle;
 
   @override
   void initState() {
@@ -27,44 +27,33 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
     _focusNode = FocusNode();
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final noteAsyncState = ref.watch(selectedNoteStateProvider);
-      final rawSelectedItem = ref.watch(selectedArtifactProvider);
-      final Artifact? selectedItem =
-          rawSelectedItem ?? noteAsyncState.value?.note;
-      _controller.text = selectedItem?.name ?? '';
+      _controller.text = ref.read(selectedArtifactProvider)?.name ?? '';
 
       _focusNode.addListener(() async {
         if (_focusNode.hasFocus) {
-          _titleOnFocusGain = ref
-              .read(selectedNoteStateProvider)
-              .value
-              ?.note
-              ?.name;
+          _currentTitle = ref.read(selectedArtifactProvider)?.name;
           return;
         }
-        final note = ref.read(selectedNoteStateProvider).value?.note;
+        final note = ref.read(selectedArtifactProvider);
         if (note == null) return;
         final error = await ref
             .read(artifactsProvider.notifier)
             .renameItem(note, _controller.text);
         if (!mounted) return;
         if (error != null) {
-          _controller.text = _titleOnFocusGain ?? note.name;
+          _controller.text = _currentTitle ?? note.name;
         }
         setState(() => _errorMessage = null);
         _overlayController.hide();
       });
 
-      _itemListener = ref.listenManual(
-        selectedNoteStateProvider.select((state) => state.value?.note),
-        (prev, next) {
-          if (!_focusNode.hasFocus &&
-              next != null &&
-              next.name != _controller.text) {
-            _controller.text = next.name;
-          }
-        },
-      );
+      _itemListener = ref.listenManual(selectedArtifactProvider, (prev, next) {
+        if (!_focusNode.hasFocus &&
+            next != null &&
+            next.name != _controller.text) {
+          _controller.text = next.name;
+        }
+      });
     });
   }
 
@@ -126,7 +115,7 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
             final msg = ItemTitleValidationService.errorMessage(
               ref.read(artifactsProvider).value ?? const <Artifact>[],
               value,
-              ref.read(selectedNoteStateProvider).value?.note?.id ?? '',
+              ref.read(selectedArtifactProvider)?.id ?? '',
             );
             setState(() => _errorMessage = msg);
             if (msg != null) {
