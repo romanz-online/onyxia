@@ -32,6 +32,7 @@ class _VaultListColumnState extends ConsumerState<_VaultListColumn> {
   @override
   Widget build(BuildContext context) {
     // TODO: this is showing the wrong vault selection per user. it's never refreshing or invalidating for a different user.
+    // TODO: ctrl+shift+R reload tab and cache when logged out. log in and now the vault list never updates and always says it's empty. reloading the tab forces it to populate the list. this might be the same issue as above.
     final vaultsAsync = ref.watch(vaultsProvider);
     final vaults = vaultsAsync.isLoading
         ? const <Vault>[]

@@ -28,7 +28,6 @@ export 'package:onyxia/helpers/url_helper.dart';
 export 'package:onyxia/data/models/user.dart';
 export 'package:onyxia/data/models/vault.dart';
 export 'package:onyxia/data/models/vault_member.dart';
-export 'package:onyxia/data/models/vault_invitation.dart';
 export 'package:onyxia/data/models/artifact_op.dart';
 export 'package:onyxia/data/models/artifact_snapshot.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';

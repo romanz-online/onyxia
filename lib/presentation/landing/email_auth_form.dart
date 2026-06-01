@@ -66,6 +66,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
       children: [
+        // TODO: this seems to be weirdly laggy and doesn't recognize immediately that i'm trying to fill in credentials. it takes several clicks to refresh it enough to get it to understand.
         OnyxiaTextFormField(
           controller: _emailController,
           keyboardType: .emailAddress,
@@ -83,6 +84,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           fontSize: 13,
           onSubmitted: (_) => _submit(),
         ),
+        // TODO: add "Remember me" checkbox
         if (_errorMessage != null) ...[
           const Gap(8),
           Text(
