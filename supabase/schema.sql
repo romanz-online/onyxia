@@ -344,17 +344,6 @@ CREATE OR REPLACE VIEW "public"."users" AS
 ALTER VIEW "public"."users" OWNER TO "postgres";
 
 
-CREATE TABLE IF NOT EXISTS "public"."vault_invitations" (
-    "token" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "vault_id" "uuid" NOT NULL,
-    "email" "text" NOT NULL,
-    "expires_at" timestamp with time zone DEFAULT ("now"() + '14 days'::interval) NOT NULL
-);
-
-
-ALTER TABLE "public"."vault_invitations" OWNER TO "postgres";
-
-
 CREATE TABLE IF NOT EXISTS "public"."vault_members" (
     "vault_id" "uuid" NOT NULL,
     "user_id" "uuid" NOT NULL,
@@ -376,7 +365,8 @@ CREATE TABLE IF NOT EXISTS "public"."vaults" (
     "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
     "created_by" "uuid",
     "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
-    "updated_by" "uuid"
+    "updated_by" "uuid",
+    CONSTRAINT "vaults_name_check" CHECK (("length"("name") < 40))
 );
 
 ALTER TABLE ONLY "public"."vaults" REPLICA IDENTITY FULL;
@@ -439,11 +429,6 @@ ALTER TABLE ONLY "public"."sub_comments"
 
 
 
-ALTER TABLE ONLY "public"."vault_invitations"
-    ADD CONSTRAINT "vault_invitations_pkey" PRIMARY KEY ("token");
-
-
-
 CREATE INDEX "artifact_ops_artifact_id_idx" ON "public"."artifact_ops" USING "btree" ("artifact_id");
 
 
@@ -497,10 +482,6 @@ CREATE INDEX "project_members_user_id_idx" ON "public"."vault_members" USING "bt
 
 
 CREATE INDEX "sub_comments_comment_id_idx" ON "public"."sub_comments" USING "btree" ("comment_id");
-
-
-
-CREATE INDEX "vault_invitations_vault_id_email_idx" ON "public"."vault_invitations" USING "btree" ("vault_id", "lower"("email"));
 
 
 
@@ -729,11 +710,6 @@ ALTER TABLE ONLY "public"."sub_comments"
 
 
 
-ALTER TABLE ONLY "public"."vault_invitations"
-    ADD CONSTRAINT "vault_invitations_vault_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
-
-
-
 ALTER TABLE "public"."artifact_ops" ENABLE ROW LEVEL SECURITY;
 
 
@@ -873,21 +849,6 @@ CREATE POLICY "sub_comments_all" ON "public"."sub_comments" TO "authenticated" U
 
 
 
-ALTER TABLE "public"."vault_invitations" ENABLE ROW LEVEL SECURITY;
-
-
-CREATE POLICY "vault_invitations: insert by owners" ON "public"."vault_invitations" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "vault_invitations"."vault_id") AND ("vm"."user_id" = "auth"."uid"()) AND ("vm"."role" = 'owner'::"text")))));
-
-
-
-CREATE POLICY "vault_invitations: select for owners" ON "public"."vault_invitations" FOR SELECT USING ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "vault_invitations"."vault_id") AND ("vm"."user_id" = "auth"."uid"()) AND ("vm"."role" = 'owner'::"text")))));
-
-
-
 ALTER TABLE "public"."vault_members" ENABLE ROW LEVEL SECURITY;
 
 
@@ -904,6 +865,10 @@ ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
 ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."artifact_ops";
+
+
+
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."artifact_snapshots";
 
 
 
@@ -1194,12 +1159,6 @@ GRANT ALL ON TABLE "public"."sub_comments" TO "service_role";
 GRANT ALL ON TABLE "public"."users" TO "anon";
 GRANT ALL ON TABLE "public"."users" TO "authenticated";
 GRANT ALL ON TABLE "public"."users" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."vault_invitations" TO "anon";
-GRANT ALL ON TABLE "public"."vault_invitations" TO "authenticated";
-GRANT ALL ON TABLE "public"."vault_invitations" TO "service_role";
 
 
 
