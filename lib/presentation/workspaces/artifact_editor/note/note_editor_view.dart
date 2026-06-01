@@ -109,7 +109,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       selectedNoteStateProvider.select((state) => state.value?.note),
     );
     if (item == null) {
-      return const Center(child: Text('No item selected'));
+      return const Center(child: OnyxiaLoadingIndicator());
     }
 
     return noteState.when(
@@ -121,7 +121,12 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       data: (state) {
         final controller = state.bardController;
         if (controller == null) {
-          return const Center(child: Text('Note not initialized'));
+          return Center(
+            child: Text(
+              'Note not initialized',
+              style: TextStyle(color: ThemeHelper.error()),
+            ),
+          );
         }
 
         return SizedBox.expand(

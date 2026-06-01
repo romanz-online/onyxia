@@ -13,6 +13,8 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   bool _creatingNote = false;
   Artifact? _pendingArtifact;
 
+  static const double appBarHeight = 32;
+
   Future<void> _createUntitledNote() async {
     if (_creatingNote) return;
     final vaultId = ref.read(selectedVaultProvider)?.id;
@@ -46,7 +48,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
       surfaceTintColor: ThemeHelper.background1(),
       elevation: 0,
       centerTitle: false,
-      toolbarHeight: 32,
+      toolbarHeight: appBarHeight,
       title: Center(
         child: Text(
           title,
@@ -56,116 +58,85 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
     );
   }
 
-  Widget _buildBody(Artifact selectedItem, AsyncValue noteAsyncState) {
-    if (selectedItem.type == .note) {
-      // TODO: seems like the async state isLoading/hasError stuff would be better served in selectedArtifactProvider or something else more central to all artifacts rather than keeping it to just notes
-      if (noteAsyncState.isLoading) {
-        return Center(child: OnyxiaLoadingIndicator());
-      }
-      if (noteAsyncState.hasError) {
-        return Center(
-          child: Text(
-            'Error: ${noteAsyncState.error}',
-            style: TextStyle(color: ThemeHelper.foreground1()),
-          ),
-        );
-      }
-    }
-    return _buildEditorContent(selectedItem);
-  }
-
   @override
   Widget build(BuildContext context) {
-    // TODO: this stuff is weirdly complicated. i'd really like to simplify it somehow
-
     // Always subscribe to note state for save tracking
-    final noteAsyncState = ref.watch(selectedNoteStateProvider);
     final rawSelectedItem = ref.watch(selectedArtifactProvider);
 
     // Clear pending once the provider has caught up
     if (_pendingArtifact != null &&
-        (rawSelectedItem ?? noteAsyncState.value?.note)?.id ==
-            _pendingArtifact!.id) {
+        rawSelectedItem?.id == _pendingArtifact!.id) {
       // Use a post-frame callback to avoid setState during build
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) setState(() => _pendingArtifact = null);
       });
     }
 
-    final Artifact? selectedItem =
-        rawSelectedItem ?? noteAsyncState.value?.note ?? _pendingArtifact;
+    final Artifact? selectedItem = rawSelectedItem ?? _pendingArtifact;
 
-    if (selectedItem == null) {
-      return Container(
-        color: ThemeHelper.background1(),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: .center,
-            spacing: 8,
-            children: [
-              if (_creatingNote)
-                const OnyxiaLoadingIndicator()
-              else
-                Column(
-                  spacing: 12,
-                  children: [
-                    Text(
-                      'No item selected',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: ThemeHelper.foreground2(),
-                      ),
-                      textAlign: .center,
-                    ),
-                    HoverBuilder(
-                      builder: (context, isHovered) {
-                        return MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: GestureDetector(
-                            onTap: _createUntitledNote,
-                            child: Text(
-                              'Create new note',
-                              style: TextStyle(
-                                fontSize: 20,
-                                color: Color.lerp(
-                                  ThemeHelper.accent(),
-                                  Colors.white,
-                                  isHovered ? 0.3 : 0.0,
-                                ),
-                                decoration: TextDecoration.underline,
-                                decorationColor: Color.lerp(
-                                  ThemeHelper.accent(),
-                                  Colors.white,
-                                  isHovered ? 0.3 : 0.0,
+    return Scaffold(
+      appBar: PreferredSize(
+        preferredSize: const Size.fromHeight(appBarHeight),
+        child: SizedBox(
+          height: appBarHeight,
+          child: selectedItem != null ? _buildAppBar(selectedItem.name) : null,
+        ),
+      ),
+      backgroundColor: ThemeHelper.background1(),
+      body: selectedItem != null
+          ? SizedBox.expand(child: _buildEditorContent(selectedItem))
+          : Center(
+              child: Column(
+                mainAxisAlignment: .center,
+                spacing: 8,
+                children: [
+                  if (_creatingNote)
+                    const OnyxiaLoadingIndicator()
+                  else
+                    Column(
+                      spacing: 12,
+                      children: [
+                        Text(
+                          'No item selected',
+                          style: TextStyle(
+                            fontSize: 20,
+                            color: ThemeHelper.foreground2(),
+                          ),
+                          textAlign: .center,
+                        ),
+                        HoverBuilder(
+                          builder: (context, isHovered) {
+                            return MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: GestureDetector(
+                                onTap: _createUntitledNote,
+                                child: Text(
+                                  'Create new note',
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Color.lerp(
+                                      ThemeHelper.accent(),
+                                      Colors.white,
+                                      isHovered ? 0.3 : 0.0,
+                                    ),
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Color.lerp(
+                                      ThemeHelper.accent(),
+                                      Colors.white,
+                                      isHovered ? 0.3 : 0.0,
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
-                        );
-                      },
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-              // TODO: also need some instructions on how to open the artifact search, which currently isn't implemented
-            ],
-          ),
-        ),
-      );
-    }
-
-    return Stack(
-      children: [
-        Scaffold(
-          appBar: PreferredSize(
-            preferredSize: Size.fromHeight(32),
-            child: _buildAppBar(selectedItem.name),
-          ),
-          backgroundColor: ThemeHelper.background1(),
-          body: SizedBox.expand(
-            child: _buildBody(selectedItem, noteAsyncState),
-          ),
-        ),
-      ],
+                  // TODO: also need some instructions on how to open the artifact search, which currently isn't implemented
+                ],
+              ),
+            ),
     );
   }
 }
