@@ -57,7 +57,7 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
   }
 
   Widget _buildBody(Artifact selectedItem, AsyncValue noteAsyncState) {
-    if (selectedItem.type == ArtifactType.note) {
+    if (selectedItem.type == .note) {
       // TODO: seems like the async state isLoading/hasError stuff would be better served in selectedArtifactProvider or something else more central to all artifacts rather than keeping it to just notes
       if (noteAsyncState.isLoading) {
         return Center(child: OnyxiaLoadingIndicator());

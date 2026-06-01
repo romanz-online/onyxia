@@ -17,26 +17,18 @@ final selectedNoteStateProvider =
 class NoteState {
   final NoteArtifact? note;
   final BardController? bardController;
-  final FocusNode? focusNode;
   final BardCollabConfig? collabConfig;
 
-  const NoteState({
-    this.note,
-    this.bardController,
-    this.focusNode,
-    this.collabConfig,
-  });
+  const NoteState({this.note, this.bardController, this.collabConfig});
 
   NoteState copyWith({
     NoteArtifact? note,
     BardController? bardController,
-    FocusNode? focusNode,
     BardCollabConfig? collabConfig,
   }) {
     return NoteState(
       note: note ?? this.note,
       bardController: bardController ?? this.bardController,
-      focusNode: focusNode ?? this.focusNode,
       collabConfig: collabConfig ?? this.collabConfig,
     );
   }
@@ -45,7 +37,6 @@ class NoteState {
 class NoteNotifier extends AsyncNotifier<NoteState> {
   String? _vaultId;
   BardController? _controller;
-  FocusNode? _focusNode;
   StreamController<Uint8List>? _remoteOpsController;
 
   @override
@@ -124,20 +115,7 @@ class NoteNotifier extends AsyncNotifier<NoteState> {
     return NoteState(
       note: note,
       bardController: controller,
-      focusNode: _focusNode,
       collabConfig: collab,
     );
   }
-
-  // ===== FOCUS =====
-
-  void setFocusNode(FocusNode focusNode) {
-    _focusNode = focusNode;
-    final current = state.value;
-    if (current != null) {
-      state = AsyncData(current.copyWith(focusNode: focusNode));
-    }
-  }
-
-  bool get hasFocus => _focusNode?.hasFocus ?? false;
 }

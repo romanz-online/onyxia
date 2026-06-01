@@ -124,14 +124,6 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
           return const Center(child: Text('Note not initialized'));
         }
 
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (mounted) {
-            ref
-                .read(selectedNoteStateProvider.notifier)
-                .setFocusNode(_focusNode);
-          }
-        });
-
         return SizedBox.expand(
           child: _NoteEditorContent(
             controller: controller,
