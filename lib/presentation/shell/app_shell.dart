@@ -24,6 +24,7 @@ class AppShell extends ConsumerStatefulWidget {
 }
 
 class _AppShellState extends ConsumerState<AppShell> {
+  double _maxArtifactsSidebarWidth = 0;
   static const double _defaultArtifactsSidebarWidth = 260;
   final _artifactsSidebarWidth = ValueNotifier<double>(
     _defaultArtifactsSidebarWidth,
@@ -121,16 +122,18 @@ class _AppShellState extends ConsumerState<AppShell> {
                 child: _ResizeDivider(
                   onDragStart: () {
                     _animateNextCollapseChange.value = false;
+                    _maxArtifactsSidebarWidth =
+                        MediaQuery.of(context).size.width - 46 - 300;
                   },
                   onDragUpdate: (globalDx) {
-                    // TODO: don't want to recalculate maxWidth each time, ideally
-                    final maxWidth =
-                        MediaQuery.of(context).size.width - 46 - 300;
                     _artifactsSidebarWidth.value =
                         (globalDx -
                                 MasterSidebar.width +
                                 ArtifactsSidebar.dividerStripWidth)
-                            .clamp(ArtifactsSidebar.minWidth, maxWidth);
+                            .clamp(
+                              ArtifactsSidebar.minWidth,
+                              _maxArtifactsSidebarWidth,
+                            );
                     _isArtifactsSidebarCollapsed.value =
                         globalDx < ArtifactsSidebar.collapseThreshold;
                   },
