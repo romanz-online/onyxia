@@ -219,6 +219,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
             message: _getNodeTooltip(node.data),
             direction: .right,
             tooltipOffset: const Offset(24, 0),
+            waitDuration: const Duration(milliseconds: 1000),
             child: child,
           ),
           style: TreeViewStyle(
