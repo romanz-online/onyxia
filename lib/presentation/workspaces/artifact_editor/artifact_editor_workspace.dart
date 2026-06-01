@@ -106,7 +106,6 @@ class _ArtifactWorkspaceState extends ConsumerState<ArtifactWorkspace> {
               if (_creatingNote)
                 const OnyxiaLoadingIndicator()
               else
-                // TODO: after the note is finished being made, there's a brief moment where the "no item selected" text reappears before the url and selection changes. i assume because of a rebuild here that shouldn't be happening. on release it's optimized enough that it isn't visible but i should fix it anyway.
                 Column(
                   spacing: 12,
                   children: [
