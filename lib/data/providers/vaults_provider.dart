@@ -11,7 +11,10 @@ class VaultsNotifier extends StreamNotifier<List<Vault>> {
   Stream<List<Vault>> build() {
     final userId = ref.watch(currentUserProvider.select((u) => u.value?.id));
     _repository = VaultsRepository();
-    if (userId == null || userId.isEmpty) return Stream.value(const <Vault>[]);
+    // user record still resolving
+    if (userId == null) return const Stream.empty();
+    // user is logged out
+    if (userId.isEmpty) return Stream.value(const <Vault>[]);
     return _repository.getStream();
   }
 

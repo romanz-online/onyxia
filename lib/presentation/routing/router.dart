@@ -69,7 +69,6 @@ final routerProvider = Provider<GoRouter>((ref) {
           final destParam = state.uri.queryParameters['dest'];
           return AppShell(
             vaultId: state.pathParameters['id'] ?? '',
-            // TODO: reloading while in a vault keeps kicking me out of the vault
             selectedId: state.pathParameters['selectedId'],
             initialLandingMode: _landingModeFor(state.matchedLocation),
             inviteToken: state.uri.queryParameters['token'],
@@ -113,7 +112,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       final pathvaultId = state.pathParameters['id'];
       if (pathvaultId != null && pathvaultId.isNotEmpty) {
-        // null means vaults haven't loaded yet — don't false-kick on cold boot.
+        // vaults haven't loaded yet
         if (notifier.accessibleVaultIds == null) return null;
         if (!notifier.accessibleVaultIds!.contains(pathvaultId)) {
           return Routes.home;
