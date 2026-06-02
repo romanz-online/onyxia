@@ -1,9 +1,5 @@
 import 'package:onyxia/export.dart';
 
-// TODO: dragging the text sometimes while renaming, often when there's already a selection of text, causes the node to be deselected for renaming and the text field closes
-
-// TODO: when renaming, the text field's background is foreground2 i think but the rest of the node itself has no color. it should have the same background color as if it was being hovered or selected by the user, even if it's not selected while renaming
-
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
   final TreeController<Artifact> controller;
@@ -106,12 +102,6 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
     _controller = TextEditingController(text: _baseName);
     _prevRenamingNodeId = widget.controller.renamingNodeId;
 
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus && _isRenaming) {
-        _saveChanges();
-      }
-    });
-
     if (_isRenaming) startEditing();
   }
 
@@ -202,71 +192,66 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                   Expanded(
                     child: CompositedTransformTarget(
                       link: _layerLink,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: ThemeHelper.background2(),
-                          borderRadius: .circular(4),
-                        ),
-                        child: Shortcuts(
-                          shortcuts: const <ShortcutActivator, Intent>{
-                            SingleActivator(.space):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.enter):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.arrowUp):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.arrowDown):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.arrowLeft):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.arrowRight):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.home):
-                                DoNothingAndStopPropagationIntent(),
-                            SingleActivator(.end):
-                                DoNothingAndStopPropagationIntent(),
+                      child: Shortcuts(
+                        shortcuts: const <ShortcutActivator, Intent>{
+                          SingleActivator(.space):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.enter):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.arrowUp):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.arrowDown):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.arrowLeft):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.arrowRight):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.home):
+                              DoNothingAndStopPropagationIntent(),
+                          SingleActivator(.end):
+                              DoNothingAndStopPropagationIntent(),
+                        },
+                        child: KeyboardListener(
+                          focusNode: _keyboardFocusNode,
+                          onKeyEvent: (event) {
+                            if (event is KeyDownEvent &&
+                                event.logicalKey == .escape) {
+                              _cancelEditing();
+                            }
                           },
-                          child: KeyboardListener(
-                            focusNode: _keyboardFocusNode,
-                            onKeyEvent: (event) {
-                              if (event is KeyDownEvent &&
-                                  event.logicalKey == .escape) {
-                                _cancelEditing();
+                          child: TextField(
+                            controller: _controller,
+                            focusNode: _focusNode,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: .normal,
+                              color: ThemeHelper.foreground1(),
+                            ),
+                            decoration: InputDecoration(
+                              border: .none,
+                              contentPadding: .zero,
+                              isDense: true,
+                              fillColor: Colors.transparent,
+                              hoverColor: Colors.transparent,
+                            ),
+                            autofocus: true,
+                            onSubmitted: (_) => _saveChanges(),
+                            onTapOutside: (_) => _saveChanges(),
+                            onChanged: (value) {
+                              final msg =
+                                  ItemTitleValidationService.errorMessage(
+                                    ref.read(artifactsProvider).value ??
+                                        const <Artifact>[],
+                                    value,
+                                    widget.item.id,
+                                  );
+                              setState(() => _errorMessage = msg);
+                              if (msg != null) {
+                                _overlayController.show();
+                              } else {
+                                _overlayController.hide();
                               }
                             },
-                            child: TextField(
-                              controller: _controller,
-                              focusNode: _focusNode,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: .normal,
-                                color: ThemeHelper.foreground1(),
-                              ),
-                              decoration: InputDecoration(
-                                border: .none,
-                                contentPadding: .zero,
-                                isDense: true,
-                                fillColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                              ),
-                              autofocus: true,
-                              onSubmitted: (_) => _saveChanges(),
-                              onChanged: (value) {
-                                final msg =
-                                    ItemTitleValidationService.errorMessage(
-                                      ref.read(artifactsProvider).value ??
-                                          const <Artifact>[],
-                                      value,
-                                      widget.item.id,
-                                    );
-                                setState(() => _errorMessage = msg);
-                                if (msg != null) {
-                                  _overlayController.show();
-                                } else {
-                                  _overlayController.hide();
-                                }
-                              },
-                            ),
                           ),
                         ),
                       ),
