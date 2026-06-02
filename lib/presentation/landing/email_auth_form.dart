@@ -84,7 +84,6 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
           fontSize: 13,
           onSubmitted: (_) => _submit(),
         ),
-        // TODO: add "Remember me" checkbox
         if (_errorMessage != null) ...[
           const Gap(8),
           Text(
