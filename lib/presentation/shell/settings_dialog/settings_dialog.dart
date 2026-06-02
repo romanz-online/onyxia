@@ -17,8 +17,6 @@ class SettingsDialog extends ConsumerStatefulWidget {
   ConsumerState<SettingsDialog> createState() => _SettingsDialogState();
 }
 
-// TODO: turn vault members into a separate widget
-
 class _SettingsDialogState extends ConsumerState<SettingsDialog> {
   _SettingsTab _selected = _SettingsTab.members;
 
@@ -40,7 +38,13 @@ class _SettingsDialogState extends ConsumerState<SettingsDialog> {
         VerticalDivider(thickness: 1, color: ThemeHelper.auxiliary()),
         // Tab content
         Expanded(
-          child: Padding(padding: .all(12), child: _buildTabContent()),
+          child: Padding(
+            padding: .all(12),
+            child: switch (_selected) {
+              .members => const VaultMembersTab(),
+              .theme => const ThemeTab(),
+            },
+          ),
         ),
       ],
     );
@@ -63,9 +67,4 @@ class _SettingsDialogState extends ConsumerState<SettingsDialog> {
       ),
     );
   }
-
-  Widget _buildTabContent() => switch (_selected) {
-    .members => const VaultMembersTab(),
-    .theme => const ThemeTab(),
-  };
 }
