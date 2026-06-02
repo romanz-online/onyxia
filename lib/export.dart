@@ -8,6 +8,7 @@ export 'package:file_picker/file_picker.dart';
 export 'package:collection/collection.dart' hide binarySearch, mergeSort;
 export 'package:gap/gap.dart';
 export 'package:flutter_portal/flutter_portal.dart';
+export 'package:speech_balloon/speech_balloon.dart';
 
 export 'package:flutter/material.dart';
 export 'package:flutter/foundation.dart' hide shortHash, describeIdentity;
@@ -112,6 +113,7 @@ export 'package:onyxia/repository/artifact_ops_repository.dart';
 export 'package:onyxia/repository/artifact_snapshots_repository.dart';
 
 export 'package:onyxia/services/item_title_validation_service.dart';
+export 'package:onyxia/services/email_validation_service.dart';
 export 'package:onyxia/services/image_service.dart';
 export 'package:onyxia/services/porting_service.dart';
 export 'package:onyxia/services/timestamp_service.dart';

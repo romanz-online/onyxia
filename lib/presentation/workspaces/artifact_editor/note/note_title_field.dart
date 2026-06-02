@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'package:speech_balloon/speech_balloon.dart';
 
 class NoteTitleField extends ConsumerStatefulWidget {
   final FocusNode? nextFocusNode;

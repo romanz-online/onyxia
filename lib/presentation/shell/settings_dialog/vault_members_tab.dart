@@ -8,29 +8,44 @@ class VaultMembersTab extends ConsumerStatefulWidget {
 }
 
 class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
+  final OverlayPortalController _overlayController = OverlayPortalController();
+  final LayerLink _layerLink = LayerLink();
+  // TODO: could do with a more descriptive message. EmailValidationService should check individual invalid cases and return a different message each time like ItemValidationService does
+  static const String _errorMessage = 'Must be a valid email address';
+
   final TextEditingController _emailController = TextEditingController();
-  String _email = '';
+  final FocusNode _focusNode = FocusNode();
   bool _isProcessing = false;
 
   @override
   void initState() {
     super.initState();
-    _emailController.addListener(() {
-      if (_emailController.text == _email) return;
-      setState(() => _email = _emailController.text);
-    });
+    _emailController.addListener(_overlayController.hide);
   }
 
   @override
   void dispose() {
     _emailController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  bool get _isValidEmail => _email.trim().isNotEmpty && _email.contains('@');
+  bool _validateEmail() {
+    final email = _emailController.text.trim().toLowerCase();
+    final isValid = EmailValidationService.isValidEmail(email);
 
-  Future<void> _onSendInvite() async {
-    if (!_isValidEmail || _isProcessing) return;
+    if (isValid) {
+      _overlayController.hide();
+    } else {
+      _overlayController.show();
+      _focusNode.requestFocus();
+    }
+
+    return isValid;
+  }
+
+  Future<void> _tryAddMember() async {
+    if (_isProcessing) return;
     final vault = ref.read(selectedVaultProvider);
     if (vault == null) {
       OnyxiaToast.error(text: 'No vault selected');
@@ -41,12 +56,14 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
       OnyxiaToast.error(text: 'Not signed in');
       return;
     }
-    final email = _email.trim().toLowerCase();
+
+    final email = _emailController.text.trim().toLowerCase();
 
     setState(() => _isProcessing = true);
 
     // Branch A: email already belongs to an existing Onyxia user → add directly.
     final existing = await UsersRepository().getByEmail(email);
+    // TODO: look into ways to avoid checking mounted after every async call
     if (!mounted) return;
 
     if (existing != null) {
@@ -97,24 +114,72 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
             spacing: 8,
             children: [
               Expanded(
-                // TODO: this needs a speech bubble similar to the one made from item_title_validation_service.dart - use "validator"? i don't know what that does really
-                child: OnyxiaTextFormField(
-                  controller: _emailController,
-                  enabled: !_isProcessing,
-                  hintText: 'Enter email address',
-                  keyboardType: TextInputType.emailAddress,
-                  autofocus: true,
-                  onSubmitted: (_) {
-                    if (_isValidEmail) _onSendInvite();
-                  },
-                ),
+                child:
+                    // TODO: turn this error speech balloon into a reusable widget. i'm already duplicating code three times and will probably need it more. it should take a validator as an arg which is just a service or function that returns a String? error message. should be as configurable as OnyxiaTooltip
+                    OverlayPortal(
+                      controller: _overlayController,
+                      overlayChildBuilder: (context) =>
+                          CompositedTransformFollower(
+                            link: _layerLink,
+                            targetAnchor: .bottomCenter,
+                            followerAnchor: .topCenter,
+                            offset: const Offset(0, 9),
+                            child: Align(
+                              alignment: .topCenter,
+                              child: IntrinsicWidth(
+                                child: IntrinsicHeight(
+                                  child: SpeechBalloon(
+                                    nipLocation: .top,
+                                    color: ThemeHelper.error(),
+                                    borderRadius: 6,
+                                    nipHeight: 8,
+                                    width: .infinity,
+                                    height: .infinity,
+                                    child: Center(
+                                      child: Padding(
+                                        padding: .symmetric(
+                                          vertical: 5,
+                                          horizontal: 12,
+                                        ),
+                                        child: Text(
+                                          _errorMessage,
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            color: ThemeHelper.foreground1(),
+                                            fontWeight: .w700,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      child: CompositedTransformTarget(
+                        link: _layerLink,
+                        child: OnyxiaTextFormField(
+                          controller: _emailController,
+                          focusNode: _focusNode,
+                          enabled: !_isProcessing,
+                          hintText: 'Enter email address',
+                          keyboardType: TextInputType.emailAddress,
+                          autofocus: true,
+                          onSubmitted: (_) {
+                            if (_validateEmail()) _tryAddMember();
+                          },
+                        ),
+                      ),
+                    ),
               ),
               if (_isProcessing)
                 const OnyxiaLoadingIndicator()
               else ...[
                 OnyxiaButton(
                   label: 'Add',
-                  onPressed: _isValidEmail ? _onSendInvite : null,
+                  onPressed: () {
+                    if (_validateEmail()) _tryAddMember();
+                  },
                 ),
               ],
             ],

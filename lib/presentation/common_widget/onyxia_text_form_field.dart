@@ -2,6 +2,7 @@ import 'package:onyxia/export.dart';
 
 class OnyxiaTextFormField extends StatelessWidget {
   final TextEditingController? controller;
+  final FocusNode? focusNode;
   final String? hintText;
   final int? maxLength;
   final bool autofocus;
@@ -17,6 +18,7 @@ class OnyxiaTextFormField extends StatelessWidget {
   const OnyxiaTextFormField({
     super.key,
     this.controller,
+    this.focusNode,
     this.hintText,
     this.maxLength,
     this.autofocus = false,
@@ -34,6 +36,7 @@ class OnyxiaTextFormField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: controller,
+      focusNode: focusNode,
       maxLength: maxLength,
       autofocus: autofocus,
       obscureText: obscureText,
@@ -51,7 +54,7 @@ class OnyxiaTextFormField extends StatelessWidget {
           fontSize: fontSize,
           color: ThemeHelper.foreground2().withValues(alpha: 0.7),
         ),
-        contentPadding: .symmetric(vertical: 4, horizontal: 8),
+        contentPadding: .fromLTRB(8, 0, 8, 8),
         counter: const SizedBox(),
         fillColor: ThemeHelper.background1(),
         filled: true,

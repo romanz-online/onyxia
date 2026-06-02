@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'package:speech_balloon/speech_balloon.dart';
 
 final renameArtifactIdProvider =
     NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
