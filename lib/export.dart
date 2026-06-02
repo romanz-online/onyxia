@@ -52,11 +52,12 @@ export 'package:onyxia/data/providers/vault_members_provider.dart';
 export 'package:onyxia/data/providers/artifacts_provider.dart';
 export 'package:onyxia/data/providers/selected_artifact_provider.dart';
 export 'package:onyxia/data/providers/selected_vault_provider.dart';
+export 'package:onyxia/data/providers/note_editor_state_provider.dart';
 export 'package:onyxia/data/providers/theme_provider.dart';
 
 export 'package:onyxia/presentation/routing/router.dart';
 export 'package:onyxia/presentation/routing/routes.dart';
-export 'package:onyxia/presentation/routing/providers/auth_provider.dart';
+export 'package:onyxia/data/providers/auth_provider.dart';
 
 export 'package:onyxia/presentation/shell/workspace_host.dart';
 export 'package:onyxia/presentation/shell/master_sidebar.dart';

@@ -2,7 +2,6 @@ import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/presentation/workspaces/artifact_editor/note/note_title_field.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:onyxia/export.dart';
-import 'package:onyxia/presentation/workspaces/artifact_editor/note/providers/note_editor_state_provider.dart';
 
 const String _kGhostLorem =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
