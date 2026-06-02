@@ -88,28 +88,30 @@ class _ArtifactsSidebarFooterState
       ),
       padding: .symmetric(horizontal: 12, vertical: 4),
       child: Row(
+        mainAxisAlignment: .spaceBetween,
         children: [
-          OnyxiaOverlay(
-            isOpen: _isMenuOpen,
-            onClose: () => _setMenuOpen(false),
-            anchor: const Aligned(
-              follower: .bottomLeft,
-              target: .topLeft,
-              offset: const Offset(0, -4),
-            ),
-            builder: (context, closeOverlay) =>
-                _buildMenu(closeOverlay, selectedVault),
-            child: OnyxiaButton(
-              label: vaultName,
-              isPressed: _isMenuOpen,
-              onPressed: () => _setMenuOpen(!_isMenuOpen),
-              leftIcon: selectedVault == null
-                  ? null
-                  : LucideIcons.chevronsUpDown,
+          Flexible(
+            child: OnyxiaOverlay(
+              isOpen: _isMenuOpen,
+              onClose: () => _setMenuOpen(false),
+              anchor: const Aligned(
+                follower: .bottomLeft,
+                target: .topLeft,
+                offset: const Offset(0, -4),
+              ),
+              builder: (context, closeOverlay) =>
+                  _buildMenu(closeOverlay, selectedVault),
+              child: OnyxiaButton(
+                label: vaultName,
+                isPressed: _isMenuOpen,
+                onPressed: () => _setMenuOpen(!_isMenuOpen),
+                leftIcon: selectedVault == null
+                    ? null
+                    : LucideIcons.chevronsUpDown,
+              ),
             ),
           ),
 
-          const Spacer(),
           if (selectedVault != null) const VaultSettingsButton(),
         ],
       ),
