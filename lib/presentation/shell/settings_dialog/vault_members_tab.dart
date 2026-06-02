@@ -61,12 +61,11 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
 
     setState(() => _isProcessing = true);
 
-    // Branch A: email already belongs to an existing Onyxia user → add directly.
     final existing = await UsersRepository().getByEmail(email);
-    // TODO: look into ways to avoid checking mounted after every async call
     if (!mounted) return;
 
     if (existing != null) {
+      // email already belongs to an existing Onyxia user so add them directly
       await VaultMembersRepository(vaultId: vault.id)
           .add([
             VaultMember(
