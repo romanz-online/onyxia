@@ -92,12 +92,12 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
                       color: ThemeHelper.foreground1(),
                     ),
                   ),
-                  // TODO: hitting Enter should actually submit this
                   OnyxiaTextFormField(
                     maxLength: 40,
                     controller: _nameController,
                     autofocus: true,
                     hintText: 'Enter vault name',
+                    onSubmitted: (_) => _startImport(),
                   ),
                   // Text(
                   //   'Importing ${widget.files.length} files from folder.',

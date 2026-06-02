@@ -97,7 +97,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
             spacing: 8,
             children: [
               Expanded(
-                // TODO: this needs a speech bubble similar to the one made from item_title_validation_service.dart
+                // TODO: this needs a speech bubble similar to the one made from item_title_validation_service.dart - use "validator"? i don't know what that does really
                 child: OnyxiaTextFormField(
                   controller: _emailController,
                   enabled: !_isProcessing,
