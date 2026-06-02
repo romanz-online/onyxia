@@ -1,6 +1,8 @@
 import 'package:onyxia/export.dart';
 
-// TODO: double-tap gesture stuff should go into contentWrapper in the tree
+// TODO: dragging the text sometimes while renaming, often when there's already a selection of text, causes the node to be deselected for renaming and the text field closes
+
+// TODO: when renaming, the text field's background is foreground2 i think but the rest of the node itself has no color. it should have the same background color as if it was being hovered or selected by the user, even if it's not selected while renaming
 
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
@@ -207,67 +209,64 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                         ),
                         child: Shortcuts(
                           shortcuts: const <ShortcutActivator, Intent>{
-                            SingleActivator(LogicalKeyboardKey.space):
+                            SingleActivator(.space):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.enter):
+                            SingleActivator(.enter):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.arrowUp):
+                            SingleActivator(.arrowUp):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.arrowDown):
+                            SingleActivator(.arrowDown):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.arrowLeft):
+                            SingleActivator(.arrowLeft):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.arrowRight):
+                            SingleActivator(.arrowRight):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.home):
+                            SingleActivator(.home):
                                 DoNothingAndStopPropagationIntent(),
-                            SingleActivator(LogicalKeyboardKey.end):
+                            SingleActivator(.end):
                                 DoNothingAndStopPropagationIntent(),
                           },
                           child: KeyboardListener(
                             focusNode: _keyboardFocusNode,
                             onKeyEvent: (event) {
                               if (event is KeyDownEvent &&
-                                  event.logicalKey ==
-                                      LogicalKeyboardKey.escape) {
+                                  event.logicalKey == .escape) {
                                 _cancelEditing();
                               }
                             },
-                            child:
-                                // TODO: textfield should extend to the whole content area
-                                TextField(
-                                  controller: _controller,
-                                  focusNode: _focusNode,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: .normal,
-                                    color: ThemeHelper.foreground1(),
-                                  ),
-                                  decoration: InputDecoration(
-                                    border: .none,
-                                    contentPadding: .zero,
-                                    isDense: true,
-                                    fillColor: Colors.transparent,
-                                    hoverColor: Colors.transparent,
-                                  ),
-                                  autofocus: true,
-                                  onSubmitted: (_) => _saveChanges(),
-                                  onChanged: (value) {
-                                    final msg =
-                                        ItemTitleValidationService.errorMessage(
-                                          ref.read(artifactsProvider).value ??
-                                              const <Artifact>[],
-                                          value,
-                                          widget.item.id,
-                                        );
-                                    setState(() => _errorMessage = msg);
-                                    if (msg != null) {
-                                      _overlayController.show();
-                                    } else {
-                                      _overlayController.hide();
-                                    }
-                                  },
-                                ),
+                            child: TextField(
+                              controller: _controller,
+                              focusNode: _focusNode,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: .normal,
+                                color: ThemeHelper.foreground1(),
+                              ),
+                              decoration: InputDecoration(
+                                border: .none,
+                                contentPadding: .zero,
+                                isDense: true,
+                                fillColor: Colors.transparent,
+                                hoverColor: Colors.transparent,
+                              ),
+                              autofocus: true,
+                              onSubmitted: (_) => _saveChanges(),
+                              onChanged: (value) {
+                                final msg =
+                                    ItemTitleValidationService.errorMessage(
+                                      ref.read(artifactsProvider).value ??
+                                          const <Artifact>[],
+                                      value,
+                                      widget.item.id,
+                                    );
+                                setState(() => _errorMessage = msg);
+                                if (msg != null) {
+                                  _overlayController.show();
+                                } else {
+                                  _overlayController.hide();
+                                }
+                              },
+                            ),
                           ),
                         ),
                       ),
@@ -276,42 +275,38 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                 ],
               ),
             )
-          : GestureDetector(
-              onDoubleTap: () =>
-                  widget.controller.setRenamingNodeId(widget.item.id),
-              child: Row(
-                mainAxisSize: .min,
-                mainAxisAlignment: .spaceBetween,
-                spacing: 8,
-                children: [
-                  Flexible(
-                    child: Text(
-                      _baseName,
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: .normal,
-                        color: widget.item.id == selectedArtifactId
-                            ? ThemeHelper.foreground1()
-                            : ThemeHelper.foreground2(),
-                        letterSpacing: 0.5,
-                      ),
-                      overflow: .ellipsis,
-                      maxLines: 1,
+          : Row(
+              mainAxisSize: .min,
+              mainAxisAlignment: .spaceBetween,
+              spacing: 8,
+              children: [
+                Flexible(
+                  child: Text(
+                    _baseName,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: .normal,
+                      color: widget.item.id == selectedArtifactId
+                          ? ThemeHelper.foreground1()
+                          : ThemeHelper.foreground2(),
+                      letterSpacing: 0.5,
                     ),
+                    overflow: .ellipsis,
+                    maxLines: 1,
                   ),
-                  if (widget.trailingExtension != null)
-                    Text(
-                      widget.trailingExtension!,
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: .normal,
-                        color: ThemeHelper.foreground3(),
-                        letterSpacing: 0.5,
-                      ),
-                      maxLines: 1,
+                ),
+                if (widget.trailingExtension != null)
+                  Text(
+                    widget.trailingExtension!,
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: .normal,
+                      color: ThemeHelper.foreground3(),
+                      letterSpacing: 0.5,
                     ),
-                ],
-              ),
+                    maxLines: 1,
+                  ),
+              ],
             ),
     );
   }

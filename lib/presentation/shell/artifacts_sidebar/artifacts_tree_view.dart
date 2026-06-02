@@ -243,6 +243,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
             enableDragAndDrop: true,
             selectionMode: .multiple,
             expansionTrigger: .tap,
+            namingStrategy: .doubleClick,
             onNodeTap: (id) => _onNodeTapped(id),
             dragAndDrop: TreeDragAndDropConfig(
               canAcceptDrop: (draggedNode, targetNode, position) {

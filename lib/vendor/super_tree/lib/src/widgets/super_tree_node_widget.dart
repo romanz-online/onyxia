@@ -402,6 +402,8 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
                 (!isRenaming &&
                     (widget.logic.expansionTrigger ==
                             ExpansionTrigger.doubleTap ||
+                        widget.logic.namingStrategy ==
+                            TreeNamingStrategy.doubleClick ||
                         widget.logic.onNodeDoubleTap != null))
                 ? _handleDoubleTap
                 : null,
