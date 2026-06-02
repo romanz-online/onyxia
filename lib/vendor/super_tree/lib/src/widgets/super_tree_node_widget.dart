@@ -380,12 +380,13 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
     final TreeIntegrityIssue? integrityIssue = widget.controller
         .getIntegrityIssueForNode(widget.node.id);
     final List<TreeNode<T>> dragNodes = _resolveDragNodes(isSelected);
+    final bool isRenaming = widget.controller.renamingNodeId == widget.node.id;
 
     return Container(
       padding: widget.style.padding,
       child: TreeDragAndDropWrapper<T>(
         node: widget.node,
-        enabled: widget.logic.enableDragAndDrop,
+        enabled: widget.logic.enableDragAndDrop && !isRenaming,
         dragNodes: dragNodes,
         dragStyle: widget.style.dragAndDrop,
         config: widget.logic.dragAndDrop,
@@ -394,12 +395,14 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
           onEnter: (_) => setState(() => _isHovering = true),
           onExit: (_) => setState(() => _isHovering = false),
           child: GestureDetector(
-            onSecondaryTapDown: _handleSecondaryTapDown,
-            onLongPressStart: _handleLongPressStart,
-            onTap: _handleTap,
+            onSecondaryTapDown: isRenaming ? null : _handleSecondaryTapDown,
+            onLongPressStart: isRenaming ? null : _handleLongPressStart,
+            onTap: isRenaming ? null : _handleTap,
             onDoubleTap:
-                (widget.logic.expansionTrigger == ExpansionTrigger.doubleTap ||
-                    widget.logic.onNodeDoubleTap != null)
+                (!isRenaming &&
+                    (widget.logic.expansionTrigger ==
+                            ExpansionTrigger.doubleTap ||
+                        widget.logic.onNodeDoubleTap != null))
                 ? _handleDoubleTap
                 : null,
             behavior: HitTestBehavior.opaque,
@@ -437,7 +440,7 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
                       children: [
                         if (canExpand)
                           GestureDetector(
-                            onTap: _handleIconTap,
+                            onTap: isRenaming ? null : _handleIconTap,
                             behavior: HitTestBehavior.opaque,
                             child: KeyedSubtree(
                               key: Key('expansion_caret_${widget.node.id}'),

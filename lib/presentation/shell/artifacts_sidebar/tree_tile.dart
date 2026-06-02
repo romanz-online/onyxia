@@ -1,6 +1,6 @@
 import 'package:onyxia/export.dart';
 
-// TODO: this tile should be 100% uninteractable (except for the text form) when being edited. lots of gestures still make it through to the tile while editing like dragging and clicking
+// TODO: double-tap gesture stuff should go into contentWrapper in the tree
 
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
@@ -233,39 +233,41 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                                 _cancelEditing();
                               }
                             },
-                            child: TextField(
-                              controller: _controller,
-                              focusNode: _focusNode,
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: .normal,
-                                color: ThemeHelper.foreground1(),
-                              ),
-                              decoration: InputDecoration(
-                                border: .none,
-                                contentPadding: .zero,
-                                isDense: true,
-                                fillColor: Colors.transparent,
-                                hoverColor: Colors.transparent,
-                              ),
-                              autofocus: true,
-                              onSubmitted: (_) => _saveChanges(),
-                              onChanged: (value) {
-                                final msg =
-                                    ItemTitleValidationService.errorMessage(
-                                      ref.read(artifactsProvider).value ??
-                                          const <Artifact>[],
-                                      value,
-                                      widget.item.id,
-                                    );
-                                setState(() => _errorMessage = msg);
-                                if (msg != null) {
-                                  _overlayController.show();
-                                } else {
-                                  _overlayController.hide();
-                                }
-                              },
-                            ),
+                            child:
+                                // TODO: textfield should extend to the whole content area
+                                TextField(
+                                  controller: _controller,
+                                  focusNode: _focusNode,
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: .normal,
+                                    color: ThemeHelper.foreground1(),
+                                  ),
+                                  decoration: InputDecoration(
+                                    border: .none,
+                                    contentPadding: .zero,
+                                    isDense: true,
+                                    fillColor: Colors.transparent,
+                                    hoverColor: Colors.transparent,
+                                  ),
+                                  autofocus: true,
+                                  onSubmitted: (_) => _saveChanges(),
+                                  onChanged: (value) {
+                                    final msg =
+                                        ItemTitleValidationService.errorMessage(
+                                          ref.read(artifactsProvider).value ??
+                                              const <Artifact>[],
+                                          value,
+                                          widget.item.id,
+                                        );
+                                    setState(() => _errorMessage = msg);
+                                    if (msg != null) {
+                                      _overlayController.show();
+                                    } else {
+                                      _overlayController.hide();
+                                    }
+                                  },
+                                ),
                           ),
                         ),
                       ),
