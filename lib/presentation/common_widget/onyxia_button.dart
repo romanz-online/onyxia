@@ -20,7 +20,7 @@ class OnyxiaButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return HoverBuilder(
       builder: (context, isHovered) {
-        // TODO: intrinsicwidth leads to the button overflowing its container when the label is long. need this widget to check against its container to provide a max width
+        // TODO: IntrinsicWidth leads to the button overflowing its container when the label is long. need this widget to check against its container to provide a max width
         return IntrinsicWidth(
           child: GestureDetector(
             onTap: onPressed,

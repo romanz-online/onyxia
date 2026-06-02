@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 
-// TODO: it would be better to keep all of noteEditorProvider's functionality within the actual editor workspace since that's the only area it's being used in anyway. i'm not even actually sure if i need a provider at all since it's not going cross-file.
+// TODO: is there any point in this being a provider when all of its functionality is confined to NoteEditorView and nowhere else?
 
 /// Creates a NoteNotifier for the currently selected Note item.
 final noteEditorProvider =
