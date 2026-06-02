@@ -177,6 +177,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       }
     });
 
+    // TODO: switch to using asyncvalue.when()
     if (async.hasError)
       return Center(
         child: Text(
