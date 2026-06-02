@@ -1,5 +1,7 @@
 import 'package:onyxia/export.dart';
 
+// TODO: rename textfield selection bar should be ThemeHelper.accent(). the super tree rename node border is also purple but should be ThemeHelper.accent().
+
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
   final TreeController<Artifact> controller;
