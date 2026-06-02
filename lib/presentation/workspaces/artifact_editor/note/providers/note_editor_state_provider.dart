@@ -3,10 +3,8 @@ import 'dart:async';
 import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/export.dart';
 
-// TODO: is there any point in this being a provider when all of its functionality is confined to NoteEditorView and nowhere else?
-
 /// Creates a NoteNotifier for the currently selected Note item.
-final noteEditorProvider =
+final noteEditorStateProvider =
     AsyncNotifierProvider.autoDispose<NoteEditorStateNotifier, NoteEditorState>(
       NoteEditorStateNotifier.new,
     );

@@ -2,6 +2,7 @@ import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/presentation/workspaces/artifact_editor/note/note_title_field.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:onyxia/export.dart';
+import 'package:onyxia/presentation/workspaces/artifact_editor/note/providers/note_editor_state_provider.dart';
 
 const String _kGhostLorem =
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, '
@@ -44,7 +45,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   }
 
   void _checkNoteChange() {
-    final noteState = ref.read(noteEditorProvider);
+    final noteState = ref.read(noteEditorStateProvider);
     noteState.whenData((state) {
       final newNoteId = state.note?.id;
       if (newNoteId != _currentNoteId) {
@@ -103,10 +104,10 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
   Widget build(BuildContext context) {
     if (!mounted) return Container();
 
-    final noteState = ref.watch(noteEditorProvider);
+    final noteState = ref.watch(noteEditorStateProvider);
 
     final item = ref.watch(
-      noteEditorProvider.select((state) => state.value?.note),
+      noteEditorStateProvider.select((state) => state.value?.note),
     );
     if (item == null) {
       return const Center(child: OnyxiaLoadingIndicator());
@@ -116,7 +117,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
       loading: () => Center(child: OnyxiaLoadingIndicator()),
       error: (error, _) => _ErrorView(
         error: error,
-        onRetry: () => ref.invalidate(noteEditorProvider),
+        onRetry: () => ref.invalidate(noteEditorStateProvider),
       ),
       data: (state) {
         final controller = state.bardController;
