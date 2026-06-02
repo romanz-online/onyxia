@@ -97,6 +97,7 @@ export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_icon_button.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_tooltip.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_loading_indicator.dart';
+export 'package:onyxia/presentation/common_widget/onyxia_scroll_view.dart';
 
 export 'package:onyxia/repository/base_supabase_repository.dart';
 export 'package:onyxia/repository/auth_repository.dart';

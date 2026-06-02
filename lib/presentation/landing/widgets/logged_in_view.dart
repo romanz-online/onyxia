@@ -32,39 +32,44 @@ class _VaultListColumnState extends ConsumerState<_VaultListColumn> {
   @override
   Widget build(BuildContext context) {
     final vaultsAsync = ref.watch(vaultsProvider);
-    final vaults = vaultsAsync.isLoading
-        ? const <Vault>[]
-        : vaultsAsync.value ?? const <Vault>[];
+
     return Container(
       color: ThemeHelper.background2(),
-      padding: .fromLTRB(12, 12, 4, 6),
+      padding: .fromLTRB(12, 6, 4, 6),
       height: .infinity,
-      child: vaults.isEmpty
-          ? Center(
-              child: Text(
-                'No vaults',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: ThemeHelper.foreground2(),
+      child: vaultsAsync.when(
+        loading: () => const Center(child: OnyxiaLoadingIndicator()),
+        error: (e, _) => Center(
+          child: Text(
+            'Could not retrieve vaults.',
+            style: TextStyle(fontSize: 13, color: ThemeHelper.error()),
+          ),
+        ),
+        data: (vaults) => vaults.isEmpty
+            ? Center(
+                child: Text(
+                  'No vaults',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: ThemeHelper.foreground2(),
+                  ),
+                ),
+              )
+            : OnyxiaScrollView(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  mainAxisAlignment: .start,
+                  spacing: 6,
+                  children: [
+                    for (final vault in vaults)
+                      Padding(
+                        padding: .only(bottom: 6, right: 16),
+                        child: VaultRow(vault: vault),
+                      ),
+                  ],
                 ),
               ),
-            )
-          :
-            // TODO: this scrollbar should always be visible if there is enough content to scroll
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: .start,
-                mainAxisAlignment: .start,
-                spacing: 6,
-                children: [
-                  for (final vault in vaults)
-                    Padding(
-                      padding: .only(bottom: 6, right: 16),
-                      child: VaultRow(vault: vault),
-                    ),
-                ],
-              ),
-            ),
+      ),
     );
   }
 }

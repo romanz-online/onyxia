@@ -92,6 +92,7 @@ class _ImportVaultDialogState extends ConsumerState<ImportVaultDialog> {
                       color: ThemeHelper.foreground1(),
                     ),
                   ),
+                  // TODO: hitting Enter should actually submit this
                   OnyxiaTextFormField(
                     maxLength: 40,
                     controller: _nameController,
