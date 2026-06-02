@@ -112,6 +112,12 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
         .where((id) => _findNodeById(newRoots, id) != null)
         .toSet();
 
+    final renamingId = treeController.renamingNodeId;
+    final preservedRenamingId =
+        renamingId != null && _findNodeById(newRoots, renamingId) != null
+        ? renamingId
+        : null;
+
     final oldController = treeController;
     _moveSubscription?.cancel();
     _selectionSubscription?.cancel();
@@ -129,6 +135,10 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       for (final id in preserved) {
         treeController.toggleSelection(id);
       }
+    }
+
+    if (preservedRenamingId != null) {
+      treeController.setRenamingNodeId(preservedRenamingId);
     }
   }
 
@@ -212,8 +222,8 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                   ),
                 )
               : const SizedBox.shrink(),
-          // TODO: contentBuilder has a field called renameField which i should try using instead of manually keeping tracking whether the artifact is being renamed
-          contentBuilder: (context, node, renameField) => TreeTile(node: node),
+          contentBuilder: (context, node, renameField) =>
+              TreeTile(node: node, controller: treeController),
           // TODO: track hoveredNode or hoveredNodeId or something. wrap this in MouseRegion and expose the state variable. send it into TreeTile so that the hovered tile can lighten its text
           contentWrapper: (context, node, child) => OnyxiaTooltip(
             message: _getNodeTooltip(node.data),
@@ -279,6 +289,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                   ref,
                   _menuNode!,
                   treeController.selectedNodeIds,
+                  treeController,
                 ),
                 closeOverlay: close,
               ),

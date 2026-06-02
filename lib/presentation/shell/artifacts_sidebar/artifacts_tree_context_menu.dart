@@ -4,6 +4,7 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
   WidgetRef ref,
   TreeNode<Artifact> node,
   Set<String> selectedIds,
+  TreeController<Artifact> controller,
 ) {
   return [
     OnyxiaMenuItem(
@@ -39,8 +40,7 @@ List<OnyxiaMenuItem> buildArtifactContextMenuItems(
         'Rename Item',
         style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
       ),
-      onTap: () =>
-          ref.read(renameArtifactIdProvider.notifier).set(node.data.id),
+      onTap: () => controller.setRenamingNodeId(node.data.id),
     ),
     OnyxiaMenuItem(
       icon: LucideIcons.trash2,

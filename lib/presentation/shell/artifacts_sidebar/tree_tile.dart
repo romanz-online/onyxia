@@ -1,21 +1,12 @@
 import 'package:onyxia/export.dart';
 
-final renameArtifactIdProvider =
-    NotifierProvider.autoDispose<RenameArtifactIdNotifier, String?>(
-      RenameArtifactIdNotifier.new,
-    );
-
-class RenameArtifactIdNotifier extends Notifier<String?> {
-  @override
-  String? build() => null;
-
-  void set(String? value) => state = value;
-}
+// TODO: this tile should be 100% uninteractable (except for the text form) when being edited. lots of gestures still make it through to the tile while editing like dragging and clicking
 
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
+  final TreeController<Artifact> controller;
 
-  const TreeTile({super.key, required this.node});
+  const TreeTile({super.key, required this.node, required this.controller});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,6 +26,7 @@ class TreeTile extends ConsumerWidget {
         child: _EditableArtifactName(
           item: nodeData,
           trailingExtension: _imageExt(nodeData),
+          controller: controller,
         ),
       ),
     );
@@ -57,7 +49,16 @@ class _EditableArtifactName extends ConsumerStatefulWidget {
   /// artifact name still ends in the extension.
   final String? trailingExtension;
 
-  const _EditableArtifactName({required this.item, this.trailingExtension});
+  /// Source of truth for rename mode: this node is being renamed when
+  /// `controller.renamingNodeId == item.id`. Entering/leaving rename is done
+  /// by writing `setRenamingNodeId(...)` back to the controller.
+  final TreeController<Artifact> controller;
+
+  const _EditableArtifactName({
+    required this.item,
+    this.trailingExtension,
+    required this.controller,
+  });
 
   @override
   ConsumerState<_EditableArtifactName> createState() =>
@@ -65,13 +66,17 @@ class _EditableArtifactName extends ConsumerStatefulWidget {
 }
 
 class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
-  bool _isEditing = false;
   late TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
   final FocusNode _keyboardFocusNode = FocusNode();
   final OverlayPortalController _overlayController = OverlayPortalController();
   final LayerLink _layerLink = LayerLink();
   String? _errorMessage;
+
+  String? _prevRenamingNodeId;
+  bool _committing = false;
+
+  bool get _isRenaming => widget.controller.renamingNodeId == widget.item.id;
 
   String get _baseName {
     final ext = widget.trailingExtension;
@@ -83,10 +88,12 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
 
   void startEditing() {
     _controller.text = _baseName;
-    setState(() {
-      _isEditing = true;
-    });
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_isRenaming) return;
+      _controller.selection = TextSelection(
+        baseOffset: 0,
+        extentOffset: _controller.text.length,
+      );
       _focusNode.requestFocus();
     });
   }
@@ -95,12 +102,25 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
   void initState() {
     super.initState();
     _controller = TextEditingController(text: _baseName);
+    _prevRenamingNodeId = widget.controller.renamingNodeId;
 
     _focusNode.addListener(() {
-      if (!_focusNode.hasFocus && _isEditing) {
+      if (!_focusNode.hasFocus && _isRenaming) {
         _saveChanges();
       }
     });
+
+    if (_isRenaming) startEditing();
+  }
+
+  @override
+  void didUpdateWidget(_EditableArtifactName oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final current = widget.controller.renamingNodeId;
+    if (current == widget.item.id && _prevRenamingNodeId != widget.item.id) {
+      startEditing();
+    }
+    _prevRenamingNodeId = current;
   }
 
   @override
@@ -113,34 +133,27 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
 
   void _cancelEditing() {
     _controller.text = _baseName;
-    _focusNode.unfocus();
+    _overlayController.hide();
+    setState(() => _errorMessage = null);
+    widget.controller.setRenamingNodeId(null);
   }
 
   Future<void> _saveChanges() async {
-    setState(() {
-      _errorMessage = null;
-      _isEditing = false;
-    });
+    if (_committing) return;
+    _committing = true;
+    setState(() => _errorMessage = null);
     _overlayController.hide();
+    widget.controller.setRenamingNodeId(null);
     final error = await ref
         .read(artifactsProvider.notifier)
         .renameItem(widget.item, _controller.text);
     if (!mounted) return;
-    if (error != null) {
-      _controller.text = _baseName;
-    }
+    if (error != null) _controller.text = _baseName;
+    _committing = false;
   }
 
   @override
   Widget build(BuildContext context) {
-    final pendingRenameId = ref.watch(renameArtifactIdProvider);
-    if (pendingRenameId == widget.item.id) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(renameArtifactIdProvider.notifier).set(null);
-        startEditing();
-      });
-    }
-
     final selectedArtifactId = ref.watch(selectedArtifactProvider)?.id ?? '';
 
     return OverlayPortal(
@@ -179,7 +192,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
           ),
         ),
       ),
-      child: _isEditing
+      child: _isRenaming
           ? Transform.translate(
               offset: const Offset(0, -1),
               child: Row(
@@ -262,7 +275,8 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
               ),
             )
           : GestureDetector(
-              onDoubleTap: startEditing,
+              onDoubleTap: () =>
+                  widget.controller.setRenamingNodeId(widget.item.id),
               child: Row(
                 mainAxisSize: .min,
                 mainAxisAlignment: .spaceBetween,
