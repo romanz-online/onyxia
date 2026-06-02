@@ -10,8 +10,7 @@ class VaultMembersTab extends ConsumerStatefulWidget {
 class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   final OverlayPortalController _overlayController = OverlayPortalController();
   final LayerLink _layerLink = LayerLink();
-  // TODO: could do with a more descriptive message. EmailValidationService should check individual invalid cases and return a different message each time like ItemValidationService does
-  static const String _errorMessage = 'Must be a valid email address';
+  String? _errorMessage;
 
   final TextEditingController _emailController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -32,16 +31,17 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
 
   bool _validateEmail() {
     final email = _emailController.text.trim().toLowerCase();
-    final isValid = EmailValidationService.isValidEmail(email);
+    final msg = EmailValidationService.errorMessage(email);
 
-    if (isValid) {
+    if (msg == null) {
       _overlayController.hide();
     } else {
+      setState(() => _errorMessage = msg);
       _overlayController.show();
       _focusNode.requestFocus();
     }
 
-    return isValid;
+    return msg == null;
   }
 
   Future<void> _tryAddMember() async {
@@ -142,7 +142,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                                           horizontal: 12,
                                         ),
                                         child: Text(
-                                          _errorMessage,
+                                          _errorMessage ?? '',
                                           style: TextStyle(
                                             fontSize: 14,
                                             color: ThemeHelper.foreground1(),
