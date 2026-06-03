@@ -28,6 +28,17 @@ class VaultMembersRepository extends BaseSupabaseRepository<VaultMember> {
   @override
   String getIdFromItem(VaultMember item) => item.userId;
 
+  /// The membership row for [userId] in this vault, or null if not a member.
+  Future<VaultMember?> getMember(String userId) async {
+    final row = await Supabase.instance.client
+        .from(tableName)
+        .select()
+        .eq('vault_id', vaultId!)
+        .eq('user_id', userId)
+        .maybeSingle();
+    return row == null ? null : VaultMember.fromMap(row);
+  }
+
   /// Adds a member to this vault by email via the `add_vault_member_by_email`
   /// RPC. If no account exists for [email] yet, the RPC creates a "ghost" user
   /// that becomes the real account once that person signs up.

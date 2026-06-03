@@ -3,8 +3,9 @@ import 'package:onyxia/presentation/landing/widgets/rename_vault_dialog.dart';
 
 List<OnyxiaMenuItem> buildVaultContextMenuItems(
   BuildContext context,
-  Vault vault,
-) {
+  Vault vault, {
+  required bool canManage,
+}) {
   return [
     OnyxiaMenuItem(
       icon: LucideIcons.externalLink,
@@ -22,29 +23,33 @@ List<OnyxiaMenuItem> buildVaultContextMenuItems(
       ),
       onTap: () => UrlHelper.copyLinkToClipboard(Routes.graphUrl(vault.id)),
     ),
-    const OnyxiaMenuItem.divider(),
-    OnyxiaMenuItem(
-      icon: LucideIcons.pencil,
-      child: Text(
-        'Rename Vault',
-        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
+    // Rename/Delete are only shown to vault owners — the DB enforces the same
+    // via RLS, so hiding them just avoids a silent failure for non-owners.
+    if (canManage) ...[
+      const OnyxiaMenuItem.divider(),
+      OnyxiaMenuItem(
+        icon: LucideIcons.pencil,
+        child: Text(
+          'Rename Vault',
+          style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
+        ),
+        onTap: () {
+          showDialog(
+            context: context,
+            builder: (_) =>
+                RenameVaultDialog(vaultName: vault.name, vaultId: vault.id),
+          );
+        },
       ),
-      onTap: () {
-        showDialog(
-          context: context,
-          builder: (_) =>
-              RenameVaultDialog(vaultName: vault.name, vaultId: vault.id),
-        );
-      },
-    ),
-    OnyxiaMenuItem(
-      icon: LucideIcons.trash2,
-      child: Text(
-        'Delete Vault',
-        style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
+      OnyxiaMenuItem(
+        icon: LucideIcons.trash2,
+        child: Text(
+          'Delete Vault',
+          style: TextStyle(color: ThemeHelper.foreground1(), fontSize: 13),
+        ),
+        onTap: () => _confirmRemove(context, vault),
       ),
-      onTap: () => _confirmRemove(context, vault),
-    ),
+    ],
   ];
 }
 

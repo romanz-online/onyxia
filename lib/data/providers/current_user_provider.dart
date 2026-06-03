@@ -11,6 +11,19 @@ final currentUserRoleProvider = Provider<UserRole?>((ref) {
   return members.firstWhereOrNull((m) => m.userId == userId)?.role;
 });
 
+/// The current user's role in the vault with [vaultId], or null if not a member.
+/// Like [currentUserRoleProvider] but for any vault, not just the selected one.
+/// One-shot read — roles don't change while the vault list is open.
+final vaultRoleProvider =
+    FutureProvider.autoDispose.family<UserRole?, String>((ref, vaultId) async {
+      final userId = ref.watch(currentUserProvider.select((u) => u.value?.id));
+      if (userId == null || userId.isEmpty) return null;
+      final member = await VaultMembersRepository(
+        vaultId: vaultId,
+      ).getMember(userId);
+      return member?.role;
+    });
+
 final currentUserProvider = StreamNotifierProvider<CurrentUserNotifier, User>(
   CurrentUserNotifier.new,
 );

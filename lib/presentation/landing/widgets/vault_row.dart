@@ -38,15 +38,30 @@ class _VaultRowState extends ConsumerState<VaultRow> {
     setState(() => _isButtonMenuOpen = false);
   }
 
-  Widget buildOnyxiaMenu(BuildContext context, void Function() closeOverlay) =>
-      OnyxiaMenu(
-        width: 170,
-        items: buildVaultContextMenuItems(context, widget.vault),
-        closeOverlay: closeOverlay,
-      );
-
   @override
   Widget build(BuildContext context) {
+    // Owners can rename/delete; everyone else gets a read-only menu. Defaults
+    // to false while the role loads, so manage actions stay hidden until
+    // ownership is confirmed.
+    final canManage = ref.watch(
+      vaultRoleProvider(
+        widget.vault.id,
+      ).select((async) => async.asData?.value == UserRole.owner),
+    );
+
+    Widget buildOnyxiaMenu(
+      BuildContext context,
+      void Function() closeOverlay,
+    ) => OnyxiaMenu(
+      width: 170,
+      items: buildVaultContextMenuItems(
+        context,
+        widget.vault,
+        canManage: canManage,
+      ),
+      closeOverlay: closeOverlay,
+    );
+
     return OnyxiaOverlay(
       isOpen: _cursorOffset != null,
       onClose: _closeCursorMenu,
