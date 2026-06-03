@@ -13,6 +13,7 @@ class _OnyxiaAppState extends ConsumerState<OnyxiaApp> {
   Widget build(BuildContext context) {
     final routerInstance = ref.watch(routerProvider);
     return Themed(
+      // using a builder here so that the entirety of MaterialApp, including its theme (which sometimes is outside of its context) gets captured under Themed()
       child: Builder(
         builder: (context) => MaterialApp.router(
           debugShowCheckedModeBanner: false,
