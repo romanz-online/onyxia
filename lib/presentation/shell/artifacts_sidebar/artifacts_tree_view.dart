@@ -177,128 +177,126 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
       }
     });
 
-    // TODO: switch to using asyncvalue.when()
-    if (async.hasError)
-      return Center(
+    return async.when(
+      loading: () => const Center(child: OnyxiaLoadingIndicator()),
+      error: (e, _) => Center(
         child: Text(
-          'Error loading items. Please refresh the page.',
+          'Error loading items.\nRefresh the page.',
           style: TextStyle(color: ThemeHelper.error()),
         ),
-      );
-
-    if (!async.hasValue) return const Center(child: OnyxiaLoadingIndicator());
-
-    if (itemNodes.isEmpty) return const SizedBox.shrink();
-
-    return Stack(
-      key: _stackKey,
-      children: [
-        SuperTreeView<Artifact>(
-          controller: treeController,
-          expansionSlotSize: 20,
-          expansionBuilder: (ctx, node) => node.hasChildren
-              ? Padding(
-                  padding: .fromLTRB(
-                    node.isExpanded ? 2 : 3,
-                    0,
-                    0,
-                    node.isExpanded ? 4 : 2,
+      ),
+      data: (items) => items.isEmpty
+          ? const SizedBox.shrink()
+          : Stack(
+              key: _stackKey,
+              children: [
+                SuperTreeView<Artifact>(
+                  controller: treeController,
+                  expansionSlotSize: 20,
+                  expansionBuilder: (ctx, node) => node.hasChildren
+                      ? Padding(
+                          padding: .fromLTRB(
+                            node.isExpanded ? 2 : 3,
+                            0,
+                            0,
+                            node.isExpanded ? 4 : 2,
+                          ),
+                          child: Icon(
+                            LucideIcons.chevronRight,
+                            color: ThemeHelper.foreground1(),
+                            size: 16,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                  prefixBuilder: (ctx, node) => node.data.type == .folder
+                      ? Padding(
+                          padding: .only(left: 7),
+                          child: Icon(
+                            node.isExpanded
+                                ? LucideIcons.folderOpen
+                                : LucideIcons.folder,
+                            color: ThemeHelper.foreground1(),
+                            size: 16,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
+                  contentBuilder: (context, node, renameField) =>
+                      TreeTile(node: node, controller: treeController),
+                  // TODO: track hoveredNode or hoveredNodeId or something. wrap this in MouseRegion and expose the state variable. send it into TreeTile so that the hovered tile can lighten its text
+                  contentWrapper: (context, node, child) => OnyxiaTooltip(
+                    message: _getNodeTooltip(node.data),
+                    direction: .right,
+                    tooltipOffset: const Offset(24, 0),
+                    waitDuration: const Duration(milliseconds: 1000),
+                    child: child,
                   ),
-                  child: Icon(
-                    LucideIcons.chevronRight,
-                    color: ThemeHelper.foreground1(),
-                    size: 16,
+                  style: TreeViewStyle(
+                    indentAmount: 16,
+                    padding: .fromLTRB(8, 0, 16, 0),
+                    hoverColor: ThemeHelper.background2(),
+                    selectedColor: ThemeHelper.background2(),
                   ),
-                )
-              : const SizedBox.shrink(),
-          prefixBuilder: (ctx, node) => node.data.type == .folder
-              ? Padding(
-                  padding: .only(left: 7),
-                  child: Icon(
-                    node.isExpanded
-                        ? LucideIcons.folderOpen
-                        : LucideIcons.folder,
-                    color: ThemeHelper.foreground1(),
-                    size: 16,
+                  padding: .symmetric(vertical: 8),
+                  logic: TreeViewConfig(
+                    enableDragAndDrop: true,
+                    selectionMode: .multiple,
+                    expansionTrigger: .tap,
+                    namingStrategy: .doubleClick,
+                    onNodeTap: (id) => _onNodeTapped(id),
+                    dragAndDrop: TreeDragAndDropConfig(
+                      canAcceptDrop: (draggedNode, targetNode, position) {
+                        if (position != .inside) return false;
+                        if (targetNode.data.type != .folder) return false;
+                        if (targetNode.id == draggedNode.id) return false;
+                        return true;
+                      },
+                      canAcceptDropMany: (draggedNodes, targetNode, position) {
+                        if (position != .inside) return false;
+                        if (targetNode.data.type != .folder) return false;
+                        if (draggedNodes
+                            .map((e) => e.data.id)
+                            .contains(targetNode.id)) {
+                          return false;
+                        }
+                        return true;
+                      },
+                    ),
                   ),
-                )
-              : const SizedBox.shrink(),
-          contentBuilder: (context, node, renameField) =>
-              TreeTile(node: node, controller: treeController),
-          // TODO: track hoveredNode or hoveredNodeId or something. wrap this in MouseRegion and expose the state variable. send it into TreeTile so that the hovered tile can lighten its text
-          contentWrapper: (context, node, child) => OnyxiaTooltip(
-            message: _getNodeTooltip(node.data),
-            direction: .right,
-            tooltipOffset: const Offset(24, 0),
-            waitDuration: const Duration(milliseconds: 1000),
-            child: child,
-          ),
-          style: TreeViewStyle(
-            indentAmount: 16,
-            padding: .fromLTRB(8, 0, 16, 0),
-            hoverColor: ThemeHelper.background2(),
-            selectedColor: ThemeHelper.background2(),
-          ),
-          padding: .symmetric(vertical: 8),
-          logic: TreeViewConfig(
-            enableDragAndDrop: true,
-            selectionMode: .multiple,
-            expansionTrigger: .tap,
-            namingStrategy: .doubleClick,
-            onNodeTap: (id) => _onNodeTapped(id),
-            dragAndDrop: TreeDragAndDropConfig(
-              canAcceptDrop: (draggedNode, targetNode, position) {
-                if (position != .inside) return false;
-                if (targetNode.data.type != .folder) return false;
-                if (targetNode.id == draggedNode.id) return false;
-                return true;
-              },
-              canAcceptDropMany: (draggedNodes, targetNode, position) {
-                if (position != .inside) return false;
-                if (targetNode.data.type != .folder) return false;
-                if (draggedNodes
-                    .map((e) => e.data.id)
-                    .contains(targetNode.id)) {
-                  return false;
-                }
-                return true;
-              },
-            ),
-          ),
-          onNodeContextMenuRequested: _openContextMenu,
-        ),
-
-        if (_menuNode != null)
-          Positioned(
-            left: _menuLocalPosition.dx,
-            top: _menuLocalPosition.dy,
-            child: OnyxiaOverlay(
-              isOpen: _isMenuOpen,
-              anchor: const Aligned(
-                follower: .topLeft,
-                target: .topLeft,
-                offset: .zero,
-                backup: Aligned(
-                  follower: .bottomRight,
-                  target: .topLeft,
-                  offset: .zero,
+                  onNodeContextMenuRequested: _openContextMenu,
                 ),
-              ),
-              onClose: _closeContextMenu,
-              builder: (ctx, close) => OnyxiaMenu(
-                width: 170,
-                items: buildArtifactContextMenuItems(
-                  ref,
-                  _menuNode!,
-                  treeController.selectedNodeIds,
-                  treeController,
-                ),
-                closeOverlay: close,
-              ),
-              child: const SizedBox.shrink(),
+
+                if (_menuNode != null)
+                  Positioned(
+                    left: _menuLocalPosition.dx,
+                    top: _menuLocalPosition.dy,
+                    child: OnyxiaOverlay(
+                      isOpen: _isMenuOpen,
+                      anchor: const Aligned(
+                        follower: .topLeft,
+                        target: .topLeft,
+                        offset: .zero,
+                        backup: Aligned(
+                          follower: .bottomRight,
+                          target: .topLeft,
+                          offset: .zero,
+                        ),
+                      ),
+                      onClose: _closeContextMenu,
+                      builder: (ctx, close) => OnyxiaMenu(
+                        width: 170,
+                        items: buildArtifactContextMenuItems(
+                          ref,
+                          _menuNode!,
+                          treeController.selectedNodeIds,
+                          treeController,
+                        ),
+                        closeOverlay: close,
+                      ),
+                      child: const SizedBox.shrink(),
+                    ),
+                  ),
+              ],
             ),
-          ),
-      ],
     );
   }
 
