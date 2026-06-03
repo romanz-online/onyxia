@@ -67,7 +67,7 @@ class _NoteEditorState extends ConsumerState<NoteEditorView> {
     });
   }
 
-  // TODO: handle inserting images
+  // TODO: handle inserting images; realistically this should actually be handled in bardeditor
   Future<void> _handleImageDrop(PerformDropEvent event) async {
     // final item = event.session.items.first;
     // final reader = item.dataReader!;
