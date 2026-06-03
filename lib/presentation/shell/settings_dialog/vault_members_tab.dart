@@ -67,7 +67,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
       OnyxiaToast.show(
         text: user.isRegistered
             ? '$email added to vault'
-            : "$email added;\nthey'll join when they sign up",
+            : "$email added.\nThey'll join when they sign up.",
         duration: const Duration(seconds: 10),
       );
       _emailController.clear();
@@ -194,7 +194,9 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                     ),
                   ),
                 )
-              : ListView.builder(
+              :
+                // TODO: after adding a new member, the list doesn't automatically refresh
+                ListView.builder(
                   shrinkWrap: true,
                   itemCount: entries.length,
                   itemBuilder: (_, i) => _MemberRow(
@@ -241,7 +243,7 @@ class _MemberRow extends StatelessWidget {
                       fontSize: 14,
                       fontWeight: .w500,
                       color: isGhost
-                          ? ThemeHelper.foreground2()
+                          ? ThemeHelper.foreground3()
                           : ThemeHelper.foreground1(),
                       fontStyle: isGhost ? .italic : .normal,
                     ),
@@ -254,7 +256,7 @@ class _MemberRow extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 14,
                       color: isGhost
-                          ? ThemeHelper.foreground2()
+                          ? ThemeHelper.foreground3()
                           : ThemeHelper.foreground1(),
                       fontStyle: isGhost ? .italic : .normal,
                     ),
