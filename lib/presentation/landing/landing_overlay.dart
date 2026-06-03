@@ -323,6 +323,7 @@ class _LandingOverlayState extends ConsumerState<LandingOverlay> {
       title: 'Check your inbox',
       message:
           'Check your inbox to confirm your email, then return here to sign in.',
+      // TODO: make a customized confirmation email. right now we're using the generic supabase one
     ),
     .resetSent => const InfoMessageView(
       title: 'Reset link sent',

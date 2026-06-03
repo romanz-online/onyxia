@@ -10,6 +10,7 @@ class CreateAccountView extends ConsumerStatefulWidget {
 }
 
 class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
+  // TODO: check if the email here is validated the same way as in EmailValidationService. use EmailValidationService to keep things consistent and also use a speech balloon here to show errors. potentially do the same for the email auth form widget
   static final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
 
   final TextEditingController _emailController = TextEditingController();

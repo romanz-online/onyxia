@@ -4,31 +4,45 @@ class User {
   final String email;
   final bool isLogged;
 
+  /// Whether this user has a real account yet. A "ghost" user (`false`) was
+  /// added to a vault by email before ever signing up; they become registered
+  /// once they create their account with that email.
+  final bool isRegistered;
+
   const User({
     required this.id,
     required this.name,
     required this.email,
     this.isLogged = false,
+    this.isRegistered = false,
   });
 
   User.initial()
     : id = '',
       name = 'Anonymous User',
       email = '',
-      isLogged = false;
+      isLogged = false,
+      isRegistered = false;
 
-  User copyWith({String? id, String? name, String? email, bool? isLogged}) =>
-      User(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        email: email ?? this.email,
-        isLogged: isLogged ?? this.isLogged,
-      );
+  User copyWith({
+    String? id,
+    String? name,
+    String? email,
+    bool? isLogged,
+    bool? isRegistered,
+  }) => User(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    email: email ?? this.email,
+    isLogged: isLogged ?? this.isLogged,
+    isRegistered: isRegistered ?? this.isRegistered,
+  );
 
   factory User.fromMap(Map<String, dynamic> map) => User(
     id: map['id'] ?? '',
     name: map['name'] ?? '',
     email: map['email'] ?? '',
+    isRegistered: map['is_registered'] ?? false,
   );
 
   @override
@@ -38,10 +52,11 @@ class User {
           other.id == id &&
           other.email == email &&
           other.name == name &&
-          other.isLogged == isLogged);
+          other.isLogged == isLogged &&
+          other.isRegistered == isRegistered);
 
   @override
-  int get hashCode => Object.hash(id, email, name, isLogged);
+  int get hashCode => Object.hash(id, email, name, isLogged, isRegistered);
 
   @override
   String toString() =>
@@ -49,6 +64,7 @@ class User {
       'name: $name, '
       'email: $email, '
       'isLogged: $isLogged, '
+      'isRegistered: $isRegistered, '
       ')';
 }
 

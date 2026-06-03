@@ -51,40 +51,31 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
       OnyxiaToast.error(text: 'No vault selected');
       return;
     }
-    final me = ref.read(currentUserProvider).value;
-    if (me == null) {
-      OnyxiaToast.error(text: 'Not signed in');
-      return;
-    }
 
     final email = _emailController.text.trim().toLowerCase();
 
     setState(() => _isProcessing = true);
 
-    final existing = await UsersRepository().getByEmail(email);
-    if (!mounted) return;
-
-    if (existing != null) {
-      // email already belongs to an existing Onyxia user so add them directly
-      await VaultMembersRepository(vaultId: vault.id)
-          .add([
-            VaultMember(
-              vaultId: vault.id,
-              userId: existing.id,
-              role: .member,
-              createdBy: me.id,
-              updatedBy: me.id,
-            ),
-          ])
-          .then((_) {
-            OnyxiaToast.show(text: '${existing.email} added to vault');
-            _emailController.clear();
-            setState(() {
-              _isProcessing = false;
-            });
-          });
-    } else {
-      // TODO: this should just create a ghost account that will be added to the vault members, and once the user actually logs in for the first time they'll fill in their password etc. and see that they're already a part of a vault. this might mean i need to stop using the real "users" table and start mirroring it into my own table where i can keep additional information. unsure.
+    // The RPC adds the member directly. If no account exists for this email
+    // yet, it creates a "ghost" user that becomes the real account when that
+    // person signs up — so we can add anyone, registered or not.
+    try {
+      final user = await VaultMembersRepository(
+        vaultId: vault.id,
+      ).addByEmail(email: email);
+      if (!mounted) return;
+      OnyxiaToast.show(
+        text: user.isRegistered
+            ? '$email added to vault'
+            : "$email added;\nthey'll join when they sign up",
+        duration: const Duration(seconds: 10),
+      );
+      _emailController.clear();
+    } catch (_) {
+      if (!mounted) return;
+      OnyxiaToast.error(text: 'Could not add $email');
+    } finally {
+      if (mounted) setState(() => _isProcessing = false);
     }
   }
 
@@ -174,6 +165,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
               if (_isProcessing)
                 const OnyxiaLoadingIndicator()
               else ...[
+                // TODO: prevent adding emails that are already in the members
                 OnyxiaButton(
                   label: 'Add',
                   onPressed: () {
@@ -202,11 +194,9 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                     ),
                   ),
                 )
-              : ListView.separated(
+              : ListView.builder(
                   shrinkWrap: true,
                   itemCount: entries.length,
-                  separatorBuilder: (_, __) =>
-                      Divider(height: 1, color: ThemeHelper.auxiliary()),
                   itemBuilder: (_, i) => _MemberRow(
                     member: entries[i].member,
                     user: entries[i].user,
@@ -218,6 +208,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   }
 }
 
+// TODO: add hover highlight to each row using HoverBuilder, like each theme option in ThemeTab
 class _MemberRow extends StatelessWidget {
   final VaultMember member;
   final User? user;
@@ -226,7 +217,13 @@ class _MemberRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final email = user?.email ?? '';
+    final email = user?.email;
+    final isGhost = user != null && !user!.isRegistered;
+    final name = user == null
+        ? null
+        : user!.name.isEmpty
+        ? null
+        : user?.name;
 
     return Padding(
       padding: .symmetric(vertical: 8, horizontal: 8),
@@ -235,23 +232,31 @@ class _MemberRow extends StatelessWidget {
           Expanded(
             child: Column(
               crossAxisAlignment: .start,
+              mainAxisAlignment: .start,
               children: [
-                Text(
-                  user?.name ?? '...',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: .w500,
-                    color: ThemeHelper.foreground1(),
+                if (name != null)
+                  Text(
+                    name,
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: .w500,
+                      color: isGhost
+                          ? ThemeHelper.foreground2()
+                          : ThemeHelper.foreground1(),
+                      fontStyle: isGhost ? .italic : .normal,
+                    ),
+                    maxLines: 1,
+                    overflow: .ellipsis,
                   ),
-                  maxLines: 1,
-                  overflow: .ellipsis,
-                ),
-                if (email.isNotEmpty)
+                if (email != null)
                   Text(
                     email,
                     style: TextStyle(
-                      fontSize: 12,
-                      color: ThemeHelper.foreground1(),
+                      fontSize: 14,
+                      color: isGhost
+                          ? ThemeHelper.foreground2()
+                          : ThemeHelper.foreground1(),
+                      fontStyle: isGhost ? .italic : .normal,
                     ),
                     maxLines: 1,
                     overflow: .ellipsis,
@@ -263,7 +268,7 @@ class _MemberRow extends StatelessWidget {
               ? Text(
                   member.role.label,
                   style: TextStyle(
-                    fontSize: 12,
+                    fontSize: 14,
                     fontWeight: .w500,
                     color: ThemeHelper.foreground1(),
                   ),
@@ -271,7 +276,8 @@ class _MemberRow extends StatelessWidget {
               : OnyxiaIconButton(
                   icon: LucideIcons.userMinus400,
                   iconColor: ThemeHelper.foreground1(),
-                  onPressed: () => {}, // TODO: implement member removal
+                  onPressed: () =>
+                      {}, // TODO: implement member removal. also implement some sort of permission system so that non-owners can't remove members from vaults or delete/rename vaults they don't own, etc.
                 ),
         ],
       ),

@@ -45,51 +45,6 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp" WITH SCHEMA "extensions";
 
 
 
-CREATE OR REPLACE FUNCTION "public"."accept_vault_invitation"("p_token" "uuid") RETURNS "uuid"
-    LANGUAGE "plpgsql" SECURITY DEFINER
-    SET "search_path" TO 'public', 'auth'
-    AS $$
-declare
-  inv public.vault_invitations%rowtype;
-  caller_id uuid := auth.uid();
-  caller_email text;
-begin
-  if caller_id is null then
-    raise exception 'unauthenticated';
-  end if;
-
-  select email into caller_email from auth.users where id = caller_id;
-
-  select * into inv
-    from public.vault_invitations
-   where token = p_token;
-
-  if inv.token is null then
-    raise exception 'invitation_not_found';
-  end if;
-  if inv.expires_at < now() then
-    raise exception 'invitation_expired';
-  end if;
-  if lower(inv.email) <> lower(caller_email) then
-    raise exception 'invitation_email_mismatch';
-  end if;
-
-  insert into public.vault_members
-    (vault_id, user_id, role, created_by, updated_by)
-  values
-    (inv.vault_id, caller_id, 'member', caller_id, caller_id)
-  on conflict (vault_id, user_id) do nothing;
-
-  delete from public.vault_invitations where token = inv.token;
-
-  return inv.vault_id;
-end;
-$$;
-
-
-ALTER FUNCTION "public"."accept_vault_invitation"("p_token" "uuid") OWNER TO "postgres";
-
-
 CREATE OR REPLACE FUNCTION "public"."add_owner_to_members"() RETURNS "trigger"
     LANGUAGE "plpgsql" SECURITY DEFINER
     SET "search_path" TO 'public'
@@ -102,6 +57,64 @@ end;$$;
 
 
 ALTER FUNCTION "public"."add_owner_to_members"() OWNER TO "postgres";
+
+SET default_tablespace = '';
+
+SET default_table_access_method = "heap";
+
+
+CREATE TABLE IF NOT EXISTS "public"."users" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "email" "text" NOT NULL,
+    "name" "text" DEFAULT ''::"text" NOT NULL,
+    "is_registered" boolean DEFAULT false NOT NULL
+);
+
+
+ALTER TABLE "public"."users" OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."add_vault_member_by_email"("p_vault_id" "uuid", "p_email" "text", "p_role" "text" DEFAULT 'member'::"text") RETURNS "public"."users"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'auth'
+    AS $$
+declare
+  caller uuid := auth.uid();
+  v_email text := lower(trim(p_email));
+  target public.users%rowtype;
+begin
+  if caller is null then
+    raise exception 'unauthenticated';
+  end if;
+
+  -- Only an owner/admin of the vault may add members.
+  if not exists (
+    select 1 from public.vault_members pm
+    where pm.vault_id = p_vault_id
+      and pm.user_id = caller
+      and pm.role = any (array['admin','owner'])
+  ) then
+    raise exception 'not_authorized';
+  end if;
+
+  select * into target from public.users where lower(email) = v_email;
+
+  if target.id is null then
+    insert into public.users (email, name, is_registered)
+    values (v_email, '', false)
+    returning * into target;
+  end if;
+
+  insert into public.vault_members (vault_id, user_id, role, created_by, updated_by)
+  values (p_vault_id, target.id, coalesce(nullif(p_role, ''), 'member'), caller, caller)
+  on conflict (vault_id, user_id) do nothing;
+
+  return target;
+end;
+$$;
+
+
+ALTER FUNCTION "public"."add_vault_member_by_email"("p_vault_id" "uuid", "p_email" "text", "p_role" "text") OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."artifacts_resolve_unique_name"() RETURNS "trigger"
@@ -156,6 +169,70 @@ end;$$;
 ALTER FUNCTION "public"."bump_vault_updated_at"() OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."handle_delete_user"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'auth'
+    AS $$
+begin
+  delete from public.users where id = old.id;
+  return old;
+end;
+$$;
+
+
+ALTER FUNCTION "public"."handle_delete_user"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'auth'
+    AS $$
+declare
+  meta_name text := coalesce(
+    new.raw_user_meta_data ->> 'name',
+    new.raw_user_meta_data ->> 'full_name'
+  );
+begin
+  if exists (select 1 from public.users where lower(email) = lower(new.email)) then
+    -- A ghost was created for this email; promote it to the real account. The
+    -- id change cascades to vault_members.user_id, inheriting any memberships.
+    update public.users
+       set id = new.id,
+           is_registered = true,
+           name = coalesce(meta_name, name)
+     where lower(email) = lower(new.email);
+  else
+    insert into public.users (id, email, name, is_registered)
+    values (new.id, new.email, coalesce(meta_name, ''), true);
+  end if;
+  return new;
+end;
+$$;
+
+
+ALTER FUNCTION "public"."handle_new_user"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."handle_update_user"() RETURNS "trigger"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public', 'auth'
+    AS $$
+begin
+  update public.users
+     set email = new.email,
+         name  = coalesce(
+                   new.raw_user_meta_data ->> 'name',
+                   new.raw_user_meta_data ->> 'full_name',
+                   name)
+   where id = new.id;
+  return new;
+end;
+$$;
+
+
+ALTER FUNCTION "public"."handle_update_user"() OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."is_vault_member"("p_project_id" "uuid") RETURNS boolean
     LANGUAGE "sql" STABLE SECURITY DEFINER
     SET "search_path" TO 'public'
@@ -197,9 +274,22 @@ $$;
 
 ALTER FUNCTION "public"."set_updated_audit"() OWNER TO "postgres";
 
-SET default_tablespace = '';
 
-SET default_table_access_method = "heap";
+CREATE OR REPLACE FUNCTION "public"."shares_vault"("p_other" "uuid") RETURNS boolean
+    LANGUAGE "sql" STABLE SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+  select exists(
+    select 1
+      from public.vault_members a
+      join public.vault_members b on b.vault_id = a.vault_id
+     where a.user_id = auth.uid()
+       and b.user_id = p_other
+  );
+$$;
+
+
+ALTER FUNCTION "public"."shares_vault"("p_other" "uuid") OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."artifact_ops" (
@@ -334,16 +424,6 @@ ALTER TABLE ONLY "public"."sub_comments" REPLICA IDENTITY FULL;
 ALTER TABLE "public"."sub_comments" OWNER TO "postgres";
 
 
-CREATE OR REPLACE VIEW "public"."users" AS
- SELECT "id",
-    ("email")::"text" AS "email",
-    COALESCE(("raw_user_meta_data" ->> 'name'::"text"), ("raw_user_meta_data" ->> 'full_name'::"text"), ''::"text") AS "name"
-   FROM "auth"."users";
-
-
-ALTER VIEW "public"."users" OWNER TO "postgres";
-
-
 CREATE TABLE IF NOT EXISTS "public"."vault_members" (
     "vault_id" "uuid" NOT NULL,
     "user_id" "uuid" NOT NULL,
@@ -395,7 +475,7 @@ ALTER TABLE ONLY "public"."artifacts"
 
 
 ALTER TABLE ONLY "public"."artifacts"
-    ADD CONSTRAINT "artifacts_project_name_unique" UNIQUE ("vault_id", "name");
+    ADD CONSTRAINT "artifacts_vault_name_unique" UNIQUE ("vault_id", "name");
 
 
 
@@ -414,18 +494,23 @@ ALTER TABLE ONLY "public"."pins"
 
 
 
+ALTER TABLE ONLY "public"."sub_comments"
+    ADD CONSTRAINT "sub_comments_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "users_pkey" PRIMARY KEY ("id");
+
+
+
 ALTER TABLE ONLY "public"."vault_members"
-    ADD CONSTRAINT "project_members_pkey" PRIMARY KEY ("vault_id", "user_id");
+    ADD CONSTRAINT "vault_members_pkey" PRIMARY KEY ("vault_id", "user_id");
 
 
 
 ALTER TABLE ONLY "public"."vaults"
-    ADD CONSTRAINT "projects_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."sub_comments"
-    ADD CONSTRAINT "sub_comments_pkey" PRIMARY KEY ("id");
+    ADD CONSTRAINT "vaults_pkey" PRIMARY KEY ("id");
 
 
 
@@ -441,15 +526,15 @@ CREATE INDEX "artifact_snapshots_vault_id_idx" ON "public"."artifact_snapshots" 
 
 
 
-CREATE INDEX "artifacts_project_id_idx" ON "public"."artifacts" USING "btree" ("vault_id");
+CREATE INDEX "artifacts_vault_id_idx" ON "public"."artifacts" USING "btree" ("vault_id");
 
 
 
-CREATE INDEX "artifacts_project_id_parent_folder_id_idx" ON "public"."artifacts" USING "btree" ("vault_id", "parent_folder_id");
+CREATE INDEX "artifacts_vault_id_parent_folder_id_idx" ON "public"."artifacts" USING "btree" ("vault_id", "parent_folder_id");
 
 
 
-CREATE INDEX "artifacts_project_id_type_idx" ON "public"."artifacts" USING "btree" ("vault_id", "type");
+CREATE INDEX "artifacts_vault_id_type_idx" ON "public"."artifacts" USING "btree" ("vault_id", "type");
 
 
 
@@ -477,11 +562,15 @@ CREATE INDEX "pins_target_object_id_idx" ON "public"."pins" USING "btree" ("pinn
 
 
 
-CREATE INDEX "project_members_user_id_idx" ON "public"."vault_members" USING "btree" ("user_id");
-
-
-
 CREATE INDEX "sub_comments_comment_id_idx" ON "public"."sub_comments" USING "btree" ("comment_id");
+
+
+
+CREATE UNIQUE INDEX "users_email_lower_key" ON "public"."users" USING "btree" ("lower"("email"));
+
+
+
+CREATE INDEX "vault_members_user_id_idx" ON "public"."vault_members" USING "btree" ("user_id");
 
 
 
@@ -596,12 +685,12 @@ ALTER TABLE ONLY "public"."artifacts"
 
 
 ALTER TABLE ONLY "public"."artifacts"
-    ADD CONSTRAINT "artifacts_project_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
+    ADD CONSTRAINT "artifacts_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
 
 
 
 ALTER TABLE ONLY "public"."artifacts"
-    ADD CONSTRAINT "artifacts_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
+    ADD CONSTRAINT "artifacts_vault_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
 
 
 
@@ -665,36 +754,6 @@ ALTER TABLE ONLY "public"."pins"
 
 
 
-ALTER TABLE ONLY "public"."vault_members"
-    ADD CONSTRAINT "project_members_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "auth"."users"("id");
-
-
-
-ALTER TABLE ONLY "public"."vault_members"
-    ADD CONSTRAINT "project_members_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
-
-
-
-ALTER TABLE ONLY "public"."vault_members"
-    ADD CONSTRAINT "project_members_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."vault_members"
-    ADD CONSTRAINT "project_members_vault_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."vaults"
-    ADD CONSTRAINT "projects_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "auth"."users"("id");
-
-
-
-ALTER TABLE ONLY "public"."vaults"
-    ADD CONSTRAINT "projects_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
-
-
-
 ALTER TABLE ONLY "public"."sub_comments"
     ADD CONSTRAINT "sub_comments_comment_id_fkey" FOREIGN KEY ("comment_id") REFERENCES "public"."comments"("id") ON DELETE CASCADE;
 
@@ -707,6 +766,36 @@ ALTER TABLE ONLY "public"."sub_comments"
 
 ALTER TABLE ONLY "public"."sub_comments"
     ADD CONSTRAINT "sub_comments_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."vault_members"
+    ADD CONSTRAINT "vault_members_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."vault_members"
+    ADD CONSTRAINT "vault_members_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."vault_members"
+    ADD CONSTRAINT "vault_members_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."vault_members"
+    ADD CONSTRAINT "vault_members_vault_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."vaults"
+    ADD CONSTRAINT "vaults_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."vaults"
+    ADD CONSTRAINT "vaults_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
 
 
 
@@ -788,54 +877,6 @@ CREATE POLICY "pins_all" ON "public"."pins" TO "authenticated" USING ("public"."
 
 
 
-CREATE POLICY "project_members_delete" ON "public"."vault_members" FOR DELETE TO "authenticated" USING ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"]))))));
-
-
-
-CREATE POLICY "project_members_insert" ON "public"."vault_members" FOR INSERT TO "authenticated" WITH CHECK (((("user_id" = "auth"."uid"()) AND ("role" = 'owner'::"text") AND (EXISTS ( SELECT 1
-   FROM "public"."vaults" "p"
-  WHERE (("p"."id" = "vault_members"."vault_id") AND ("p"."created_by" = "auth"."uid"()))))) OR (EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))));
-
-
-
-CREATE POLICY "project_members_select" ON "public"."vault_members" FOR SELECT TO "authenticated" USING ("public"."is_vault_member"("vault_id"));
-
-
-
-CREATE POLICY "project_members_update" ON "public"."vault_members" FOR UPDATE TO "authenticated" USING ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))) WITH CHECK ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"]))))));
-
-
-
-CREATE POLICY "projects_delete" ON "public"."vaults" FOR DELETE TO "authenticated" USING ((("created_by" = "auth"."uid"()) OR (EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vaults"."id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))));
-
-
-
-CREATE POLICY "projects_insert" ON "public"."vaults" FOR INSERT TO "authenticated" WITH CHECK (("created_by" = "auth"."uid"()));
-
-
-
-CREATE POLICY "projects_select" ON "public"."vaults" FOR SELECT TO "authenticated" USING ((("created_by" = "auth"."uid"()) OR "public"."is_vault_member"("id")));
-
-
-
-CREATE POLICY "projects_update" ON "public"."vaults" FOR UPDATE TO "authenticated" USING ((("created_by" = "auth"."uid"()) OR (EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vaults"."id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"]))))))) WITH CHECK ((("created_by" = "auth"."uid"()) OR (EXISTS ( SELECT 1
-   FROM "public"."vault_members" "pm"
-  WHERE (("pm"."vault_id" = "vaults"."id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))));
-
-
-
 ALTER TABLE "public"."sub_comments" ENABLE ROW LEVEL SECURITY;
 
 
@@ -849,10 +890,65 @@ CREATE POLICY "sub_comments_all" ON "public"."sub_comments" TO "authenticated" U
 
 
 
+ALTER TABLE "public"."users" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "users_select" ON "public"."users" FOR SELECT TO "authenticated" USING ((("id" = "auth"."uid"()) OR "public"."shares_vault"("id")));
+
+
+
 ALTER TABLE "public"."vault_members" ENABLE ROW LEVEL SECURITY;
 
 
+CREATE POLICY "vault_members_delete" ON "public"."vault_members" FOR DELETE TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"]))))));
+
+
+
+CREATE POLICY "vault_members_insert" ON "public"."vault_members" FOR INSERT TO "authenticated" WITH CHECK (((("user_id" = "auth"."uid"()) AND ("role" = 'owner'::"text") AND (EXISTS ( SELECT 1
+   FROM "public"."vaults" "p"
+  WHERE (("p"."id" = "vault_members"."vault_id") AND ("p"."created_by" = "auth"."uid"()))))) OR (EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))));
+
+
+
+CREATE POLICY "vault_members_select" ON "public"."vault_members" FOR SELECT TO "authenticated" USING ("public"."is_vault_member"("vault_id"));
+
+
+
+CREATE POLICY "vault_members_update" ON "public"."vault_members" FOR UPDATE TO "authenticated" USING ((EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vault_members"."vault_id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"]))))));
+
+
+
 ALTER TABLE "public"."vaults" ENABLE ROW LEVEL SECURITY;
+
+
+CREATE POLICY "vaults_delete" ON "public"."vaults" FOR DELETE TO "authenticated" USING ((("created_by" = "auth"."uid"()) OR (EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vaults"."id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))));
+
+
+
+CREATE POLICY "vaults_insert" ON "public"."vaults" FOR INSERT TO "authenticated" WITH CHECK (("created_by" = "auth"."uid"()));
+
+
+
+CREATE POLICY "vaults_select" ON "public"."vaults" FOR SELECT TO "authenticated" USING ((("created_by" = "auth"."uid"()) OR "public"."is_vault_member"("id")));
+
+
+
+CREATE POLICY "vaults_update" ON "public"."vaults" FOR UPDATE TO "authenticated" USING ((("created_by" = "auth"."uid"()) OR (EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vaults"."id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"]))))))) WITH CHECK ((("created_by" = "auth"."uid"()) OR (EXISTS ( SELECT 1
+   FROM "public"."vault_members" "pm"
+  WHERE (("pm"."vault_id" = "vaults"."id") AND ("pm"."user_id" = "auth"."uid"()) AND ("pm"."role" = ANY (ARRAY['admin'::"text", 'owner'::"text"])))))));
+
 
 
 
@@ -1050,16 +1146,21 @@ GRANT USAGE ON SCHEMA "public" TO "service_role";
 
 
 
-REVOKE ALL ON FUNCTION "public"."accept_vault_invitation"("p_token" "uuid") FROM PUBLIC;
-GRANT ALL ON FUNCTION "public"."accept_vault_invitation"("p_token" "uuid") TO "anon";
-GRANT ALL ON FUNCTION "public"."accept_vault_invitation"("p_token" "uuid") TO "authenticated";
-GRANT ALL ON FUNCTION "public"."accept_vault_invitation"("p_token" "uuid") TO "service_role";
-
-
-
 GRANT ALL ON FUNCTION "public"."add_owner_to_members"() TO "anon";
 GRANT ALL ON FUNCTION "public"."add_owner_to_members"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."add_owner_to_members"() TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."users" TO "anon";
+GRANT ALL ON TABLE "public"."users" TO "authenticated";
+GRANT ALL ON TABLE "public"."users" TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."add_vault_member_by_email"("p_vault_id" "uuid", "p_email" "text", "p_role" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."add_vault_member_by_email"("p_vault_id" "uuid", "p_email" "text", "p_role" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."add_vault_member_by_email"("p_vault_id" "uuid", "p_email" "text", "p_role" "text") TO "service_role";
 
 
 
@@ -1072,6 +1173,24 @@ GRANT ALL ON FUNCTION "public"."artifacts_resolve_unique_name"() TO "service_rol
 GRANT ALL ON FUNCTION "public"."bump_vault_updated_at"() TO "anon";
 GRANT ALL ON FUNCTION "public"."bump_vault_updated_at"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."bump_vault_updated_at"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."handle_delete_user"() TO "anon";
+GRANT ALL ON FUNCTION "public"."handle_delete_user"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."handle_delete_user"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "anon";
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."handle_new_user"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."handle_update_user"() TO "anon";
+GRANT ALL ON FUNCTION "public"."handle_update_user"() TO "authenticated";
+GRANT ALL ON FUNCTION "public"."handle_update_user"() TO "service_role";
 
 
 
@@ -1090,6 +1209,12 @@ GRANT ALL ON FUNCTION "public"."set_created_audit"() TO "service_role";
 GRANT ALL ON FUNCTION "public"."set_updated_audit"() TO "anon";
 GRANT ALL ON FUNCTION "public"."set_updated_audit"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."set_updated_audit"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."shares_vault"("p_other" "uuid") TO "anon";
+GRANT ALL ON FUNCTION "public"."shares_vault"("p_other" "uuid") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."shares_vault"("p_other" "uuid") TO "service_role";
 
 
 
@@ -1153,12 +1278,6 @@ GRANT ALL ON TABLE "public"."pins" TO "service_role";
 GRANT ALL ON TABLE "public"."sub_comments" TO "anon";
 GRANT ALL ON TABLE "public"."sub_comments" TO "authenticated";
 GRANT ALL ON TABLE "public"."sub_comments" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."users" TO "anon";
-GRANT ALL ON TABLE "public"."users" TO "authenticated";
-GRANT ALL ON TABLE "public"."users" TO "service_role";
 
 
 
