@@ -23,6 +23,7 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
   Offset _menuLocalPosition = Offset.zero;
   TreeNode<Artifact>? _menuNode;
   bool _isMenuOpen = false;
+  String? _hoveredNodeId;
 
   @override
   void initState() {
@@ -220,15 +221,24 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                           ),
                         )
                       : const SizedBox.shrink(),
-                  contentBuilder: (context, node, renameField) =>
-                      TreeTile(node: node, controller: treeController),
-                  // TODO: track hoveredNode or hoveredNodeId or something. wrap this in MouseRegion and expose the state variable. send it into TreeTile so that the hovered tile can lighten its text
-                  contentWrapper: (context, node, child) => OnyxiaTooltip(
-                    message: _getNodeTooltip(node.data),
-                    direction: .right,
-                    tooltipOffset: const Offset(24, 0),
-                    waitDuration: const Duration(milliseconds: 1000),
-                    child: child,
+                  contentBuilder: (context, node, renameField) => TreeTile(
+                    node: node,
+                    controller: treeController,
+                    isHovered: node.data.id == _hoveredNodeId,
+                  ),
+                  contentWrapper: (context, node, child) => HoverBuilder(
+                    onHoverEnter: () =>
+                        setState(() => _hoveredNodeId = node.data.id),
+                    onHoverExit: () => setState(() {
+                      if (_hoveredNodeId == node.data.id) _hoveredNodeId = null;
+                    }),
+                    builder: (context, _) => OnyxiaTooltip(
+                      message: _getNodeTooltip(node.data),
+                      direction: .right,
+                      tooltipOffset: const Offset(24, 0),
+                      waitDuration: const Duration(milliseconds: 1000),
+                      child: child,
+                    ),
                   ),
                   style: TreeViewStyle(
                     indentAmount: 16,

@@ -3,8 +3,14 @@ import 'package:onyxia/export.dart';
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
   final TreeController<Artifact> controller;
+  final bool isHovered;
 
-  const TreeTile({super.key, required this.node, required this.controller});
+  const TreeTile({
+    super.key,
+    required this.node,
+    required this.controller,
+    this.isHovered = false,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,6 +31,7 @@ class TreeTile extends ConsumerWidget {
           item: nodeData,
           trailingExtension: _imageExt(nodeData),
           controller: controller,
+          isHovered: isHovered,
         ),
       ),
     );
@@ -52,10 +59,13 @@ class _EditableArtifactName extends ConsumerStatefulWidget {
   /// by writing `setRenamingNodeId(...)` back to the controller.
   final TreeController<Artifact> controller;
 
+  final bool isHovered;
+
   const _EditableArtifactName({
     required this.item,
     this.trailingExtension,
     required this.controller,
+    this.isHovered = false,
   });
 
   @override
@@ -159,7 +169,8 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: .normal,
-                  color: widget.item.id == selectedArtifactId
+                  color:
+                      (widget.item.id == selectedArtifactId || widget.isHovered)
                       ? ThemeHelper.foreground1()
                       : ThemeHelper.foreground2(),
                   letterSpacing: 0.5,
