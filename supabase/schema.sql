@@ -1010,6 +1010,10 @@ ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."sub_comments";
 
 
 
+ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."vault_members";
+
+
+
 ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."vaults";
 
 
