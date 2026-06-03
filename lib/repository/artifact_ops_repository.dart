@@ -2,6 +2,8 @@ import 'package:onyxia/export.dart';
 import 'dart:async';
 import 'dart:convert';
 
+// TODO: might need to make artifact ops automatically update the vault's and artifact's updatedAt in supabase
+
 class ArtifactOpsRepository extends BaseSupabaseRepository<ArtifactOp> {
   ArtifactOpsRepository({required super.vaultId});
 
