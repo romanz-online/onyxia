@@ -53,6 +53,7 @@ class OnyxiaValidator extends StatelessWidget {
     this.offset = const Offset(0, 9),
     this.nipHeight = 8,
     this.borderRadius = 6,
+    this.maxWidth,
   });
 
   final OnyxiaValidatorController controller;
@@ -69,8 +70,45 @@ class OnyxiaValidator extends StatelessWidget {
   final double nipHeight;
   final double borderRadius;
 
+  /// Caps the balloon width. When null, the balloon sizes to its content
+  /// (intrinsic width). When set, the message wraps within [maxWidth].
+  final double? maxWidth;
+
   @override
   Widget build(BuildContext context) {
+    final intrinsicChild = IntrinsicWidth(
+      child: IntrinsicHeight(
+        child: SpeechBalloon(
+          nipLocation: .top,
+          color: color ?? ThemeHelper.error(),
+          borderRadius: borderRadius,
+          nipHeight: nipHeight,
+          width: .infinity,
+          height: .infinity,
+          child: Center(
+            child: Padding(
+              padding: .symmetric(vertical: 5, horizontal: 12),
+              // Rebuilds on message change so the text updates even while
+              // the overlay is already shown.
+              child: ListenableBuilder(
+                listenable: controller,
+                builder: (context, _) => Text(
+                  controller.errorMessage ?? '',
+                  style:
+                      textStyle ??
+                      TextStyle(
+                        fontSize: 14,
+                        color: ThemeHelper.foreground1(),
+                        fontWeight: .w700,
+                      ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
     return OverlayPortal(
       controller: controller.overlay,
       overlayChildBuilder: (context) => CompositedTransformFollower(
@@ -80,38 +118,12 @@ class OnyxiaValidator extends StatelessWidget {
         offset: offset,
         child: Align(
           alignment: .topCenter,
-          child: IntrinsicWidth(
-            child: IntrinsicHeight(
-              child: SpeechBalloon(
-                nipLocation: .top,
-                color: color ?? ThemeHelper.error(),
-                borderRadius: borderRadius,
-                nipHeight: nipHeight,
-                width: .infinity,
-                height: .infinity,
-                child: Center(
-                  child: Padding(
-                    padding: .symmetric(vertical: 5, horizontal: 12),
-                    // Rebuilds on message change so the text updates even while
-                    // the overlay is already shown.
-                    child: ListenableBuilder(
-                      listenable: controller,
-                      builder: (context, _) => Text(
-                        controller.errorMessage ?? '',
-                        style:
-                            textStyle ??
-                            TextStyle(
-                              fontSize: 14,
-                              color: ThemeHelper.foreground1(),
-                              fontWeight: .w700,
-                            ),
-                      ),
-                    ),
-                  ),
+          child: maxWidth == null
+              ? intrinsicChild
+              : ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth!),
+                  child: intrinsicChild,
                 ),
-              ),
-            ),
-          ),
         ),
       ),
       child: CompositedTransformTarget(link: controller.link, child: child),

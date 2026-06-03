@@ -186,7 +186,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
 
     return OnyxiaValidator(
       controller: _validator,
-      // TODO: OnyxiaValidator needs a maxWidth parameter for its balloon. unbounded it should be intrinsicwidth or whatever but here it should be smaller, like 300px.
+      maxWidth: 250,
       child: Row(
         children: [
           Expanded(
