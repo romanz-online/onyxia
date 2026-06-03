@@ -11,6 +11,7 @@ class ItemNameValidationService {
     String value,
     String excludeId,
   ) {
+    // TODO: rename to "validate"
     if (_forbidden.hasMatch(value)) {
       return 'Title cannot contain any of these characters: * " / \\ < > : | ?';
     }

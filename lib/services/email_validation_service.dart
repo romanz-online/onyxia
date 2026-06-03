@@ -2,6 +2,7 @@ class EmailValidationService {
   /// Returns a human-readable error message describing why [email] is invalid,
   /// or `null` if it is a valid email address.
   static String? errorMessage(String email) {
+    // TODO: rename to "validate"
     if (email.isEmpty) {
       return 'Email address cannot be empty';
     }
