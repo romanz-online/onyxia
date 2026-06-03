@@ -212,8 +212,6 @@ class _MemberRow extends StatelessWidget {
     required this.isOwner,
   });
 
-  // TODO: switch positions i think. owner/remove on the left, aligned towards a spine, then on the other side of the spine the name/email, also aligned towards the spine
-
   @override
   Widget build(BuildContext context) {
     final email = user?.email;
