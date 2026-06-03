@@ -118,8 +118,6 @@ class _ConstellationState extends ConsumerState<Constellation> {
     );
   }
 
-  // TODO: the nodes currently all start in one places and explode out. they need to start already spread out over the visible area of the screen, with a margin, so that their movement isn't so explosive.
-
   @override
   Widget build(BuildContext context) {
     final async = ref.watch(artifactsProvider);

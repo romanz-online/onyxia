@@ -19,7 +19,9 @@ class _WebConstellationSimulation extends ConstellationSimulationBase {
     required List<ConstellationNode> nodes,
     required List<ConstellationEdge> edges,
     required Map<String, dynamic> forces,
+    required Size viewport,
   }) async {
+    this.viewport = viewport;
     _worker = web.Worker('assets/constellation_engine.js'.toJS);
     _worker.onmessage = _onMessage.toJS;
     sendGraph(nodes, edges, forces: forces, alpha: 1.0);

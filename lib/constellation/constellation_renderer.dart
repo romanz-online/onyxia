@@ -63,12 +63,15 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
     _simulation = ConstellationSimulation();
     _recomputeDegree();
     _nodeData = _buildNodeData();
-    Future.microtask(() async {
+    // Defer to after first layout so the render box has a size — used to
+    // scatter nodes across the viewport instead of stacking them at the origin.
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!mounted) return;
       await _simulation.initialize(
         nodes: widget.physicsNodes,
         edges: widget.physicsEdges,
         forces: widget.forces,
+        viewport: _size ?? const Size(800, 600),
       );
     });
   }

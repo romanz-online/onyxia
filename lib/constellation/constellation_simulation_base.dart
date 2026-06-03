@@ -33,6 +33,18 @@ abstract class ConstellationSimulationBase implements ConstellationSimulation {
 
   final _rng = math.Random();
 
+  /// Visible viewport size, used to scatter fresh nodes across the screen.
+  /// Null until [setViewport] is called (e.g. an update arriving before the
+  /// first layout); falls back to a tiny origin cluster in that case.
+  Size? _viewport;
+
+  /// Inset from the viewport edges so nodes never spawn flush against the border.
+  static const _spreadMargin = 48.0;
+
+  /// Records the visible area so [buildNodeMap] can scatter un-positioned nodes.
+  @protected
+  set viewport(Size size) => _viewport = size;
+
   // ── Abstract transport ────────────────────────────────────────────────────
 
   /// Send a message to the physics engine. Implemented by each platform.
@@ -93,10 +105,22 @@ abstract class ConstellationSimulationBase implements ConstellationSimulation {
       if (pos != null) {
         result[n.id] = [pos.dx, pos.dy];
       } else {
-        final a = _rng.nextDouble() * math.pi * 2;
-        final d = _rng.nextDouble() * 5;
-        final x = math.cos(a) * d;
-        final y = math.sin(a) * d;
+        final double x, y;
+        final viewport = _viewport;
+        if (viewport != null) {
+          // Scatter uniformly across the visible rectangle (world space is
+          // screen-centered at the default zoom/pan), inset by a margin.
+          final spreadW = math.max(0.0, viewport.width - 2 * _spreadMargin);
+          final spreadH = math.max(0.0, viewport.height - 2 * _spreadMargin);
+          x = (_rng.nextDouble() - 0.5) * spreadW;
+          y = (_rng.nextDouble() - 0.5) * spreadH;
+        } else {
+          // No viewport yet — fall back to a tiny origin cluster.
+          final a = _rng.nextDouble() * math.pi * 2;
+          final d = _rng.nextDouble() * 5;
+          x = math.cos(a) * d;
+          y = math.sin(a) * d;
+        }
         current[n.id] = Offset(x, y);
         result[n.id] = [x, y];
       }

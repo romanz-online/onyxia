@@ -42,11 +42,13 @@ abstract class ConstellationSimulation {
   /// Fires on every sim tick with updated world-space positions (origin-centered).
   ValueNotifier<Map<String, Offset>> get positions;
 
-  /// Start the simulation. Safe to call from initState via Future.microtask.
+  /// Start the simulation. [viewport] is the size of the visible area, used to
+  /// scatter fresh nodes across the screen instead of stacking them at the origin.
   Future<void> initialize({
     required List<ConstellationNode> nodes,
     required List<ConstellationEdge> edges,
     required Map<String, dynamic> forces,
+    required Size viewport,
   });
 
   /// Reheat with new data, preserving existing positions (alpha 0.3).
