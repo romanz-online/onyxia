@@ -235,6 +235,9 @@ class ArtifactsTreeViewState extends ConsumerState<ArtifactsTreeView> {
                     padding: .fromLTRB(8, 0, 16, 0),
                     hoverColor: ThemeHelper.background2(),
                     selectedColor: ThemeHelper.background2(),
+                    renameBorderColor: ThemeHelper.accent().withValues(
+                      alpha: 0.5,
+                    ),
                   ),
                   padding: .symmetric(vertical: 8),
                   logic: TreeViewConfig(

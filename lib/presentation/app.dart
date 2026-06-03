@@ -12,6 +12,9 @@ class _OnyxiaAppState extends ConsumerState<OnyxiaApp> {
   @override
   Widget build(BuildContext context) {
     final routerInstance = ref.watch(routerProvider);
+    ref.watch(
+      themeProvider,
+    ); // TODO: ideally wouldn't have to do this but the _buildTheme() values don't seem to refresh without it
 
     return Themed(
       child: MaterialApp.router(
@@ -30,6 +33,11 @@ class _OnyxiaAppState extends ConsumerState<OnyxiaApp> {
   ThemeData _buildTheme() => ThemeData(
     useMaterial3: true,
     fontFamily: 'Inter',
+    textSelectionTheme: TextSelectionThemeData(
+      cursorColor: ThemeHelper.accent().withValues(alpha: 0.75),
+      selectionColor: ThemeHelper.accent().withValues(alpha: 0.6),
+      selectionHandleColor: ThemeHelper.accent().withValues(alpha: 0.75),
+    ),
     dialogTheme: DialogThemeData(
       barrierColor: Colors.black.withValues(alpha: 0.3),
     ),

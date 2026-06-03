@@ -1,7 +1,5 @@
 import 'package:onyxia/export.dart';
 
-// TODO: rename textfield selection bar should be ThemeHelper.accent(). the super tree rename node border is also purple but should be ThemeHelper.accent().
-
 class TreeTile extends ConsumerWidget {
   final TreeNode<Artifact> node;
   final TreeController<Artifact> controller;
@@ -187,6 +185,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
       controller: _validator,
       // TODO: OnyxiaValidator needs a maxWidth parameter for its balloon. unbounded it should be intrinsicwidth or whatever but here it should be smaller, like 300px.
       child: Transform.translate(
+        // TODO: this offset causes an annoying 1 pixel of blank space beneath the text selection highlight, but without the offset the editable text is out of sync with the non-editable text's position
         offset: const Offset(0, -1),
         child: Row(
           children: [

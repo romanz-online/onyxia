@@ -432,9 +432,10 @@ class _SuperTreeNodeWidgetState<T> extends State<SuperTreeNodeWidget<T>>
                       border: Border.all(
                         color:
                             widget.controller.renamingNodeId == widget.node.id
-                            ? Theme.of(
-                                context,
-                              ).colorScheme.primary.withAlpha(204)
+                            ? (widget.style.renameBorderColor ??
+                                  Theme.of(
+                                    context,
+                                  ).colorScheme.primary.withAlpha(204))
                             : Colors.transparent,
                         width: 2.0,
                       ),

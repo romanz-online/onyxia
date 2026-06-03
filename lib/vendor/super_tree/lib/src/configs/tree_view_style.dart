@@ -21,6 +21,10 @@ class TreeViewStyle {
   /// Background color of a node when selected.
   final Color selectedColor;
 
+  /// Border color drawn around a node while it is being renamed.
+  /// When null, falls back to the theme's `colorScheme.primary`.
+  final Color? renameBorderColor;
+
   /// Animation duration for expand/collapse (e.g. caret rotation).
   final Duration expandAnimationDuration;
 
@@ -38,6 +42,7 @@ class TreeViewStyle {
     this.idleColor = Colors.transparent,
     this.hoverColor = const Color(0x1A000000), // Light grey transparent
     this.selectedColor = const Color(0x33000000), // Darker transparent
+    this.renameBorderColor,
     this.expandAnimationDuration = const Duration(milliseconds: 200),
     this.labelStyle,
     this.dragAndDrop = const TreeDragAndDropStyle(),
@@ -51,6 +56,7 @@ class TreeViewStyle {
     Color? idleColor,
     Color? hoverColor,
     Color? selectedColor,
+    Color? renameBorderColor,
     Duration? expandAnimationDuration,
     TextStyle? labelStyle,
     TreeDragAndDropStyle? dragAndDrop,
@@ -62,6 +68,7 @@ class TreeViewStyle {
       idleColor: idleColor ?? this.idleColor,
       hoverColor: hoverColor ?? this.hoverColor,
       selectedColor: selectedColor ?? this.selectedColor,
+      renameBorderColor: renameBorderColor ?? this.renameBorderColor,
       expandAnimationDuration:
           expandAnimationDuration ?? this.expandAnimationDuration,
       labelStyle: labelStyle ?? this.labelStyle,

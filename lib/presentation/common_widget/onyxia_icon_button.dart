@@ -10,6 +10,7 @@ class OnyxiaIconButton extends StatelessWidget {
   final double size;
   final Color? iconColor;
   final String? tooltip;
+  final Color? backgroundColor;
 
   /// Side of the button the tooltip appears on. Null = auto-pick based on
   /// viewport room. Pass explicitly for buttons near a viewport edge
@@ -32,6 +33,7 @@ class OnyxiaIconButton extends StatelessWidget {
     this.tooltipDirection,
     this.badgeCount = 0,
     this.badgeColor,
+    this.backgroundColor,
   });
 
   Color getIconColor() {
@@ -49,10 +51,9 @@ class OnyxiaIconButton extends StatelessWidget {
       } else if (isSelected) {
         return ThemeHelper.auxiliary().withValues(alpha: 0.8);
       } else if (states.contains(WidgetState.hovered)) {
-        // TODO: also either slightly darken or slightly lighten the icon color. same goes for pressed and selected states.
         return ThemeHelper.background2();
       } else {
-        return Colors.transparent;
+        return backgroundColor ?? Colors.transparent;
       }
     }
 

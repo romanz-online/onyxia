@@ -64,7 +64,8 @@
       "Bash(git check-ignore *)",
       "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\RZinoviev\\\\Projects\\\\onyxia\" -Directory)",
       "Bash(Select-Object Name)",
-      "PowerShell(ls -Path \"c:\\\\Users\\\\RZinoviev\\\\Projects\\\\onyxia\" -Force | where-object { $_.PSIsContainer } | Select-Object -ExpandProperty Name)"
+      "PowerShell(ls -Path \"c:\\\\Users\\\\RZinoviev\\\\Projects\\\\onyxia\" -Force | where-object { $_.PSIsContainer } | Select-Object -ExpandProperty Name)",
+      "PowerShell(flutter analyze lib/vendor/super_tree/lib/src/configs/tree_view_style.dart lib/vendor/super_tree/lib/src/widgets/super_tree_node_widget.dart lib/presentation/shell/artifacts_sidebar/artifacts_tree_view.dart)"
     ],
     "deny": []
   },
