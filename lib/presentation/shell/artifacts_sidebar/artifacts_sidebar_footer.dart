@@ -21,8 +21,7 @@ class _ArtifactsSidebarFooterState
   List<Vault> getMostRelevantVaults(
     List<Vault> vaults,
     Vault? currentVault,
-    String currentUserId,
-    Map<String, DateTime> accessLog, {
+    String currentUserId, {
     int count = 3,
   }) {
     final now = DateTime.now();
@@ -45,12 +44,6 @@ class _ArtifactsSidebarFooterState
       // Medium signal: user created it
       if (vault.createdBy == currentUserId) {
         s += 0.5 * recencyScore(vault.createdAt);
-      }
-
-      // Weaker signal: user just visited it
-      final accessed = accessLog[vault.id];
-      if (accessed != null) {
-        s += 0.3 * recencyScore(accessed);
       }
 
       return s;
@@ -128,7 +121,6 @@ class _ArtifactsSidebarFooterState
       vaults,
       currentVault,
       ref.read(currentUserProvider).value?.id ?? '',
-      {}, // TODO: implement recently-accessed (but not written-to) vaults, stored only in sharedpreferences
       count: 2,
     );
 
