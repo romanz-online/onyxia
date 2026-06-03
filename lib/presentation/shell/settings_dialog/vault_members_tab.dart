@@ -143,7 +143,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                       focusNode: _focusNode,
                       enabled: !_isProcessing,
                       hintText: 'Enter email address',
-                      // TODO: i wish this would show cached emails like on the login screen
+                      autofillHints: const [AutofillHints.email],
                       keyboardType: .emailAddress,
                       autofocus: true,
                       onSubmitted: (_) => _submit(entries),
