@@ -2,7 +2,7 @@ import 'package:onyxia/export.dart';
 
 final _forbidden = RegExp(r'[*"\\/<>:|?]');
 
-class ItemTitleValidationService {
+class ItemNameValidationService {
   static String correctTitle(String text) =>
       text.replaceAll(_forbidden, '').replaceAll(RegExp(r'[\r\n]'), '');
 

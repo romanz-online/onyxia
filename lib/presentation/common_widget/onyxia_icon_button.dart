@@ -21,7 +21,7 @@ class OnyxiaIconButton extends StatelessWidget {
   const OnyxiaIconButton({
     super.key,
     required this.icon,
-    this.onPressed,   
+    this.onPressed,
     this.enabled = true,
     this.isSelected = false,
     this.isPressed = false,
@@ -51,6 +51,7 @@ class OnyxiaIconButton extends StatelessWidget {
       } else if (states.contains(WidgetState.hovered)) {
         return ThemeHelper.background2();
       } else {
+        // TODO: instead of changing background color explicitly like this, i want to see if it's possible to inherit the parent container's color automatically and lerp it color as needed so that the button always fits into the parent context WITHOUT explicitly passing in the parent's color as a parameter
         return Colors.transparent;
       }
     }

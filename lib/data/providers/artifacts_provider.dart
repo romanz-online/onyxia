@@ -127,9 +127,9 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   /// and navigates the URL if the user is currently viewing this item.
   /// Returns `null` on success or no-op (empty / unchanged name).
   Future<String?> renameItem(Artifact item, String newName) async {
-    final cleaned = ItemTitleValidationService.correctTitle(newName.trim());
+    final cleaned = ItemNameValidationService.correctTitle(newName.trim());
     if (cleaned.isEmpty || cleaned == item.name) return null;
-    final err = ItemTitleValidationService.errorMessage(
+    final err = ItemNameValidationService.errorMessage(
       _items,
       cleaned,
       item.id,

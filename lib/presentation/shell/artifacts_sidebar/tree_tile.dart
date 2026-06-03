@@ -69,9 +69,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
   late TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
   final FocusNode _keyboardFocusNode = FocusNode();
-  final OverlayPortalController _overlayController = OverlayPortalController();
-  final LayerLink _layerLink = LayerLink();
-  String? _errorMessage;
+  final OnyxiaValidatorController _balloon = OnyxiaValidatorController();
 
   String? _prevRenamingNodeId;
   bool _committing = false;
@@ -122,21 +120,20 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
     _controller.dispose();
     _focusNode.dispose();
     _keyboardFocusNode.dispose();
+    _balloon.dispose();
     super.dispose();
   }
 
   void _cancelEditing() {
     _controller.text = _baseName;
-    _overlayController.hide();
-    setState(() => _errorMessage = null);
+    _balloon.clear();
     widget.controller.setRenamingNodeId(null);
   }
 
   Future<void> _saveChanges() async {
     if (_committing) return;
     _committing = true;
-    setState(() => _errorMessage = null);
-    _overlayController.hide();
+    _balloon.clear();
     widget.controller.setRenamingNodeId(null);
     final error = await ref
         .read(artifactsProvider.notifier)
@@ -150,151 +147,107 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
   Widget build(BuildContext context) {
     final selectedArtifactId = ref.watch(selectedArtifactProvider)?.id ?? '';
 
-    return OverlayPortal(
-      controller: _overlayController,
-      overlayChildBuilder: (context) => CompositedTransformFollower(
-        link: _layerLink,
-        targetAnchor: .bottomCenter,
-        followerAnchor: .topCenter,
-        offset: const Offset(0, 9),
-        child: Align(
-          alignment: .topCenter,
-          child: IntrinsicWidth(
-            child: IntrinsicHeight(
-              child: SpeechBalloon(
-                nipLocation: .top,
-                color: ThemeHelper.error(),
-                borderRadius: 6,
-                nipHeight: 8,
-                width: .infinity,
-                height: .infinity,
-                child: Center(
-                  child: Padding(
-                    padding: .symmetric(vertical: 5, horizontal: 12),
-                    child: Text(
-                      _errorMessage ?? '',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: ThemeHelper.foreground1(),
-                        fontWeight: .w700,
-                      ),
-                    ),
-                  ),
-                ),
+    if (!_isRenaming) {
+      return Row(
+        mainAxisSize: .min,
+        mainAxisAlignment: .spaceBetween,
+        spacing: 8,
+        children: [
+          Flexible(
+            child: Text(
+              _baseName,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: .normal,
+                color: widget.item.id == selectedArtifactId
+                    ? ThemeHelper.foreground1()
+                    : ThemeHelper.foreground2(),
+                letterSpacing: 0.5,
               ),
+              overflow: .ellipsis,
+              maxLines: 1,
             ),
           ),
-        ),
-      ),
-      child: _isRenaming
-          ? Transform.translate(
-              offset: const Offset(0, -1),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: CompositedTransformTarget(
-                      link: _layerLink,
-                      child: Shortcuts(
-                        shortcuts: const <ShortcutActivator, Intent>{
-                          SingleActivator(.space):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.enter):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.arrowUp):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.arrowDown):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.arrowLeft):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.arrowRight):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.home):
-                              DoNothingAndStopPropagationIntent(),
-                          SingleActivator(.end):
-                              DoNothingAndStopPropagationIntent(),
-                        },
-                        child: KeyboardListener(
-                          focusNode: _keyboardFocusNode,
-                          onKeyEvent: (event) {
-                            if (event is KeyDownEvent &&
-                                event.logicalKey == .escape) {
-                              _cancelEditing();
-                            }
-                          },
-                          child: TextField(
-                            controller: _controller,
-                            focusNode: _focusNode,
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: .normal,
-                              color: ThemeHelper.foreground1(),
-                            ),
-                            decoration: InputDecoration(
-                              border: .none,
-                              contentPadding: .zero,
-                              isDense: true,
-                              fillColor: Colors.transparent,
-                              hoverColor: Colors.transparent,
-                            ),
-                            autofocus: true,
-                            onSubmitted: (_) => _saveChanges(),
-                            onTapOutside: (_) => _saveChanges(),
-                            onChanged: (value) {
-                              final msg =
-                                  ItemTitleValidationService.errorMessage(
-                                    ref.read(artifactsProvider).value ??
-                                        const <Artifact>[],
-                                    value,
-                                    widget.item.id,
-                                  );
-                              setState(() => _errorMessage = msg);
-                              if (msg != null) {
-                                _overlayController.show();
-                              } else {
-                                _overlayController.hide();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          if (widget.trailingExtension != null)
+            Text(
+              widget.trailingExtension!,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: .normal,
+                color: ThemeHelper.foreground3(),
+                letterSpacing: 0.5,
               ),
-            )
-          : Row(
-              mainAxisSize: .min,
-              mainAxisAlignment: .spaceBetween,
-              spacing: 8,
-              children: [
-                Flexible(
-                  child: Text(
-                    _baseName,
+              maxLines: 1,
+            ),
+        ],
+      );
+    }
+
+    return OnyxiaValidator(
+      controller: _balloon,
+      // TODO: OnyxiaValidator needs a width parameter for its balloon. unbounded it should be intrinsicwidth or whatever but here it should be smaller, like 300px.
+      child: Transform.translate(
+        offset: const Offset(0, -1),
+        child: Row(
+          children: [
+            Expanded(
+              child: Shortcuts(
+                shortcuts: const <ShortcutActivator, Intent>{
+                  SingleActivator(.space): DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.enter): DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.arrowUp):
+                      DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.arrowDown):
+                      DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.arrowLeft):
+                      DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.arrowRight):
+                      DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.home): DoNothingAndStopPropagationIntent(),
+                  SingleActivator(.end): DoNothingAndStopPropagationIntent(),
+                },
+                child: KeyboardListener(
+                  focusNode: _keyboardFocusNode,
+                  onKeyEvent: (event) {
+                    if (event is KeyDownEvent && event.logicalKey == .escape) {
+                      _cancelEditing();
+                    }
+                  },
+                  child: TextField(
+                    controller: _controller,
+                    focusNode: _focusNode,
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: .normal,
-                      color: widget.item.id == selectedArtifactId
-                          ? ThemeHelper.foreground1()
-                          : ThemeHelper.foreground2(),
-                      letterSpacing: 0.5,
+                      color: ThemeHelper.foreground1(),
                     ),
-                    overflow: .ellipsis,
-                    maxLines: 1,
+                    decoration: InputDecoration(
+                      border: .none,
+                      contentPadding: .zero,
+                      isDense: true,
+                      fillColor: Colors.transparent,
+                      hoverColor: Colors.transparent,
+                    ),
+                    autofocus: true,
+                    onSubmitted: (_) => _saveChanges(),
+                    onTapOutside: (_) => _saveChanges(),
+                    onChanged: (value) {
+                      _balloon.showError(
+                        ItemNameValidationService.errorMessage(
+                          ref.read(artifactsProvider).value ??
+                              const <Artifact>[],
+                          value,
+                          widget.item.id,
+                        ),
+                      );
+                    },
                   ),
                 ),
-                if (widget.trailingExtension != null)
-                  Text(
-                    widget.trailingExtension!,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: .normal,
-                      color: ThemeHelper.foreground3(),
-                      letterSpacing: 0.5,
-                    ),
-                    maxLines: 1,
-                  ),
-              ],
+              ),
             ),
+          ],
+        ),
+      ),
     );
   }
 }

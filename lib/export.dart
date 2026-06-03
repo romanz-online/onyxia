@@ -97,6 +97,7 @@ export 'package:onyxia/presentation/common_widget/onyxia_dialog.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_button.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_icon_button.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_tooltip.dart';
+export 'package:onyxia/presentation/common_widget/onyxia_validator.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_loading_indicator.dart';
 export 'package:onyxia/presentation/common_widget/onyxia_scroll_view.dart';
 
@@ -112,7 +113,7 @@ export 'package:onyxia/repository/artifacts_repository.dart';
 export 'package:onyxia/repository/artifact_ops_repository.dart';
 export 'package:onyxia/repository/artifact_snapshots_repository.dart';
 
-export 'package:onyxia/services/item_title_validation_service.dart';
+export 'package:onyxia/services/item_name_validation_service.dart';
 export 'package:onyxia/services/email_validation_service.dart';
 export 'package:onyxia/services/image_service.dart';
 export 'package:onyxia/services/porting_service.dart';

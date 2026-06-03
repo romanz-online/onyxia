@@ -90,6 +90,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
                       ),
                     ),
                   ),
+                  // TODO: need a way to check if the current user is an owner in each vault and tailor the context menu options here accordingly. they shouldn't be able to rename or delete vaults that don't belong to them.
                   OnyxiaOverlay(
                     isOpen: _isButtonMenuOpen,
                     onClose: _closeButtonMenu,

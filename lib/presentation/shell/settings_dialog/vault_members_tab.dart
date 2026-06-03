@@ -8,9 +8,9 @@ class VaultMembersTab extends ConsumerStatefulWidget {
 }
 
 class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
-  final OverlayPortalController _overlayController = OverlayPortalController();
-  final LayerLink _layerLink = LayerLink();
-  String? _errorMessage;
+  final OnyxiaValidatorController _balloon = OnyxiaValidatorController(
+    validator: EmailValidationService.errorMessage,
+  );
 
   final TextEditingController _emailController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
@@ -19,40 +19,42 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   @override
   void initState() {
     super.initState();
-    _emailController.addListener(_overlayController.hide);
+    _emailController.addListener(_balloon.clear);
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _focusNode.dispose();
+    _balloon.dispose();
     super.dispose();
   }
 
-  bool _validateEmail() {
+  /// Validates the entered email, rejects duplicates, then adds the member.
+  void _submit(List<VaultMemberWithUser> entries) {
     final email = _emailController.text.trim().toLowerCase();
-    final msg = EmailValidationService.errorMessage(email);
 
-    if (msg == null) {
-      _overlayController.hide();
-    } else {
-      setState(() => _errorMessage = msg);
-      _overlayController.show();
+    if (!_balloon.validate(email)) {
       _focusNode.requestFocus();
+      return;
     }
 
-    return msg == null;
+    if (entries.any((e) => e.user.email.toLowerCase() == email)) {
+      _balloon.showError('Already a member');
+      _focusNode.requestFocus();
+      return;
+    }
+
+    _tryAddMember(email);
   }
 
-  Future<void> _tryAddMember() async {
+  Future<void> _tryAddMember(String email) async {
     if (_isProcessing) return;
     final vault = ref.read(selectedVaultProvider);
     if (vault == null) {
       OnyxiaToast.error(text: 'No vault selected');
       return;
     }
-
-    final email = _emailController.text.trim().toLowerCase();
 
     setState(() => _isProcessing = true);
 
@@ -79,9 +81,38 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
     }
   }
 
+  Future<void> _removeMember(VaultMember member) async {
+    final vault = ref.read(selectedVaultProvider);
+    if (vault == null) return;
+    try {
+      await VaultMembersRepository(vaultId: vault.id).delete(member);
+    } catch (_) {
+      OnyxiaToast.error(text: 'Could not remove member');
+    }
+  }
+
+  /// Owners first, then most recently created first (null `createdAt` last).
+  List<VaultMemberWithUser> _sorted(List<VaultMemberWithUser> entries) {
+    final sorted = [...entries];
+    sorted.sort((a, b) {
+      final aOwner = a.member.role == .owner;
+      final bOwner = b.member.role == .owner;
+      if (aOwner != bOwner) return aOwner ? -1 : 1;
+
+      final aDate = a.member.createdAt;
+      final bDate = b.member.createdAt;
+      if (aDate == null && bDate == null) return 0;
+      if (aDate == null) return 1;
+      if (bDate == null) return -1;
+      return bDate.compareTo(aDate);
+    });
+    return sorted;
+  }
+
   @override
   Widget build(BuildContext context) {
     final entriesAsync = ref.watch(vaultMembersWithUsersProvider);
+    final isOwner = ref.watch(currentUserRoleProvider) == .owner;
 
     return entriesAsync.when(
       loading: () => Center(child: OnyxiaLoadingIndicator()),
@@ -89,96 +120,47 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
         'Failed to load members: $e',
         style: TextStyle(color: ThemeHelper.error()),
       ),
-      data: (entries) => _buildContent(entries),
-      // TODO: sort entries so that the most recently created (createdAt) is at the top/start, and then owners always come before everyone else
+      data: (entries) => _buildContent(isOwner, _sorted(entries)),
     );
   }
 
-  Widget _buildContent(List<VaultMemberWithUser> entries) {
+  Widget _buildContent(bool isOwner, List<VaultMemberWithUser> entries) {
     return Column(
       crossAxisAlignment: .start,
       children: [
-        SizedBox(
-          height: 40,
-          child: Row(
-            crossAxisAlignment: .center,
-            spacing: 8,
-            children: [
-              Expanded(
-                child:
-                    // TODO: turn this error speech balloon into a reusable widget. i'm already duplicating code three times and will probably need it more. it should take a validator as an arg which is just a service or function that returns a String? error message. should be as configurable as OnyxiaTooltip
-                    OverlayPortal(
-                      controller: _overlayController,
-                      overlayChildBuilder: (context) =>
-                          CompositedTransformFollower(
-                            link: _layerLink,
-                            targetAnchor: .bottomCenter,
-                            followerAnchor: .topCenter,
-                            offset: const Offset(0, 9),
-                            child: Align(
-                              alignment: .topCenter,
-                              child: IntrinsicWidth(
-                                child: IntrinsicHeight(
-                                  child: SpeechBalloon(
-                                    nipLocation: .top,
-                                    color: ThemeHelper.error(),
-                                    borderRadius: 6,
-                                    nipHeight: 8,
-                                    width: .infinity,
-                                    height: .infinity,
-                                    child: Center(
-                                      child: Padding(
-                                        padding: .symmetric(
-                                          vertical: 5,
-                                          horizontal: 12,
-                                        ),
-                                        child: Text(
-                                          _errorMessage ?? '',
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            color: ThemeHelper.foreground1(),
-                                            fontWeight: .w700,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                      child: CompositedTransformTarget(
-                        link: _layerLink,
-                        child: OnyxiaTextFormField(
-                          controller: _emailController,
-                          focusNode: _focusNode,
-                          enabled: !_isProcessing,
-                          hintText: 'Enter email address',
-                          keyboardType: TextInputType.emailAddress,
-                          autofocus: true,
-                          onSubmitted: (_) {
-                            if (_validateEmail()) _tryAddMember();
-                          },
-                        ),
-                      ),
+        if (isOwner) ...[
+          SizedBox(
+            height: 40,
+            child: Row(
+              crossAxisAlignment: .center,
+              spacing: 8,
+              children: [
+                Expanded(
+                  child: OnyxiaValidator(
+                    controller: _balloon,
+                    child: OnyxiaTextFormField(
+                      controller: _emailController,
+                      focusNode: _focusNode,
+                      enabled: !_isProcessing,
+                      hintText: 'Enter email address',
+                      // TODO: i wish this would show cached emails like on the login screen
+                      keyboardType: .emailAddress,
+                      autofocus: true,
+                      onSubmitted: (_) => _submit(entries),
                     ),
-              ),
-              if (_isProcessing)
-                const OnyxiaLoadingIndicator()
-              else ...[
-                // TODO: prevent adding emails that are already in the members
-                OnyxiaButton(
-                  label: 'Add',
-                  onPressed: () {
-                    if (_validateEmail()) _tryAddMember();
-                  },
+                  ),
                 ),
+                if (_isProcessing)
+                  const OnyxiaLoadingIndicator()
+                else ...[
+                  OnyxiaButton(label: 'Add', onPressed: () => _submit(entries)),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
-        const Gap(12),
-        Divider(height: 1, color: ThemeHelper.auxiliary()),
+          const Gap(12),
+          Divider(height: 1, color: ThemeHelper.auxiliary()),
+        ],
         // Member list
         ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 300),
@@ -195,14 +177,14 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                     ),
                   ),
                 )
-              :
-                // TODO: after adding or removing a new member, the list doesn't automatically refresh
-                ListView.builder(
+              : ListView.builder(
                   shrinkWrap: true,
                   itemCount: entries.length,
                   itemBuilder: (_, i) => _MemberRow(
                     member: entries[i].member,
                     user: entries[i].user,
+                    onRemove: () => _removeMember(entries[i].member),
+                    isOwner: isOwner,
                   ),
                 ),
         ),
@@ -211,12 +193,20 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   }
 }
 
-// TODO: add hover highlight to each row using HoverBuilder, like each theme option in ThemeTab
 class _MemberRow extends StatelessWidget {
   final VaultMember member;
   final User? user;
+  final VoidCallback onRemove;
+  final bool isOwner;
 
-  const _MemberRow({required this.member, required this.user});
+  const _MemberRow({
+    required this.member,
+    required this.user,
+    required this.onRemove,
+    required this.isOwner,
+  });
+
+  // TODO: switch positions i think. owner/remove on the left, aligned towards a spine, then on the other side of the spine the name/email, also aligned towards the spine
 
   @override
   Widget build(BuildContext context) {
@@ -228,47 +218,53 @@ class _MemberRow extends StatelessWidget {
         ? null
         : user?.name;
 
-    return Padding(
-      padding: .symmetric(vertical: 8, horizontal: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: .start,
-              mainAxisAlignment: .start,
-              children: [
-                if (name != null)
-                  Text(
-                    name,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: .w500,
-                      color: isGhost
-                          ? ThemeHelper.foreground3()
-                          : ThemeHelper.foreground1(),
-                      fontStyle: isGhost ? .italic : .normal,
-                    ),
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                  ),
-                if (email != null)
-                  Text(
-                    email,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: isGhost
-                          ? ThemeHelper.foreground3()
-                          : ThemeHelper.foreground1(),
-                      fontStyle: isGhost ? .italic : .normal,
-                    ),
-                    maxLines: 1,
-                    overflow: .ellipsis,
-                  ),
-              ],
-            ),
+    return HoverBuilder(
+      builder: (context, isHovered) {
+        return Container(
+          decoration: BoxDecoration(
+            borderRadius: .all(.circular(4)),
+            color: isHovered ? ThemeHelper.background2() : Colors.transparent,
           ),
-          member.role == .owner
-              ? Text(
+          padding: .symmetric(vertical: 8, horizontal: 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: .start,
+                  mainAxisAlignment: .start,
+                  children: [
+                    if (name != null)
+                      Text(
+                        name,
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: .w500,
+                          color: isGhost
+                              ? ThemeHelper.foreground3()
+                              : ThemeHelper.foreground1(),
+                          fontStyle: isGhost ? .italic : .normal,
+                        ),
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                      ),
+                    if (email != null)
+                      Text(
+                        email,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: isGhost
+                              ? ThemeHelper.foreground3()
+                              : ThemeHelper.foreground1(),
+                          fontStyle: isGhost ? .italic : .normal,
+                        ),
+                        maxLines: 1,
+                        overflow: .ellipsis,
+                      ),
+                  ],
+                ),
+              ),
+              if (member.role == .owner)
+                Text(
                   member.role.label,
                   style: TextStyle(
                     fontSize: 14,
@@ -276,14 +272,16 @@ class _MemberRow extends StatelessWidget {
                     color: ThemeHelper.foreground1(),
                   ),
                 )
-              : OnyxiaIconButton(
+              else if (isOwner)
+                OnyxiaIconButton(
                   icon: LucideIcons.userMinus400,
                   iconColor: ThemeHelper.foreground1(),
-                  onPressed: () => {}, // TODO: implement member removal
-                  // TODO: implement some sort of permission system so that non-owners can't remove members from vaults or delete/rename vaults they don't own, add members, etc.
+                  onPressed: onRemove,
                 ),
-        ],
-      ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
