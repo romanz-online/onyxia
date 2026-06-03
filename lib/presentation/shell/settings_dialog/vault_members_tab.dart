@@ -279,7 +279,7 @@ class _MemberRow extends StatelessWidget {
                   icon: LucideIcons.userMinus400,
                   iconColor: ThemeHelper.foreground1(),
                   onPressed: () =>
-                      {}, // TODO: implement member removal. also implement some sort of permission system so that non-owners can't remove members from vaults or delete/rename vaults they don't own, etc.
+                      {}, // TODO: implement member removal. also implement some sort of permission system so that non-owners can't remove members from vaults or delete/rename vaults they don't own, add members, etc.
                 ),
         ],
       ),
