@@ -67,7 +67,11 @@ CREATE TABLE IF NOT EXISTS "public"."users" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "email" "text" NOT NULL,
     "name" "text" DEFAULT ''::"text" NOT NULL,
-    "is_registered" boolean DEFAULT false NOT NULL
+    "is_registered" boolean DEFAULT false NOT NULL,
+    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "created_by" "uuid",
+    "updated_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "updated_by" "uuid"
 );
 
 
@@ -634,6 +638,14 @@ CREATE OR REPLACE TRIGGER "sub_comments_set_updated" BEFORE UPDATE ON "public"."
 
 
 
+CREATE OR REPLACE TRIGGER "users_set_created" BEFORE INSERT ON "public"."users" FOR EACH ROW EXECUTE FUNCTION "public"."set_created_audit"();
+
+
+
+CREATE OR REPLACE TRIGGER "users_set_updated" BEFORE UPDATE ON "public"."users" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_audit"();
+
+
+
 CREATE OR REPLACE TRIGGER "vault_members_set_created" BEFORE INSERT ON "public"."vault_members" FOR EACH ROW EXECUTE FUNCTION "public"."set_created_audit"();
 
 
@@ -766,6 +778,16 @@ ALTER TABLE ONLY "public"."sub_comments"
 
 ALTER TABLE ONLY "public"."sub_comments"
     ADD CONSTRAINT "sub_comments_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "users_created_by_fkey" FOREIGN KEY ("created_by") REFERENCES "auth"."users"("id");
+
+
+
+ALTER TABLE ONLY "public"."users"
+    ADD CONSTRAINT "users_updated_by_fkey" FOREIGN KEY ("updated_by") REFERENCES "auth"."users"("id");
 
 
 

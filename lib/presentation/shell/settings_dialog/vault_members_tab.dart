@@ -90,6 +90,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
         style: TextStyle(color: ThemeHelper.error()),
       ),
       data: (entries) => _buildContent(entries),
+      // TODO: sort entries so that the most recently created (createdAt) is at the top/start, and then owners always come before everyone else
     );
   }
 
@@ -278,8 +279,8 @@ class _MemberRow extends StatelessWidget {
               : OnyxiaIconButton(
                   icon: LucideIcons.userMinus400,
                   iconColor: ThemeHelper.foreground1(),
-                  onPressed: () =>
-                      {}, // TODO: implement member removal. also implement some sort of permission system so that non-owners can't remove members from vaults or delete/rename vaults they don't own, add members, etc.
+                  onPressed: () => {}, // TODO: implement member removal
+                  // TODO: implement some sort of permission system so that non-owners can't remove members from vaults or delete/rename vaults they don't own, add members, etc.
                 ),
         ],
       ),

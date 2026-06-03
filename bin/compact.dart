@@ -21,8 +21,7 @@ import 'package:postgres/postgres.dart';
 
 const _unfoldedOpThreshold = 25;
 const _unfoldedAgeHours = 24;
-
-// TODO: this should also remove "ghost accounts" (users who have been added to vaults but haven't signed up themselves) that are older than a certain age
+const _ghostInvitationAgeDays = 30;
 
 Future<void> main() async {
   final dbUrl = Platform.environment['DATABASE_URL'];
@@ -58,21 +57,48 @@ Future<void> main() async {
     }
     stdout.writeln('Done. compacted=$compacted skipped=$skipped');
 
-    // await _cleanupExpiredInvitations(conn);
+    await _cleanupGhostAccounts(conn);
   } finally {
     await conn.close();
   }
 }
 
-// Future<void> _cleanupExpiredInvitations(Connection conn) async {
-//   final result = await conn.execute(
-//     Sql.named('''
-//     DELETE FROM vault_invitations
-//     WHERE expires_at < NOW()
-//   '''),
-//   );
-//   stdout.writeln('Deleted ${result.affectedRows} expired invitation(s).');
-// }
+Future<void> _cleanupGhostAccounts(Connection conn) async {
+  // Ghost users (is_registered=false) are created when someone is invited to a
+  // vault by email before signing up; each vault_members row is a pending
+  // invitation. A ghost has no auth.users row (its id is a random uuid until
+  // handle_new_user promotes it on signup), so a plain DELETE on public.users
+  // fully removes it — no Auth Admin API needed. Registered users are never
+  // touched.
+
+  // Stage 1: expire ghost invitations older than the window.
+  final expired = await conn.execute(
+    Sql.named('''
+      DELETE FROM vault_members vm
+      USING users u
+      WHERE vm.user_id = u.id
+        AND u.is_registered = false
+        AND vm.created_at < NOW() - make_interval(days => @ageDays)
+    '''),
+    parameters: {'ageDays': _ghostInvitationAgeDays},
+  );
+
+  // Stage 2: delete ghosts left with no memberships.
+  final removed = await conn.execute(
+    Sql.named('''
+      DELETE FROM users u
+      WHERE u.is_registered = false
+        AND NOT EXISTS (
+          SELECT 1 FROM vault_members vm WHERE vm.user_id = u.id
+        )
+    '''),
+  );
+
+  stdout.writeln(
+    'Ghost cleanup: expired ${expired.affectedRows} invitation(s), '
+    'deleted ${removed.affectedRows} ghost account(s).',
+  );
+}
 
 Endpoint _parseEndpoint(String url) {
   final uri = Uri.parse(url);

@@ -1,3 +1,5 @@
+import 'package:onyxia/export.dart';
+
 class User {
   final String id;
   final String name;
@@ -9,12 +11,24 @@ class User {
   /// once they create their account with that email.
   final bool isRegistered;
 
+  // Read-only audit fields, populated by the database triggers and parsed in
+  // [fromMap]. Never written back (there is no toMap; excluded from copyWith).
+  final DateTime? createdAt;
+  final String? createdBy;
+  final DateTime? updatedAt;
+  final String? updatedBy;
+
   const User({
     required this.id,
     required this.name,
     required this.email,
     this.isLogged = false,
     this.isRegistered = false,
+    //
+    this.createdAt,
+    this.createdBy,
+    this.updatedAt,
+    this.updatedBy,
   });
 
   User.initial()
@@ -22,7 +36,12 @@ class User {
       name = 'Anonymous User',
       email = '',
       isLogged = false,
-      isRegistered = false;
+      isRegistered = false,
+      //
+      createdAt = null,
+      createdBy = null,
+      updatedAt = null,
+      updatedBy = null;
 
   User copyWith({
     String? id,
@@ -43,6 +62,11 @@ class User {
     name: map['name'] ?? '',
     email: map['email'] ?? '',
     isRegistered: map['is_registered'] ?? false,
+    //
+    createdAt: TimestampService.fromMap(map['created_at']),
+    createdBy: map['created_by'],
+    updatedAt: TimestampService.fromMap(map['updated_at']),
+    updatedBy: map['updated_by'],
   );
 
   @override
@@ -53,10 +77,24 @@ class User {
           other.email == email &&
           other.name == name &&
           other.isLogged == isLogged &&
-          other.isRegistered == isRegistered);
+          other.isRegistered == isRegistered &&
+          other.createdAt == createdAt &&
+          other.createdBy == createdBy &&
+          other.updatedAt == updatedAt &&
+          other.updatedBy == updatedBy);
 
   @override
-  int get hashCode => Object.hash(id, email, name, isLogged, isRegistered);
+  int get hashCode => Object.hash(
+    id,
+    email,
+    name,
+    isLogged,
+    isRegistered,
+    createdAt,
+    createdBy,
+    updatedAt,
+    updatedBy,
+  );
 
   @override
   String toString() =>
@@ -65,6 +103,10 @@ class User {
       'email: $email, '
       'isLogged: $isLogged, '
       'isRegistered: $isRegistered, '
+      'createdAt: $createdAt, '
+      'createdBy: $createdBy, '
+      'updatedAt: $updatedAt, '
+      'updatedBy: $updatedBy, '
       ')';
 }
 
