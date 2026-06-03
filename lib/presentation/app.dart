@@ -12,20 +12,18 @@ class _OnyxiaAppState extends ConsumerState<OnyxiaApp> {
   @override
   Widget build(BuildContext context) {
     final routerInstance = ref.watch(routerProvider);
-    ref.watch(
-      themeProvider,
-    ); // TODO: ideally wouldn't have to do this but the _buildTheme() values don't seem to refresh without it
-
     return Themed(
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        title: 'Onyxia',
-        routeInformationParser: routerInstance.routeInformationParser,
-        routerDelegate: routerInstance.routerDelegate,
-        routeInformationProvider: routerInstance.routeInformationProvider,
-        theme: _buildTheme(),
-        builder: (context, child) =>
-            Portal(child: child ?? const SizedBox.shrink()),
+      child: Builder(
+        builder: (context) => MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          title: 'Onyxia',
+          routeInformationParser: routerInstance.routeInformationParser,
+          routerDelegate: routerInstance.routerDelegate,
+          routeInformationProvider: routerInstance.routeInformationProvider,
+          theme: _buildTheme(),
+          builder: (context, child) =>
+              Portal(child: child ?? const SizedBox.shrink()),
+        ),
       ),
     );
   }
