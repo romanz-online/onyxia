@@ -24,6 +24,7 @@ abstract class Artifact {
   final String? createdBy;
   final DateTime? updatedAt;
   final String? updatedBy;
+  // TODO: there are a lot of database functions which trigger updatedAt and createdAt, but since the compaction worker runs with no auth it sets updatedBy and createdBy to null sometimes. worth thinking about whether the *By fields are even needed or if they're taking up space for no reason.
 
   Artifact({
     String? id,
