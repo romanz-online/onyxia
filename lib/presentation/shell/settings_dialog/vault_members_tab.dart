@@ -196,7 +196,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                   ),
                 )
               :
-                // TODO: after adding a new member, the list doesn't automatically refresh
+                // TODO: after adding or removing a new member, the list doesn't automatically refresh
                 ListView.builder(
                   shrinkWrap: true,
                   itemCount: entries.length,
