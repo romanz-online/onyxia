@@ -6,12 +6,12 @@ class ItemNameValidationService {
   static String correctTitle(String text) =>
       text.replaceAll(_forbidden, '').replaceAll(RegExp(r'[\r\n]'), '');
 
-  static String? errorMessage(
+  /// Returns a human-readable error message or `null` if it's valid
+  static String? validate(
     List<Artifact> existing,
     String value,
     String excludeId,
   ) {
-    // TODO: rename to "validate"
     if (_forbidden.hasMatch(value)) {
       return 'Title cannot contain any of these characters: * " / \\ < > : | ?';
     }

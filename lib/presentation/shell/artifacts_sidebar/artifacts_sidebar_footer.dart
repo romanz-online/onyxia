@@ -105,7 +105,7 @@ class _ArtifactsSidebarFooterState
             ),
           ),
 
-          if (selectedVault != null) const VaultSettingsButton(),
+          const VaultSettingsButton(),
         ],
       ),
     );

@@ -17,10 +17,6 @@ class _VaultSettingsButtonState extends ConsumerState<VaultSettingsButton> {
 
   @override
   Widget build(BuildContext context) {
-    final vaultId = ref.read(selectedVaultProvider)?.id;
-    if (vaultId == null) return const SizedBox.shrink();
-    // TODO: let this button appear when no vault is selected but adjust the settings to be vault-inspecific
-
     return OnyxiaIconButton(
       icon: LucideIcons.settings,
       iconColor: ThemeHelper.foreground2(),

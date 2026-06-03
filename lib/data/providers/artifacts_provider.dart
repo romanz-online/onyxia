@@ -129,11 +129,7 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   Future<String?> renameItem(Artifact item, String newName) async {
     final cleaned = ItemNameValidationService.correctTitle(newName.trim());
     if (cleaned.isEmpty || cleaned == item.name) return null;
-    final err = ItemNameValidationService.errorMessage(
-      _items,
-      cleaned,
-      item.id,
-    );
+    final err = ItemNameValidationService.validate(_items, cleaned, item.id);
     if (err != null) return err;
 
     final oldName = item.name;

@@ -10,15 +10,29 @@ class CreateAccountView extends ConsumerStatefulWidget {
 }
 
 class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
-  // TODO: check if the email here is validated the same way as in EmailValidationService. use EmailValidationService to keep things consistent and also use onyxiavalidator here to show errors. do the same for the email auth form widget
-  static final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
 
-  String? _errorMessage;
+  final OnyxiaValidatorController _emailValidator = OnyxiaValidatorController(
+    validator: EmailValidationService.validate,
+  );
+  final OnyxiaValidatorController _passwordValidator =
+      OnyxiaValidatorController(
+        validator: (v) =>
+            v.length < 6 ? 'Password must be at least 6 characters.' : null,
+      );
+  late final OnyxiaValidatorController _confirmValidator =
+      OnyxiaValidatorController(
+        validator: (v) =>
+            v != _passwordController.text ? 'Passwords do not match.' : null,
+      );
+
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+  final FocusNode _confirmFocus = FocusNode();
+
   bool _isSubmitting = false;
 
   @override
@@ -26,32 +40,30 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
     _emailController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
+    _emailValidator.dispose();
+    _passwordValidator.dispose();
+    _confirmValidator.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    _confirmFocus.dispose();
     super.dispose();
   }
 
-  String? _validate() {
-    final email = _emailController.text.trim();
-    if (!_emailRegex.hasMatch(email)) return 'Enter a valid email address.';
-    if (_passwordController.text.length < 6) {
-      return 'Password must be at least 6 characters.';
-    }
-    if (_passwordController.text != _confirmPasswordController.text) {
-      return 'Passwords do not match.';
-    }
-    return null;
-  }
-
   Future<void> _submit() async {
-    final validationError = _validate();
-    if (validationError != null) {
-      setState(() => _errorMessage = validationError);
+    if (!_emailValidator.validate(_emailController.text.trim())) {
+      _emailFocus.requestFocus();
+      return;
+    }
+    if (!_passwordValidator.validate(_passwordController.text)) {
+      _passwordFocus.requestFocus();
+      return;
+    }
+    if (!_confirmValidator.validate(_confirmPasswordController.text)) {
+      _confirmFocus.requestFocus();
       return;
     }
 
-    setState(() {
-      _isSubmitting = true;
-      _errorMessage = null;
-    });
+    setState(() => _isSubmitting = true);
 
     try {
       await ref
@@ -62,7 +74,7 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
           );
       if (mounted) widget.onNavigate(.checkInbox);
     } on AuthException catch (e) {
-      if (mounted) setState(() => _errorMessage = e.message);
+      if (mounted) _emailValidator.showError(e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -90,39 +102,47 @@ class _CreateAccountViewState extends ConsumerState<CreateAccountView> {
                   ),
                 ),
                 const Gap(20),
-                OnyxiaTextFormField(
-                  controller: _emailController,
-                  keyboardType: .emailAddress,
-                  autofillHints: const [AutofillHints.email],
-                  hintText: 'Email',
-                  fontSize: 13,
-                  onSubmitted: (_) => _submit(),
-                ),
-                const Gap(8),
-                OnyxiaTextFormField(
-                  controller: _passwordController,
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.newPassword],
-                  hintText: 'Password',
-                  fontSize: 13,
-                  onSubmitted: (_) => _submit(),
-                ),
-                const Gap(8),
-                OnyxiaTextFormField(
-                  controller: _confirmPasswordController,
-                  obscureText: true,
-                  autofillHints: const [AutofillHints.newPassword],
-                  hintText: 'Confirm password',
-                  fontSize: 13,
-                  onSubmitted: (_) => _submit(),
-                ),
-                if (_errorMessage != null) ...[
-                  const Gap(8),
-                  Text(
-                    _errorMessage!,
-                    style: TextStyle(fontSize: 12, color: ThemeHelper.error()),
+                OnyxiaValidator(
+                  controller: _emailValidator,
+                  child: OnyxiaTextFormField(
+                    controller: _emailController,
+                    focusNode: _emailFocus,
+                    keyboardType: .emailAddress,
+                    autofillHints: const [AutofillHints.email],
+                    hintText: 'Email',
+                    fontSize: 13,
+                    onChanged: (_) => _emailValidator.clear(),
+                    onSubmitted: (_) => _submit(),
                   ),
-                ],
+                ),
+                const Gap(8),
+                OnyxiaValidator(
+                  controller: _passwordValidator,
+                  child: OnyxiaTextFormField(
+                    controller: _passwordController,
+                    focusNode: _passwordFocus,
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.newPassword],
+                    hintText: 'Password',
+                    fontSize: 13,
+                    onChanged: (_) => _passwordValidator.clear(),
+                    onSubmitted: (_) => _submit(),
+                  ),
+                ),
+                const Gap(8),
+                OnyxiaValidator(
+                  controller: _confirmValidator,
+                  child: OnyxiaTextFormField(
+                    controller: _confirmPasswordController,
+                    focusNode: _confirmFocus,
+                    obscureText: true,
+                    autofillHints: const [AutofillHints.newPassword],
+                    hintText: 'Confirm password',
+                    fontSize: 13,
+                    onChanged: (_) => _confirmValidator.clear(),
+                    onSubmitted: (_) => _submit(),
+                  ),
+                ),
                 const Gap(16),
                 Center(
                   child: OnyxiaButton(

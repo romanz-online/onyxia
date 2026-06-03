@@ -69,7 +69,7 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
   late TextEditingController _controller;
   final FocusNode _focusNode = FocusNode();
   final FocusNode _keyboardFocusNode = FocusNode();
-  final OnyxiaValidatorController _balloon = OnyxiaValidatorController();
+  final OnyxiaValidatorController _validator = OnyxiaValidatorController();
 
   String? _prevRenamingNodeId;
   bool _committing = false;
@@ -120,20 +120,20 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
     _controller.dispose();
     _focusNode.dispose();
     _keyboardFocusNode.dispose();
-    _balloon.dispose();
+    _validator.dispose();
     super.dispose();
   }
 
   void _cancelEditing() {
     _controller.text = _baseName;
-    _balloon.clear();
+    _validator.clear();
     widget.controller.setRenamingNodeId(null);
   }
 
   Future<void> _saveChanges() async {
     if (_committing) return;
     _committing = true;
-    _balloon.clear();
+    _validator.clear();
     widget.controller.setRenamingNodeId(null);
     final error = await ref
         .read(artifactsProvider.notifier)
@@ -184,8 +184,8 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
     }
 
     return OnyxiaValidator(
-      controller: _balloon,
-      // TODO: OnyxiaValidator needs a width parameter for its balloon. unbounded it should be intrinsicwidth or whatever but here it should be smaller, like 300px.
+      controller: _validator,
+      // TODO: OnyxiaValidator needs a maxWidth parameter for its balloon. unbounded it should be intrinsicwidth or whatever but here it should be smaller, like 300px.
       child: Transform.translate(
         offset: const Offset(0, -1),
         child: Row(
@@ -232,8 +232,8 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
                     onSubmitted: (_) => _saveChanges(),
                     onTapOutside: (_) => _saveChanges(),
                     onChanged: (value) {
-                      _balloon.showError(
-                        ItemNameValidationService.errorMessage(
+                      _validator.showError(
+                        ItemNameValidationService.validate(
                           ref.read(artifactsProvider).value ??
                               const <Artifact>[],
                           value,

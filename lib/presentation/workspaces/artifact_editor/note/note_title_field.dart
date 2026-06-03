@@ -12,10 +12,8 @@ class NoteTitleField extends ConsumerStatefulWidget {
 class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
   late final TextEditingController _controller;
   late final FocusNode _focusNode;
-  final OnyxiaValidatorController _balloon = OnyxiaValidatorController();
+  final OnyxiaValidatorController _validator = OnyxiaValidatorController();
   ProviderSubscription<Artifact?>? _itemListener;
-
-  String? _currentTitle;
 
   @override
   void initState() {
@@ -23,25 +21,23 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
     _controller = TextEditingController();
     _focusNode = FocusNode();
 
-    // TODO: this is allowing me to submit names that are empty or with illegal characters in the validator, even though the error balloon is correctly appearing. it's working correctly in the tree tile.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _controller.text = ref.read(selectedArtifactProvider)?.name ?? '';
 
       _focusNode.addListener(() async {
-        if (_focusNode.hasFocus) {
-          _currentTitle = ref.read(selectedArtifactProvider)?.name;
-          return;
-        }
+        if (_focusNode.hasFocus) return;
         final note = ref.read(selectedArtifactProvider);
         if (note == null) return;
-        final error = await ref
+        await ref
             .read(artifactsProvider.notifier)
             .renameItem(note, _controller.text);
         if (!mounted) return;
-        if (error != null) {
-          _controller.text = _currentTitle ?? note.name;
-        }
-        _balloon.clear();
+        // Source of truth is the artifact name after the (attempted) rename:
+        // a valid edit -> new name, illegal chars -> stripped name,
+        // empty/dupe -> unchanged.
+        final current = ref.read(selectedArtifactProvider)?.name ?? note.name;
+        if (_controller.text != current) _controller.text = current;
+        _validator.clear();
       });
 
       _itemListener = ref.listenManual(selectedArtifactProvider, (prev, next) {
@@ -59,14 +55,14 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
     _itemListener?.close();
     _controller.dispose();
     _focusNode.dispose();
-    _balloon.dispose();
+    _validator.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return OnyxiaValidator(
-      controller: _balloon,
+      controller: _validator,
       child: TextField(
         controller: _controller,
         focusNode: _focusNode,
@@ -74,8 +70,8 @@ class _NoteTitleFieldState extends ConsumerState<NoteTitleField> {
         textInputAction: .unspecified,
         onSubmitted: (_) => widget.nextFocusNode?.requestFocus(),
         onChanged: (value) {
-          _balloon.showError(
-            ItemNameValidationService.errorMessage(
+          _validator.showError(
+            ItemNameValidationService.validate(
               ref.read(artifactsProvider).value ?? const <Artifact>[],
               value,
               ref.read(selectedArtifactProvider)?.id ?? '',

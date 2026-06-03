@@ -8,8 +8,8 @@ class VaultMembersTab extends ConsumerStatefulWidget {
 }
 
 class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
-  final OnyxiaValidatorController _balloon = OnyxiaValidatorController(
-    validator: EmailValidationService.errorMessage,
+  final OnyxiaValidatorController _validator = OnyxiaValidatorController(
+    validator: EmailValidationService.validate,
   );
 
   final TextEditingController _emailController = TextEditingController();
@@ -19,14 +19,14 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   @override
   void initState() {
     super.initState();
-    _emailController.addListener(_balloon.clear);
+    _emailController.addListener(_validator.clear);
   }
 
   @override
   void dispose() {
     _emailController.dispose();
     _focusNode.dispose();
-    _balloon.dispose();
+    _validator.dispose();
     super.dispose();
   }
 
@@ -34,13 +34,13 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
   void _submit(List<VaultMemberWithUser> entries) {
     final email = _emailController.text.trim().toLowerCase();
 
-    if (!_balloon.validate(email)) {
+    if (!_validator.validate(email)) {
       _focusNode.requestFocus();
       return;
     }
 
     if (entries.any((e) => e.user.email.toLowerCase() == email)) {
-      _balloon.showError('Already a member');
+      _validator.showError('Already a member');
       _focusNode.requestFocus();
       return;
     }
@@ -137,7 +137,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
               children: [
                 Expanded(
                   child: OnyxiaValidator(
-                    controller: _balloon,
+                    controller: _validator,
                     child: OnyxiaTextFormField(
                       controller: _emailController,
                       focusNode: _focusNode,

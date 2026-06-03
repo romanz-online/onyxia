@@ -10,41 +10,44 @@ class EmailAuthForm extends ConsumerStatefulWidget {
 }
 
 class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
-  static final RegExp _emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  String? _errorMessage;
+  final OnyxiaValidatorController _emailBalloon = OnyxiaValidatorController(
+    validator: EmailValidationService.validate,
+  );
+  final OnyxiaValidatorController _passwordBalloon = OnyxiaValidatorController(
+    validator: (v) =>
+        v.length < 6 ? 'Password must be at least 6 characters.' : null,
+  );
+
+  final FocusNode _emailFocus = FocusNode();
+  final FocusNode _passwordFocus = FocusNode();
+
   bool _isSubmitting = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailBalloon.dispose();
+    _passwordBalloon.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
     super.dispose();
   }
 
-  String? _validate() {
-    final email = _emailController.text.trim();
-    if (!_emailRegex.hasMatch(email)) return 'Enter a valid email address.';
-    if (_passwordController.text.length < 6) {
-      return 'Password must be at least 6 characters.';
-    }
-    return null;
-  }
-
   Future<void> _submit() async {
-    final validationError = _validate();
-    if (validationError != null) {
-      setState(() => _errorMessage = validationError);
+    if (!_emailBalloon.validate(_emailController.text.trim())) {
+      _emailFocus.requestFocus();
+      return;
+    }
+    if (!_passwordBalloon.validate(_passwordController.text)) {
+      _passwordFocus.requestFocus();
       return;
     }
 
-    setState(() {
-      _isSubmitting = true;
-      _errorMessage = null;
-    });
+    setState(() => _isSubmitting = true);
 
     try {
       await ref
@@ -54,7 +57,7 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
             password: _passwordController.text,
           );
     } on AuthException catch (e) {
-      if (mounted) setState(() => _errorMessage = e.message);
+      if (mounted) _emailBalloon.showError(e.message);
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -66,30 +69,33 @@ class _EmailAuthFormState extends ConsumerState<EmailAuthForm> {
       mainAxisSize: .min,
       crossAxisAlignment: .stretch,
       children: [
-        OnyxiaTextFormField(
-          controller: _emailController,
-          keyboardType: .emailAddress,
-          autofillHints: const [AutofillHints.email],
-          hintText: 'Email',
-          fontSize: 13,
-          onSubmitted: (_) => _submit(),
+        OnyxiaValidator(
+          controller: _emailBalloon,
+          child: OnyxiaTextFormField(
+            controller: _emailController,
+            focusNode: _emailFocus,
+            keyboardType: .emailAddress,
+            autofillHints: const [AutofillHints.email],
+            hintText: 'Email',
+            fontSize: 13,
+            onChanged: (_) => _emailBalloon.clear(),
+            onSubmitted: (_) => _submit(),
+          ),
         ),
         const Gap(8),
-        OnyxiaTextFormField(
-          controller: _passwordController,
-          obscureText: true,
-          autofillHints: const [AutofillHints.password],
-          hintText: 'Password',
-          fontSize: 13,
-          onSubmitted: (_) => _submit(),
-        ),
-        if (_errorMessage != null) ...[
-          const Gap(8),
-          Text(
-            _errorMessage!,
-            style: TextStyle(fontSize: 12, color: ThemeHelper.error()),
+        OnyxiaValidator(
+          controller: _passwordBalloon,
+          child: OnyxiaTextFormField(
+            controller: _passwordController,
+            focusNode: _passwordFocus,
+            obscureText: true,
+            autofillHints: const [AutofillHints.password],
+            hintText: 'Password',
+            fontSize: 13,
+            onChanged: (_) => _passwordBalloon.clear(),
+            onSubmitted: (_) => _submit(),
           ),
-        ],
+        ),
         const Gap(12),
         Center(
           child: OnyxiaButton(
