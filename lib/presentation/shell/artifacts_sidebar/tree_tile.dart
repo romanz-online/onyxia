@@ -146,106 +146,103 @@ class EditableArtifactNameState extends ConsumerState<_EditableArtifactName> {
     final selectedArtifactId = ref.watch(selectedArtifactProvider)?.id ?? '';
 
     if (!_isRenaming) {
-      return Row(
-        mainAxisSize: .min,
-        mainAxisAlignment: .spaceBetween,
-        spacing: 8,
-        children: [
-          Flexible(
-            child: Text(
-              _baseName,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: .normal,
-                color: widget.item.id == selectedArtifactId
-                    ? ThemeHelper.foreground1()
-                    : ThemeHelper.foreground2(),
-                letterSpacing: 0.5,
+      return Transform.translate(
+        offset: const Offset(0, 1),
+        child: Row(
+          mainAxisSize: .min,
+          mainAxisAlignment: .spaceBetween,
+          spacing: 8,
+          children: [
+            Flexible(
+              child: Text(
+                _baseName,
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: .normal,
+                  color: widget.item.id == selectedArtifactId
+                      ? ThemeHelper.foreground1()
+                      : ThemeHelper.foreground2(),
+                  letterSpacing: 0.5,
+                ),
+                overflow: .ellipsis,
+                maxLines: 1,
               ),
-              overflow: .ellipsis,
-              maxLines: 1,
             ),
-          ),
-          if (widget.trailingExtension != null)
-            Text(
-              widget.trailingExtension!,
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: .normal,
-                color: ThemeHelper.foreground3(),
-                letterSpacing: 0.5,
+            if (widget.trailingExtension != null)
+              Text(
+                widget.trailingExtension!,
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: .normal,
+                  color: ThemeHelper.foreground3(),
+                  letterSpacing: 0.5,
+                ),
+                maxLines: 1,
               ),
-              maxLines: 1,
-            ),
-        ],
+          ],
+        ),
       );
     }
 
     return OnyxiaValidator(
       controller: _validator,
       // TODO: OnyxiaValidator needs a maxWidth parameter for its balloon. unbounded it should be intrinsicwidth or whatever but here it should be smaller, like 300px.
-      child: Transform.translate(
-        // TODO: this offset causes an annoying 1 pixel of blank space beneath the text selection highlight, but without the offset the editable text is out of sync with the non-editable text's position
-        offset: const Offset(0, -1),
-        child: Row(
-          children: [
-            Expanded(
-              child: Shortcuts(
-                shortcuts: const <ShortcutActivator, Intent>{
-                  SingleActivator(.space): DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.enter): DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.arrowUp):
-                      DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.arrowDown):
-                      DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.arrowLeft):
-                      DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.arrowRight):
-                      DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.home): DoNothingAndStopPropagationIntent(),
-                  SingleActivator(.end): DoNothingAndStopPropagationIntent(),
+      child: Row(
+        children: [
+          Expanded(
+            child: Shortcuts(
+              shortcuts: const <ShortcutActivator, Intent>{
+                SingleActivator(.space): DoNothingAndStopPropagationIntent(),
+                SingleActivator(.enter): DoNothingAndStopPropagationIntent(),
+                SingleActivator(.arrowUp): DoNothingAndStopPropagationIntent(),
+                SingleActivator(.arrowDown):
+                    DoNothingAndStopPropagationIntent(),
+                SingleActivator(.arrowLeft):
+                    DoNothingAndStopPropagationIntent(),
+                SingleActivator(.arrowRight):
+                    DoNothingAndStopPropagationIntent(),
+                SingleActivator(.home): DoNothingAndStopPropagationIntent(),
+                SingleActivator(.end): DoNothingAndStopPropagationIntent(),
+              },
+              child: KeyboardListener(
+                focusNode: _keyboardFocusNode,
+                onKeyEvent: (event) {
+                  if (event is KeyDownEvent && event.logicalKey == .escape) {
+                    _cancelEditing();
+                  }
                 },
-                child: KeyboardListener(
-                  focusNode: _keyboardFocusNode,
-                  onKeyEvent: (event) {
-                    if (event is KeyDownEvent && event.logicalKey == .escape) {
-                      _cancelEditing();
-                    }
-                  },
-                  child: TextField(
-                    controller: _controller,
-                    focusNode: _focusNode,
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: .normal,
-                      color: ThemeHelper.foreground1(),
-                    ),
-                    decoration: InputDecoration(
-                      border: .none,
-                      contentPadding: .zero,
-                      isDense: true,
-                      fillColor: Colors.transparent,
-                      hoverColor: Colors.transparent,
-                    ),
-                    autofocus: true,
-                    onSubmitted: (_) => _saveChanges(),
-                    onTapOutside: (_) => _saveChanges(),
-                    onChanged: (value) {
-                      _validator.showError(
-                        ItemNameValidationService.validate(
-                          ref.read(artifactsProvider).value ??
-                              const <Artifact>[],
-                          value,
-                          widget.item.id,
-                        ),
-                      );
-                    },
+                child: TextField(
+                  controller: _controller,
+                  focusNode: _focusNode,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: .normal,
+                    color: ThemeHelper.foreground1(),
                   ),
+                  decoration: InputDecoration(
+                    border: .none,
+                    contentPadding: .zero,
+                    isDense: true,
+                    fillColor: Colors.transparent,
+                    hoverColor: Colors.transparent,
+                  ),
+                  autofocus: true,
+                  onSubmitted: (_) => _saveChanges(),
+                  onTapOutside: (_) => _saveChanges(),
+                  onChanged: (value) {
+                    _validator.showError(
+                      ItemNameValidationService.validate(
+                        ref.read(artifactsProvider).value ?? const <Artifact>[],
+                        value,
+                        widget.item.id,
+                      ),
+                    );
+                  },
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
