@@ -14,6 +14,41 @@ final wikiLinkTitlesProvider = Provider<List<String>>(
       .toList(),
 );
 
+/// Unfiltered wiki-link graph derived from note content. Cached off
+/// [artifactsProvider] so it re-extracts only when artifacts actually change
+/// (e.g. a content writeback), not on every constellation widget rebuild /
+/// filter toggle. The constellation applies its display filters on top.
+typedef WikiGraph = ({
+  List<String> nodeNames,
+  List<({String source, String target})> edges,
+  Set<String> zombieNames,
+});
+
+final wikiGraphProvider = Provider<WikiGraph>((ref) {
+  final items = ref.watch(artifactsProvider).value ?? const <Artifact>[];
+  final titleLookup = <String, String>{
+    for (final i in items) i.name.toLowerCase(): i.name,
+  };
+  final nodeNames = items.map((i) => i.name).toList();
+  final edges = <({String source, String target})>[];
+  final zombieNames = <String>{};
+
+  for (final item in items) {
+    if (item is! NoteArtifact) continue;
+    for (final rawLink in extractWikiLinks(item.content)) {
+      final canonical = titleLookup[rawLink.toLowerCase()];
+      if (canonical != null && canonical != item.name) {
+        edges.add((source: item.name, target: canonical));
+      } else if (canonical == null && rawLink.isNotEmpty) {
+        zombieNames.add(rawLink);
+        edges.add((source: item.name, target: rawLink));
+      }
+    }
+  }
+
+  return (nodeNames: nodeNames, edges: edges, zombieNames: zombieNames);
+});
+
 class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
   String? _vaultId;
   late ArtifactsRepository _repository;

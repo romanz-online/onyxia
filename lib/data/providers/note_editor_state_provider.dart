@@ -33,6 +33,15 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
   String? _vaultId;
   BardController? _controller;
   StreamController<Uint8List>? _remoteOpsController;
+  NoteArtifact? _note;
+
+  // Debounced writeback of the converged editor text into artifacts.body.content.
+  // body.content is a denormalized read-cache (the constellation reads it; the
+  // editor itself hydrates from snapshot+ops, not from it). Refreshing it also
+  // fires the artifacts UPDATE triggers that bump artifact + vault updated_at.
+  Timer? _writebackTimer;
+  String? _lastWrittenContent;
+  static const _writebackDebounce = Duration(seconds: 2);
 
   @override
   Future<NoteEditorState> build() async {
@@ -42,8 +51,23 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
     _vaultId = ref.watch(selectedVaultProvider.select((p) => p?.id));
 
     ref.onDispose(() {
+      _writebackTimer?.cancel();
+      _writebackTimer = null;
       final controller = _controller;
+      final note = _note;
+      final vaultId = _vaultId;
       _controller = null;
+      // Final writeback so edits made in the last debounce window aren't lost
+      // on note switch / editor close. onDispose can't await — issue and go.
+      if (controller != null && note != null && vaultId != null) {
+        final text = controller.text;
+        if (text != _lastWrittenContent) {
+          _lastWrittenContent = text;
+          ArtifactsRepository(
+            vaultId: vaultId,
+          ).update([note.copyWith(content: text)]);
+        }
+      }
       _remoteOpsController?.close();
       _remoteOpsController = null;
       if (controller != null) {
@@ -59,6 +83,8 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
     }
 
     final note = ref.read(selectedArtifactProvider) as NoteArtifact;
+    _note = note;
+    _lastWrittenContent = note.content;
     final opsRepo = ArtifactOpsRepository(vaultId: _vaultId);
     final snapsRepo = ArtifactSnapshotsRepository(vaultId: _vaultId);
 
@@ -89,6 +115,7 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
       onLocalOp: (bytes) {
         // Fire-and-forget; failures should surface via global error handling.
         opsRepo.append(note.id, bytes);
+        _scheduleContentWriteback();
       },
     );
 
@@ -105,5 +132,29 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
       bardController: controller,
       collabConfig: collab,
     );
+  }
+
+  void _scheduleContentWriteback() {
+    _writebackTimer?.cancel();
+    _writebackTimer = Timer(_writebackDebounce, _flushContentWriteback);
+  }
+
+  Future<void> _flushContentWriteback() async {
+    _writebackTimer = null;
+    final controller = _controller;
+    final note = _note;
+    final vaultId = _vaultId;
+    if (controller == null || note == null || vaultId == null) return;
+    final text = controller.text;
+    if (text == _lastWrittenContent) return; // nothing changed since last write
+    _lastWrittenContent = text;
+    try {
+      await ArtifactsRepository(
+        vaultId: vaultId,
+      ).update([note.copyWith(content: text)]);
+    } catch (_) {
+      // Let a later edit retry the write rather than swallowing the change.
+      if (_lastWrittenContent == text) _lastWrittenContent = null;
+    }
   }
 }

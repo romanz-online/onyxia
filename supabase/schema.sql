@@ -160,10 +160,21 @@ begin
   elsif tg_table_name = 'comments' then
     v_target_id := case when tg_op = 'DELETE' then old.target_id else new.target_id end;
     select vault_id into v_vault_id from public.artifacts where id = v_target_id;
+  elsif tg_table_name = 'artifact_ops' then
+    v_vault_id := new.vault_id;
   end if;
 
   if v_vault_id is not null then
-    update public.vaults set updated_at = now() where id = v_vault_id;
+    if tg_table_name = 'artifact_ops' then
+      -- Ops fire on every keystroke; throttle so the vault row is touched at
+      -- most once per 30s. The client's debounced body.content writeback bumps
+      -- updated_at on the artifacts table path anyway — this just guarantees
+      -- recency on the first keystroke even before/without that writeback.
+      update public.vaults set updated_at = now()
+        where id = v_vault_id and now() - updated_at > interval '30 seconds';
+    else
+      update public.vaults set updated_at = now() where id = v_vault_id;
+    end if;
   end if;
 
   return null; -- AFTER trigger; return value ignored
@@ -579,6 +590,10 @@ CREATE INDEX "vault_members_user_id_idx" ON "public"."vault_members" USING "btre
 
 
 CREATE OR REPLACE TRIGGER "artifacts_bump_vault" AFTER INSERT OR DELETE OR UPDATE ON "public"."artifacts" FOR EACH ROW EXECUTE FUNCTION "public"."bump_vault_updated_at"();
+
+
+
+CREATE OR REPLACE TRIGGER "artifact_ops_bump_vault" AFTER INSERT ON "public"."artifact_ops" FOR EACH ROW EXECUTE FUNCTION "public"."bump_vault_updated_at"();
 
 
 

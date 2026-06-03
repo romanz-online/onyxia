@@ -216,6 +216,10 @@ Future<bool> _compactArtifact(
           'snapshot. Aborting before write.',
         );
       }
+      // Reuse the round-tripped text to refresh the denormalized
+      // artifacts.body.content cache below (see the UPDATE after the snapshot
+      // write). This self-heals content for notes edited on other devices.
+      final convergedText = verifyText.value;
       verifyDoc.dispose();
 
       await tx.execute(
@@ -236,6 +240,19 @@ Future<bool> _compactArtifact(
           'vv': versionVectorJson,
           'mseq': newMaxOpSeq,
         },
+      );
+
+      // Refresh the denormalized body.content cache (read by the constellation
+      // graph). No-op for non-note artifacts; jsonb_set preserves other body
+      // keys. This is the only writeback path for notes edited on devices that
+      // never opened them locally (the client editor handles the open case).
+      await tx.execute(
+        Sql.named('''
+          UPDATE artifacts
+          SET body = jsonb_set(coalesce(body, '{}'::jsonb), '{content}', to_jsonb(@content::text), true)
+          WHERE id = @aid::uuid AND type = 'note'
+        '''),
+        parameters: {'aid': artifactId, 'content': convergedText},
       );
 
       await tx.execute(

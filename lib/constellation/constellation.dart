@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import 'package:onyxia/bard/bard.dart';
 import 'package:onyxia/constellation/constellation_simulation.dart';
 import 'package:onyxia/constellation/constellation_renderer.dart';
 
@@ -16,9 +15,6 @@ const _defaultForces = {
   'centerStrength': 0.1,
 };
 
-ConstellationNode _nodeFromItem(BuildContext context, Artifact i) =>
-    ConstellationNode(id: i.name);
-
 typedef ConstellationLayout = ({
   List<ConstellationNode> nodes,
   List<ConstellationEdge> edges,
@@ -27,37 +23,18 @@ typedef ConstellationLayout = ({
 
 /// Wiki-link layout: edges follow [[Title]] references in note content.
 /// Filters drop file artifacts, orphan nodes, and zombie targets per user prefs.
+/// Pure filtering over the cached [WikiGraph] — extraction happens once in
+/// [wikiGraphProvider], so toggling filters here never re-parses note content.
 ConstellationLayout _buildWikiLinks(
-  BuildContext context,
-  List<Artifact> items, {
+  WikiGraph graph, {
   required bool showFiles,
   required bool showOrphans,
   required bool showZombies,
 }) {
-  final titleLookup = <String, String>{
-    for (final i in items) i.name.toLowerCase(): i.name,
-  };
-
-  var nodes = items.map((i) => _nodeFromItem(context, i)).toList();
-  final edges = <ConstellationEdge>[];
-  final zombieNames = <String>{};
-
-  for (final item in items) {
-    if (item is! NoteArtifact) continue;
-    // TODO: because this uses item.content, it misses content updates until the notes' ops are compressed. eventually this should actually read through the ops to properly see what up-to-date connections there are
-    for (final rawLink in extractWikiLinks(item.content)) {
-      final canonical = titleLookup[rawLink.toLowerCase()];
-      if (canonical != null && canonical != item.name) {
-        edges.add(ConstellationEdge(source: item.name, target: canonical));
-      } else if (canonical == null && rawLink.isNotEmpty) {
-        zombieNames.add(rawLink);
-        edges.add(ConstellationEdge(source: item.name, target: rawLink));
-      }
-    }
-  }
+  var nodes = graph.nodeNames.map((n) => ConstellationNode(id: n)).toList();
 
   if (showZombies) {
-    nodes.addAll(zombieNames.map((n) => ConstellationNode(id: n)));
+    nodes.addAll(graph.zombieNames.map((n) => ConstellationNode(id: n)));
   }
 
   if (!showFiles) {
@@ -65,13 +42,14 @@ ConstellationLayout _buildWikiLinks(
   }
 
   final keptIds = nodes.map((n) => n.id).toSet();
-  var keptEdges = edges
+  var keptEdges = graph.edges
       .where((e) => keptIds.contains(e.source) && keptIds.contains(e.target))
+      .map((e) => ConstellationEdge(source: e.source, target: e.target))
       .toList();
 
   if (!showZombies) {
     keptEdges = keptEdges
-        .where((e) => !zombieNames.contains(e.target))
+        .where((e) => !graph.zombieNames.contains(e.target))
         .toList();
   }
 
@@ -122,11 +100,10 @@ class _ConstellationState extends ConsumerState<Constellation> {
   Widget build(BuildContext context) {
     final async = ref.watch(artifactsProvider);
     if (!async.hasValue) return Center(child: OnyxiaLoadingIndicator());
-    final items = async.value!;
+    final graph = ref.watch(wikiGraphProvider);
 
     final layout = _buildWikiLinks(
-      context,
-      items,
+      graph,
       showFiles: _showFiles,
       showOrphans: _showOrphans,
       showZombies: _showZombies,
