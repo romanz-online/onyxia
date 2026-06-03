@@ -153,7 +153,12 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
                 if (_isProcessing)
                   const OnyxiaLoadingIndicator()
                 else ...[
-                  OnyxiaButton(label: 'Add', onPressed: () => _submit(entries)),
+                  OnyxiaIconButton(
+                    icon: LucideIcons.userPlus400,
+                    tooltip: 'Add Member',
+                    tooltipDirection: .bottom,
+                    onPressed: () => _submit(entries),
+                  ),
                 ],
               ],
             ),
@@ -161,6 +166,7 @@ class _VaultMembersTabState extends ConsumerState<VaultMembersTab> {
           const Gap(12),
           Divider(height: 1, color: ThemeHelper.auxiliary()),
         ],
+        const Gap(12),
         // Member list
         ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: 300),
@@ -274,8 +280,10 @@ class _MemberRow extends StatelessWidget {
                 )
               else if (isOwner)
                 OnyxiaIconButton(
-                  icon: LucideIcons.userMinus400,
+                  icon: LucideIcons.userX400,
                   iconColor: ThemeHelper.foreground1(),
+                  tooltip: 'Remove Member',
+                  tooltipDirection: .bottom,
                   onPressed: onRemove,
                 ),
             ],

@@ -49,9 +49,9 @@ class OnyxiaIconButton extends StatelessWidget {
       } else if (isSelected) {
         return ThemeHelper.auxiliary().withValues(alpha: 0.8);
       } else if (states.contains(WidgetState.hovered)) {
+        // TODO: also either slightly darken or slightly lighten the icon color. same goes for pressed and selected states.
         return ThemeHelper.background2();
       } else {
-        // TODO: instead of changing background color explicitly like this, i want to see if it's possible to inherit the parent container's color automatically and lerp it color as needed so that the button always fits into the parent context WITHOUT explicitly passing in the parent's color as a parameter
         return Colors.transparent;
       }
     }
