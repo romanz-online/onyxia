@@ -81,8 +81,8 @@ class Constellation extends ConsumerStatefulWidget {
 class _ConstellationState extends ConsumerState<Constellation> {
   bool _filterMenuOpen = false;
   bool _showFiles = false;
-  bool _showOrphans = false;
-  bool _showZombies = false;
+  bool _showOrphans = true;
+  bool _showZombies = true;
 
   void _onNodeTap(String nodeId) {
     final item = (ref.read(artifactsProvider).value ?? const <Artifact>[])
