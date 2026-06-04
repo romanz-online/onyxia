@@ -71,7 +71,6 @@ class _ConstellationRendererState extends State<ConstellationRenderer> {
         nodes: widget.physicsNodes,
         edges: widget.physicsEdges,
         forces: widget.forces,
-        viewport: _size ?? const Size(800, 600),
       );
     });
   }
