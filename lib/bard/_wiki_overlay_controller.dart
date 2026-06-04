@@ -91,7 +91,7 @@ extension _WikiOverlay on _BardEditorState {
     if (offset < 0) return;
     final wikiSpan = _controller
         .spansAt(offset)
-        .where((s) => s.type == MarkdownFormatType.wikiLink)
+        .where((s) => s.type == .wikiLink)
         .firstOrNull;
     if (wikiSpan == null) return;
     final title = _controller.text.substring(
@@ -114,7 +114,7 @@ extension _WikiOverlay on _BardEditorState {
     final newCursor = _wikiQueryStart + target.length + 4; // [[ + target + ]]
     _controller.value = TextEditingValue(
       text: newText,
-      selection: TextSelection.collapsed(offset: newCursor),
+      selection: .collapsed(offset: newCursor),
     );
     _removeWikiOverlay();
   }

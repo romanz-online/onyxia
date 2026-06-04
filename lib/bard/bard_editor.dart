@@ -279,7 +279,7 @@ class _BardEditorState extends State<BardEditor> {
 
   KeyEventResult _onKeyEvent(FocusNode node, KeyEvent event) {
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) {
-      return KeyEventResult.ignored;
+      return .ignored;
     }
 
     final isCtrl =
@@ -295,7 +295,7 @@ class _BardEditorState extends State<BardEditor> {
           _filteredTargets.length - 1,
         );
         _wikiOverlay?.markNeedsBuild();
-        return KeyEventResult.handled;
+        return .handled;
       }
       if (event.logicalKey == LogicalKeyboardKey.arrowUp) {
         _wikiSelectedIndex = (_wikiSelectedIndex - 1).clamp(
@@ -303,37 +303,37 @@ class _BardEditorState extends State<BardEditor> {
           _filteredTargets.length - 1,
         );
         _wikiOverlay?.markNeedsBuild();
-        return KeyEventResult.handled;
+        return .handled;
       }
       if (event.logicalKey == LogicalKeyboardKey.enter ||
           event.logicalKey == LogicalKeyboardKey.tab) {
         if (_filteredTargets.isNotEmpty) {
           _onWikiTargetSelected(_filteredTargets[_wikiSelectedIndex]);
-          return KeyEventResult.handled;
+          return .handled;
         }
       }
       if (event.logicalKey == LogicalKeyboardKey.escape) {
         _removeWikiOverlay();
-        return KeyEventResult.handled;
+        return .handled;
       }
     }
 
-    if (!isCtrl) return KeyEventResult.ignored;
+    if (!isCtrl) return .ignored;
 
     final format = _kFormatHotkeys[(event.logicalKey, isShift)];
     if (format != null) {
       _applyFormat(format);
-      return KeyEventResult.handled;
+      return .handled;
     }
 
-    return KeyEventResult.ignored;
+    return .ignored;
   }
 
   static final _kFormatHotkeys =
       <(LogicalKeyboardKey, bool), MarkdownFormatType>{
-        (LogicalKeyboardKey.keyI, false): MarkdownFormatType.italic,
-        (LogicalKeyboardKey.keyB, false): MarkdownFormatType.bold,
-        (LogicalKeyboardKey.keyX, true): MarkdownFormatType.strikethrough,
+        (LogicalKeyboardKey.keyI, false): .italic,
+        (LogicalKeyboardKey.keyB, false): .bold,
+        (LogicalKeyboardKey.keyX, true): .strikethrough,
       };
 
   @override

@@ -1,6 +1,5 @@
 import 'package:crdt_lf/crdt_lf.dart';
 import 'package:onyxia/bard/markdown_parser.dart';
-import 'package:onyxia/bard/markdown_span.dart';
 import 'package:onyxia/export.dart';
 
 final artifactsProvider =
@@ -254,7 +253,7 @@ String _rewriteWikiLinksInContent(
   if (!content.contains('[[')) return content;
   final spans = parseMarkdown(
     content,
-  ).inlineSpans.where((s) => s.type == MarkdownFormatType.wikiLink).toList();
+  ).inlineSpans.where((s) => s.type == .wikiLink).toList();
   if (spans.isEmpty) return content;
 
   final buf = StringBuffer();

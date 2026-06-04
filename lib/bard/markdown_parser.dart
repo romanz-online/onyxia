@@ -17,33 +17,21 @@ class _Token {
 }
 
 MarkdownParseResult parseMarkdown(String text) {
-  if (text.isEmpty) return MarkdownParseResult.empty;
+  if (text.isEmpty) return .empty;
 
   final tokens = _tokenize(text);
   final newlinePositions = tokens
-      .where((t) => t.type == _TokenType.newline)
+      .where((t) => t.type == .newline)
       .map((t) => t.start)
       .toList();
 
   final inlineSpans = [
+    ..._matchSymmetricType(tokens, .bold, .bold, text, newlinePositions),
+    ..._matchSymmetricType(tokens, .italic, .italic, text, newlinePositions),
     ..._matchSymmetricType(
       tokens,
-      _TokenType.bold,
-      MarkdownFormatType.bold,
-      text,
-      newlinePositions,
-    ),
-    ..._matchSymmetricType(
-      tokens,
-      _TokenType.italic,
-      MarkdownFormatType.italic,
-      text,
-      newlinePositions,
-    ),
-    ..._matchSymmetricType(
-      tokens,
-      _TokenType.strikethrough,
-      MarkdownFormatType.strikethrough,
+      .strikethrough,
+      .strikethrough,
       text,
       newlinePositions,
     ),
@@ -63,22 +51,22 @@ List<_Token> _tokenize(String text) {
     final next = i + 1 < text.length ? text[i + 1] : null;
 
     if (c == '*' && next == '*') {
-      tokens.add(_Token(_TokenType.bold, i, i + 2));
+      tokens.add(_Token(.bold, i, i + 2));
       i += 2;
     } else if (c == '*') {
-      tokens.add(_Token(_TokenType.italic, i, i + 1));
+      tokens.add(_Token(.italic, i, i + 1));
       i++;
     } else if (c == '~' && next == '~') {
-      tokens.add(_Token(_TokenType.strikethrough, i, i + 2));
+      tokens.add(_Token(.strikethrough, i, i + 2));
       i += 2;
     } else if (c == '[' && next == '[') {
-      tokens.add(_Token(_TokenType.wikilinkOpen, i, i + 2));
+      tokens.add(_Token(.wikilinkOpen, i, i + 2));
       i += 2;
     } else if (c == ']' && next == ']') {
-      tokens.add(_Token(_TokenType.wikilinkClose, i, i + 2));
+      tokens.add(_Token(.wikilinkClose, i, i + 2));
       i += 2;
     } else if (c == '\n') {
-      tokens.add(_Token(_TokenType.newline, i, i + 1));
+      tokens.add(_Token(.newline, i, i + 1));
       i++;
     } else {
       i++;
@@ -147,13 +135,13 @@ List<MarkdownSpan> _matchWikiLinks(
   final spans = <MarkdownSpan>[];
 
   for (final token in tokens) {
-    if (token.type == _TokenType.wikilinkOpen) {
+    if (token.type == .wikilinkOpen) {
       opens.add(token);
-    } else if (token.type == _TokenType.wikilinkClose && opens.isNotEmpty) {
+    } else if (token.type == .wikilinkClose && opens.isNotEmpty) {
       final open = opens.removeLast();
       spans.add(
         MarkdownSpan(
-          type: MarkdownFormatType.wikiLink,
+          type: .wikiLink,
           markerStartOpen: open.start,
           contentStart: open.end,
           contentEnd: token.start,
@@ -170,7 +158,7 @@ List<MarkdownSpan> _matchWikiLinks(
         _nextNewlineAfter(open.start, newlinePositions) ?? text.length;
     spans.add(
       MarkdownSpan(
-        type: MarkdownFormatType.wikiLink,
+        type: .wikiLink,
         markerStartOpen: open.start,
         contentStart: open.end,
         contentEnd: autoCloseAt,
@@ -206,7 +194,7 @@ LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   // Check longer prefixes first to avoid premature matching
   if (line.startsWith('### ')) {
     return LineSpan(
-      type: LineFormatType.heading3,
+      type: .heading3,
       lineStart: lineStart,
       lineEnd: lineEnd,
       markerEnd: lineStart + 4,
@@ -214,7 +202,7 @@ LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   }
   if (line.startsWith('## ')) {
     return LineSpan(
-      type: LineFormatType.heading2,
+      type: .heading2,
       lineStart: lineStart,
       lineEnd: lineEnd,
       markerEnd: lineStart + 3,
@@ -222,7 +210,7 @@ LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   }
   if (line.startsWith('# ')) {
     return LineSpan(
-      type: LineFormatType.heading1,
+      type: .heading1,
       lineStart: lineStart,
       lineEnd: lineEnd,
       markerEnd: lineStart + 2,
@@ -230,7 +218,7 @@ LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   }
   if (line.startsWith('- ') || line.startsWith('* ')) {
     return LineSpan(
-      type: LineFormatType.bulletList,
+      type: .bulletList,
       lineStart: lineStart,
       lineEnd: lineEnd,
       markerEnd: lineStart + 2,
@@ -238,7 +226,7 @@ LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   }
   if (line.startsWith('> ')) {
     return LineSpan(
-      type: LineFormatType.blockquote,
+      type: .blockquote,
       lineStart: lineStart,
       lineEnd: lineEnd,
       markerEnd: lineStart + 2,
@@ -247,7 +235,7 @@ LineSpan? _detectLineFormat(String line, int lineStart, int lineEnd) {
   final numberedMatch = RegExp(r'^\d+\. ').firstMatch(line);
   if (numberedMatch != null) {
     return LineSpan(
-      type: LineFormatType.numberedList,
+      type: .numberedList,
       lineStart: lineStart,
       lineEnd: lineEnd,
       markerEnd: lineStart + numberedMatch.end,
@@ -266,7 +254,7 @@ int? _nextNewlineAfter(int position, List<int> sortedNewlines) {
 List<String> extractWikiLinks(String content) {
   final result = parseMarkdown(content);
   return result.inlineSpans
-      .where((s) => s.type == MarkdownFormatType.wikiLink)
+      .where((s) => s.type == .wikiLink)
       .map((s) => content.substring(s.contentStart, s.contentEnd))
       .toList();
 }

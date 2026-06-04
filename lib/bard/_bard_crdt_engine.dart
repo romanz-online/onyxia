@@ -53,7 +53,7 @@ class BardCrdtEngine {
     // FugueElementID collisions on subsequent loads. A session-scoped UUID
     // sidesteps that — the doc gains one version-vector entry per session,
     // which compaction collapses.
-    _doc = CRDTDocument(peerId: PeerId.generate());
+    _doc = CRDTDocument(peerId: .generate());
     _text = CRDTFugueTextHandler(_doc, BardCodec.handlerKey);
 
     // Hydrate from snapshot then catch-up ops.

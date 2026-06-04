@@ -19,7 +19,7 @@ class BardController extends TextEditingController {
 
   // Tier 1: parse cache — only invalidated when text changes
   String? _cachedText;
-  MarkdownParseResult _parseResult = MarkdownParseResult.empty;
+  MarkdownParseResult _parseResult = .empty;
 
   // Tier 2: render cache — invalidated when cursor crosses a span boundary
   // or the base style changes. Pure cursor movement within a "neutral zone"
@@ -126,7 +126,7 @@ class BardController extends TextEditingController {
         TextSpan(
           text: composing,
           style: (style ?? const TextStyle()).copyWith(
-            decoration: TextDecoration.underline,
+            decoration: .underline,
             backgroundColor: Colors.transparent,
           ),
         ),
@@ -272,26 +272,25 @@ class BardController extends TextEditingController {
     final fontFamily = baseStyle?.fontFamily ?? 'Inter';
     final decorations = <TextDecoration>[];
 
-    if (baseStyle?.decoration != null &&
-        baseStyle!.decoration != TextDecoration.none) {
+    if (baseStyle?.decoration != null && baseStyle!.decoration != .none) {
       decorations.add(baseStyle.decoration!);
     }
 
     for (final s in lineSpans) {
       switch (s.type) {
-        case LineFormatType.heading1:
+        case .heading1:
           fontSize = 24.0;
           fontWeight = .bold;
-        case LineFormatType.heading2:
+        case .heading2:
           fontSize = 20.0;
           fontWeight = .bold;
-        case LineFormatType.heading3:
+        case .heading3:
           fontSize = 16.0;
           fontWeight = .bold;
-        case LineFormatType.bulletList:
-        case LineFormatType.numberedList:
+        case .bulletList:
+        case .numberedList:
           break;
-        case LineFormatType.blockquote:
+        case .blockquote:
           color = _kBlockquoteColor;
           fontStyle = .italic;
       }
@@ -299,23 +298,23 @@ class BardController extends TextEditingController {
 
     for (final s in contentSpans) {
       switch (s.type) {
-        case MarkdownFormatType.bold:
+        case .bold:
           fontWeight = .bold;
-        case MarkdownFormatType.italic:
+        case .italic:
           fontStyle = .italic;
-        case MarkdownFormatType.strikethrough:
-          decorations.add(TextDecoration.lineThrough);
-        case MarkdownFormatType.wikiLink:
+        case .strikethrough:
+          decorations.add(.lineThrough);
+        case .wikiLink:
           color = _kWikiLinkColor;
-          decorations.add(TextDecoration.underline);
+          decorations.add(.underline);
       }
     }
 
-    final decoration = decorations.isEmpty
+    final TextDecoration? decoration = decorations.isEmpty
         ? null
         : decorations.length == 1
         ? decorations.first
-        : TextDecoration.combine(decorations);
+        : .combine(decorations);
 
     return TextStyle(
       fontSize: fontSize,

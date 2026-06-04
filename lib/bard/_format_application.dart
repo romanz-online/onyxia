@@ -19,7 +19,7 @@ extension _Format on _BardEditorState {
         if (cursor == span.contentStart) {
           return; // S5b: cursor at first content position — do nothing
         } else if (cursor == span.contentEnd) {
-          _controller.selection = TextSelection.collapsed(
+          _controller.selection = .collapsed(
             offset: span.markerEndClose,
           ); // S6: jump
         } else {
@@ -81,7 +81,7 @@ extension _Format on _BardEditorState {
           text.substring(cursor);
       _controller.value = TextEditingValue(
         text: newText,
-        selection: TextSelection.collapsed(offset: cursor + 2 * ml),
+        selection: .collapsed(offset: cursor + 2 * ml),
       );
     } else if (leftBound && !rightBound) {
       // S3: word starts at cursor — wrap word forward, cursor at contentStart
@@ -97,7 +97,7 @@ extension _Format on _BardEditorState {
           text.substring(we);
       _controller.value = TextEditingValue(
         text: newText,
-        selection: TextSelection.collapsed(offset: cursor + ml),
+        selection: .collapsed(offset: cursor + ml),
       );
     } else {
       // S4: cursor mid-word — wrap whole word, cursor keeps relative position
@@ -118,7 +118,7 @@ extension _Format on _BardEditorState {
           text.substring(we);
       _controller.value = TextEditingValue(
         text: newText,
-        selection: TextSelection.collapsed(offset: ws + ml + rel),
+        selection: .collapsed(offset: ws + ml + rel),
       );
     }
   }
@@ -174,18 +174,12 @@ extension _Format on _BardEditorState {
     );
   }
 
-  String _markerFor(MarkdownFormatType type) {
-    switch (type) {
-      case MarkdownFormatType.bold:
-        return '**';
-      case MarkdownFormatType.italic:
-        return '*';
-      case MarkdownFormatType.strikethrough:
-        return '~~';
-      case MarkdownFormatType.wikiLink:
-        return '[[';
-    }
-  }
+  String _markerFor(MarkdownFormatType type) => switch (type) {
+    .bold => '**',
+    .italic => '*',
+    .strikethrough => '~~',
+    .wikiLink => '[[',
+  };
 
   void _insertMarkerPair(int selStart, int selEnd, String marker) {
     final text = _controller.text;
@@ -198,7 +192,7 @@ extension _Format on _BardEditorState {
     _controller.value = TextEditingValue(
       text: newText,
       selection: selStart == selEnd
-          ? TextSelection.collapsed(offset: selStart + marker.length)
+          ? .collapsed(offset: selStart + marker.length)
           : TextSelection(
               baseOffset: selStart + marker.length,
               extentOffset: selEnd + marker.length,

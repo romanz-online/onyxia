@@ -29,100 +29,65 @@ final List<_CharProfile> _kCharRegistry = [
   _CharProfile(
     opening: '(',
     closing: ')',
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '[',
     closing: ']',
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '{',
     closing: '}',
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: "'",
     closing: "'",
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '"',
     closing: '"',
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '_',
     closing: '_',
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '*',
     closing: '*',
-    behaviors: {
-      BardBehavior.autocomplete,
-      BardBehavior.skipClose,
-      BardBehavior.wrapSelection,
-      BardBehavior.deletePair,
-    },
+    behaviors: {.autocomplete, .skipClose, .wrapSelection, .deletePair},
     noAdjacentDuplicate: true,
   ),
   _CharProfile(
     opening: '~~',
     closing: '~~',
-    behaviors: {BardBehavior.autocomplete, BardBehavior.skipClose},
+    behaviors: {.autocomplete, .skipClose},
     triggerLength: 2,
     noAdjacentDuplicate: true,
   ),
   _CharProfile(
     opening: '~',
     closing: '~',
-    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+    behaviors: {.wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '=',
     closing: '=',
-    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+    behaviors: {.wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: r'$',
     closing: r'$',
-    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+    behaviors: {.wrapSelection, .deletePair},
   ),
   _CharProfile(
     opening: '%',
     closing: '%',
-    behaviors: {BardBehavior.wrapSelection, BardBehavior.deletePair},
+    behaviors: {.wrapSelection, .deletePair},
   ),
 ];
 
