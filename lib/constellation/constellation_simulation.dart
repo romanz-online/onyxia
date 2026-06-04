@@ -7,8 +7,13 @@ import 'constellation_simulation_web.dart';
 class ConstellationNode {
   final String id;
   final String? assignedTo;
+  final bool isZombie;
 
-  const ConstellationNode({required this.id, this.assignedTo});
+  const ConstellationNode({
+    required this.id,
+    this.assignedTo,
+    this.isZombie = false,
+  });
 
   @override
   bool operator ==(Object other) =>

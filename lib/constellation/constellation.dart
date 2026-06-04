@@ -34,7 +34,9 @@ ConstellationLayout _buildWikiLinks(
   var nodes = graph.nodeNames.map((n) => ConstellationNode(id: n)).toList();
 
   if (showZombies) {
-    nodes.addAll(graph.zombieNames.map((n) => ConstellationNode(id: n)));
+    nodes.addAll(
+      graph.zombieNames.map((n) => ConstellationNode(id: n, isZombie: true)),
+    );
   }
 
   if (!showFiles) {
