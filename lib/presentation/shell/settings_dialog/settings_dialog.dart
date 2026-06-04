@@ -2,6 +2,8 @@ import 'package:onyxia/export.dart';
 import 'vault_members_tab.dart';
 import 'theme_tab.dart';
 
+// TODO: add a "vault" or something tab for vault name, deletion, and export -- just a button that gives you a .zip of .md and image files, just the inverse of import as it currently exists
+
 enum _SettingsTab with OnyxiaEnum {
   members('Members'),
   theme('Theme');
