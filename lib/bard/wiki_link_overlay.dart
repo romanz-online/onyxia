@@ -4,6 +4,8 @@ import 'package:onyxia/export.dart';
 
 // TODO: not here but clicking a link when not selecting any of its text (so the brackets are hidden) should actually direct the user to the linked item
 
+// TODO: not here but clicking a link's brackets shouldn't redirect. only clicking the span's content, not its markers, should redirect
+
 class WikiLinkOverlay extends StatelessWidget {
   const WikiLinkOverlay({
     super.key,

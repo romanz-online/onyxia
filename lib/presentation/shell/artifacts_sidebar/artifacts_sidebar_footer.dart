@@ -17,7 +17,7 @@ class _ArtifactsSidebarFooterState
     setState(() => _isMenuOpen = open);
   }
 
-  // TODO: the results from this are wrong because artifact content doesn't get updated immediately. need ops or snapshots to update a project's updatedAt data but also the createdAt value seems to not be registering properly here
+  // TODO: check the results from this method after sorting out the artifact ops/snapshot/body.content mess
   List<Vault> getMostRelevantVaults(
     List<Vault> vaults,
     Vault? currentVault,
