@@ -27,7 +27,10 @@ class _SettingsDialogState extends ConsumerState<SettingsDialog> {
     final hasVault = ref.watch(selectedVaultProvider) != null;
     // The Members tab is vault-specific; without a vault only show
     // vault-agnostic tabs.
-    final List<_SettingsTab> tabs = [if (hasVault) .members, .theme];
+    final List<_SettingsTab> tabs = [
+      if (hasVault) .members,
+      .theme,
+    ]; // TODO: there should be a divider between global tabs like theme and vault-specific tabs like members/vault. global at the top and the rest below
     // The previously selected tab may no longer be visible (e.g. the vault
     // was deselected) — fall back to the first available tab.
     final selected = tabs.contains(_selected) ? _selected : tabs.first;

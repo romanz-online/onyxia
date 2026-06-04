@@ -27,7 +27,7 @@ class NewVaultDialogState extends ConsumerState<NewVaultDialog> {
     await _waitForVaultInProvider(newVault.id);
     if (!mounted) return;
     Navigator.of(context).pop();
-    navigatorKey.currentContext?.go(Routes.graphUrl(newVault.id));
+    navigatorKey.currentContext?.go(Routes.vaultUrl(newVault.id));
   }
 
   Future<void> _waitForVaultInProvider(String id) {
