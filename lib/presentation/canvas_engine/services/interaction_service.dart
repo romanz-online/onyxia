@@ -213,7 +213,7 @@ class CanvasInteractionService {
       final textProvider = ref.read(canvasTextProvider);
       final objectsNotifier = ref.read(canvasObjectsProvider.notifier);
       final object = objectsNotifier.getObjectById(textProvider.editingObjId);
-      if (object.id.isNotEmpty && object.type == CanvasObjectType.text) {
+      if (object.id.isNotEmpty && object.type == .text) {
         object.content = textNotifier.text;
         if (object.isContentEmpty) {
           // automatically delete text objects with no text
@@ -258,7 +258,7 @@ class CanvasInteractionService {
           canvasPosition.dx + image.width,
           canvasPosition.dy + image.height,
         ),
-        type: CanvasObjectType.image,
+        type: .image,
         imageProperties: ImageProperties(imageUrl: data.imageUrl),
       );
 
@@ -330,7 +330,7 @@ class CanvasInteractionService {
 
     ref.read(pinsProvider.notifier).addPin(pin);
 
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   }
 
   static Future<void> createArtifactObject({
@@ -350,14 +350,14 @@ class CanvasInteractionService {
         position.dx + defaultArtifactObjectDimensions.width / 2,
         position.dy + defaultArtifactObjectDimensions.height / 2,
       ),
-      type: CanvasObjectType.artifact,
+      type: .artifact,
       artifactProperties: ArtifactProperties(artifactId: artifact?.id ?? ''),
     );
     // TODO: null artifact should create a note?
 
     ref.read(canvasObjectsProvider.notifier).addObject(newObj);
 
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   }
 
   /// Creates a comment pin at the specified position
@@ -399,6 +399,6 @@ class CanvasInteractionService {
           pinnedObjectId: targetObject?.id,
         );
 
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   }
 }

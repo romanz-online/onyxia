@@ -171,7 +171,7 @@ class TransformationNotifier extends Notifier<TransformationController> {
     final selected = ref.read(selectedArtifactProvider);
     final currentCanvas = selected is CanvasArtifact ? selected : null;
 
-    if (currentCanvas?.canvasType == CanvasType.markup) {
+    if (currentCanvas?.canvasType == .markup) {
       final percentage = (currentScale * 100).round();
       return '$percentage%';
     } else {

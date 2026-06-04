@@ -11,7 +11,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
   const BrushToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.brush;
+  ToolMode get toolMode => .brush;
 
   @override
   bool get allowsViewportPanning => false;
@@ -28,7 +28,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
 
     final brush = CanvasObject(
       id: const Uuid().v4(),
-      type: CanvasObjectType.brush,
+      type: .brush,
       topLeft: details.localPosition,
       bottomRight: details.localPosition,
       color: CanvasColors.neutral600,
@@ -80,7 +80,7 @@ class BrushToolBehavior extends CanvasToolGestureHandler {
     if (brushObject == null || !brushObject.isBrush) return;
 
     ref.read(canvasObjectsProvider.notifier).selectObject(brushObject);
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
   };
 }

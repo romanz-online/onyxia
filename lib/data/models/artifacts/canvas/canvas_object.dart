@@ -8,7 +8,7 @@ const Size defaultArtifactObjectDimensions = Size(
   CanvasBounds.gridSpacing * 10,
 );
 
-enum ResizeHandle {
+enum ResizeHandle with OnyxiaEnum {
   center,
   topLeft,
   topCenter,
@@ -76,8 +76,8 @@ class CanvasObject {
   CanvasObject({
     required this.id,
     this.color = Colors.transparent,
-    this.type = CanvasObjectType.rectangle,
-    this.stroke = StrokeType.solid,
+    this.type = .rectangle,
+    this.stroke = .solid,
     this.topLeft = .zero,
     this.bottomRight = .zero,
     this.content = '',
@@ -94,19 +94,19 @@ class CanvasObject {
        _imageProps = imageProperties,
        _brushProps = brushProperties,
        _artifactProps = artifactProperties {
-    if (type == CanvasObjectType.arrow) {
+    if (type == .arrow) {
       if (_arrowProps == null) {
         throw ArgumentError('Arrow objects require ArrowProperties');
       }
-    } else if (type == CanvasObjectType.image) {
+    } else if (type == .image) {
       if (_imageProps == null) {
         throw ArgumentError('Image objects require ImageProperties');
       }
-    } else if (type == CanvasObjectType.brush) {
+    } else if (type == .brush) {
       if (_brushProps == null) {
         throw ArgumentError('Brush objects require BrushProperties');
       }
-    } else if (type == CanvasObjectType.artifact) {
+    } else if (type == .artifact) {
       if (_artifactProps == null) {
         throw ArgumentError('Artifact objects require ArtifactProperties');
       }
@@ -149,8 +149,8 @@ class CanvasObject {
     return CanvasObject(
       id: '',
       color: Colors.transparent,
-      type: CanvasObjectType.rectangle,
-      stroke: StrokeType.solid,
+      type: .rectangle,
+      stroke: .solid,
       topLeft: .zero,
       bottomRight: .zero,
     );
@@ -218,18 +218,18 @@ class CanvasObject {
           (map['payload'] as Map<String, dynamic>?) ??
           const <String, dynamic>{};
 
-      CanvasObjectType type = CanvasObjectType.rectangle;
+      CanvasObjectType type = .rectangle;
       try {
         type = CanvasObjectType.values.fromString(map['type'] ?? '');
       } catch (e) {
-        type = CanvasObjectType.rectangle;
+        type = .rectangle;
       }
 
-      StrokeType stroke = StrokeType.solid;
+      StrokeType stroke = .solid;
       try {
         stroke = StrokeType.values.fromString(payload['stroke'] ?? '');
       } catch (e) {
-        stroke = StrokeType.solid;
+        stroke = .solid;
       }
 
       Color color = Colors.transparent;
@@ -271,21 +271,17 @@ class CanvasObject {
         topLeft: topLeft,
         bottomRight: bottomRight,
         content: content,
-        arrowProperties:
-            type == CanvasObjectType.arrow && payload['arrow_props'] != null
+        arrowProperties: type == .arrow && payload['arrow_props'] != null
             ? ArrowProperties.fromMap(payload['arrow_props'])
             : null,
-        imageProperties:
-            type == CanvasObjectType.image && payload['image_props'] != null
+        imageProperties: type == .image && payload['image_props'] != null
             ? ImageProperties.fromMap(payload['image_props'])
             : null,
-        brushProperties:
-            type == CanvasObjectType.brush && payload['brush_props'] != null
+        brushProperties: type == .brush && payload['brush_props'] != null
             ? BrushProperties.fromMap(payload['brush_props'])
             : null,
         artifactProperties:
-            type == CanvasObjectType.artifact &&
-                payload['artifact_props'] != null
+            type == .artifact && payload['artifact_props'] != null
             ? ArtifactProperties.fromMap(payload['artifact_props'])
             : null,
         //
@@ -366,18 +362,18 @@ class CanvasObject {
       // case ObjectType.line:
       // case ObjectType.dashedLine:
       // case ObjectType.dotDashLine:
-      case CanvasObjectType.rectangle:
-      case CanvasObjectType.diamond:
-      case CanvasObjectType.oblong:
-      case CanvasObjectType.circle:
-      case CanvasObjectType.rhombus:
-      case CanvasObjectType.trapezoid:
-      case CanvasObjectType.cylinder:
-      case CanvasObjectType.house:
-      case CanvasObjectType.reverseHouse:
-      case CanvasObjectType.image:
-      case CanvasObjectType.text:
-      case CanvasObjectType.artifact:
+      case .rectangle:
+      case .diamond:
+      case .oblong:
+      case .circle:
+      case .rhombus:
+      case .trapezoid:
+      case .cylinder:
+      case .house:
+      case .reverseHouse:
+      case .image:
+      case .text:
+      case .artifact:
         final double minX = math.min(topLeft.dx, bottomRight.dx);
         final double maxX = math.max(topLeft.dx, bottomRight.dx);
         final double minY = math.min(topLeft.dy, bottomRight.dy);
@@ -401,7 +397,7 @@ class CanvasObject {
 
       //   return isInObject;
 
-      case CanvasObjectType.brush:
+      case .brush:
         if (!isBrush) return false;
 
         // Check if point is near any brush point
@@ -414,10 +410,10 @@ class CanvasObject {
 
         return false;
 
-      case CanvasObjectType.arrow:
+      case .arrow:
         if (!isArrow || arrowProps.points.isEmpty) return false;
 
-        if (arrowProps.arrowType == ArrowType.curved) {
+        if (arrowProps.arrowType == .curved) {
           final minX =
               math.min(arrowProps.points[0].dx, arrowProps.points.last.dx) -
               margin;
@@ -497,34 +493,34 @@ class CanvasObject {
     if (isArrow || isBrush) return (ConnectionPoint.none, .zero);
 
     switch (type) {
-      case CanvasObjectType.rectangle:
-      case CanvasObjectType.text:
-      case CanvasObjectType.image:
-      case CanvasObjectType.artifact:
+      case .rectangle:
+      case .text:
+      case .image:
+      case .artifact:
         return _findNearestBoundingBoxOffset(position);
 
-      case CanvasObjectType.diamond:
+      case .diamond:
         return _findNearestDiamondOffset(position);
 
-      case CanvasObjectType.circle:
+      case .circle:
         return _findNearestCircleOffset(position);
 
-      case CanvasObjectType.oblong:
+      case .oblong:
         return _findNearestOblongOffset(position);
 
-      case CanvasObjectType.rhombus:
+      case .rhombus:
         return _findNearestRhombusOffset(position);
 
-      case CanvasObjectType.trapezoid:
+      case .trapezoid:
         return _findNearestTrapezoidOffset(position);
 
-      case CanvasObjectType.house:
+      case .house:
         return _findNearestHouseOffset(position);
 
-      case CanvasObjectType.reverseHouse:
+      case .reverseHouse:
         return _findNearestReverseHouseOffset(position);
 
-      case CanvasObjectType.cylinder:
+      case .cylinder:
         return _findNearestCylinderOffset(position);
 
       default:
@@ -1377,7 +1373,7 @@ class CanvasObject {
       Offset newTopLeft = topLeft;
       Offset newBottomRight = bottomRight;
 
-      if (type == CanvasObjectType.image) {
+      if (type == .image) {
         // maintain aspect ratio
         final currentWidth = bottomRight.dx - topLeft.dx;
         final currentHeight = bottomRight.dy - topLeft.dy;
@@ -1387,33 +1383,33 @@ class CanvasObject {
         final heightChange = d * aspectRatio;
 
         switch (handle) {
-          case ResizeHandle.topCenter:
+          case .topCenter:
             newTopLeft += Offset(delta.dy * aspectRatio, delta.dy);
             break;
-          case ResizeHandle.centerLeft:
+          case .centerLeft:
             newTopLeft += Offset(delta.dx, delta.dx / aspectRatio);
             break;
-          case ResizeHandle.centerRight:
+          case .centerRight:
             newBottomRight += Offset(delta.dx, delta.dx / aspectRatio);
             break;
-          case ResizeHandle.bottomCenter:
+          case .bottomCenter:
             newBottomRight += Offset(delta.dy * aspectRatio, delta.dy);
             break;
-          case ResizeHandle.topLeft:
+          case .topLeft:
             if (delta.dx.abs() > delta.dy.abs()) {
               newTopLeft += Offset(d, widthChange);
             } else {
               newTopLeft += Offset(heightChange, d);
             }
             break;
-          case ResizeHandle.bottomRight:
+          case .bottomRight:
             if (delta.dx.abs() > delta.dy.abs()) {
               newBottomRight += Offset(d, widthChange);
             } else {
               newBottomRight += Offset(heightChange, d);
             }
             break;
-          case ResizeHandle.bottomLeft:
+          case .bottomLeft:
             if (delta.dx.abs() > delta.dy.abs()) {
               newTopLeft += Offset(d, 0);
               newBottomRight += Offset(0, -d / aspectRatio);
@@ -1422,7 +1418,7 @@ class CanvasObject {
               newBottomRight += Offset(0, d);
             }
             break;
-          case ResizeHandle.topRight:
+          case .topRight:
             if (delta.dx.abs() > delta.dy.abs()) {
               newTopLeft += Offset(0, -d / aspectRatio);
               newBottomRight += Offset(d, 0);
@@ -1431,45 +1427,45 @@ class CanvasObject {
               newBottomRight += Offset(-d * aspectRatio, 0);
             }
             break;
-          case ResizeHandle.arrow:
-          case ResizeHandle.arrowHead:
-          case ResizeHandle.center:
-          case ResizeHandle.none:
+          case .arrow:
+          case .arrowHead:
+          case .center:
+          case .none:
             break;
         }
       } else {
         // For non-image objects, use the original logic
         switch (handle) {
-          case ResizeHandle.topLeft:
+          case .topLeft:
             newTopLeft += delta;
             break;
-          case ResizeHandle.topCenter:
+          case .topCenter:
             newTopLeft += Offset(0, delta.dy);
             break;
-          case ResizeHandle.topRight:
+          case .topRight:
             newTopLeft += Offset(0, delta.dy);
             newBottomRight += Offset(delta.dx, 0);
             break;
-          case ResizeHandle.centerLeft:
+          case .centerLeft:
             newTopLeft += Offset(delta.dx, 0);
             break;
-          case ResizeHandle.centerRight:
+          case .centerRight:
             newBottomRight += Offset(delta.dx, 0);
             break;
-          case ResizeHandle.bottomLeft:
+          case .bottomLeft:
             newTopLeft += Offset(delta.dx, 0);
             newBottomRight += Offset(0, delta.dy);
             break;
-          case ResizeHandle.bottomCenter:
+          case .bottomCenter:
             newBottomRight += Offset(0, delta.dy);
             break;
-          case ResizeHandle.bottomRight:
+          case .bottomRight:
             newBottomRight += delta;
             break;
-          case ResizeHandle.arrow:
-          case ResizeHandle.arrowHead:
-          case ResizeHandle.center:
-          case ResizeHandle.none:
+          case .arrow:
+          case .arrowHead:
+          case .center:
+          case .none:
             break;
         }
       }
@@ -1477,15 +1473,11 @@ class CanvasObject {
       newTopLeft = canvasBoundsNotifier.clamp(newTopLeft);
       newBottomRight = canvasBoundsNotifier.clamp(newBottomRight);
 
-      if (topLeft != newTopLeft &&
-          snapToGrid &&
-          type != CanvasObjectType.image) {
+      if (topLeft != newTopLeft && snapToGrid && type != .image) {
         newTopLeft = canvasBoundsNotifier.snap(newTopLeft);
       }
 
-      if (bottomRight != newBottomRight &&
-          snapToGrid &&
-          type != CanvasObjectType.image) {
+      if (bottomRight != newBottomRight && snapToGrid && type != .image) {
         newBottomRight = canvasBoundsNotifier.snap(newBottomRight);
       }
 
@@ -1632,14 +1624,14 @@ class CanvasObject {
     final rect = Rect.fromPoints(topLeft, bottomRight);
 
     switch (type) {
-      case CanvasObjectType.rectangle:
-      case CanvasObjectType.text:
-      case CanvasObjectType.image:
-      case CanvasObjectType.artifact:
+      case .rectangle:
+      case .text:
+      case .image:
+      case .artifact:
         // For rectangles, the inner rect is the same as the bounding rect
         return rect;
 
-      case CanvasObjectType.diamond:
+      case .diamond:
         // For diamond, calculate the inscribed rectangle properly
         // Diamond vertices are at (centerX, top), (right, centerY), (centerX, bottom), (left, centerY)
         // The largest inscribed rectangle has corners that touch the diamond edges
@@ -1657,7 +1649,7 @@ class CanvasObject {
           height: innerHeight,
         );
 
-      case CanvasObjectType.circle:
+      case .circle:
         // For circle/oval, the inner rect is the largest rectangle that fits inside
         // For a circle, this is a square with side = diameter/sqrt(2)
         // For an oval, we need to scale based on the aspect ratio
@@ -1670,7 +1662,7 @@ class CanvasObject {
           height: innerHeight,
         );
 
-      case CanvasObjectType.oblong:
+      case .oblong:
         // For oblong (rounded rectangle), the inner rect has corners at the center of each quarter-circle
         final center = rect.center;
 
@@ -1720,7 +1712,7 @@ class CanvasObject {
           return Rect.fromLTRB(innerLeft, innerTop, innerRight, innerBottom);
         }
 
-      case CanvasObjectType.rhombus:
+      case .rhombus:
         // For rhombus (parallelogram), the inner rect excludes the slanted triangular areas
         final offset = rect.width * 0.2; // Same offset as used in drawing
         final innerLeft = rect.left + offset;
@@ -1728,7 +1720,7 @@ class CanvasObject {
 
         return Rect.fromLTRB(innerLeft, rect.top, innerRight, rect.bottom);
 
-      case CanvasObjectType.trapezoid:
+      case .trapezoid:
         // For trapezoid, the inner rect is bounded by the narrower top edge
         final topInset = rect.width * 0.2; // Same inset as used in drawing
         final innerLeft = rect.left + topInset;
@@ -1736,7 +1728,7 @@ class CanvasObject {
 
         return Rect.fromLTRB(innerLeft, rect.top, innerRight, rect.bottom);
 
-      case CanvasObjectType.house:
+      case .house:
         // For house, the inner rect is the main body excluding the roof
         final roofHeight = rect.height * 0.4; // Same ratio as used in drawing
         return Rect.fromLTRB(
@@ -1746,7 +1738,7 @@ class CanvasObject {
           rect.bottom,
         );
 
-      case CanvasObjectType.reverseHouse:
+      case .reverseHouse:
         // For reverse house, the inner rect is the main body excluding the bottom roof
         final roofHeight = rect.height * 0.4; // Same ratio as used in drawing
         return Rect.fromLTRB(
@@ -1756,7 +1748,7 @@ class CanvasObject {
           rect.bottom - roofHeight,
         );
 
-      case CanvasObjectType.cylinder:
+      case .cylinder:
         // For cylinder, the inner rect is the main body excluding the curved top and bottom
         final radiusY = rect.height * 0.2; // Same ratio as used in drawing
         return Rect.fromLTRB(
@@ -1766,7 +1758,7 @@ class CanvasObject {
           rect.bottom - radiusY,
         );
 
-      case CanvasObjectType.brush:
+      case .brush:
         // For brush, return the bounding rect of the brush strokes
         if (!isBrush || brushProps.points.isEmpty) return rect;
 
@@ -1785,7 +1777,7 @@ class CanvasObject {
 
         return Rect.fromLTRB(minX, minY, maxX, maxY);
 
-      case CanvasObjectType.arrow:
+      case .arrow:
         // For arrows, return the bounding rect of the arrow path
         if (!isArrow || arrowProps.points.isEmpty) return rect;
 
@@ -1808,14 +1800,11 @@ class CanvasObject {
 }
 
 extension GenericCanvasObjectExtension on CanvasObject {
-  bool get isGeneric =>
-      type != CanvasObjectType.arrow &&
-      type != CanvasObjectType.image &&
-      type != CanvasObjectType.brush;
+  bool get isGeneric => type != .arrow && type != .image && type != .brush;
 }
 
 extension ArrowCanvasObjectExtension on CanvasObject {
-  bool get isArrow => type == CanvasObjectType.arrow;
+  bool get isArrow => type == .arrow;
   ArrowProperties get arrow => arrowProps;
 
   CanvasObject? getStartObject(WidgetRef ref) => ref
@@ -2168,7 +2157,7 @@ extension ArrowCanvasObjectExtension on CanvasObject {
   Offset getTextOffset() {
     if (arrowProps.points.isEmpty) return .zero;
 
-    if (arrowProps.arrowType == ArrowType.curved) {
+    if (arrowProps.arrowType == .curved) {
       return curveOffset(arrowProps.textPosition);
     }
 
@@ -2327,12 +2316,12 @@ extension ArrowCanvasObjectExtension on CanvasObject {
 }
 
 extension ImageCanvasObjectExtension on CanvasObject {
-  bool get isImage => type == CanvasObjectType.image;
+  bool get isImage => type == .image;
   ImageProperties get obj => imageProps;
 }
 
 extension BrushCanvasObjectExtension on CanvasObject {
-  bool get isBrush => type == CanvasObjectType.brush;
+  bool get isBrush => type == .brush;
   BrushProperties get obj => brushProps;
 
   void draw(Offset point) {
@@ -2342,7 +2331,7 @@ extension BrushCanvasObjectExtension on CanvasObject {
 }
 
 extension ArtifactCanvasObjectExtension on CanvasObject {
-  bool get isArtifact => type == CanvasObjectType.artifact;
+  bool get isArtifact => type == .artifact;
   ArtifactProperties get obj => artifactProps;
 }
 

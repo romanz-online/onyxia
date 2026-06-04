@@ -164,7 +164,7 @@ class _ErrorView extends StatelessWidget {
         spacing: 16,
         children: [
           Text('Error: $error', style: TextStyle(color: ThemeHelper.error())),
-          ElevatedButton(onPressed: onRetry, child: const Text('Retry')),
+          OnyxiaButton(label: 'Retry', onPressed: onRetry),
         ],
       ),
     );

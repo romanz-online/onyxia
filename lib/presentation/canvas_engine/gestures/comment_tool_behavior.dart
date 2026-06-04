@@ -8,7 +8,7 @@ class CommentToolBehavior extends CanvasToolGestureHandler {
   const CommentToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.comment;
+  ToolMode get toolMode => .comment;
 
   @override
   bool get allowsViewportPanning => false;
@@ -35,7 +35,7 @@ class CommentToolBehavior extends CanvasToolGestureHandler {
         return;
     }
 
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   };
 
   Future<void> _createComment(

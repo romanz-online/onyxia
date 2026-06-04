@@ -25,7 +25,7 @@ class HeadlessState {
 
   bool get isVisible => headlessArrow != null;
   bool get hasGhostObject => ghostObject != null;
-  bool get isFlowCanvas => canvasConfig?.canvasType == CanvasType.flow;
+  bool get isFlowCanvas => canvasConfig?.canvasType == .flow;
   bool get hasChildren => children != null && children!.isNotEmpty;
 }
 
@@ -41,7 +41,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     List<Artifact>? children;
 
     // For flow canvases, try to find the source item and its child notes
-    if (canvasConfig.canvasType == CanvasType.flow) {
+    if (canvasConfig.canvasType == .flow) {
       sourceArtifactId = _extractSourceArtifactId(headlessArrow);
       if (sourceArtifactId != null) {
         children = _findChildren(sourceArtifactId);
@@ -145,7 +145,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
       type: shapeType,
       topLeft: topLeft,
       bottomRight: bottomRight,
-      stroke: StrokeType.solid,
+      stroke: .solid,
     );
   }
 
@@ -192,10 +192,10 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
     return CanvasObject(
       id: const Uuid().v4(),
       color: CanvasColors.neutral100.withValues(alpha: 0.5),
-      type: CanvasObjectType.artifact,
+      type: .artifact,
       topLeft: topLeft,
       bottomRight: bottomRight,
-      stroke: StrokeType.solid,
+      stroke: .solid,
       artifactProperties: ArtifactProperties(artifactId: item.id),
     );
   }
@@ -210,8 +210,7 @@ class HeadlessArrowNotifier extends Notifier<HeadlessState> {
       (obj) => obj.id == startObjectId,
     );
 
-    if (sourceObject != null &&
-        sourceObject.type == CanvasObjectType.artifact) {
+    if (sourceObject != null && sourceObject.type == .artifact) {
       return sourceObject.artifactProps.artifactId;
     }
 

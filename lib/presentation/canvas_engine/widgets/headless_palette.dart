@@ -36,27 +36,27 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
   );
 
   static const List<CanvasObjectType> shapeOptions = [
-    CanvasObjectType.rectangle,
-    CanvasObjectType.diamond,
-    CanvasObjectType.oblong,
-    CanvasObjectType.circle,
-    CanvasObjectType.rhombus,
-    CanvasObjectType.trapezoid,
-    CanvasObjectType.cylinder,
-    CanvasObjectType.house,
-    CanvasObjectType.reverseHouse,
+    .rectangle,
+    .diamond,
+    .oblong,
+    .circle,
+    .rhombus,
+    .trapezoid,
+    .cylinder,
+    .house,
+    .reverseHouse,
   ];
 
   static const Map<CanvasObjectType, IconData> _shapeIcons = {
-    CanvasObjectType.rectangle: LucideIcons.square,
-    CanvasObjectType.diamond: LucideIcons.diamond,
-    CanvasObjectType.oblong: LucideIcons.rectangleHorizontal,
-    CanvasObjectType.circle: LucideIcons.circle,
-    CanvasObjectType.rhombus: LucideIcons.diamond,
-    CanvasObjectType.trapezoid: LucideIcons.pentagon,
-    CanvasObjectType.cylinder: LucideIcons.cylinder,
-    CanvasObjectType.house: LucideIcons.house,
-    CanvasObjectType.reverseHouse: LucideIcons.house,
+    .rectangle: LucideIcons.square,
+    .diamond: LucideIcons.diamond,
+    .oblong: LucideIcons.rectangleHorizontal,
+    .circle: LucideIcons.circle,
+    .rhombus: LucideIcons.diamond,
+    .trapezoid: LucideIcons.pentagon,
+    .cylinder: LucideIcons.cylinder,
+    .house: LucideIcons.house,
+    .reverseHouse: LucideIcons.house,
   };
 
   IconData _getShapeIcon(CanvasObjectType shapeType) =>
@@ -105,7 +105,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(ghostObject);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
     CanvasInteractionService.openTextEditor(ref: ref);
   }
 
@@ -152,7 +152,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(ghostObject);
     ref.read(canvasGestureStateProvider.notifier).resetInteraction(ref);
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   }
 
   @override
@@ -164,7 +164,7 @@ class HeadlessPaletteState extends ConsumerState<HeadlessPalette> {
     final config = ref.watch(canvasConfigProvider);
 
     // Different layouts for flow vs other canvas types
-    if (config.canvasType == CanvasType.flow) {
+    if (config.canvasType == .flow) {
       return _buildNotesPaletteLayout(paletteState);
     } else {
       return _buildShapesPaletteLayout(paletteState);

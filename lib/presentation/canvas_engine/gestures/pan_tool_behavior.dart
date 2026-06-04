@@ -10,7 +10,7 @@ class PanToolBehavior extends CanvasToolGestureHandler {
   const PanToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.pan;
+  ToolMode get toolMode => .pan;
 
   @override
   bool get allowsViewportPanning => true;

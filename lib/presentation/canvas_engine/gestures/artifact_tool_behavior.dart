@@ -1,5 +1,4 @@
 import 'package:onyxia/export.dart';
-import '../canvas_config.dart';
 import '../providers/providers.dart';
 import 'canvas_interaction_context.dart';
 import 'canvas_tool_gesture_handler.dart';
@@ -9,7 +8,7 @@ class ArtifactToolBehavior extends CanvasToolGestureHandler {
   const ArtifactToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.artifact;
+  ToolMode get toolMode => .artifact;
 
   @override
   bool get allowsViewportPanning => false;
@@ -36,14 +35,14 @@ class ArtifactToolBehavior extends CanvasToolGestureHandler {
       case BackgroundInteraction():
         if (canvasConfig.allowArtifactsOnBackground) {
           switch (canvasConfig.artifactDisplay) {
-            case ArtifactCanvasDisplay.pin:
+            case .pin:
               CanvasInteractionService.createPin(
                 ref: ref,
                 position: details.localPosition,
                 targetObject: null,
               );
               break;
-            case ArtifactCanvasDisplay.object:
+            case .object:
               CanvasInteractionService.createArtifactObject(
                 ref: ref,
                 position: details.localPosition,
@@ -57,6 +56,6 @@ class ArtifactToolBehavior extends CanvasToolGestureHandler {
         return;
     }
 
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   };
 }

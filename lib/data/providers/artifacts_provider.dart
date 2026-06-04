@@ -120,10 +120,9 @@ class ArtifactsTreeNotifier extends StreamNotifier<List<Artifact>> {
     if (item == null) return false;
     if (item.parentFolderId == newParentId) return false;
 
-    if (item.type == ArtifactType.folder && newParentId.isNotEmpty) {
+    if (item.type == .folder && newParentId.isNotEmpty) {
       final newParent = _items.firstWhereOrNull((e) => e.id == newParentId);
-      if (newParent == null || newParent.type != ArtifactType.folder)
-        return false;
+      if (newParent == null || newParent.type != .folder) return false;
     }
 
     updateItem(item.copyWith(parentFolderId: newParentId));

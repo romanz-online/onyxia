@@ -109,7 +109,7 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
           needsReinitialize = true;
         } else if (prevCanvas.canvasType != nextCanvas.canvasType) {
           needsReinitialize = true;
-        } else if (nextCanvas.canvasType == CanvasType.markup &&
+        } else if (nextCanvas.canvasType == .markup &&
             prevCanvas.imageUrl != nextCanvas.imageUrl) {
           needsReinitialize = true;
         }
@@ -144,8 +144,8 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
     }
 
     switch (canvas.canvasType) {
-      case CanvasType.whiteboard:
-      case CanvasType.flow:
+      case .whiteboard:
+      case .flow:
         if (ref.mounted && _loadGeneration == myGeneration) {
           state = const CanvasBounds(
             bounds: CanvasBounds.defaultBounds,
@@ -154,7 +154,7 @@ class CanvasBoundsNotifier extends Notifier<CanvasBounds> {
         }
         break;
 
-      case CanvasType.markup:
+      case .markup:
         if (canvas.imageUrl != null && canvas.imageUrl!.isNotEmpty) {
           // Set loading state before starting async operation
           if (ref.mounted && _loadGeneration == myGeneration) {

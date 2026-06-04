@@ -29,8 +29,8 @@ class ArrowProperties {
     this.points = const <Offset>[],
     this.startObjectId,
     this.endObjectId,
-    this.startTip = ArrowTip.none,
-    this.endTip = ArrowTip.triangle,
+    this.startTip = .none,
+    this.endTip = .triangle,
     this.startPoint = ConnectionPoint.none,
     this.startRelativeOffset,
     this.startAbsoluteOffset,
@@ -39,11 +39,11 @@ class ArrowProperties {
     this.endAbsoluteOffset,
     this.textPosition = 0.5,
     this.curvedMidpoint,
-    this.arrowType = ArrowType.segmented,
+    this.arrowType = .segmented,
   });
 
   factory ArrowProperties.initial() {
-    return ArrowProperties(points: [], arrowType: ArrowType.segmented);
+    return ArrowProperties(points: [], arrowType: .segmented);
   }
 
   @override
@@ -100,22 +100,22 @@ class ArrowProperties {
       }
 
       // Safe enum parsing
-      ArrowTip startTip = ArrowTip.none;
+      ArrowTip startTip = .none;
       try {
         if (map['start_tip'] != null) {
           startTip = ArrowTip.values.fromString(map['start_tip']);
         }
       } catch (e) {
-        startTip = ArrowTip.none;
+        startTip = .none;
       }
 
-      ArrowTip endTip = ArrowTip.triangle;
+      ArrowTip endTip = .triangle;
       try {
         if (map['end_tip'] != null) {
           endTip = ArrowTip.values.fromString(map['end_tip']);
         }
       } catch (e) {
-        endTip = ArrowTip.triangle;
+        endTip = .triangle;
       }
 
       ConnectionPoint startPoint = ConnectionPoint.none;
@@ -140,13 +140,13 @@ class ArrowProperties {
         endPoint = ConnectionPoint.none;
       }
 
-      ArrowType arrowType = ArrowType.segmented;
+      ArrowType arrowType = .segmented;
       try {
         if (map['arrow_type'] != null) {
           arrowType = ArrowType.values.fromString(map['arrow_type']);
         }
       } catch (e) {
-        arrowType = ArrowType.segmented;
+        arrowType = .segmented;
       }
 
       // Safe offset parsing

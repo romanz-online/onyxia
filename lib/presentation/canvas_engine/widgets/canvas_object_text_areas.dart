@@ -35,18 +35,18 @@ class CanvasObjectTextArea extends ConsumerWidget {
       if (isSelected &&
           !isEditing &&
           canvasObject.isContentEmpty &&
-          canvasObject.type != CanvasObjectType.text) {
+          canvasObject.type != .text) {
         return _buildHoverHint(ref: ref);
       }
 
       if (!isEditing && !canvasObject.isContentEmpty) {
-        return canvasObject.type == CanvasObjectType.text
+        return canvasObject.type == .text
             ? _buildTextViewer(ref: ref)
             : _buildNormalViewer(ref: ref);
       }
 
       if (isEditing) {
-        return canvasObject.type == CanvasObjectType.text
+        return canvasObject.type == .text
             ? _buildTextEditor(ref: ref)
             : _buildNormalEditor(ref: ref);
       }

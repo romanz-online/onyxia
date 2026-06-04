@@ -124,7 +124,7 @@ class CanvasClipboardService {
 
         final newObj = CanvasObject(
           id: const Uuid().v4(),
-          type: CanvasObjectType.text,
+          type: .text,
           topLeft: viewportCenter,
           bottomRight: viewportCenter,
           createdAt: DateTime.now(),

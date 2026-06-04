@@ -12,7 +12,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
   PointerToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.pointer;
+  ToolMode get toolMode => .pointer;
 
   @override
   bool get allowsViewportPanning => false;
@@ -263,14 +263,12 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
       case ObjectResizeInteraction(:final targetObject, :final handle):
         if (selectedObjects.contains(targetObject)) {
           final cursor = switch (handle) {
-            ResizeHandle.topLeft || ResizeHandle.bottomRight =>
-              SystemMouseCursors.resizeUpLeftDownRight,
-            ResizeHandle.topRight ||
-            ResizeHandle.bottomLeft => SystemMouseCursors.resizeUpRightDownLeft,
-            ResizeHandle.topCenter ||
-            ResizeHandle.bottomCenter => SystemMouseCursors.resizeUpDown,
-            ResizeHandle.centerLeft ||
-            ResizeHandle.centerRight => SystemMouseCursors.resizeLeftRight,
+            .topLeft ||
+            .bottomRight => SystemMouseCursors.resizeUpLeftDownRight,
+            .topRight ||
+            .bottomLeft => SystemMouseCursors.resizeUpRightDownLeft,
+            .topCenter || .bottomCenter => SystemMouseCursors.resizeUpDown,
+            .centerLeft || .centerRight => SystemMouseCursors.resizeLeftRight,
             _ => SystemMouseCursors.move,
           };
           cursorNotifier.set(cursor);
@@ -570,7 +568,7 @@ class PointerToolBehavior extends CanvasToolGestureHandler {
       final newSegmentCreated = arrow.handleResize(
         ref,
         deltaToUse,
-        ResizeHandle.arrow,
+        .arrow,
         arrowKeypointIndex:
             ref.read(canvasGestureStateProvider).arrowSegmentIndex ?? 0,
       );

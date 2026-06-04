@@ -6,7 +6,7 @@ class ImageArtifact extends Artifact {
 
   ImageArtifact({
     super.id,
-    super.type = ArtifactType.image,
+    super.type = .image,
     super.name = 'Untitled',
     super.parentFolderId,
     super.createdAt,

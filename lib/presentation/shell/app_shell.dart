@@ -14,7 +14,7 @@ class AppShell extends ConsumerStatefulWidget {
     super.key,
     required this.vaultId,
     this.selectedId,
-    this.initialLandingMode = LandingMode.signIn,
+    this.initialLandingMode = .signIn,
     this.inviteToken,
     this.inviteDestPath,
   });

@@ -9,7 +9,7 @@ class CanvasArtifact extends Artifact {
 
   CanvasArtifact({
     super.id,
-    super.type = ArtifactType.canvas,
+    super.type = .canvas,
     super.name = 'Canvas',
     super.parentFolderId,
     //
@@ -18,12 +18,12 @@ class CanvasArtifact extends Artifact {
     super.updatedAt,
     super.updatedBy,
     //
-    this.canvasType = CanvasType.whiteboard,
+    this.canvasType = .whiteboard,
     this.imageUrl,
   });
 
   CanvasArtifact.fromMap(super.map)
-    : canvasType = CanvasType.values.fromString(
+    : canvasType = .values.fromString(
         (map['body'] as Map<String, dynamic>?)?['canvas_type'] ?? '',
       ),
       imageUrl =

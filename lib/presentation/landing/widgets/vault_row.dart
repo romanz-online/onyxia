@@ -46,7 +46,7 @@ class _VaultRowState extends ConsumerState<VaultRow> {
     final canManage = ref.watch(
       vaultRoleProvider(
         widget.vault.id,
-      ).select((async) => async.asData?.value == UserRole.owner),
+      ).select((async) => async.asData?.value == .owner),
     );
 
     Widget buildOnyxiaMenu(

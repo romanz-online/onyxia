@@ -114,44 +114,44 @@ class CanvasObjectPainter {
     );
 
     switch (paintContext.object.type) {
-      case CanvasObjectType.artifact:
-      case CanvasObjectType.rectangle:
+      case .artifact:
+      case .rectangle:
         _drawRectangle(paintContext);
         break;
-      case CanvasObjectType.diamond:
+      case .diamond:
         _drawDiamond(paintContext);
         break;
-      case CanvasObjectType.oblong:
+      case .oblong:
         _drawOblong(paintContext);
         break;
-      case CanvasObjectType.circle:
+      case .circle:
         _drawCircle(paintContext);
         break;
-      case CanvasObjectType.rhombus:
+      case .rhombus:
         _drawRhombus(paintContext);
         break;
-      case CanvasObjectType.trapezoid:
+      case .trapezoid:
         _drawTrapezoid(paintContext);
         break;
-      case CanvasObjectType.cylinder:
+      case .cylinder:
         _drawCylinder(paintContext);
         break;
-      case CanvasObjectType.house:
+      case .house:
         _drawHouse(paintContext);
         break;
-      case CanvasObjectType.reverseHouse:
+      case .reverseHouse:
         _drawReverseHouse(paintContext);
         break;
-      case CanvasObjectType.brush:
+      case .brush:
         _drawBrush(paintContext);
         break;
-      case CanvasObjectType.image:
+      case .image:
         _drawImage(paintContext);
         break;
-      case CanvasObjectType.arrow:
+      case .arrow:
         _drawArrow(paintContext);
         break;
-      case CanvasObjectType.text:
+      case .text:
         break;
     }
   }
@@ -172,7 +172,7 @@ class CanvasObjectPainter {
 
     paintContext.touchyObjectPainter.drawPath(path, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
     if (paintContext.drawGaps) {
       final halfGap = paintContext.gapLength / 2 - 1;
@@ -203,7 +203,7 @@ class CanvasObjectPainter {
         ..moveTo(leftGapEnd.dx, leftGapEnd.dy)
         ..lineTo(topGapStart.dx, topGapStart.dy);
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           strokePath,
@@ -218,7 +218,7 @@ class CanvasObjectPainter {
         );
       }
     } else {
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           path,
@@ -254,9 +254,9 @@ class CanvasObjectPainter {
       paintContext.fillPaint,
     );
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 4.0;
       final dashSpace = 4.0;
       final Path path = Path()..addRRect(roundedRect);
@@ -433,9 +433,9 @@ class CanvasObjectPainter {
 
     paintContext.touchyObjectPainter.drawPath(path, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 4.0;
       final dashSpace = 4.0;
       TouchyDashedPainter.paint(
@@ -561,9 +561,9 @@ class CanvasObjectPainter {
 
     paintContext.touchyObjectPainter.drawPath(path, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 4.0;
       final dashSpace = 4.0;
       TouchyDashedPainter.paint(
@@ -706,9 +706,9 @@ class CanvasObjectPainter {
     roofPath.lineTo(roofBottomRight.dx, roofBottomRight.dy);
     paintContext.touchyObjectPainter.drawPath(roofPath, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 4.0;
       final dashSpace = 4.0;
 
@@ -925,9 +925,9 @@ class CanvasObjectPainter {
     roofPath.lineTo(roofTopRight.dx, roofTopRight.dy);
     paintContext.touchyObjectPainter.drawPath(roofPath, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 4.0;
       final dashSpace = 4.0;
 
@@ -1130,7 +1130,7 @@ class CanvasObjectPainter {
       return;
     }
 
-    if (paintContext.object.arrowProps.arrowType == ArrowType.curved) {
+    if (paintContext.object.arrowProps.arrowType == .curved) {
       _drawCurvedArrow(paintContext, paint, points.first, points.last);
       return;
     }
@@ -1171,17 +1171,17 @@ class CanvasObjectPainter {
 
     Offset adjustedEndpoint = endpoint;
     Offset adjustedStartPoint = startPoint;
-    if (paintContext.object.arrowProps.endTip != ArrowTip.none) {
+    if (paintContext.object.arrowProps.endTip != .none) {
       adjustedEndpoint = endpoint - endNormalizedDirection * arrowSize * 0.4;
     }
-    if (paintContext.object.arrowProps.startTip != ArrowTip.none) {
+    if (paintContext.object.arrowProps.startTip != .none) {
       adjustedStartPoint =
           startPoint + startNormalizedDirection * arrowSize * 0.5;
     }
 
     adjustedEndpoint = adjustedEndpoint - endNormalizedDirection;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 8.0;
       final dashSpace = 6.0;
       for (int i = 0; i < points.length - 1; i++) {
@@ -1427,15 +1427,15 @@ class CanvasObjectPainter {
     if (!arrow.isArrow) return;
 
     Paint paint = Paint()
-      ..strokeWidth = arrow.stroke == StrokeType.thick ? 5 : 4
+      ..strokeWidth = arrow.stroke == .thick ? 5 : 4
       ..color = arrow.color
       ..style = .stroke
       ..strokeCap = .round;
 
     switch (tipType) {
-      case ArrowTip.none:
+      case .none:
         break;
-      case ArrowTip.triangle:
+      case .triangle:
         final angle = atan2(direction.dy, direction.dx);
         final arrowAngle1 = angle - pi / 5, arrowAngle2 = angle + pi / 5;
         final arrowHeadPath = Path()
@@ -1459,7 +1459,7 @@ class CanvasObjectPainter {
 
         paintContext.canvas.drawPath(arrowHeadPath, paint..style = .fill);
         break;
-      case ArrowTip.circle:
+      case .circle:
         final circleRadius = 6.0;
 
         paintContext.canvas.drawCircle(point, circleRadius, paint);
@@ -1531,9 +1531,9 @@ class CanvasObjectPainter {
 
     paintContext.touchyObjectPainter.drawOval(ovalRect, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       final dashWidth = 4.0;
       final dashSpace = 4.0;
       final Path path = Path()..addOval(ovalRect);
@@ -1627,9 +1627,9 @@ class CanvasObjectPainter {
 
     paintContext.touchyObjectPainter.drawRRect(rrect, paintContext.fillPaint);
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
-    if (paintContext.object.stroke == StrokeType.dashed) {
+    if (paintContext.object.stroke == .dashed) {
       TouchyDashedPainter.paint(
         paintContext,
         Path()..addRRect(rrect),
@@ -1769,7 +1769,7 @@ class CanvasObjectPainter {
       paintContext.fillPaint,
     );
 
-    if (paintContext.object.stroke == StrokeType.none) return;
+    if (paintContext.object.stroke == .none) return;
 
     if (paintContext.drawGaps) {
       // Calculate gap positions for bounding rect edge centers
@@ -1822,7 +1822,7 @@ class CanvasObjectPainter {
         pi / 2 + topGapAngle,
       );
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           topOvalPath,
@@ -1862,7 +1862,7 @@ class CanvasObjectPainter {
         bottomLeftAngle - bottomBottomAngle - bottomGapAngle,
       );
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           bottomOvalPath,
@@ -1884,7 +1884,7 @@ class CanvasObjectPainter {
       leftBorderPath.moveTo(bodyRect.left, leftGapBottom);
       leftBorderPath.lineTo(bodyRect.left, bodyRect.bottom);
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           leftBorderPath,
@@ -1906,7 +1906,7 @@ class CanvasObjectPainter {
       rightBorderPath.moveTo(bodyRect.right, rightGapBottom);
       rightBorderPath.lineTo(bodyRect.right, bodyRect.bottom);
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           rightBorderPath,
@@ -1941,7 +1941,7 @@ class CanvasObjectPainter {
         bottomLeftAngle - bottomRightAngle,
       );
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           topOvalPathNoGap,
@@ -1974,7 +1974,7 @@ class CanvasObjectPainter {
       bodyBorderPath.moveTo(bodyRect.right, bodyRect.top);
       bodyBorderPath.lineTo(bodyRect.right, bodyRect.bottom);
 
-      if (paintContext.object.stroke == StrokeType.dashed) {
+      if (paintContext.object.stroke == .dashed) {
         TouchyDashedPainter.paint(
           paintContext,
           bodyBorderPath,

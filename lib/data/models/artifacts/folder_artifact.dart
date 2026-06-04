@@ -3,7 +3,7 @@ import 'package:onyxia/export.dart';
 class FolderArtifact extends Artifact {
   FolderArtifact({
     super.id,
-    super.type = ArtifactType.folder,
+    super.type = .folder,
     super.name = 'Folder',
     super.parentFolderId,
     //

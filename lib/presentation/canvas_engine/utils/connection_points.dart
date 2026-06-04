@@ -8,24 +8,24 @@ extension ConnectionPointExtension on ConnectionPoint {
     if (object.id.isEmpty) return .zero;
 
     switch (object.type) {
-      case CanvasObjectType.rectangle:
-      case CanvasObjectType.diamond:
-      case CanvasObjectType.oblong:
-      case CanvasObjectType.circle:
-      case CanvasObjectType.cylinder:
+      case .rectangle:
+      case .diamond:
+      case .oblong:
+      case .circle:
+      case .cylinder:
         // These shapes use bounding box approach - gaps are at edge centers
         return getBoundingBoxOffset(object.topLeft, object.bottomRight);
 
-      case CanvasObjectType.rhombus:
+      case .rhombus:
         return _getRhombusOffset(object.topLeft, object.bottomRight);
 
-      case CanvasObjectType.trapezoid:
+      case .trapezoid:
         return _getTrapezoidOffset(object.topLeft, object.bottomRight);
 
-      case CanvasObjectType.house:
+      case .house:
         return _getHouseOffset(object.topLeft, object.bottomRight);
 
-      case CanvasObjectType.reverseHouse:
+      case .reverseHouse:
         return _getReverseHouseOffset(object.topLeft, object.bottomRight);
 
       default:

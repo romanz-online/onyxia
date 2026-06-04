@@ -18,17 +18,14 @@ class SettingsDialog extends ConsumerStatefulWidget {
 }
 
 class _SettingsDialogState extends ConsumerState<SettingsDialog> {
-  _SettingsTab _selected = _SettingsTab.members;
+  _SettingsTab _selected = .members;
 
   @override
   Widget build(BuildContext context) {
     final hasVault = ref.watch(selectedVaultProvider) != null;
     // The Members tab is vault-specific; without a vault only show
     // vault-agnostic tabs.
-    final tabs = [
-      if (hasVault) _SettingsTab.members,
-      _SettingsTab.theme,
-    ];
+    final List<_SettingsTab> tabs = [if (hasVault) .members, .theme];
     // The previously selected tab may no longer be visible (e.g. the vault
     // was deselected) — fall back to the first available tab.
     final selected = tabs.contains(_selected) ? _selected : tabs.first;

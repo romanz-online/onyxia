@@ -36,7 +36,7 @@ final toolModeProvider =
 
 class ToolModeNotifier extends Notifier<ToolMode> {
   @override
-  ToolMode build() => ToolMode.pointer;
+  ToolMode build() => .pointer;
 
   void set(ToolMode value) => state = value;
 }

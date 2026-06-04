@@ -42,7 +42,7 @@ class CanvasImageUploadService {
             viewportCenter.dx + image.width,
             viewportCenter.dy + image.height,
           ),
-          type: CanvasObjectType.image,
+          type: .image,
           imageProperties: ImageProperties(imageUrl: imageUrl),
         );
 

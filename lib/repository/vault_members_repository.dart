@@ -47,7 +47,7 @@ class VaultMembersRepository extends BaseSupabaseRepository<VaultMember> {
   /// isn't an owner/admin of the vault.
   Future<User> addByEmail({
     required String email,
-    UserRole role = UserRole.member,
+    UserRole role = .member,
   }) async {
     final row =
         await Supabase.instance.client.rpc(

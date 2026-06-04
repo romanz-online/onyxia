@@ -8,7 +8,7 @@ class TextToolBehavior extends CanvasToolGestureHandler {
   const TextToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.text;
+  ToolMode get toolMode => .text;
 
   @override
   bool get allowsViewportPanning => false;
@@ -37,7 +37,7 @@ class TextToolBehavior extends CanvasToolGestureHandler {
         return;
     }
 
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
   };
 
   void _createTextObject(Offset tapPosition, WidgetRef ref) {
@@ -48,7 +48,7 @@ class TextToolBehavior extends CanvasToolGestureHandler {
 
     final textObject = CanvasObject(
       id: const Uuid().v4(),
-      type: CanvasObjectType.text,
+      type: .text,
       topLeft: Offset(leftX, topY),
       bottomRight: Offset(leftX + width, topY + height),
       createdAt: DateTime.now(),

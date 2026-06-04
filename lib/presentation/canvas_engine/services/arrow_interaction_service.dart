@@ -82,10 +82,10 @@ class ArrowInteractionService {
     final arrow = CanvasObject(
       id: const Uuid().v4(),
       color: CanvasColors.neutral600,
-      type: CanvasObjectType.arrow,
+      type: .arrow,
       topLeft: .zero,
       bottomRight: .zero,
-      stroke: StrokeType.solid,
+      stroke: .solid,
       arrowProperties: ArrowProperties(
         startObjectId: sourceObject.id,
         endAbsoluteOffset: ref

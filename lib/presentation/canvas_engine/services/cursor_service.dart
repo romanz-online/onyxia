@@ -18,9 +18,9 @@ class CanvasCursorService {
 
   MouseCursor _systemCursorForTool(ToolMode toolMode, bool isPressed) {
     switch (toolMode) {
-      case ToolMode.pointer:
+      case .pointer:
         return SystemMouseCursors.basic;
-      case ToolMode.pan:
+      case .pan:
         return isPressed
             ? SystemMouseCursors.grabbing
             : SystemMouseCursors.grab;

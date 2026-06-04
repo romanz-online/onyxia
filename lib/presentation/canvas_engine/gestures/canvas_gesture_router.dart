@@ -33,50 +33,47 @@ class CanvasGestureRouter {
 
   void _initializeHandlers() {
     _handlers = {
-      ToolMode.pointer: PointerToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.pan: PanToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.rectangle: ShapeToolBehavior(
+      .pointer: PointerToolBehavior(canvasConfig: canvasConfig),
+      .pan: PanToolBehavior(canvasConfig: canvasConfig),
+      .rectangle: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.rectangle,
+        shapeType: .rectangle,
       ),
-      ToolMode.diamond: ShapeToolBehavior(
+      .diamond: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.diamond,
+        shapeType: .diamond,
       ),
-      ToolMode.oblong: ShapeToolBehavior(
+      .oblong: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.oblong,
+        shapeType: .oblong,
       ),
-      ToolMode.circle: ShapeToolBehavior(
+      .circle: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.circle,
+        shapeType: .circle,
       ),
-      ToolMode.rhombus: ShapeToolBehavior(
+      .rhombus: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.rhombus,
+        shapeType: .rhombus,
       ),
-      ToolMode.trapezoid: ShapeToolBehavior(
+      .trapezoid: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.trapezoid,
+        shapeType: .trapezoid,
       ),
-      ToolMode.cylinder: ShapeToolBehavior(
+      .cylinder: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.cylinder,
+        shapeType: .cylinder,
       ),
-      ToolMode.house: ShapeToolBehavior(
+      .house: ShapeToolBehavior(canvasConfig: canvasConfig, shapeType: .house),
+      .reverseHouse: ShapeToolBehavior(
         canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.house,
+        shapeType: .reverseHouse,
       ),
-      ToolMode.reverseHouse: ShapeToolBehavior(
-        canvasConfig: canvasConfig,
-        shapeType: CanvasObjectType.reverseHouse,
-      ),
-      ToolMode.text: TextToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.image: ImageToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.brush: BrushToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.arrow: ArrowToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.comment: CommentToolBehavior(canvasConfig: canvasConfig),
-      ToolMode.artifact: ArtifactToolBehavior(canvasConfig: canvasConfig),
+      .text: TextToolBehavior(canvasConfig: canvasConfig),
+      .image: ImageToolBehavior(canvasConfig: canvasConfig),
+      .brush: BrushToolBehavior(canvasConfig: canvasConfig),
+      .arrow: ArrowToolBehavior(canvasConfig: canvasConfig),
+      .comment: CommentToolBehavior(canvasConfig: canvasConfig),
+      .artifact: ArtifactToolBehavior(canvasConfig: canvasConfig),
     };
   }
 

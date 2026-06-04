@@ -213,10 +213,10 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   List<CanvasObjectMenuOption> getObjectOptions(CanvasObjectType objectType) =>
       switch (objectType) {
-        CanvasObjectType.text => textOptions,
-        CanvasObjectType.image => imageOptions,
-        CanvasObjectType.arrow => arrowOptions,
-        CanvasObjectType.brush => brushOptions,
+        .text => textOptions,
+        .image => imageOptions,
+        .arrow => arrowOptions,
+        .brush => brushOptions,
         _ => shapeOptions,
       };
 
@@ -271,15 +271,15 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         case CanvasObjectMenuOption.shape:
           final isSelected = _activeMenuOption == opt;
           final icon = switch (_selectedObjects[0].type) {
-            CanvasObjectType.rectangle => LucideIcons.square,
-            CanvasObjectType.diamond => LucideIcons.diamond,
-            CanvasObjectType.oblong => LucideIcons.rectangleHorizontal,
-            CanvasObjectType.circle => LucideIcons.circle,
-            CanvasObjectType.rhombus => LucideIcons.diamond,
-            CanvasObjectType.trapezoid => LucideIcons.pentagon,
-            CanvasObjectType.cylinder => LucideIcons.cylinder,
-            CanvasObjectType.house => LucideIcons.house,
-            CanvasObjectType.reverseHouse => LucideIcons.house,
+            .rectangle => LucideIcons.square,
+            .diamond => LucideIcons.diamond,
+            .oblong => LucideIcons.rectangleHorizontal,
+            .circle => LucideIcons.circle,
+            .rhombus => LucideIcons.diamond,
+            .trapezoid => LucideIcons.pentagon,
+            .cylinder => LucideIcons.cylinder,
+            .house => LucideIcons.house,
+            .reverseHouse => LucideIcons.house,
             _ => LucideIcons.square,
           };
 
@@ -503,27 +503,27 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
 
   Widget _buildShapePalette() {
     final List<CanvasObjectType> shapeOptions = [
-      CanvasObjectType.rectangle,
-      CanvasObjectType.diamond,
-      CanvasObjectType.oblong,
-      CanvasObjectType.circle,
-      CanvasObjectType.rhombus,
-      CanvasObjectType.trapezoid,
-      CanvasObjectType.cylinder,
-      CanvasObjectType.house,
-      CanvasObjectType.reverseHouse,
+      .rectangle,
+      .diamond,
+      .oblong,
+      .circle,
+      .rhombus,
+      .trapezoid,
+      .cylinder,
+      .house,
+      .reverseHouse,
     ];
 
     final Map<CanvasObjectType, IconData> shapeIcons = {
-      CanvasObjectType.rectangle: LucideIcons.square,
-      CanvasObjectType.diamond: LucideIcons.diamond,
-      CanvasObjectType.oblong: LucideIcons.rectangleHorizontal,
-      CanvasObjectType.circle: LucideIcons.circle,
-      CanvasObjectType.rhombus: LucideIcons.diamond,
-      CanvasObjectType.trapezoid: LucideIcons.pentagon,
-      CanvasObjectType.cylinder: LucideIcons.cylinder,
-      CanvasObjectType.house: LucideIcons.house,
-      CanvasObjectType.reverseHouse: LucideIcons.house,
+      .rectangle: LucideIcons.square,
+      .diamond: LucideIcons.diamond,
+      .oblong: LucideIcons.rectangleHorizontal,
+      .circle: LucideIcons.circle,
+      .rhombus: LucideIcons.diamond,
+      .trapezoid: LucideIcons.pentagon,
+      .cylinder: LucideIcons.cylinder,
+      .house: LucideIcons.house,
+      .reverseHouse: LucideIcons.house,
     };
 
     List<Widget> buttons = shapeOptions
@@ -558,16 +558,16 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
-              obj.arrowProps.endTip = ArrowTip.circle;
+              obj.arrowProps.endTip = .circle;
             } else {
-              obj.arrowProps.startTip = ArrowTip.circle;
+              obj.arrowProps.startTip = .circle;
             }
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: selectedTip == ArrowTip.circle,
+        isSelected: selectedTip == .circle,
       ),
 
       // Triangle tip
@@ -576,16 +576,16 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
-              obj.arrowProps.endTip = ArrowTip.triangle;
+              obj.arrowProps.endTip = .triangle;
             } else {
-              obj.arrowProps.startTip = ArrowTip.triangle;
+              obj.arrowProps.startTip = .triangle;
             }
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: selectedTip == ArrowTip.triangle,
+        isSelected: selectedTip == .triangle,
       ),
 
       // No tip
@@ -594,16 +594,16 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         onPressed: () {
           for (final obj in _selectedObjects) {
             if (tipOnRight) {
-              obj.arrowProps.endTip = ArrowTip.none;
+              obj.arrowProps.endTip = .none;
             } else {
-              obj.arrowProps.startTip = ArrowTip.none;
+              obj.arrowProps.startTip = .none;
             }
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: selectedTip == ArrowTip.none,
+        isSelected: selectedTip == .none,
       ),
     ];
 
@@ -619,13 +619,13 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         icon: LucideIcons.cornerDownRight,
         onPressed: () {
           for (final obj in _selectedObjects) {
-            obj.arrowProps.arrowType = ArrowType.segmented;
+            obj.arrowProps.arrowType = .segmented;
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: selectedType == ArrowType.segmented,
+        isSelected: selectedType == .segmented,
       ),
 
       // Curved type
@@ -633,13 +633,13 @@ class CanvasObjectMenuState extends ConsumerState<CanvasObjectMenu> {
         icon: LucideIcons.trendingUp,
         onPressed: () {
           for (final obj in _selectedObjects) {
-            obj.arrowProps.arrowType = ArrowType.curved;
+            obj.arrowProps.arrowType = .curved;
           }
           ref
               .read(canvasObjectsProvider.notifier)
               .updateObjects(objects: _selectedObjects);
         },
-        isSelected: selectedType == ArrowType.curved,
+        isSelected: selectedType == .curved,
       ),
     ];
 

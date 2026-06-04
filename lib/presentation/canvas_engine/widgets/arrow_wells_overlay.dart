@@ -58,10 +58,10 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
     final stackChildren = <Widget>[];
 
     // Only show traditional arrow wells when NOT in arrow tool mode
-    if (toolMode != ToolMode.arrow) {
+    if (toolMode != .arrow) {
       // Create arrow wells for ALL objects - let each well decide its own visibility
       for (final obj in objects) {
-        if (obj.isArrow || obj.isBrush || obj.type == CanvasObjectType.text) {
+        if (obj.isArrow || obj.isBrush || obj.type == .text) {
           continue;
         }
 
@@ -87,7 +87,7 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
               // Pass state info so arrow well can decide its visibility
               isSourceSelected: selectedObjects.contains(obj),
               isSourceHovered: _hoveredObjectIds.contains(obj.id),
-              isArrowToolActive: toolMode == ToolMode.arrow,
+              isArrowToolActive: toolMode == .arrow,
               isGesturing:
                   ref.watch(canvasGestureStateProvider).interactionContext !=
                   null,
@@ -106,7 +106,7 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
       }
 
       // Small hover region for arrow tool wells (only in arrow tool mode)
-      if (toolMode == ToolMode.arrow) {
+      if (toolMode == .arrow) {
         final smallHoverDetector = _buildSmallHoverDetector(obj, ref);
         if (smallHoverDetector != null) {
           stackChildren.add(smallHoverDetector);
@@ -166,7 +166,7 @@ class _ArrowWellsOverlayState extends ConsumerState<ArrowWellsOverlay> {
     // Only include objects that aren't brushes, arrows, or text
     if (canvasObject.isArrow ||
         canvasObject.isBrush ||
-        canvasObject.type == CanvasObjectType.text) {
+        canvasObject.type == .text) {
       return null;
     }
 

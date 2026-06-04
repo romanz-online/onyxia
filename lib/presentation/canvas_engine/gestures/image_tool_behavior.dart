@@ -7,7 +7,7 @@ class ImageToolBehavior extends CanvasToolGestureHandler {
   const ImageToolBehavior({required super.canvasConfig});
 
   @override
-  ToolMode get toolMode => ToolMode.image;
+  ToolMode get toolMode => .image;
 
   @override
   bool get allowsViewportPanning => false;
@@ -31,7 +31,7 @@ class ImageToolBehavior extends CanvasToolGestureHandler {
       case ArrowResizeInteraction():
       case ArrowMoveInteraction():
       case ObjectFillInteractionContext():
-        ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+        ref.read(toolModeProvider.notifier).set(.pointer);
         break;
       case BackgroundInteraction():
         break;

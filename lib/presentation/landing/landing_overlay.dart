@@ -7,7 +7,7 @@ import 'package:onyxia/presentation/landing/widgets/pre_auth_view.dart';
 import 'package:onyxia/presentation/landing/widgets/reset_password_view.dart';
 import 'package:onyxia/presentation/landing/widgets/logged_in_view.dart';
 
-enum LandingMode {
+enum LandingMode with OnyxiaEnum {
   signIn,
   createAccount,
   forgotPassword,

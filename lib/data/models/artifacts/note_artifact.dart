@@ -5,7 +5,7 @@ class NoteArtifact extends Artifact {
 
   NoteArtifact({
     super.id,
-    super.type = ArtifactType.note,
+    super.type = .note,
     super.name = 'Untitled',
     super.parentFolderId,
     //

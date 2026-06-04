@@ -75,7 +75,7 @@ class BackgroundState extends ConsumerState<Background>
       }
 
       // For markup canvases, show loading indicator if image is expected but not loaded yet
-      if (currentCanvas.canvasType == CanvasType.markup &&
+      if (currentCanvas.canvasType == .markup &&
           currentCanvas.imageUrl != null &&
           currentCanvas.imageUrl!.isNotEmpty &&
           canvasBounds.backgroundImage == null &&

@@ -57,10 +57,10 @@ abstract class Artifact {
     final itemType = ArtifactType.values.fromString(typeString ?? '');
 
     return switch (itemType) {
-      ArtifactType.canvas => CanvasArtifact.fromMap(map),
-      ArtifactType.note => NoteArtifact.fromMap(map),
-      ArtifactType.folder => FolderArtifact.fromMap(map),
-      ArtifactType.image => ImageArtifact.fromMap(map),
+      .canvas => CanvasArtifact.fromMap(map),
+      .note => NoteArtifact.fromMap(map),
+      .folder => FolderArtifact.fromMap(map),
+      .image => ImageArtifact.fromMap(map),
     };
   }
 
@@ -125,9 +125,9 @@ abstract class Artifact {
   }
 
   dynamic castToSubtype() => switch (type) {
-    ArtifactType.note => this as NoteArtifact,
-    ArtifactType.canvas => this as CanvasArtifact,
-    ArtifactType.folder => this as FolderArtifact,
-    ArtifactType.image => this as ImageArtifact,
+    .note => this as NoteArtifact,
+    .canvas => this as CanvasArtifact,
+    .folder => this as FolderArtifact,
+    .image => this as ImageArtifact,
   };
 }

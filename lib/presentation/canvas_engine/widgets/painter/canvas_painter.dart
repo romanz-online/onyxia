@@ -112,8 +112,7 @@ class CanvasPainter extends NarwhalPainter {
                       activeObject.arrowProps.startObjectId == object.id) ||
                   (moveType == ArrowMoveType.end &&
                       activeObject.arrowProps.endObjectId == object.id))) ||
-          (toolMode == ToolMode.arrow &&
-              arrowToolPrimedData?.object.id == object.id);
+          (toolMode == .arrow && arrowToolPrimedData?.object.id == object.id);
 
       CanvasObjectPainter.paint(
         touchyCanvas,
@@ -146,7 +145,7 @@ class CanvasPainter extends NarwhalPainter {
 
       if (!object.isBrush &&
           !object.isArrow &&
-          object.type != CanvasObjectType.text &&
+          object.type != .text &&
           textEditedObjId != object.id) {
         _drawResizeEdges(touchyCanvas, canvas, object);
         _drawResizeCorners(touchyCanvas, canvas, object);
@@ -300,11 +299,11 @@ class CanvasPainter extends NarwhalPainter {
 
     final selectionColor = ThemeHelper.accent();
 
-    final edgeHandles = [
-      ResizeHandle.topCenter,
-      ResizeHandle.centerRight,
-      ResizeHandle.bottomCenter,
-      ResizeHandle.centerLeft,
+    final List<ResizeHandle> edgeHandles = [
+      .topCenter,
+      .centerRight,
+      .bottomCenter,
+      .centerLeft,
     ];
 
     final objWidth = object.bottomRight.dx - object.topLeft.dx;
@@ -323,25 +322,25 @@ class CanvasPainter extends NarwhalPainter {
 
     for (final handle in edgeHandles) {
       final Rect handleRect = switch (handle) {
-        ResizeHandle.topCenter => Rect.fromLTWH(
+        .topCenter => Rect.fromLTWH(
           topLeftPos.dx,
           topLeftPos.dy - edgeHandleThickness / 2,
           objWidth,
           edgeHandleThickness,
         ),
-        ResizeHandle.centerRight => Rect.fromLTWH(
+        .centerRight => Rect.fromLTWH(
           topRightPos.dx - edgeHandleThickness / 2,
           topRightPos.dy,
           edgeHandleThickness,
           objHeight,
         ),
-        ResizeHandle.bottomCenter => Rect.fromLTWH(
+        .bottomCenter => Rect.fromLTWH(
           bottomLeftPos.dx,
           bottomLeftPos.dy - edgeHandleThickness / 2,
           objWidth,
           edgeHandleThickness,
         ),
-        ResizeHandle.centerLeft => Rect.fromLTWH(
+        .centerLeft => Rect.fromLTWH(
           topLeftPos.dx - edgeHandleThickness / 2,
           topLeftPos.dy,
           edgeHandleThickness,
@@ -352,9 +351,7 @@ class CanvasPainter extends NarwhalPainter {
 
       if (handleRect == Rect.zero) continue;
 
-      final isHorizontal =
-          handle == ResizeHandle.centerLeft ||
-          handle == ResizeHandle.centerRight;
+      final isHorizontal = handle == .centerLeft || handle == .centerRight;
       final lineHeight = isHorizontal ? handleRect.height : edgeWidth;
       final lineWidth = isHorizontal ? edgeWidth : handleRect.width;
       final lineRect = Rect.fromLTWH(
@@ -391,11 +388,11 @@ class CanvasPainter extends NarwhalPainter {
     final selectionColor = ThemeHelper.accent();
     final backgroundColor = ThemeHelper.background1();
 
-    final cornerHandles = [
-      ResizeHandle.topLeft,
-      ResizeHandle.topRight,
-      ResizeHandle.bottomLeft,
-      ResizeHandle.bottomRight,
+    final List<ResizeHandle> cornerHandles = [
+      .topLeft,
+      .topRight,
+      .bottomLeft,
+      .bottomRight,
     ];
 
     final topLeftPos = object.topLeft;
@@ -414,10 +411,10 @@ class CanvasPainter extends NarwhalPainter {
 
     for (final handle in cornerHandles) {
       final Offset cornerPos = switch (handle) {
-        ResizeHandle.topLeft => topLeftPos,
-        ResizeHandle.topRight => topRightPos,
-        ResizeHandle.bottomLeft => bottomLeftPos,
-        ResizeHandle.bottomRight => bottomRightPos,
+        .topLeft => topLeftPos,
+        .topRight => topRightPos,
+        .bottomLeft => bottomLeftPos,
+        .bottomRight => bottomRightPos,
         _ => .zero,
       };
 
@@ -628,7 +625,7 @@ class CanvasPainter extends NarwhalPainter {
   }
 
   void _drawArrowToolWell(TouchyCanvas touchyCanvas, Canvas canvas) {
-    if (ref.read(toolModeProvider) != ToolMode.arrow ||
+    if (ref.read(toolModeProvider) != .arrow ||
         arrowToolPrimedData == null ||
         ref.read(canvasGestureStateProvider).interactionContext != null) {
       return;

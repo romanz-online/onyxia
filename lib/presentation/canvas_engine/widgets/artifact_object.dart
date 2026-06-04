@@ -143,7 +143,7 @@ class ArtifactObject extends ConsumerWidget {
   }
 
   Widget _buildContent(BuildContext context, Artifact item) {
-    if (item.type == ArtifactType.note) {
+    if (item.type == .note) {
       return Text(
         item is NoteArtifact ? item.content : '',
         style: TextStyle(

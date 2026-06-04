@@ -39,7 +39,7 @@ class _ForgotPasswordViewState extends ConsumerState<ForgotPasswordView> {
       await ref
           .read(currentUserProvider.notifier)
           .sendPasswordResetEmail(email);
-      if (mounted) widget.onNavigate(LandingMode.resetSent);
+      if (mounted) widget.onNavigate(.resetSent);
     } on AuthException catch (e) {
       if (mounted) setState(() => _errorMessage = e.message);
     } finally {

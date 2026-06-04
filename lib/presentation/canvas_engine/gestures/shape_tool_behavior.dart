@@ -19,16 +19,16 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
 
   @override
   ToolMode get toolMode => switch (shapeType) {
-    CanvasObjectType.rectangle => ToolMode.rectangle,
-    CanvasObjectType.diamond => ToolMode.diamond,
-    CanvasObjectType.oblong => ToolMode.oblong,
-    CanvasObjectType.circle => ToolMode.circle,
-    CanvasObjectType.rhombus => ToolMode.rhombus,
-    CanvasObjectType.trapezoid => ToolMode.trapezoid,
-    CanvasObjectType.cylinder => ToolMode.cylinder,
-    CanvasObjectType.house => ToolMode.house,
-    CanvasObjectType.reverseHouse => ToolMode.reverseHouse,
-    _ => ToolMode.rectangle,
+    .rectangle => .rectangle,
+    .diamond => .diamond,
+    .oblong => .oblong,
+    .circle => .circle,
+    .rhombus => .rhombus,
+    .trapezoid => .trapezoid,
+    .cylinder => .cylinder,
+    .house => .house,
+    .reverseHouse => .reverseHouse,
+    _ => .rectangle,
   };
 
   @override
@@ -76,7 +76,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
     ref.read(canvasObjectsProvider.notifier).clearSelectedObjects();
     ref.read(canvasObjectsProvider.notifier).selectObject(newObject);
     print(7);
-    ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+    ref.read(toolModeProvider.notifier).set(.pointer);
     CanvasInteractionService.openTextEditor(ref: ref);
   };
 
@@ -152,7 +152,7 @@ class ShapeToolBehavior extends CanvasToolGestureHandler {
     if (activeObject != null) {
       ref.read(canvasObjectsProvider.notifier).updateObject(activeObject);
       ref.read(canvasObjectsProvider.notifier).selectObject(activeObject);
-      ref.read(toolModeProvider.notifier).set(ToolMode.pointer);
+      ref.read(toolModeProvider.notifier).set(.pointer);
       CanvasInteractionService.openTextEditor(ref: ref);
     }
 
