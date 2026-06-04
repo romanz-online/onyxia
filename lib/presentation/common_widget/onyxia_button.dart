@@ -6,6 +6,7 @@ class OnyxiaButton extends StatelessWidget {
   final VoidCallback? onPressed;
   final IconData? leftIcon;
   final IconData? rightIcon;
+  final bool isDangerous;
 
   const OnyxiaButton({
     super.key,
@@ -14,6 +15,7 @@ class OnyxiaButton extends StatelessWidget {
     this.onPressed,
     this.leftIcon,
     this.rightIcon,
+    this.isDangerous = false,
   });
 
   @override
@@ -36,7 +38,13 @@ class OnyxiaButton extends StatelessWidget {
                 spacing: 3,
                 children: [
                   if (leftIcon != null)
-                    Icon(leftIcon!, color: ThemeHelper.foreground2(), size: 15),
+                    Icon(
+                      leftIcon!,
+                      color: isDangerous
+                          ? ThemeHelper.error()
+                          : ThemeHelper.foreground2(),
+                      size: 15,
+                    ),
 
                   Flexible(
                     child: Padding(
@@ -48,7 +56,9 @@ class OnyxiaButton extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: .w600,
-                          color: ThemeHelper.foreground1(),
+                          color: isDangerous
+                              ? ThemeHelper.error()
+                              : ThemeHelper.foreground1(),
                         ),
                       ),
                     ),
@@ -57,7 +67,9 @@ class OnyxiaButton extends StatelessWidget {
                   if (rightIcon != null)
                     Icon(
                       rightIcon!,
-                      color: ThemeHelper.foreground2(),
+                      color: isDangerous
+                          ? ThemeHelper.error()
+                          : ThemeHelper.foreground2(),
                       size: 15,
                     ),
                 ],
