@@ -29,6 +29,7 @@ class ConstellationNodePainter extends NarwhalPainter {
       final isHovered = entry.key == hoverNodeId;
       final r = (radii[entry.key] ?? 7.0) * (isHovered ? 1.075 : 1.0);
       final opacity = (anyHover && !isHovered) ? 0.5 : 0.9;
+      // TODO: give zombies ThemeHelper.foreground2()
       final color = isHovered
           ? ThemeHelper.accent()
           : ThemeHelper.foreground1();
