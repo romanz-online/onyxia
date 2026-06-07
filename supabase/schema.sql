@@ -160,21 +160,10 @@ begin
   elsif tg_table_name = 'comments' then
     v_target_id := case when tg_op = 'DELETE' then old.target_id else new.target_id end;
     select vault_id into v_vault_id from public.artifacts where id = v_target_id;
-  elsif tg_table_name = 'artifact_ops' then
-    v_vault_id := new.vault_id;
   end if;
 
   if v_vault_id is not null then
-    if tg_table_name = 'artifact_ops' then
-      -- Ops fire on every keystroke; throttle so the vault row is touched at
-      -- most once per 30s. The client's debounced body.content writeback bumps
-      -- updated_at on the artifacts table path anyway — this just guarantees
-      -- recency on the first keystroke even before/without that writeback.
-      update public.vaults set updated_at = now()
-        where id = v_vault_id and now() - updated_at > interval '30 seconds';
-    else
-      update public.vaults set updated_at = now() where id = v_vault_id;
-    end if;
+    update public.vaults set updated_at = now() where id = v_vault_id;
   end if;
 
   return null; -- AFTER trigger; return value ignored
@@ -260,6 +249,26 @@ CREATE OR REPLACE FUNCTION "public"."is_vault_member"("p_project_id" "uuid") RET
 ALTER FUNCTION "public"."is_vault_member"("p_project_id" "uuid") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."can_access_note_channel"("p_topic" "text") RETURNS boolean
+    LANGUAGE "plpgsql" STABLE
+    AS $$declare
+  v uuid;
+begin
+  if split_part(p_topic, ':', 1) <> 'note' then
+    return false;
+  end if;
+  begin
+    v := split_part(p_topic, ':', 2)::uuid;
+  exception when others then
+    return false;
+  end;
+  return public.is_vault_member(v);
+end;$$;
+
+
+ALTER FUNCTION "public"."can_access_note_channel"("p_topic" "text") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."set_created_audit"() RETURNS "trigger"
     LANGUAGE "plpgsql"
     AS $$
@@ -305,48 +314,6 @@ $$;
 
 
 ALTER FUNCTION "public"."shares_vault"("p_other" "uuid") OWNER TO "postgres";
-
-
-CREATE TABLE IF NOT EXISTS "public"."artifact_ops" (
-    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
-    "artifact_id" "uuid" NOT NULL,
-    "vault_id" "uuid" NOT NULL,
-    "user_id" "uuid" DEFAULT "auth"."uid"() NOT NULL,
-    "op_bytes" "text" NOT NULL,
-    "op_seq" bigint NOT NULL,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
-);
-
-
-ALTER TABLE "public"."artifact_ops" OWNER TO "postgres";
-
-
-CREATE SEQUENCE IF NOT EXISTS "public"."artifact_ops_op_seq_seq"
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
-ALTER SEQUENCE "public"."artifact_ops_op_seq_seq" OWNER TO "postgres";
-
-
-ALTER SEQUENCE "public"."artifact_ops_op_seq_seq" OWNED BY "public"."artifact_ops"."op_seq";
-
-
-
-CREATE TABLE IF NOT EXISTS "public"."artifact_snapshots" (
-    "artifact_id" "uuid" NOT NULL,
-    "vault_id" "uuid" NOT NULL,
-    "snapshot_bytes" "text" NOT NULL,
-    "version_vector" "jsonb" NOT NULL,
-    "max_op_seq" bigint,
-    "created_at" timestamp with time zone DEFAULT "now"() NOT NULL
-);
-
-
-ALTER TABLE "public"."artifact_snapshots" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."artifacts" (
@@ -470,20 +437,6 @@ ALTER TABLE ONLY "public"."vaults" REPLICA IDENTITY FULL;
 ALTER TABLE "public"."vaults" OWNER TO "postgres";
 
 
-ALTER TABLE ONLY "public"."artifact_ops" ALTER COLUMN "op_seq" SET DEFAULT "nextval"('"public"."artifact_ops_op_seq_seq"'::"regclass");
-
-
-
-ALTER TABLE ONLY "public"."artifact_ops"
-    ADD CONSTRAINT "artifact_ops_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."artifact_snapshots"
-    ADD CONSTRAINT "artifact_snapshots_pkey" PRIMARY KEY ("artifact_id");
-
-
-
 ALTER TABLE ONLY "public"."artifacts"
     ADD CONSTRAINT "artifacts_pkey" PRIMARY KEY ("id");
 
@@ -526,18 +479,6 @@ ALTER TABLE ONLY "public"."vault_members"
 
 ALTER TABLE ONLY "public"."vaults"
     ADD CONSTRAINT "vaults_pkey" PRIMARY KEY ("id");
-
-
-
-CREATE INDEX "artifact_ops_artifact_id_idx" ON "public"."artifact_ops" USING "btree" ("artifact_id");
-
-
-
-CREATE INDEX "artifact_ops_artifact_seq_idx" ON "public"."artifact_ops" USING "btree" ("artifact_id", "op_seq");
-
-
-
-CREATE INDEX "artifact_snapshots_vault_id_idx" ON "public"."artifact_snapshots" USING "btree" ("vault_id");
 
 
 
@@ -590,10 +531,6 @@ CREATE INDEX "vault_members_user_id_idx" ON "public"."vault_members" USING "btre
 
 
 CREATE OR REPLACE TRIGGER "artifacts_bump_vault" AFTER INSERT OR DELETE OR UPDATE ON "public"."artifacts" FOR EACH ROW EXECUTE FUNCTION "public"."bump_vault_updated_at"();
-
-
-
-CREATE OR REPLACE TRIGGER "artifact_ops_bump_vault" AFTER INSERT ON "public"."artifact_ops" FOR EACH ROW EXECUTE FUNCTION "public"."bump_vault_updated_at"();
 
 
 
@@ -678,26 +615,6 @@ CREATE OR REPLACE TRIGGER "vaults_set_created" BEFORE INSERT ON "public"."vaults
 
 
 CREATE OR REPLACE TRIGGER "vaults_set_updated" BEFORE UPDATE ON "public"."vaults" FOR EACH ROW EXECUTE FUNCTION "public"."set_updated_audit"();
-
-
-
-ALTER TABLE ONLY "public"."artifact_ops"
-    ADD CONSTRAINT "artifact_ops_artifact_id_fkey" FOREIGN KEY ("artifact_id") REFERENCES "public"."artifacts"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."artifact_ops"
-    ADD CONSTRAINT "artifact_ops_vault_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."artifact_snapshots"
-    ADD CONSTRAINT "artifact_snapshots_artifact_id_fkey" FOREIGN KEY ("artifact_id") REFERENCES "public"."artifacts"("id") ON DELETE CASCADE;
-
-
-
-ALTER TABLE ONLY "public"."artifact_snapshots"
-    ADD CONSTRAINT "artifact_snapshots_vault_id_fkey" FOREIGN KEY ("vault_id") REFERENCES "public"."vaults"("id") ON DELETE CASCADE;
 
 
 
@@ -836,42 +753,10 @@ ALTER TABLE ONLY "public"."vaults"
 
 
 
-ALTER TABLE "public"."artifact_ops" ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "note_broadcast_insert" ON "realtime"."messages" FOR INSERT TO "authenticated" WITH CHECK ((("realtime"."messages"."extension" = 'broadcast'::"text") AND "public"."can_access_note_channel"("realtime"."messages"."topic")));
 
 
-CREATE POLICY "artifact_ops_insert" ON "public"."artifact_ops" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "artifact_ops"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
-
-
-
-CREATE POLICY "artifact_ops_select" ON "public"."artifact_ops" FOR SELECT USING ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "artifact_ops"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
-
-
-
-ALTER TABLE "public"."artifact_snapshots" ENABLE ROW LEVEL SECURITY;
-
-
-CREATE POLICY "artifact_snapshots_insert" ON "public"."artifact_snapshots" FOR INSERT WITH CHECK ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
-
-
-
-CREATE POLICY "artifact_snapshots_select" ON "public"."artifact_snapshots" FOR SELECT USING ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
-
-
-
-CREATE POLICY "artifact_snapshots_update" ON "public"."artifact_snapshots" FOR UPDATE USING ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"()))))) WITH CHECK ((EXISTS ( SELECT 1
-   FROM "public"."vault_members" "vm"
-  WHERE (("vm"."vault_id" = "artifact_snapshots"."vault_id") AND ("vm"."user_id" = "auth"."uid"())))));
-
+CREATE POLICY "note_broadcast_select" ON "realtime"."messages" FOR SELECT TO "authenticated" USING ((("realtime"."messages"."extension" = 'broadcast'::"text") AND "public"."can_access_note_channel"("realtime"."messages"."topic")));
 
 
 ALTER TABLE "public"."artifacts" ENABLE ROW LEVEL SECURITY;
@@ -994,14 +879,6 @@ ALTER PUBLICATION "supabase_realtime" OWNER TO "postgres";
 
 
 
-
-
-
-ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."artifact_ops";
-
-
-
-ALTER PUBLICATION "supabase_realtime" ADD TABLE ONLY "public"."artifact_snapshots";
 
 
 
@@ -1240,6 +1117,11 @@ GRANT ALL ON FUNCTION "public"."is_vault_member"("p_project_id" "uuid") TO "auth
 GRANT ALL ON FUNCTION "public"."is_vault_member"("p_project_id" "uuid") TO "service_role";
 
 
+GRANT ALL ON FUNCTION "public"."can_access_note_channel"("p_topic" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."can_access_note_channel"("p_topic" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."can_access_note_channel"("p_topic" "text") TO "service_role";
+
+
 
 GRANT ALL ON FUNCTION "public"."set_created_audit"() TO "anon";
 GRANT ALL ON FUNCTION "public"."set_created_audit"() TO "authenticated";
@@ -1271,24 +1153,6 @@ GRANT ALL ON FUNCTION "public"."shares_vault"("p_other" "uuid") TO "service_role
 
 
 
-
-
-
-GRANT ALL ON TABLE "public"."artifact_ops" TO "anon";
-GRANT ALL ON TABLE "public"."artifact_ops" TO "authenticated";
-GRANT ALL ON TABLE "public"."artifact_ops" TO "service_role";
-
-
-
-GRANT ALL ON SEQUENCE "public"."artifact_ops_op_seq_seq" TO "anon";
-GRANT ALL ON SEQUENCE "public"."artifact_ops_op_seq_seq" TO "authenticated";
-GRANT ALL ON SEQUENCE "public"."artifact_ops_op_seq_seq" TO "service_role";
-
-
-
-GRANT ALL ON TABLE "public"."artifact_snapshots" TO "anon";
-GRANT ALL ON TABLE "public"."artifact_snapshots" TO "authenticated";
-GRANT ALL ON TABLE "public"."artifact_snapshots" TO "service_role";
 
 
 

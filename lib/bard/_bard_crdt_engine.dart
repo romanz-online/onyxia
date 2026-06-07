@@ -6,6 +6,30 @@ import 'package:crdt_lf/crdt_lf.dart';
 import 'bard_codec.dart';
 import 'bard_collab_config.dart';
 
+/// Fixed peer id used ONLY to build the deterministic genesis seed from
+/// `body.content`. crdt_lf derives each character's FugueElementID from
+/// `doc.peerId` + a per-handler counter that resets to 0 on construction, so
+/// seeding the same content under the same constant peer id yields a
+/// byte-identical Fugue tree on every peer (ids `genesis:0..n-1`). That
+/// determinism is what lets live ops merge across peers without a shared
+/// persisted snapshot. The genesis change is only ever imported as a snapshot
+/// (never added to the DAG and never a causal dep of a live op), so the
+/// non-deterministic HLC in its version vector is inert — convergence rests
+/// solely on the element ids.
+const _kGenesisPeerId = '00000000-0000-4000-8000-000000000000';
+
+/// Builds the deterministic genesis snapshot for [content]. See
+/// [_kGenesisPeerId]. Constructed in-process (no JSON round-trip), so the
+/// handler's typed `List<FugueValueNode<String>>` state is already correct and
+/// no codec rebuild is needed.
+Snapshot seedFromContent(String content) {
+  final g = CRDTDocument(peerId: PeerId.parse(_kGenesisPeerId));
+  if (content.isNotEmpty) {
+    CRDTFugueTextHandler(g, BardCodec.handlerKey).insert(0, content);
+  }
+  return g.takeSnapshot(pruneHistory: false);
+}
+
 /// Owns one CRDTDocument + CRDTFugueTextHandler for the lifetime of a
 /// collaborative BardEditor session.
 ///
@@ -56,16 +80,10 @@ class BardCrdtEngine {
     _doc = CRDTDocument(peerId: .generate());
     _text = CRDTFugueTextHandler(_doc, BardCodec.handlerKey);
 
-    // Hydrate from snapshot then catch-up ops.
-    final snap = _config.initialSnapshot;
-    if (snap != null) {
-      _doc.importSnapshot(BardCodec.decodeSnapshot(snap));
-    }
-    if (_config.initialOps.isNotEmpty) {
-      _doc.importChanges(
-        _config.initialOps.map(BardCodec.decodeChange).toList(),
-      );
-    }
+    // Hydrate from body.content (the canonical source of truth) via a
+    // deterministic genesis seed. The live doc keeps its own unique peer id
+    // (above), so local edits never collide with a peer's. See [seedFromContent].
+    _doc.importSnapshot(seedFromContent(_config.initialContent));
 
     // Inbound: remote op bytes → applyChange. Mark the change id BEFORE
     // applyChange runs so the (async-broadcast) localChanges echo for this
@@ -145,15 +163,6 @@ class BardCrdtEngine {
     _doc.runInTransaction(() {
       _text.change(newText);
     });
-  }
-
-  /// Take a snapshot of the current state. Returns encoded bytes.
-  ///
-  /// Useful for clients to occasionally cache a snapshot locally; the
-  /// compaction service does the canonical version.
-  Uint8List takeSnapshotBytes() {
-    final snap = _doc.takeSnapshot(pruneHistory: false);
-    return BardCodec.encodeSnapshot(snap);
   }
 
   void dispose() {

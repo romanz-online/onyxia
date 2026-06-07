@@ -32,13 +32,14 @@ class NoteEditorState {
 class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
   String? _vaultId;
   BardController? _controller;
-  StreamController<Uint8List>? _remoteOpsController;
   NoteArtifact? _note;
+  NoteBroadcastSession? _session;
+  StreamController<String>? _externalContentController;
 
-  // Debounced writeback of the converged editor text into artifacts.body.content.
-  // body.content is a denormalized read-cache (the constellation reads it; the
-  // editor itself hydrates from snapshot+ops, not from it). Refreshing it also
-  // fires the artifacts UPDATE triggers that bump artifact + vault updated_at.
+  // Debounced writeback of the converged editor text into artifacts.body.content
+  // — the canonical source of truth. CRDT ops are an ephemeral broadcast-only
+  // transport; this writeback is what makes the text durable and is what other
+  // clients reconcile against (see the externalContent backstop below).
   Timer? _writebackTimer;
   String? _lastWrittenContent;
   static const _writebackDebounce = Duration(seconds: 2);
@@ -68,8 +69,10 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
           ).update([note.copyWith(content: text)]);
         }
       }
-      _remoteOpsController?.close();
-      _remoteOpsController = null;
+      _externalContentController?.close();
+      _externalContentController = null;
+      _session?.dispose();
+      _session = null;
       if (controller != null) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           controller.dispose();
@@ -85,44 +88,48 @@ class NoteEditorStateNotifier extends AsyncNotifier<NoteEditorState> {
     final note = ref.read(selectedArtifactProvider) as NoteArtifact;
     _note = note;
     _lastWrittenContent = note.content;
-    final opsRepo = ArtifactOpsRepository(vaultId: _vaultId);
-    final snapsRepo = ArtifactSnapshotsRepository(vaultId: _vaultId);
 
-    // Subscribe to realtime BEFORE the snapshot+catch-up fetches. With two
-    // concurrent writers, any op committed during the fetch window would
-    // otherwise be missed (not in catch-up, not in the realtime stream that
-    // hasn't started yet) and cause CausallyNotReady on a later dep reference.
-    // The single-listener controller buffers events arriving during the fetch
-    // so the engine drains them in order after applying the catch-up ops.
-    final remoteOps = StreamController<Uint8List>();
-    _remoteOpsController = remoteOps;
-    final supabaseSub = opsRepo.opByteStreamFor(note.id).listen(remoteOps.add);
-    ref.onDispose(supabaseSub.cancel);
+    // Ephemeral live-sync over Supabase Realtime Broadcast. The session
+    // subscribes immediately and buffers inbound ops until the engine attaches.
+    final session = NoteBroadcastRepository(
+      vaultId: _vaultId,
+    ).openSession(note.id);
+    _session = session;
 
-    final snap = await snapsRepo.latestFor(note.id);
-    if (!ref.mounted) return const NoteEditorState();
-
-    final initialOps = await opsRepo.opBytesFor(
-      note.id,
-      sinceSeq: snap?.maxOpSeq,
-    );
-    if (!ref.mounted) return const NoteEditorState();
+    // Backstop: a remote body.content change that didn't arrive as live ops
+    // (peer disconnected, wiki-link rename) is pushed here for the editor to
+    // merge via Myers diff. Single-subscription stream consumed by the editor.
+    final externalContent = StreamController<String>();
+    _externalContentController = externalContent;
 
     final collab = BardCollabConfig(
-      initialSnapshot: snap?.snapshotBytes,
-      initialOps: initialOps,
-      remoteOps: remoteOps.stream,
+      initialContent: note.content,
+      remoteOps: session.inboundOps,
       onLocalOp: (bytes) {
-        // Fire-and-forget; failures should surface via global error handling.
-        opsRepo.append(note.id, bytes);
+        // Broadcast to peers, then schedule the canonical writeback.
+        session.broadcastOp(bytes);
         _scheduleContentWriteback();
       },
+      externalContent: externalContent.stream,
     );
 
-    final snapSub = snapsRepo.changeStreamFor(note.id).listen((_) {
-      if (ref.mounted) ref.invalidateSelf();
-    });
-    ref.onDispose(snapSub.cancel);
+    // Forward remote body.content updates into the live editor. selectedArtifact
+    // tracks the realtime artifacts stream, so a content change from another
+    // client surfaces here. Skip our own writeback echoes and anything the
+    // editor already shows — only genuinely-newer remote text reaches the engine.
+    ref.listen<String?>(
+      selectedArtifactProvider.select(
+        (a) => a is NoteArtifact && a.id == note.id ? a.content : null,
+      ),
+      (prev, next) {
+        if (next == null) return;
+        final controller = _controller;
+        if (controller == null) return;
+        if (next == controller.text) return; // editor already shows it
+        if (next == _lastWrittenContent) return; // our own writeback echo
+        _externalContentController?.add(next);
+      },
+    );
 
     final controller = BardController(text: '');
     _controller = controller;

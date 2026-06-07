@@ -29,8 +29,6 @@ export 'package:onyxia/helpers/url_helper.dart';
 export 'package:onyxia/data/models/user.dart';
 export 'package:onyxia/data/models/vault.dart';
 export 'package:onyxia/data/models/vault_member.dart';
-export 'package:onyxia/data/models/artifact_op.dart';
-export 'package:onyxia/data/models/artifact_snapshot.dart';
 export 'package:onyxia/data/models/artifacts/artifact.dart';
 export 'package:onyxia/data/models/artifacts/note_artifact.dart';
 export 'package:onyxia/data/models/artifacts/folder_artifact.dart';
@@ -110,8 +108,7 @@ export 'package:onyxia/repository/pins_repository.dart';
 export 'package:onyxia/repository/users_repository.dart';
 export 'package:onyxia/repository/vault_members_repository.dart';
 export 'package:onyxia/repository/artifacts_repository.dart';
-export 'package:onyxia/repository/artifact_ops_repository.dart';
-export 'package:onyxia/repository/artifact_snapshots_repository.dart';
+export 'package:onyxia/repository/note_broadcast_repository.dart';
 
 export 'package:onyxia/services/item_name_validation_service.dart';
 export 'package:onyxia/services/email_validation_service.dart';

@@ -80,6 +80,7 @@ class _BardEditorState extends State<BardEditor> {
 
   BardCrdtEngine? _engine;
   StreamSubscription<void>? _engineUpdatesSub;
+  StreamSubscription<String>? _externalContentSub;
 
   /// True for the synchronous window during which `_applyEngineToController`
   /// is writing engine text back to the controller. The controller listener
@@ -119,10 +120,18 @@ class _BardEditorState extends State<BardEditor> {
     _engineUpdatesSub = engine.updates.listen(
       (_) => _applyEngineToController(),
     );
-    // Sync initial state (snapshot + catch-up ops) into the controller without
-    // waiting for the first updates event. addPostFrameCallback so widget
-    // build is complete and selection logic in BardController's listener won't
-    // misfire on an empty pre-frame value.
+    // Whole-text reconciliation backstop: a fresh body.content the host
+    // couldn't deliver as live ops (peer disconnected, wiki-rename). Merge it
+    // via Myers diff — this also re-broadcasts the delta to connected peers and
+    // fires `updates`, which syncs the controller with a rebased cursor.
+    _externalContentSub = config.externalContent?.listen((content) {
+      if (_controller.value.composing.isValid) return; // don't fight the IME
+      engine.applyFallbackChange(content);
+    });
+    // Sync the seeded initial state into the controller without waiting for the
+    // first updates event. addPostFrameCallback so widget build is complete and
+    // selection logic in BardController's listener won't misfire on an empty
+    // pre-frame value.
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       _applyEngineToController();
@@ -130,6 +139,8 @@ class _BardEditorState extends State<BardEditor> {
   }
 
   void _detachCollab() {
+    _externalContentSub?.cancel();
+    _externalContentSub = null;
     _engineUpdatesSub?.cancel();
     _engineUpdatesSub = null;
     _engine?.dispose();

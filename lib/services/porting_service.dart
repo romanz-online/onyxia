@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:crdt_lf/crdt_lf.dart';
 import 'package:onyxia/export.dart';
 import 'package:web/web.dart' as web;
 
@@ -101,25 +100,9 @@ class PortingService {
       createdBy: userId,
       updatedBy: userId,
     );
+    // body.content is the canonical source of truth — the editor seeds its
+    // CRDT from it on open, so writing the note is all that's needed.
     await ArtifactsRepository(vaultId: vaultId).add([note]);
-
-    // BardEditor hydrates from artifact_snapshots + artifact_ops, not from
-    // NoteArtifact.content. Seed an initial CRDT snapshot containing the
-    // imported text so the editor renders it on open.
-    if (content.isNotEmpty) {
-      final doc = CRDTDocument(peerId: PeerId.generate());
-      CRDTFugueTextHandler(doc, BardCodec.handlerKey).insert(0, content);
-      final snap = doc.takeSnapshot(pruneHistory: false);
-
-      await ArtifactSnapshotsRepository(vaultId: vaultId).add([
-        ArtifactSnapshot(
-          artifactId: note.id,
-          vaultId: vaultId,
-          snapshotBytes: BardCodec.encodeSnapshot(snap),
-          versionVector: snap.versionVector.toJson(),
-        ),
-      ]);
-    }
   }
 
   static Future<void> _importImage({
