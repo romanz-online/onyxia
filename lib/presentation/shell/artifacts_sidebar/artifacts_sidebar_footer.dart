@@ -97,7 +97,9 @@ class _ArtifactsSidebarFooterState
               child: OnyxiaButton(
                 label: vaultName,
                 isPressed: _isMenuOpen,
-                onPressed: () => _setMenuOpen(!_isMenuOpen),
+                onPressed: selectedVault == null
+                    ? null
+                    : () => _setMenuOpen(!_isMenuOpen),
                 leftIcon: selectedVault == null
                     ? null
                     : LucideIcons.chevronsUpDown,
@@ -149,20 +151,20 @@ class _ArtifactsSidebarFooterState
             ),
             onTap: () => context.go(Routes.vaultUrl(vault.id)),
           ),
-        if (currentVault != null)
-          OnyxiaMenuItem(
-            icon: LucideIcons.check600,
-            child: Text(
-              currentVault.name,
-              style: TextStyle(
-                color: ThemeHelper.foreground1(),
-                fontSize: 13,
-                overflow: .ellipsis,
-              ),
+        OnyxiaMenuItem(
+          icon: LucideIcons.check600,
+          child: Text(
+            currentVault?.name ?? '???',
+            style: TextStyle(
+              color: ThemeHelper.foreground1(),
+              fontSize: 13,
+              overflow: .ellipsis,
             ),
-            onTap: () => {},
           ),
+          onTap: () => {},
+        ),
         OnyxiaMenuItem.divider(),
+
         OnyxiaMenuItem(
           icon: LucideIcons.logOut600,
           child: Text(
