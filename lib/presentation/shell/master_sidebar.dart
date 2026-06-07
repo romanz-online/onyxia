@@ -66,7 +66,7 @@ class MasterSidebar extends ConsumerWidget {
                 },
                 isSelected: selectedId == Routes.graph,
               ),
-            // TODO: add a "daily note" button maybe that just makes a note artifact with a title that's the current datetime
+            // TODO: add a "daily note" button maybe that just makes a note artifact with a title that's the current date
           ],
         ),
       ),
